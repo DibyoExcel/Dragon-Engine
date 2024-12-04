@@ -42,7 +42,7 @@ class OutdatedState extends MusicBeatState
 		if(!leftState) {
 			if (controls.ACCEPT) {
 				leftState = true;
-				CoolUtil.browserLoad("https://gamebanana.com/mods/553668");
+				CoolUtil.browserLoad("https://github.com/DibyoExcel/Dragon-Engine");
 			}
 			else if(controls.BACK) {
 				leftState = true;

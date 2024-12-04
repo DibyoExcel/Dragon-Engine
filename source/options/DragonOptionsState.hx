@@ -27,7 +27,7 @@ import Controls;
 
 using StringTools;
 
-class DESetSubstate extends BaseOptionsMenu
+class DragonOptionsState extends BaseOptionsMenu
 {
 	public function new()
 	{
@@ -128,6 +128,21 @@ class DESetSubstate extends BaseOptionsMenu
 			true);
 		//option.onChange = changeTheme;
 		addOption(option);
+		var option:Option = new Option('Auto Pause',
+			"Auto Pause When Unfocused Game.",
+			'autopause',
+			'bool',
+			true);
+		option.onChange = changeAutoPause;
+		addOption(option);
+		#if CHECK_FOR_UPDATES
+		var option:Option = new Option('Check for Updates',
+			'On Release builds, turn this on to check for updates when you start the game.',
+			'checkForUpdates',
+			'bool',
+			true);
+		addOption(option);
+		#end
 		super();
 	}
 	override public function close():Void {
@@ -138,10 +153,12 @@ class DESetSubstate extends BaseOptionsMenu
 	}
 	function changeTheme() {
 		FlxG.state.closeSubState();
-		FlxG.state.openSubState(new DESetSubstate());
+		FlxG.state.openSubState(new DragonOptionsState());
+	}
+	function changeAutoPause() {
+		FlxG.autoPause = ClientPrefs.autopause;
 	}
 	function onChangeNoteSkin() {
-		trace("'" + ClientPrefs.dflnoteskin + "'");
 		for (i in 0...spriteNote.length) {
 			spriteNote[i].frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
 			spriteNote[i].animation.addByPrefix('idle', 'arrow' + arrowDir[i].toUpperCase(), ClientPrefs.fpsStrumAnim, true);

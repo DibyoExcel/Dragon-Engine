@@ -107,6 +107,8 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 
 		var option:GameplayOption = new GameplayOption('Health Drain', 'healthdrain', 'bool', false);//My favorite build in mechanic
 		optionsArray.push(option);
+		var option:GameplayOption = new GameplayOption('Bothside Mode', 'bothside', 'bool', false);//is inspirated my old lua script
+		optionsArray.push(option);
 		var option:GameplayOption = new GameplayOption('Note Multiplier', //Name
 			'multNote', //Save data variable name
 			'int', //Variable type

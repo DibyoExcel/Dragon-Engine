@@ -417,7 +417,7 @@ class ChartingState extends MusicBeatState
 		add(optChar);
 		plyChar = new FlxSprite(0, 0);
 		plyChar.frames = Paths.getSparrowAtlas("characters/DubEnderDragon");
-		plyChar.animation.addByPrefix("idle", "DubEnderDragon Idle", true);
+		plyChar.animation.addByPrefix("idle", "DubEnderDragon Idle", 30);
 		for (i in 0...animAssets.length) {
 			plyChar.animation.addByPrefix("sing" + animAssets[i].toUpperCase(), "DubEnderDragon " + animAssets[i], false);
 		}
