@@ -27,7 +27,7 @@ import Controls;
 
 using StringTools;
 
-class DESetSubstate extends BaseOptionsMenu
+class DragonOptionsState extends BaseOptionsMenu
 {
 	public function new()
 	{
@@ -138,7 +138,7 @@ class DESetSubstate extends BaseOptionsMenu
 	}
 	function changeTheme() {
 		FlxG.state.closeSubState();
-		FlxG.state.openSubState(new DESetSubstate());
+		FlxG.state.openSubState(new DragonOptionsState());
 	}
 	function onChangeNoteSkin() {
 		trace("'" + ClientPrefs.dflnoteskin + "'");

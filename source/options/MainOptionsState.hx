@@ -37,9 +37,9 @@ class MainOptionsState extends MusicBeatState
 	function openSelectedSubstate(label:String) {
 		switch(label) {
 			case 'Dragon Settings':
-				LoadingState.loadAndSwitchState(new options.DESetSubstate());
+				LoadingState.loadAndSwitchState(new options.DragonOptionsState());
 			case 'Psych Settings':
-				LoadingState.loadAndSwitchState(new options.OptionsState());
+				LoadingState.loadAndSwitchState(new options.PsychOptionsState());
 		}
 	}
 
