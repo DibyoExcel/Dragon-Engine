@@ -27,6 +27,7 @@ class PauseSubState extends MusicBeatSubstate
 
 	var pauseMusic:FlxSound;
 	var practiceText:FlxText;
+	var bothsideTxt:FlxText;
 	var skipTimeText:FlxText;
 	var skipTimeTracker:Alphabet;
 	var curTime:Float = Math.max(0, Conductor.songPosition);
@@ -109,6 +110,14 @@ class PauseSubState extends MusicBeatSubstate
 		practiceText.updateHitbox();
 		practiceText.visible = PlayState.instance.practiceMode;
 		add(practiceText);
+
+		bothsideTxt = new FlxText(20, 15 + 138, 0, "BOTHSIDE MODE", 32);
+		bothsideTxt.scrollFactor.set();
+		bothsideTxt.setFormat(Paths.font('vcr.ttf'), 32);
+		bothsideTxt.x = FlxG.width - (bothsideTxt.width + 20);
+		bothsideTxt.updateHitbox();
+		bothsideTxt.visible = PlayState.instance.bothside;
+		add(bothsideTxt);
 
 		var chartingText:FlxText = new FlxText(20, 15 + 101, 0, "CHARTING MODE", 32);
 		chartingText.scrollFactor.set();

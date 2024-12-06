@@ -27,7 +27,7 @@ using StringTools;
 class MainMenuState extends MusicBeatState
 {
 	public static var psychEngineVersion:String = '0.6.3'; //This is also used for Discord RPC
-	public static var engineVersion:String = "1.5.0";
+	public static var engineVersion:String = "1.5.6";
 	public static var curSelected:Int = 0;
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
@@ -97,7 +97,7 @@ class MainMenuState extends MusicBeatState
 		magenta.screenCenter();
 		magenta.visible = false;
 		magenta.antialiasing = ClientPrefs.globalAntialiasing;
-		magenta.color = 0xFFfd719b;
+		magenta.color = 0xFFff00ff;
 		add(magenta);
 		
 		// magenta.scrollFactor.set();
@@ -133,6 +133,16 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollowPos, null, 1);
 
+		var textBG:FlxSprite = new FlxSprite(0, FlxG.height - 26).makeGraphic(FlxG.width, 26, 0xFF000000);
+		textBG.alpha = 0.6;
+		add(textBG);
+		textBG.scrollFactor.set();
+		var leText:String = "Press C To Clock(Why I Make This).";
+		var size:Int = 18;
+		var text:FlxText = new FlxText(textBG.x, textBG.y + 4, FlxG.width, leText, size);
+		text.setFormat(Paths.font("vcr.ttf"), size, FlxColor.WHITE, RIGHT);
+		text.scrollFactor.set();
+		add(text);
 		var versionShit:FlxText = new FlxText(12, FlxG.height - 56, 0, "Psych Engine v" + psychEngineVersion + "\nDragon Engine v" + engineVersion, 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -158,16 +168,6 @@ class MainMenuState extends MusicBeatState
 			}
 		}
 		#end
-		var textBG:FlxSprite = new FlxSprite(0, FlxG.height - 26).makeGraphic(FlxG.width, 26, 0xFF000000);
-		textBG.alpha = 0.6;
-		add(textBG);
-		textBG.scrollFactor.set();
-		var leText:String = "Press C To Clock(Why I Make This).";
-		var size:Int = 18;
-		var text:FlxText = new FlxText(textBG.x, textBG.y + 4, FlxG.width, leText, size);
-		text.setFormat(Paths.font("vcr.ttf"), size, FlxColor.WHITE, RIGHT);
-		text.scrollFactor.set();
-		add(text);
 		super.create();
 	}
 

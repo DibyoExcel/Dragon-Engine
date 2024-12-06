@@ -34,20 +34,6 @@ class DragonOptionsState extends BaseOptionsMenu
 
 		title = 'Dragon Settings';
 		rpcTitle = 'Dragon Settings Menu'; //for Discord Rich Presence
-		var option:Option = new Option('Dark Mode',
-			"Dark Mode.",
-			'darkmode',
-			'bool',
-			false);
-		option.onChange = changeTheme;
-		addOption(option);
-
-		var option:Option = new Option('Opponent Note Splashes',
-			"Show Opponent Note Splash",
-			'noteSplashesOpt',
-			'bool',
-			true);
-		addOption(option);
 
 		var option:Option = new Option('Long Note Transparency',
 			'How much transparent should the Long Notes be.',
@@ -93,6 +79,21 @@ class DragonOptionsState extends BaseOptionsMenu
 		option.changeValue = 0.1;
 		addOption(option);
 
+		var option:Option = new Option('Dark Mode',
+			"Dark Mode.",
+			'darkmode',
+			'bool',
+			false);
+		option.onChange = reloadSubstate;
+		addOption(option);
+
+		var option:Option = new Option('Opponent Note Splashes',
+			"Show Opponent Note Splash",
+			'noteSplashesOpt',
+			'bool',
+			true);
+		addOption(option);
+
 		var option:Option = new Option('Classic Strums',
 			"The FNF Classic Strum(Note Splash Will Disable).",
 			'clsstrum',
@@ -100,15 +101,6 @@ class DragonOptionsState extends BaseOptionsMenu
 			false);
 		addOption(option);
 
-		var option:Option = new Option('Default Note Skin',
-			"Change Default Noteskin.",
-			'dflnoteskin',
-			'string',
-			'NOTE_assets',
-			['NOTE_assets', 'NOTE_minecraft_assets']);
-		option.showNote = true;
-		option.onChange = onChangeNoteSkin;
-		addOption(option);
 		var option:Option = new Option('Overfill Health Bar',
 			"Messed Up Health Bar With Spammy.",
 			'ofhb',
@@ -121,12 +113,43 @@ class DragonOptionsState extends BaseOptionsMenu
 			'bool',
 			false);
 		addOption(option);
-		var option:Option = new Option('Extra UI',
+		var EUoption:Option = new Option('Extra UI',
 			"Extra UI By DubEnderDragon.",
 			'extUI',
 			'bool',
+			false);
+		EUoption.onChange = reloadSubstate;
+		addOption(EUoption);
+		if (EUoption.getValue() == true) {
+			var option:Option = new Option('Key Stroke Transparency',
+			'How much transparent should the Key Stroke be.',
+			'keyStrokeAlpha',
+			'percent',
+			1);
+			option.scrollSpeed = 1.6;
+			option.minValue = 0.1;
+			option.maxValue = 1;
+			option.changeValue = 0.01;
+			option.decimals = 2;
+			addOption(option);
+		}
+
+		var option:Option = new Option('Auto Pause',
+			"If UnChecked The Game Keep Run Even Not Focus.",
+			'autopause',
+			'bool',
 			true);
-		//option.onChange = changeTheme;
+		option.onChange = changeAutoPause;
+		addOption(option);
+
+		var option:Option = new Option('Default Note Skin',
+			"Change Default Noteskin.",
+			'dflnoteskin',
+			'string',
+			'NOTE_assets',
+			['NOTE_assets', 'NOTE_minecraft_assets']);
+		option.showNote = true;
+		option.onChange = onChangeNoteSkin;
 		addOption(option);
 		super();
 	}
@@ -136,7 +159,10 @@ class DragonOptionsState extends BaseOptionsMenu
 		FlxG.switchState(new options.MainOptionsState());
 		//trace("setting save!");
 	}
-	function changeTheme() {
+	function changeAutoPause() {
+		FlxG.autoPause = ClientPrefs.autopause;
+	}
+	function reloadSubstate() {
 		FlxG.state.closeSubState();
 		FlxG.state.openSubState(new DragonOptionsState());
 	}

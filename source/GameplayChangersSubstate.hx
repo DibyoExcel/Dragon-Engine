@@ -80,7 +80,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 
 		var option:GameplayOption = new GameplayOption('Health Loss Multiplier', 'healthloss', 'float', 1);
 		option.scrollSpeed = 2.5;
-		option.minValue = 0.5;
+		option.minValue = 0;
 		option.maxValue = 5;
 		option.changeValue = 0.1;
 		option.displayFormat = '%vX';
@@ -107,6 +107,8 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 
 		var option:GameplayOption = new GameplayOption('Health Drain', 'healthdrain', 'bool', false);//My favorite build in mechanic
 		optionsArray.push(option);
+		var boption:GameplayOption = new GameplayOption('Bothside Mode', 'bothside', 'bool', false);//My favorite build in mechanic
+		optionsArray.push(boption);//goblog
 		var option:GameplayOption = new GameplayOption('Note Multiplier', //Name
 			'multNote', //Save data variable name
 			'int', //Variable type
@@ -132,10 +134,6 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 	public function new()
 	{
 		super();
-		
-		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-		bg.alpha = 0.6;
-		add(bg);
 
 		// avoids lagspikes while scrolling through menus!
 		grpOptions = new FlxTypedGroup<Alphabet>();

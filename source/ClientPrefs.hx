@@ -8,7 +8,9 @@ import Controls;
 
 class ClientPrefs {
 	public static var downScroll:Bool = false;
-	public static var extUI:Bool = true;
+	public static var keyStrokeAlpha:Float = 1;
+	public static var extUI:Bool = false;
+	public static var autopause:Bool = true;
 	public static var dragonW:Bool = false;
 	public static var darkmode:Bool = false;
 	public static var ofhb:Bool = false;
@@ -107,6 +109,8 @@ class ClientPrefs {
 
 	public static function saveSettings() {
 		FlxG.save.data.downScroll = downScroll;
+		FlxG.save.data.keyStrokeAlpha = keyStrokeAlpha;
+		FlxG.save.data.autopause = autopause;
 		FlxG.save.data.extUI = extUI;
 		FlxG.save.data.darkmode = darkmode;
 		FlxG.save.data.dragonW = dragonW;
@@ -166,6 +170,12 @@ class ClientPrefs {
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.autopause != null) {
+			autopause = FlxG.save.data.autopause;
+		}
+		if(FlxG.save.data.keyStrokeAlpha != null) {
+			keyStrokeAlpha = FlxG.save.data.keyStrokeAlpha;
 		}
 		if(FlxG.save.data.extUI != null) {
 			extUI = FlxG.save.data.extUI;
