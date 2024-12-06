@@ -30,6 +30,10 @@ enum abstract Action(String) to String from String
 	var NOTE_LEFT = "note_left";
 	var NOTE_RIGHT = "note_right";
 	var NOTE_DOWN = "note_down";
+	var NOTE_UP2 = "note_up2";
+	var NOTE_LEFT2 = "note_left2";
+	var NOTE_RIGHT2 = "note_right2";
+	var NOTE_DOWN2 = "note_down2";
 	var NOTE_UP_P = "note_up-press";
 	var NOTE_LEFT_P = "note_left-press";
 	var NOTE_RIGHT_P = "note_right-press";

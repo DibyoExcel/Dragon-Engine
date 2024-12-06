@@ -65,7 +65,8 @@ class ClientPrefs {
 		'practice' => false,
 		'botplay' => false,
 		'opponentplay' => false,
-		'notekey' => false
+		'notekey' => false,
+		'bothside' => false
 	];
 
 	public static var comboOffset:Array<Int> = [0, 0, 0, 0];
@@ -82,7 +83,7 @@ class ClientPrefs {
 		'note_down'		=> [S, DOWN],
 		'note_up'		=> [W, UP],
 		'note_right'	=> [D, RIGHT],
-		
+
 		'ui_left'		=> [A, LEFT],
 		'ui_down'		=> [S, DOWN],
 		'ui_up'			=> [W, UP],

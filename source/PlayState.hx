@@ -362,14 +362,22 @@ class PlayState extends MusicBeatState
 			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')),
 			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')),
 			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')),
-			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right'))
+			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right')),
+			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left2')),
+			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down2')),
+			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up2')),
+			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right2'))
 		];
 
 		controlArray = [
 			'NOTE_LEFT',
 			'NOTE_DOWN',
 			'NOTE_UP',
-			'NOTE_RIGHT'
+			'NOTE_RIGHT',
+			'NOTE_LEFT2',
+			'NOTE_DOWN2',
+			'NOTE_UP2',
+			'NOTE_RIGHT2'
 		];
 
 		//Ratings
@@ -2905,9 +2913,9 @@ class PlayState extends MusicBeatState
 					}
 				
 					strumLineNotes.add(babyArrow);
-					babyArrow.postAddedToGroup();    
-				}
-			} else {
+					babyArrow.postAddedToGroup();
+					}
+				} else {
 			// Loop for playerStrums (only 4 arrows)
 				for (i in 0...4)
 					{
@@ -2929,7 +2937,7 @@ class PlayState extends MusicBeatState
 						}
 					
 						strumLineNotes.add(babyArrow);
-						babyArrow.postAddedToGroup();    
+						babyArrow.postAddedToGroup();
 					}
 			}				
 		}
