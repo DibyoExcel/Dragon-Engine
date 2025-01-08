@@ -1,5 +1,6 @@
 package openfl.display;
 
+import flixel.FlxG;
 import haxe.Timer;
 import openfl.events.Event;
 import openfl.text.TextField;
@@ -10,8 +11,8 @@ import openfl.display._internal.stats.Context3DStats;
 import openfl.display._internal.stats.DrawCallContext;
 #end
 #if flash
-import openfl.Lib;
 #end
+import openfl.Lib;
 
 #if openfl
 import openfl.system.System;
@@ -89,7 +90,9 @@ class FPS extends TextField
 			memoryMegas = Math.abs(FlxMath.roundDecimal(System.totalMemory / 1000000, 1));
 			text += " | Memory: " + memoryMegas + " MB";
 			#end
-
+			if ((Lib.application.window.width >= Lib.application.window.display.bounds.width && Lib.application.window.height >= Lib.application.window.display.bounds.height && Lib.application.window.x == 0 && Lib.application.window.y == 0) || FlxG.fullscreen) {
+				text += "\nDragon Engine";
+			}
 			textColor = 0xFF00FF00;
 			if (memoryMegas > 3000 || currentFPS <= ClientPrefs.framerate / 2)
 			{

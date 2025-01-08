@@ -4,7 +4,7 @@ import flixel.FlxState;
 import flixel.FlxG;
 import flixel.FlxSprite;
 
-class ClockSubState extends FlxState {
+class ClockSubState extends MusicBeatState {
     private var clockFace:FlxSprite;
     private var hourHand:FlxSprite;
     private var minuteHand:FlxSprite;
@@ -13,7 +13,6 @@ class ClockSubState extends FlxState {
     private var centerY:Float;
 
     override public function create():Void {
-        super.create();
         var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image((ClientPrefs.darkmode ? 'menuDesatDark' : 'menuDesat')));
 		bg.color = 0xffffff;
 		bg.screenCenter();
@@ -41,13 +40,14 @@ class ClockSubState extends FlxState {
         secondHand = new FlxSprite(centerX - 2, centerY - 80).makeGraphic(4, 80, 0xFFFF0000);
         secondHand.origin.set(2, 80); // Set origin to bottom center
         add(secondHand);
+        super.create();
     }
 
     override public function update(elapsed:Float):Void {
         super.update(elapsed);
         if (FlxG.keys.justPressed.ESCAPE) {
             FlxG.sound.play(Paths.sound('cancelMenu'));
-			FlxG.switchState(new MainMenuState());
+			MusicBeatState.switchState(new MainMenuState());
         }
 
         var date = Date.now();

@@ -107,8 +107,10 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 
 		var option:GameplayOption = new GameplayOption('Health Drain', 'healthdrain', 'bool', false);//My favorite build in mechanic
 		optionsArray.push(option);
-		var boption:GameplayOption = new GameplayOption('Bothside Mode', 'bothside', 'bool', false);//My favorite build in mechanic
-		optionsArray.push(boption);//goblog
+		var option:GameplayOption = new GameplayOption('Game Mode', 'gamemode', 'string', "none", [ 'none', 'bothside', 'opponent' ]);//My favorite build in mechanic
+		optionsArray.push(option);//goblog
+		var option:GameplayOption = new GameplayOption('Modchart Type', 'modcharttype', 'string', "none", [ 'none', 'wave note', 'fade note' ]);//Messing Around with this
+		optionsArray.push(option);
 		var option:GameplayOption = new GameplayOption('Note Multiplier', //Name
 			'multNote', //Save data variable name
 			'int', //Variable type

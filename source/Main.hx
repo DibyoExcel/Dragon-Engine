@@ -10,6 +10,9 @@ import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.display.StageScaleMode;
+#if WINDOW_ABILITY
+import hxwindowmode.WindowColorMode;
+#end
 
 //crash handler stuff
 #if CRASH_HANDLER
@@ -40,6 +43,10 @@ class Main extends Sprite
 
 	public static function main():Void
 	{
+		#if WINDOW_ABILITY
+			WindowColorMode.setWindowBorderColor([255, 0, 0]);
+			WindowColorMode.redrawWindowHeader();
+		#end
 		Lib.current.addChild(new Main());
 	}
 

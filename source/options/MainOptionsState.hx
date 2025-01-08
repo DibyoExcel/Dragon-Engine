@@ -77,6 +77,7 @@ class MainOptionsState extends MusicBeatState
 		add(selectorRight);
 
 		changeSelection();
+		super.create();
 	}
 
 	override function update(elapsed:Float) {

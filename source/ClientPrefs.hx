@@ -8,6 +8,8 @@ import Controls;
 
 class ClientPrefs {
 	public static var downScroll:Bool = false;
+	public static var startPause:Bool = false;
+	public static var disableOGCredit:Bool = false;
 	public static var keyStrokeAlpha:Float = 1;
 	public static var extUI:Bool = false;
 	public static var autopause:Bool = true;
@@ -34,7 +36,7 @@ class ClientPrefs {
 	public static var camZooms:Bool = true;
 	public static var hideHud:Bool = false;
 	public static var noteOffset:Int = 0;
-	public static var arrowHSV:Array<Array<Int>> = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
+	public static var arrowHSV:Array<Array<Int>> = [[300, 100, 0], [180, 100, 0], [120, 100, 0], [0, 100, 0]];
 	public static var ghostTapping:Bool = true;
 	public static var timeBarType:String = 'Time Left';
 	public static var scoreZoom:Bool = true;
@@ -66,7 +68,10 @@ class ClientPrefs {
 		'botplay' => false,
 		'opponentplay' => false,
 		'notekey' => false,
-		'bothside' => false
+		'multNote' => 1,
+		'gamemode' => 'none',
+		'modcharttype' => 'none',
+		'opponent' => false
 	];
 
 	public static var comboOffset:Array<Int> = [0, 0, 0, 0];
@@ -110,6 +115,8 @@ class ClientPrefs {
 
 	public static function saveSettings() {
 		FlxG.save.data.downScroll = downScroll;
+		FlxG.save.data.startPause = startPause;
+		FlxG.save.data.disableOGCredit = disableOGCredit;
 		FlxG.save.data.keyStrokeAlpha = keyStrokeAlpha;
 		FlxG.save.data.autopause = autopause;
 		FlxG.save.data.extUI = extUI;
@@ -171,6 +178,12 @@ class ClientPrefs {
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.startPause != null) {
+			startPause = FlxG.save.data.startPause;
+		}
+		if (FlxG.save.data.disableOGCredit != null) {
+			disableOGCredit = FlxG.save.data.disableOGCredit;
 		}
 		if(FlxG.save.data.autopause != null) {
 			autopause = FlxG.save.data.autopause;

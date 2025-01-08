@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<TextureAtlas imagePath="NOTE_assets.png">
+<TextureAtlas imagePath="NOTE_minecraft_assets.png">
 <SubTexture name="arrowDOWN0000" x="0" y="0" width="169" height="169" frameX="0" frameY="0" frameWidth="159" frameHeight="159" />
 <SubTexture name="arrowLEFT0000" x="169" y="0" width="169" height="169" frameX="0" frameY="0" frameWidth="159" frameHeight="159" />
 <SubTexture name="arrowRIGHT0000" x="0" y="169" width="169" height="169" frameX="0" frameY="0" frameWidth="159" frameHeight="159" />

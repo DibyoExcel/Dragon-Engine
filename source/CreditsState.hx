@@ -80,6 +80,11 @@ class CreditsState extends MusicBeatState
 		}
 		#end
 
+		var myEngineCreditBruh:Array<Array<String>> = [
+			[ 'Dragon Engine Developer' ],
+			[ 'DubEnderDragon', 'dub', 'The Solo Developer', 'https://youtube.com/@OfficialDubEndDragonFNF', '7900FF' ]
+		];
+
 		var pisspoop:Array<Array<String>> = [ //Name - Icon name - Description - Link - BG Color
 			['Psych Engine Team'],
 			['Shadow Mario',		'shadowmario',		'Main Programmer of Psych Engine',								'https://twitter.com/Shadow_Mario_',	'444444'],
@@ -105,9 +110,13 @@ class CreditsState extends MusicBeatState
 			['evilsk8r',			'evilsk8r',			"Artist of Friday Night Funkin'",								'https://twitter.com/evilsk8r',			'5ABD4B'],
 			['kawaisprite',			'kawaisprite',		"Composer of Friday Night Funkin'",								'https://twitter.com/kawaisprite',		'378FC7']
 		];
-		
-		for(i in pisspoop){
+		for(i in myEngineCreditBruh){
 			creditsStuff.push(i);
+		}
+		if (!ClientPrefs.disableOGCredit) {
+			for(i in pisspoop){
+				creditsStuff.push(i);
+			}	
 		}
 	
 		for (i in 0...creditsStuff.length)

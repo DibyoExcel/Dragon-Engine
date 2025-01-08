@@ -33,6 +33,7 @@ import flixel.math.FlxMath;
 import flixel.util.FlxSave;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.system.FlxAssets.FlxShader;
+import hxwindowmode.WindowColorMode;
 
 #if (!flash && sys)
 import flixel.addons.display.FlxRuntimeShader;
@@ -1043,6 +1044,28 @@ class FunkinLua {
 				setGroupStuff(leArray, variable, value);
 			}
 		});
+		#if WINDOW_ABILITY
+			Lua_helper.add_callback(lua, "setWindowDarkMode", function() {
+				WindowColorMode.setDarkMode();
+				WindowColorMode.redrawWindowHeader();
+			});
+			Lua_helper.add_callback(lua, "setWindowLightMode", function() {
+				WindowColorMode.setLightMode();
+				WindowColorMode.redrawWindowHeader();
+			});
+			Lua_helper.add_callback(lua, "setWindowColorMode", function(dark:Bool = true) {
+				WindowColorMode.setWindowColorMode(dark);
+				WindowColorMode.redrawWindowHeader();
+			});
+			Lua_helper.add_callback(lua, "setWindowBorderColor", function(r:Int = 255, g:Int = 0, b:Int = 0, setHeader:Bool = true, setBorder:Bool = true) {
+				WindowColorMode.setWindowBorderColor([r, g, b], setHeader, setBorder);
+				WindowColorMode.redrawWindowHeader();
+			});
+			Lua_helper.add_callback(lua, "setWindowTitleColor", function(r:Int = 255, g:Int = 0, b:Int = 0) {
+				WindowColorMode.setWindowTitleColor([r, g, b]);
+				WindowColorMode.redrawWindowHeader();
+			});
+		#end
 		Lua_helper.add_callback(lua, "removeFromGroup", function(obj:String, index:Int, dontDestroy:Bool = false) {
 			if(Std.isOfType(Reflect.getProperty(getInstance(), obj), FlxTypedGroup)) {
 				var sex = Reflect.getProperty(getInstance(), obj).members[index];

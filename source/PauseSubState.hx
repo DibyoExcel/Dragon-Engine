@@ -111,12 +111,12 @@ class PauseSubState extends MusicBeatSubstate
 		practiceText.visible = PlayState.instance.practiceMode;
 		add(practiceText);
 
-		bothsideTxt = new FlxText(20, 15 + 138, 0, "BOTHSIDE MODE", 32);
+		bothsideTxt = new FlxText(20, 15 + 138, 0, (PlayState.instance.gamemode == "bothside" ? "BOTHSIDE MODE" : "OPPONENT MODE"), 32);
 		bothsideTxt.scrollFactor.set();
 		bothsideTxt.setFormat(Paths.font('vcr.ttf'), 32);
 		bothsideTxt.x = FlxG.width - (bothsideTxt.width + 20);
 		bothsideTxt.updateHitbox();
-		bothsideTxt.visible = PlayState.instance.bothside;
+		bothsideTxt.visible = (PlayState.instance.gamemode != 'none' ? true : false);
 		add(bothsideTxt);
 
 		var chartingText:FlxText = new FlxText(20, 15 + 101, 0, "CHARTING MODE", 32);

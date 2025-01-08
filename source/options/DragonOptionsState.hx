@@ -86,6 +86,12 @@ class DragonOptionsState extends BaseOptionsMenu
 			false);
 		option.onChange = reloadSubstate;
 		addOption(option);
+		var option:Option = new Option('Start Pause',
+			"Start Pause After Load Song.",
+			'startPause',
+			'bool',
+			false);
+		addOption(option);
 
 		var option:Option = new Option('Opponent Note Splashes',
 			"Show Opponent Note Splash",
@@ -139,6 +145,14 @@ class DragonOptionsState extends BaseOptionsMenu
 			'autopause',
 			'bool',
 			true);
+		option.onChange = changeAutoPause;
+		addOption(option);
+
+		var option:Option = new Option('Hide Original Credits',
+			"If Checked The Original Credits Will Hide.",
+			'disableOGCredit',
+			'bool',
+			false);
 		option.onChange = changeAutoPause;
 		addOption(option);
 

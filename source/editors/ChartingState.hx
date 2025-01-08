@@ -405,13 +405,13 @@ class ChartingState extends MusicBeatState
 
 		updateGrid();
 		optChar = new FlxSprite(0, 0);
-		optChar.frames = Paths.getSparrowAtlas("characters/Malfaren");
-		optChar.animation.addByPrefix("idle", "Malfaren Idle", true);
+		optChar.frames = Paths.getSparrowAtlas("characters/MintEnderDragon");
+		optChar.animation.addByPrefix("idle", "MintEnderDragon Idle", true);
 		for (i in 0...animAssets.length) {
-			optChar.animation.addByPrefix("sing" + animAssets[i].toUpperCase(), "Malfaren " + animAssets[i], false);
+			optChar.animation.addByPrefix("sing" + animAssets[i].toUpperCase(), "MintEnderDragon " + animAssets[i], false);
 		}
 		optChar.animation.play("idle");
-		optChar.scale.set(0.3, 0.3);
+		optChar.scale.set(0.1, 0.1);
 		optChar.x = (-((FlxG.width/2)+FlxG.width/4))+(optChar.width*0.1);
 		//optChar.scrollFactor.set(0, 0);
 		add(optChar);
@@ -424,7 +424,7 @@ class ChartingState extends MusicBeatState
 		plyChar.animation.play("idle");
 		plyChar.scale.set(0.1, 0.1);
 		plyChar.flipX = true;
-		plyChar.x = ((-((FlxG.width/2)+FlxG.width/4))+(plyChar.width*0.1))+145;
+		plyChar.x = ((-((FlxG.width/2)+FlxG.width/4))+(plyChar.width*0.1))+140;
 		//plyChar.scrollFactor.set(0, 0);
 		add(plyChar);
 		super.create();
@@ -2139,7 +2139,7 @@ class ChartingState extends MusicBeatState
 						if (stopOptChar != null) {
 							stopOptChar.stop();
 						}
-						stopOptChar = new Timer(note.sustainLength+150);
+						stopOptChar = new Timer(Math.floor(note.sustainLength)+500);
 						stopOptChar.run = function() {
 							optChar.animation.play("idle");
 						};
@@ -2148,7 +2148,7 @@ class ChartingState extends MusicBeatState
 						if (stopPlyChar != null) {
 							stopPlyChar.stop();
 						}
-						stopPlyChar = new Timer(note.sustainLength+150);
+						stopPlyChar = new Timer(Math.floor(note.sustainLength)+150);
 						stopPlyChar.run = function() {
 							plyChar.animation.play("idle");
 						};
