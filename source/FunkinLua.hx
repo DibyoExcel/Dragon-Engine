@@ -1100,22 +1100,6 @@ class FunkinLua {
 				return Lib.application.window.display.bounds.height;
 			});
 		#end
-		Lua_helper.add_callback(lua, "setNoteCamera", function(note:Int, camera:String) {//doing this if want silly billy style
-			if (note != 0) {
-				if (note < 0) {
-					note = 0;
-				}
-				PlayState.instance.strumLineNotes.members[note & PlayState.instance.strumLineNotes.length].cameras = [cameraFromString(camera)];
-			}
-		});
-		Lua_helper.add_callback(lua, "setNoteScrollFactor", function(note:Int, x:Float = 0, y:Float = 0) {//kinda useless but useful when use when note camera at camGame(silly billy reference)
-			if (note != 0) {
-				if (note < 0) {
-					note = 0;
-				}
-				PlayState.instance.strumLineNotes.members[note & PlayState.instance.strumLineNotes.length].scrollFactor.set(x, y);
-			}
-		});
 		Lua_helper.add_callback(lua, "removeFromGroup", function(obj:String, index:Int, dontDestroy:Bool = false) {
 			if(Std.isOfType(Reflect.getProperty(getInstance(), obj), FlxTypedGroup)) {
 				var sex = Reflect.getProperty(getInstance(), obj).members[index];
