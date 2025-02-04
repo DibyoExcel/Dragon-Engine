@@ -26,14 +26,13 @@ enum abstract Action(String) to String from String
 	var UI_LEFT_R = "ui_left-release";
 	var UI_RIGHT_R = "ui_right-release";
 	var UI_DOWN_R = "ui_down-release";
+	
+	//1
+	
 	var NOTE_UP = "note_up";
 	var NOTE_LEFT = "note_left";
 	var NOTE_RIGHT = "note_right";
 	var NOTE_DOWN = "note_down";
-	var NOTE_UP2 = "note_up2";
-	var NOTE_LEFT2 = "note_left2";
-	var NOTE_RIGHT2 = "note_right2";
-	var NOTE_DOWN2 = "note_down2";
 	var NOTE_UP_P = "note_up-press";
 	var NOTE_LEFT_P = "note_left-press";
 	var NOTE_RIGHT_P = "note_right-press";
@@ -42,6 +41,22 @@ enum abstract Action(String) to String from String
 	var NOTE_LEFT_R = "note_left-release";
 	var NOTE_RIGHT_R = "note_right-release";
 	var NOTE_DOWN_R = "note_down-release";
+
+	//2
+
+	var NOTE_UP_2 = "note_up_2";
+	var NOTE_LEFT_2 = "note_left_2";
+	var NOTE_RIGHT_2 = "note_right_2";
+	var NOTE_DOWN_2 = "note_down_2";
+	var NOTE_UP_2_P = "note_up_2-press";
+	var NOTE_LEFT_2_P = "note_left_2-press";
+	var NOTE_RIGHT_2_P = "note_right_2-press";
+	var NOTE_DOWN_2_P = "note_down_2-press";
+	var NOTE_UP_2_R = "note_up_2-release";
+	var NOTE_LEFT_2_R = "note_left_2-release";
+	var NOTE_RIGHT_2_R = "note_right_2-release";
+	var NOTE_DOWN_2_R = "note_down_2-release";
+
 	var ACCEPT = "accept";
 	var BACK = "back";
 	var PAUSE = "pause";
@@ -63,6 +78,9 @@ abstract Action(String) to String from String
 	var UI_LEFT_R = "ui_left-release";
 	var UI_RIGHT_R = "ui_right-release";
 	var UI_DOWN_R = "ui_down-release";
+
+	//1
+
 	var NOTE_UP = "note_up";
 	var NOTE_LEFT = "note_left";
 	var NOTE_RIGHT = "note_right";
@@ -75,6 +93,22 @@ abstract Action(String) to String from String
 	var NOTE_LEFT_R = "note_left-release";
 	var NOTE_RIGHT_R = "note_right-release";
 	var NOTE_DOWN_R = "note_down-release";
+
+	//2
+
+	var NOTE_UP_2 = "note_up_2";
+	var NOTE_LEFT_2 = "note_left_2";
+	var NOTE_RIGHT_2 = "note_right_2";
+	var NOTE_DOWN_2 = "note_down_2";
+	var NOTE_UP_2_P = "note_up_2-press";
+	var NOTE_LEFT_2_P = "note_left_2-press";
+	var NOTE_RIGHT_2_P = "note_right_2-press";
+	var NOTE_DOWN_2_P = "note_down_2-press";
+	var NOTE_UP_2_R = "note_up_2-release";
+	var NOTE_LEFT_2_R = "note_left_2-release";
+	var NOTE_RIGHT_2_R = "note_right_2-release";
+	var NOTE_DOWN_2_R = "note_down_2-release";
+
 	var ACCEPT = "accept";
 	var BACK = "back";
 	var PAUSE = "pause";
@@ -103,6 +137,10 @@ enum Control
 	NOTE_LEFT;
 	NOTE_RIGHT;
 	NOTE_DOWN;
+	NOTE_UP_2;
+	NOTE_LEFT_2;
+	NOTE_RIGHT_2;
+	NOTE_DOWN_2;
 	RESET;
 	ACCEPT;
 	BACK;
@@ -135,6 +173,9 @@ class Controls extends FlxActionSet
 	var _ui_leftR = new FlxActionDigital(Action.UI_LEFT_R);
 	var _ui_rightR = new FlxActionDigital(Action.UI_RIGHT_R);
 	var _ui_downR = new FlxActionDigital(Action.UI_DOWN_R);
+	
+	//1
+
 	var _note_up = new FlxActionDigital(Action.NOTE_UP);
 	var _note_left = new FlxActionDigital(Action.NOTE_LEFT);
 	var _note_right = new FlxActionDigital(Action.NOTE_RIGHT);
@@ -147,6 +188,22 @@ class Controls extends FlxActionSet
 	var _note_leftR = new FlxActionDigital(Action.NOTE_LEFT_R);
 	var _note_rightR = new FlxActionDigital(Action.NOTE_RIGHT_R);
 	var _note_downR = new FlxActionDigital(Action.NOTE_DOWN_R);
+
+	//2
+	
+	var _note_up_2 = new FlxActionDigital(Action.NOTE_UP_2);
+	var _note_left_2 = new FlxActionDigital(Action.NOTE_LEFT_2);
+	var _note_right_2 = new FlxActionDigital(Action.NOTE_RIGHT_2);
+	var _note_down_2 = new FlxActionDigital(Action.NOTE_DOWN_2);
+	var _note_up_2P = new FlxActionDigital(Action.NOTE_UP_2_P);
+	var _note_left_2P = new FlxActionDigital(Action.NOTE_LEFT_2_P);
+	var _note_right_2P = new FlxActionDigital(Action.NOTE_RIGHT_2_P);
+	var _note_down_2P = new FlxActionDigital(Action.NOTE_DOWN_2_P);
+	var _note_up_2R = new FlxActionDigital(Action.NOTE_UP_2_R);
+	var _note_left_2R = new FlxActionDigital(Action.NOTE_LEFT_2_R);
+	var _note_right_2R = new FlxActionDigital(Action.NOTE_RIGHT_2_R);
+	var _note_down_2R = new FlxActionDigital(Action.NOTE_DOWN_2_R);
+
 	var _accept = new FlxActionDigital(Action.ACCEPT);
 	var _back = new FlxActionDigital(Action.BACK);
 	var _pause = new FlxActionDigital(Action.PAUSE);
@@ -221,6 +278,8 @@ class Controls extends FlxActionSet
 	inline function get_UI_DOWN_R()
 		return _ui_downR.check();
 
+
+	//1
 	public var NOTE_UP(get, never):Bool;
 
 	inline function get_NOTE_UP()
@@ -281,6 +340,67 @@ class Controls extends FlxActionSet
 	inline function get_NOTE_DOWN_R()
 		return _note_downR.check();
 
+	//2
+	public var NOTE_UP_2(get, never):Bool;
+
+	inline function get_NOTE_UP_2()
+		return _note_up_2.check();
+
+	public var NOTE_LEFT_2(get, never):Bool;
+
+	inline function get_NOTE_LEFT_2()
+		return _note_left_2.check();
+
+	public var NOTE_RIGHT_2(get, never):Bool;
+
+	inline function get_NOTE_RIGHT_2()
+		return _note_right_2.check();
+
+	public var NOTE_DOWN_2(get, never):Bool;
+
+	inline function get_NOTE_DOWN_2()
+		return _note_down_2.check();
+
+	public var NOTE_UP_2_P(get, never):Bool;
+
+	inline function get_NOTE_UP_2_P()
+		return _note_up_2P.check();
+
+	public var NOTE_LEFT_2_P(get, never):Bool;
+
+	inline function get_NOTE_LEFT_2_P()
+		return _note_left_2P.check();
+
+	public var NOTE_RIGHT_2_P(get, never):Bool;
+
+	inline function get_NOTE_RIGHT_2_P()
+		return _note_right_2P.check();
+
+	public var NOTE_DOWN_2_P(get, never):Bool;
+
+	inline function get_NOTE_DOWN_2_P()
+		return _note_down_2P.check();
+
+	public var NOTE_UP_2_R(get, never):Bool;
+
+	inline function get_NOTE_UP_2_R()
+		return _note_up_2R.check();
+
+	public var NOTE_LEFT_2_R(get, never):Bool;
+
+	inline function get_NOTE_LEFT_2_R()
+		return _note_left_2R.check();
+
+	public var NOTE_RIGHT_2_R(get, never):Bool;
+
+	inline function get_NOTE_RIGHT_2_R()
+		return _note_right_2R.check();
+
+	public var NOTE_DOWN_2_R(get, never):Bool;
+
+	inline function get_NOTE_DOWN_2_R()
+		return _note_down_2R.check();
+
 	public var ACCEPT(get, never):Bool;
 
 	inline function get_ACCEPT()
@@ -318,6 +438,8 @@ class Controls extends FlxActionSet
 		add(_ui_leftR);
 		add(_ui_rightR);
 		add(_ui_downR);
+		
+		//1
 		add(_note_up);
 		add(_note_left);
 		add(_note_right);
@@ -330,6 +452,22 @@ class Controls extends FlxActionSet
 		add(_note_leftR);
 		add(_note_rightR);
 		add(_note_downR);
+
+		//2
+		add(_note_up_2);
+		add(_note_left_2);
+		add(_note_right_2);
+		add(_note_down_2);
+		add(_note_up_2P);
+		add(_note_left_2P);
+		add(_note_right_2P);
+		add(_note_down_2P);
+		add(_note_up_2R);
+		add(_note_left_2R);
+		add(_note_right_2R);
+		add(_note_down_2R);
+
+
 		add(_accept);
 		add(_back);
 		add(_pause);
@@ -357,6 +495,7 @@ class Controls extends FlxActionSet
 		add(_ui_leftR);
 		add(_ui_rightR);
 		add(_ui_downR);
+		//1
 		add(_note_up);
 		add(_note_left);
 		add(_note_right);
@@ -369,6 +508,21 @@ class Controls extends FlxActionSet
 		add(_note_leftR);
 		add(_note_rightR);
 		add(_note_downR);
+
+		//2
+		add(_note_up_2);
+		add(_note_left_2);
+		add(_note_right_2);
+		add(_note_down_2);
+		add(_note_up_2P);
+		add(_note_left_2P);
+		add(_note_right_2P);
+		add(_note_down_2P);
+		add(_note_up_2R);
+		add(_note_left_2R);
+		add(_note_right_2R);
+		add(_note_down_2R);
+
 		add(_accept);
 		add(_back);
 		add(_pause);
@@ -422,10 +576,21 @@ class Controls extends FlxActionSet
 			case UI_DOWN: _ui_down;
 			case UI_LEFT: _ui_left;
 			case UI_RIGHT: _ui_right;
+
+			//1
+
 			case NOTE_UP: _note_up;
 			case NOTE_DOWN: _note_down;
 			case NOTE_LEFT: _note_left;
 			case NOTE_RIGHT: _note_right;
+
+			//2
+			case NOTE_UP_2: _note_up_2;
+			case NOTE_DOWN_2: _note_down_2;
+			case NOTE_LEFT_2: _note_left_2;
+			case NOTE_RIGHT_2: _note_right_2;
+
+
 			case ACCEPT: _accept;
 			case BACK: _back;
 			case PAUSE: _pause;
@@ -465,6 +630,9 @@ class Controls extends FlxActionSet
 				func(_ui_down, PRESSED);
 				func(_ui_downP, JUST_PRESSED);
 				func(_ui_downR, JUST_RELEASED);
+
+			//1
+			
 			case NOTE_UP:
 				func(_note_up, PRESSED);
 				func(_note_upP, JUST_PRESSED);
@@ -481,6 +649,26 @@ class Controls extends FlxActionSet
 				func(_note_down, PRESSED);
 				func(_note_downP, JUST_PRESSED);
 				func(_note_downR, JUST_RELEASED);
+
+			//2
+			case NOTE_UP_2:
+				func(_note_up_2, PRESSED);
+				func(_note_up_2P, JUST_PRESSED);
+				func(_note_up_2R, JUST_RELEASED);
+			case NOTE_LEFT_2:
+				func(_note_left_2, PRESSED);
+				func(_note_left_2P, JUST_PRESSED);
+				func(_note_left_2R, JUST_RELEASED);
+			case NOTE_RIGHT_2:
+				func(_note_right_2, PRESSED);
+				func(_note_right_2P, JUST_PRESSED);
+				func(_note_right_2R, JUST_RELEASED);
+			case NOTE_DOWN_2:
+				func(_note_down_2, PRESSED);
+				func(_note_down_2P, JUST_PRESSED);
+				func(_note_down_2R, JUST_RELEASED);
+
+
 			case ACCEPT:
 				func(_accept, JUST_PRESSED);
 			case BACK:
@@ -582,37 +770,33 @@ class Controls extends FlxActionSet
 	 * Sets all actions that pertain to the binder to trigger when the supplied keys are used.
 	 * If binder is a literal you can inline this
 	 */
-	public function bindKeys(control:Control, keys:Array<FlxKey>)
-	{
-		var copyKeys:Array<FlxKey> = keys.copy();
-		for (i in 0...copyKeys.length) {
-			if(i == NONE) copyKeys.remove(i);
-		}
-
-		#if (haxe >= "4.0.0")
-		inline forEachBound(control, (action, state) -> addKeys(action, copyKeys, state));
-		#else
-		forEachBound(control, function(action, state) addKeys(action, copyKeys, state));
-		#end
-	}
-
-	/**
-	 * Sets all actions that pertain to the binder to trigger when the supplied keys are used.
-	 * If binder is a literal you can inline this
-	 */
-	public function unbindKeys(control:Control, keys:Array<FlxKey>)
-	{
-		var copyKeys:Array<FlxKey> = keys.copy();
-		for (i in 0...copyKeys.length) {
-			if(i == NONE) copyKeys.remove(i);
-		}
-
-		#if (haxe >= "4.0.0")
-		inline forEachBound(control, (action, _) -> removeKeys(action, copyKeys));
-		#else
-		forEachBound(control, function(action, _) removeKeys(action, copyKeys));
-		#end
-	}
+	 public function bindKeys(control:Control, keys:Array<FlxKey>)
+	 {
+		 var copyKeys:Array<FlxKey> = keys.copy();
+		 for (i in 0...copyKeys.length)
+			 if(i == NONE)
+				 copyKeys.remove(i);
+ 
+		 #if (haxe >= "4.0.0")
+		 inline forEachBound(control, (action, state) -> addKeys(action, copyKeys, state));
+		 #else
+		 forEachBound(control, function(action, state) addKeys(action, copyKeys, state));
+		 #end
+	 }
+ 
+	 public function unbindKeys(control:Control, keys:Array<FlxKey>)
+	 {
+		 var copyKeys:Array<FlxKey> = keys.copy();
+		 for (i in 0...copyKeys.length)
+			 if(i == NONE)
+				 copyKeys.remove(i);
+ 
+		 #if (haxe >= "4.0.0")
+		 inline forEachBound(control, (action, _) -> removeKeys(action, copyKeys));
+		 #else
+		 forEachBound(control, function(action, _) removeKeys(action, copyKeys));
+		 #end
+	 }
 
 	inline static function addKeys(action:FlxActionDigital, keys:Array<FlxKey>, state:FlxInputState)
 	{
@@ -652,6 +836,11 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.NOTE_DOWN, keysMap.get('note_down'));
 				inline bindKeys(Control.NOTE_LEFT, keysMap.get('note_left'));
 				inline bindKeys(Control.NOTE_RIGHT, keysMap.get('note_right'));
+
+				inline bindKeys(Control.NOTE_UP_2, keysMap.get('note_up_2'));
+				inline bindKeys(Control.NOTE_DOWN_2, keysMap.get('note_down_2'));
+				inline bindKeys(Control.NOTE_LEFT_2, keysMap.get('note_left_2'));
+				inline bindKeys(Control.NOTE_RIGHT_2, keysMap.get('note_right_2'));
 
 				inline bindKeys(Control.ACCEPT, keysMap.get('accept'));
 				inline bindKeys(Control.BACK, keysMap.get('back'));

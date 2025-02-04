@@ -88,6 +88,11 @@ class ClientPrefs {
 		'note_down'		=> [S, DOWN],
 		'note_up'		=> [W, UP],
 		'note_right'	=> [D, RIGHT],
+		//2 for opponent( bothside >.<)
+		'note_left_2'		=> [J, LEFT],
+		'note_down_2'		=> [K, DOWN],
+		'note_up_2'		=> [I, UP],
+		'note_right_2'	=> [L, RIGHT],
 
 		'ui_left'		=> [A, LEFT],
 		'ui_down'		=> [S, DOWN],

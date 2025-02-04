@@ -107,7 +107,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 
 		var option:GameplayOption = new GameplayOption('Health Drain', 'healthdrain', 'bool', false);//My favorite build in mechanic
 		optionsArray.push(option);
-		var option:GameplayOption = new GameplayOption('Game Mode', 'gamemode', 'string', "none", [ 'none', 'bothside', 'opponent' ]);//My favorite build in mechanic
+		var option:GameplayOption = new GameplayOption('Game Mode', 'gamemode', 'string', "none", [ 'none', 'bothside', 'bothside v2', 'opponent' ]);//My favorite build in mechanic
 		optionsArray.push(option);//goblog
 		var option:GameplayOption = new GameplayOption('Modchart Type', 'modcharttype', 'string', "none", [ 'none', 'wave note', 'fade note' ]);//Messing Around with this
 		optionsArray.push(option);
@@ -117,7 +117,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 			1); //Default value
 			option.displayFormat = '%vX';
 			option.minValue = 1;
-			option.maxValue = 1000000000;
+			option.maxValue = 1000000000;//are your crazy?
 			option.scrollSpeed = 10;
 			optionsArray.push(option);
 	}

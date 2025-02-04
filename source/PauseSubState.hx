@@ -111,7 +111,7 @@ class PauseSubState extends MusicBeatSubstate
 		practiceText.visible = PlayState.instance.practiceMode;
 		add(practiceText);
 
-		bothsideTxt = new FlxText(20, 15 + 138, 0, (PlayState.instance.gamemode == "bothside" ? "BOTHSIDE MODE" : "OPPONENT MODE"), 32);
+		bothsideTxt = new FlxText(20, 15 + 138, 0, PlayState.instance.gamemode.toUpperCase() + " MODE", 32);//optimized lmao
 		bothsideTxt.scrollFactor.set();
 		bothsideTxt.setFormat(Paths.font('vcr.ttf'), 32);
 		bothsideTxt.x = FlxG.width - (bothsideTxt.width + 20);
@@ -145,13 +145,10 @@ class PauseSubState extends MusicBeatSubstate
 		add(grpMenuShit);
 		arrowSprites = new Array<FlxSprite>();
 		skinPly = PlayState.SONG.arrowSkin;
-		if (skinPly == null || skinPly.length < 1) {
-			skinPly = ClientPrefs.dflnoteskin;
-		}
 		trace(skinPly);
 		for (i in 0...4) {
 			var arrowSpr:FlxSprite = new FlxSprite(0+(i*112), -250);
-			arrowSpr.frames = Paths.getSparrowAtlas(skinPly);
+			arrowSpr.frames = Paths.getSparrowAtlas(PlayState.instance.playerStrums.members[i].texture);
 			arrowSpr.scale.set(ClientPrefs.strumsize, ClientPrefs.strumsize);
 			arrowSpr.scrollFactor.set();
 			arrowSpr.animation.addByPrefix('idle', 'arrow' + arrowSprite[i].toUpperCase());

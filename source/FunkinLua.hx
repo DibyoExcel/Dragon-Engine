@@ -1057,6 +1057,34 @@ class FunkinLua {
 				WindowColorMode.setWindowColorMode(dark);
 				WindowColorMode.redrawWindowHeader();
 			});
+			Lua_helper.add_callback(lua, "setWindowX", function(value:Int, duration:Float = 0, ease:String) {
+				if (duration != 0) {
+					FlxTween.tween(Lib.application.window, {x: value}, duration, {ease: getFlxEaseByString(ease)});
+				} else {
+					Lib.application.window.x = value;
+				}
+			});
+			Lua_helper.add_callback(lua, "setWindowY", function(value:Int, duration:Float = 0, ease:String) {
+				if (duration != 0) {
+					FlxTween.tween(Lib.application.window, {y: value}, duration, {ease: getFlxEaseByString(ease)});
+				} else {
+					Lib.application.window.y = value;
+				}
+			});
+			Lua_helper.add_callback(lua, "setWindowWidth", function(value:Int, duration:Float = 0, ease:String) {
+				if (duration != 0) {
+					FlxTween.tween(Lib.application.window, {width: value}, duration, {ease: getFlxEaseByString(ease)});
+				} else {
+					Lib.application.window.width = value;
+				}
+			});
+			Lua_helper.add_callback(lua, "setWindowHeight", function(value:Int, duration:Float = 0, ease:String) {
+				if (duration != 0) {
+					FlxTween.tween(Lib.application.window, {height: value}, duration, {ease: getFlxEaseByString(ease)});
+				} else {
+					Lib.application.window.height = value;
+				}
+			});
 			Lua_helper.add_callback(lua, "setWindowBorderColor", function(r:Int = 255, g:Int = 0, b:Int = 0, setHeader:Bool = true, setBorder:Bool = true) {
 				WindowColorMode.setWindowBorderColor([r, g, b], setHeader, setBorder);
 				WindowColorMode.redrawWindowHeader();
@@ -1065,7 +1093,29 @@ class FunkinLua {
 				WindowColorMode.setWindowTitleColor([r, g, b]);
 				WindowColorMode.redrawWindowHeader();
 			});
+			Lua_helper.add_callback(lua, "getResolutionWidth", function() {
+				return Lib.application.window.display.bounds.width;
+			});
+			Lua_helper.add_callback(lua, "getResolutionHeight", function() {
+				return Lib.application.window.display.bounds.height;
+			});
 		#end
+		Lua_helper.add_callback(lua, "setNoteCamera", function(note:Int, camera:String) {//doing this if want silly billy style
+			if (note != 0) {
+				if (note < 0) {
+					note = 0;
+				}
+				PlayState.instance.strumLineNotes.members[note & PlayState.instance.strumLineNotes.length].cameras = [cameraFromString(camera)];
+			}
+		});
+		Lua_helper.add_callback(lua, "setNoteScrollFactor", function(note:Int, x:Float = 0, y:Float = 0) {//kinda useless but useful when use when note camera at camGame(silly billy reference)
+			if (note != 0) {
+				if (note < 0) {
+					note = 0;
+				}
+				PlayState.instance.strumLineNotes.members[note & PlayState.instance.strumLineNotes.length].scrollFactor.set(x, y);
+			}
+		});
 		Lua_helper.add_callback(lua, "removeFromGroup", function(obj:String, index:Int, dontDestroy:Bool = false) {
 			if(Std.isOfType(Reflect.getProperty(getInstance(), obj), FlxTypedGroup)) {
 				var sex = Reflect.getProperty(getInstance(), obj).members[index];

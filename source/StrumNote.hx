@@ -113,7 +113,11 @@ class StrumNote extends FlxSprite
 			animation.addByPrefix('red', 'arrowRIGHT');
 
 			antialiasing = ClientPrefs.globalAntialiasing;
-			setGraphicSize(Std.int(width * ClientPrefs.strumsize));
+			if (player == 0 && PlayState.SONG.secOpt) {//oh hell nah
+				setGraphicSize(Std.int((width * ClientPrefs.strumsize)*0.75));
+			} else {
+				setGraphicSize(Std.int(width * ClientPrefs.strumsize));
+			}
 
 			switch (Math.abs(noteData) % 4)
 			{
@@ -147,9 +151,7 @@ class StrumNote extends FlxSprite
 		playAnim('static');
 		x += Note.swagWidth * noteData;
 		x += 50;
-		if ((PlayState.instance.gamemode == 'opponent' && player == 0) || PlayState.instance.gamemode != 'opponent' && player == 1) {
-			x += ((FlxG.width / 2) * 1);
-		}
+		x += ((FlxG.width / 2) * player);
 		ID = noteData;
 	}
 
