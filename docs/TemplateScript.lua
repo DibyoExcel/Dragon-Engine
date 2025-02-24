@@ -111,6 +111,11 @@ function noteMiss(id, direction, noteType, isSustainNote)
 	-- Player missed a note by letting it go offscreen
 end
 
+function opponentNoteMiss(id, direction, noteType, isSustainNote)
+	-- Called after the note miss calculations
+	-- Opponent missed a note by letting it go offscreen
+end
+
 
 -- Other function hooks
 function onRecalculateRating()
