@@ -113,7 +113,7 @@ end
 
 function opponentNoteMiss(id, direction, noteType, isSustainNote)
 	-- Called after the note miss calculations
-	-- Opponent missed a note by letting it go offscreen
+	-- Opponent missed a note by letting it go offscreen(most use on Opponent and Bothside mode)
 end
 
 
