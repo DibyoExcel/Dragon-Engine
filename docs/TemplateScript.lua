@@ -117,7 +117,6 @@ function opponentNoteMiss(id, direction, noteType, isSustainNote)
 end
 
 
-
 -- Other function hooks
 function onRecalculateRating()
 	-- return Function_Stop if you want to do your own rating calculation,
