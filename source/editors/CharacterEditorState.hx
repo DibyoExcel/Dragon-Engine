@@ -72,7 +72,7 @@ class CharacterEditorState extends MusicBeatState
 	private var camMenu:FlxCamera;
 
 	var changeBGbutton:FlxButton;
-	var leHealthIcon:HealthIcon;
+	var leHealthIcon:HealthIconFull;
 	var characterList:Array<String> = [];
 
 	var cameraFollowPointer:FlxSprite;
@@ -119,8 +119,9 @@ class CharacterEditorState extends MusicBeatState
 		add(healthBarBG);
 		healthBarBG.cameras = [camHUD];
 
-		leHealthIcon = new HealthIcon(char.healthIcon, false);
+		leHealthIcon = new HealthIconFull(char.healthIcon, false);
 		leHealthIcon.y = FlxG.height - 150;
+		leHealthIcon.x = 100;
 		add(leHealthIcon);
 		leHealthIcon.cameras = [camHUD];
 
@@ -514,7 +515,7 @@ class CharacterEditorState extends MusicBeatState
 		tab_group.name = "Character";
 
 		imageInputText = new FlxUIInputText(15, 30, 200, 'characters/BOYFRIEND', 8);
-		var reloadImage:FlxButton = new FlxButton(imageInputText.x + 210, imageInputText.y - 3, "Reload Image", function()
+		var reloadImage:FlxButton = new FlxButton(imageInputText.x + 210, imageInputText.y -15, "Reload Image", function()
 		{
 			char.imageFile = imageInputText.text;
 			reloadCharacterImage();
@@ -526,6 +527,16 @@ class CharacterEditorState extends MusicBeatState
 		var decideIconColor:FlxButton = new FlxButton(reloadImage.x, reloadImage.y + 30, "Get Icon Color", function()
 			{
 				var coolColor = FlxColor.fromInt(CoolUtil.dominantColor(leHealthIcon));
+				healthColorStepperR.value = coolColor.red;
+				healthColorStepperG.value = coolColor.green;
+				healthColorStepperB.value = coolColor.blue;
+				getEvent(FlxUINumericStepper.CHANGE_EVENT, healthColorStepperR, null);
+				getEvent(FlxUINumericStepper.CHANGE_EVENT, healthColorStepperG, null);
+				getEvent(FlxUINumericStepper.CHANGE_EVENT, healthColorStepperB, null);
+			});
+		var averageIconColor:FlxButton = new FlxButton(decideIconColor.x, decideIconColor.y + 30, "Icon Average Color", function()
+			{
+				var coolColor = FlxColor.fromInt(CoolUtil.averageColor(leHealthIcon));
 				healthColorStepperR.value = coolColor.red;
 				healthColorStepperG.value = coolColor.green;
 				healthColorStepperB.value = coolColor.blue;
@@ -586,6 +597,7 @@ class CharacterEditorState extends MusicBeatState
 		tab_group.add(imageInputText);
 		tab_group.add(reloadImage);
 		tab_group.add(decideIconColor);
+		tab_group.add(averageIconColor);
 		tab_group.add(healthIconInputText);
 		tab_group.add(singDurationStepper);
 		tab_group.add(scaleStepper);

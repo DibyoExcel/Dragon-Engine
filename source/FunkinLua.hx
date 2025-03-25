@@ -169,6 +169,7 @@ class FunkinLua {
 
 		// Gameplay settings
 		set('healthGainMult', PlayState.instance.healthGain);
+		set('gamemode', PlayState.instance.gamemode);
 		set('healthLossMult', PlayState.instance.healthLoss);
 		set('playbackRate', PlayState.instance.playbackRate);
 		set('instakillOnMiss', PlayState.instance.instakillOnMiss);
@@ -2832,6 +2833,9 @@ class FunkinLua {
 			}
 			#end
 			return list;
+		});
+		Lua_helper.add_callback(lua, "changeGamemode", function(name:String = "none", transition:Bool = true) {
+			PlayState.instance.gamemodeChanger(name, transition);
 		});
 
 		call('onCreate', []);

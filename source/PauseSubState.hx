@@ -21,7 +21,7 @@ class PauseSubState extends MusicBeatSubstate
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
 	var menuItems:Array<String> = [];
-	var menuItemsOG:Array<String> = ['Resume', 'Restart Song', 'Change Difficulty', 'Exit to menu'];
+	var menuItemsOG:Array<String>;
 	var difficultyChoices = [];
 	var curSelected:Int = 0;
 
@@ -41,21 +41,26 @@ class PauseSubState extends MusicBeatSubstate
 	public function new(x:Float, y:Float)
 	{
 		super();
-		if(CoolUtil.difficulties.length < 2) menuItemsOG.remove('Change Difficulty'); //No need to change difficulty if there is only one!
+		if (ClientPrefs.dragonW) {
+			menuItemsOG = ['Dragonflight', 'Reignite Melody', 'Scale Challenge','Option', 'Gameplay Changer', 'Return to Lair'];
+		} else {
+			menuItemsOG = ['Resume', 'Restart Song', 'Change Difficulty', 'Option', 'Gameplay Changer', 'Exit to menu'];
+		}
+		if(CoolUtil.difficulties.length < 2) menuItemsOG.remove((ClientPrefs.dragonW ? 'Scale Challenge' : 'Change Difficulty')); //No need to change difficulty if there is only one!
 
 		if(PlayState.chartingMode)
 		{
-			menuItemsOG.insert(2, 'Leave Charting Mode');
+			menuItemsOG.insert(2, (ClientPrefs.dragonW ? 'Left Forge' : 'Leave Charting Mode'));
 			
 			var num:Int = 0;
 			if(!PlayState.instance.startingSong)
 			{
 				num = 1;
-				menuItemsOG.insert(3, 'Skip Time');
+				menuItemsOG.insert(3, (ClientPrefs.dragonW ? 'Time Control' : 'Skip Time'));
 			}
-			menuItemsOG.insert(3 + num, 'End Song');
-			menuItemsOG.insert(4 + num, 'Toggle Practice Mode');
-			menuItemsOG.insert(5 + num, 'Toggle Botplay');
+			menuItemsOG.insert(3 + num, 'End ' + (ClientPrefs.dragonW ? 'Melody' : 'Song'));
+			menuItemsOG.insert(4 + num, 'Toggle ' + (ClientPrefs.dragonW ? "Wyrm Training" : "Practice Mode") );
+			menuItemsOG.insert(5 + num, 'Toggle ' + (ClientPrefs.dragonW ? "Autoflight" : "Botplay"));
 		}
 		menuItems = menuItemsOG;
 
@@ -144,8 +149,6 @@ class PauseSubState extends MusicBeatSubstate
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		add(grpMenuShit);
 		arrowSprites = new Array<FlxSprite>();
-		skinPly = PlayState.SONG.arrowSkin;
-		trace(skinPly);
 		for (i in 0...4) {
 			var arrowSpr:FlxSprite = new FlxSprite(0+(i*112), -250);
 			arrowSpr.frames = Paths.getSparrowAtlas(PlayState.instance.playerStrums.members[i].texture);
@@ -259,6 +262,32 @@ class PauseSubState extends MusicBeatSubstate
 					else if(curTime < 0) curTime += FlxG.sound.music.length;
 					updateSkipTimeText();
 				}
+			case 'Time Control':
+				if (controls.UI_LEFT_P)
+				{
+					FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+					curTime -= 1000;
+					holdTime = 0;
+				}
+				if (controls.UI_RIGHT_P)
+				{
+					FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+					curTime += 1000;
+					holdTime = 0;
+				}
+
+				if(controls.UI_LEFT || controls.UI_RIGHT)
+				{
+					holdTime += elapsed;
+					if(holdTime > 0.5)
+					{
+						curTime += 45000 * elapsed * (controls.UI_LEFT ? -1 : 1);
+					}
+
+					if(curTime >= FlxG.sound.music.length) curTime -= FlxG.sound.music.length;
+					else if(curTime < 0) curTime += FlxG.sound.music.length;
+					updateSkipTimeText();
+				}
 		}
 
 		if (accepted && (cantUnpause <= 0 || !ClientPrefs.controllerMode))
@@ -289,13 +318,28 @@ class PauseSubState extends MusicBeatSubstate
 					menuItems = difficultyChoices;
 					deleteSkipTimeText();
 					regenMenu();
+				case "Dragonflight":
+					close();
+				case 'Scale Challenge':
+					menuItems = difficultyChoices;
+					deleteSkipTimeText();
+					regenMenu();
 				case 'Toggle Practice Mode':
+					PlayState.instance.practiceMode = !PlayState.instance.practiceMode;
+					PlayState.changedDifficulty = true;
+					practiceText.visible = PlayState.instance.practiceMode;
+				case 'Toggle Wyrm Training':
 					PlayState.instance.practiceMode = !PlayState.instance.practiceMode;
 					PlayState.changedDifficulty = true;
 					practiceText.visible = PlayState.instance.practiceMode;
 				case "Restart Song":
 					restartSong();
+				case "Reignite Melody":
+					restartSong();
 				case "Leave Charting Mode":
+					restartSong();
+					PlayState.chartingMode = false;
+				case "Left Forge":
 					restartSong();
 					PlayState.chartingMode = false;
 				case 'Skip Time':
@@ -316,7 +360,41 @@ class PauseSubState extends MusicBeatSubstate
 				case "End Song":
 					close();
 					PlayState.instance.finishSong(true);
+				case "Option":
+					close();
+					PlayState.instance.paused = true;
+					PlayState.cancelMusicFadeTween();
+					MusicBeatState.switchState(new pauseSetting.MainOptionsState());
+				case "Gameplay Changer":
+					close();
+					PlayState.instance.paused = true;
+					PlayState.cancelMusicFadeTween();
+					MusicBeatState.switchState(new pauseSetting.GameplayChangersSubstate());
+				case 'Time Control':
+					if(curTime < Conductor.songPosition)
+					{
+						PlayState.startOnTime = curTime;
+						restartSong(true);
+					}
+					else
+					{
+						if (curTime != Conductor.songPosition)
+						{
+							PlayState.instance.clearNotesBefore(curTime);
+							PlayState.instance.setSongTime(curTime);
+						}
+						close();
+					}
+				case "End Melody":
+					close();
+					PlayState.instance.finishSong(true);
 				case 'Toggle Botplay':
+					PlayState.instance.cpuControlled = !PlayState.instance.cpuControlled;
+					PlayState.changedDifficulty = true;
+					PlayState.instance.botplayTxt.visible = PlayState.instance.cpuControlled;
+					PlayState.instance.botplayTxt.alpha = 1;
+					PlayState.instance.botplaySine = 0;
+				case 'Toggle Autoflight':
 					PlayState.instance.cpuControlled = !PlayState.instance.cpuControlled;
 					PlayState.changedDifficulty = true;
 					PlayState.instance.botplayTxt.visible = PlayState.instance.cpuControlled;
@@ -336,6 +414,20 @@ class PauseSubState extends MusicBeatSubstate
 					FlxG.sound.playMusic(Paths.music('freakyMenu'));
 					PlayState.changedDifficulty = false;
 					PlayState.chartingMode = false;
+				case "Return to Lair":
+						PlayState.deathCounter = 0;
+						PlayState.seenCutscene = false;
+	
+						WeekData.loadTheFirstEnabledMod();
+						if(PlayState.isStoryMode) {
+							MusicBeatState.switchState(new StoryMenuState());
+						} else {
+							MusicBeatState.switchState(new FreeplayState());
+						}
+						PlayState.cancelMusicFadeTween();
+						FlxG.sound.playMusic(Paths.music('freakyMenu'));
+						PlayState.changedDifficulty = false;
+						PlayState.chartingMode = false;
 			}
 		}
 	}
@@ -437,6 +529,18 @@ class PauseSubState extends MusicBeatSubstate
 				updateSkipTextStuff();
 				updateSkipTimeText();
 			}
+			if(menuItems[i] == 'Time Control')
+				{
+					skipTimeText = new FlxText(0, 0, 0, '', 64);
+					skipTimeText.setFormat(Paths.font("vcr.ttf"), 64, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+					skipTimeText.scrollFactor.set();
+					skipTimeText.borderSize = 2;
+					skipTimeTracker = item;
+					add(skipTimeText);
+	
+					updateSkipTextStuff();
+					updateSkipTimeText();
+				}
 		}
 		curSelected = 0;
 		changeSelection();

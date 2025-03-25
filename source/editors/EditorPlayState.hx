@@ -20,6 +20,11 @@ import flixel.input.keyboard.FlxKey;
 import openfl.events.KeyboardEvent;
 import FunkinLua;
 
+#if sys
+import sys.FileSystem;
+import sys.io.File;
+#end
+
 using StringTools;
 
 class EditorPlayState extends MusicBeatState
@@ -34,6 +39,9 @@ class EditorPlayState extends MusicBeatState
 
 	public var notes:FlxTypedGroup<Note>;
 	public var unspawnNotes:Array<Note> = [];
+	private var songName:String;
+	public var luaArray:Array<FunkinLua> = [];
+
 
 	var generatedMusic:Bool = false;
 	var vocals:FlxSound;
@@ -47,6 +55,7 @@ class EditorPlayState extends MusicBeatState
 
 		startOffset = Conductor.crochet;
 		timerToStart = startOffset;
+		songName = PlayState.SONG.song;
 		super();
 	}
 
@@ -124,6 +133,35 @@ class EditorPlayState extends MusicBeatState
 			}
 		}
 		#end
+		// SONG SPECIFIC SCRIPTS
+		#if LUA_ALLOWED
+		var filesPushed:Array<String> = [];
+		var foldersToCheck:Array<String> = [Paths.getPreloadPath('data/' + Paths.formatToSongPath(songName) + '/')];
+
+		#if MODS_ALLOWED
+		foldersToCheck.insert(0, Paths.mods('data/' + Paths.formatToSongPath(songName) + '/'));
+		if(Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0)
+			foldersToCheck.insert(0, Paths.mods(Paths.currentModDirectory + '/data/' + Paths.formatToSongPath(songName) + '/'));
+
+		for(mod in Paths.getGlobalMods())
+			foldersToCheck.insert(0, Paths.mods(mod + '/data/' + Paths.formatToSongPath(songName) + '/' ));// using push instead of insert because these should run after everything else
+		#end
+
+		for (folder in foldersToCheck)
+		{
+			if(FileSystem.exists(folder))
+			{
+				for (file in FileSystem.readDirectory(folder))
+				{
+					if(file.endsWith('.lua') && !filesPushed.contains(file))
+					{
+						luaArray.push(new FunkinLua(folder + file));
+						filesPushed.push(file);
+					}
+				}
+			}
+		}
+		#end
 		noteTypeMap.clear();
 		noteTypeMap = null;
 
@@ -165,6 +203,7 @@ class EditorPlayState extends MusicBeatState
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 		}
+		callOnLuas('onCreatePost', []);
 		super.create();
 	}
 
@@ -193,7 +232,7 @@ class EditorPlayState extends MusicBeatState
 	var startingSong:Bool = true;
 	private function generateSong(dataPath:String):Void
 	{
-		FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0, false);
+		FlxG.sound.playMusic(Paths.inst(songName), 0, false);
 		FlxG.sound.music.pause();
 		FlxG.sound.music.onComplete = endSong;
 		vocals.pause();
@@ -236,8 +275,7 @@ class EditorPlayState extends MusicBeatState
 						else
 							oldNote = null;
 
-						var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
-						swagNote.mustPress = gottaHitNote;
+						var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, null, null, gottaHitNote);
 						swagNote.sustainLength = songNotes[2];
 						swagNote.noteType = songNotes[3];
 						if(!Std.isOfType(songNotes[3], String)) swagNote.noteType = editors.ChartingState.noteTypeList[songNotes[3]]; //Backward compatibility + compatibility with Week 7 charts
@@ -310,6 +348,8 @@ class EditorPlayState extends MusicBeatState
 		vocals.volume = 1;
 		vocals.time = startPos;
 		vocals.play();
+		callOnLuas('onStartCountdown', []);
+		callOnLuas('onSongStart', []);
 	}
 
 	function sortByShit(Obj1:Note, Obj2:Note):Int
@@ -324,6 +364,7 @@ class EditorPlayState extends MusicBeatState
 	public var noteKillOffset:Float = 350;
 	public var spawnTime:Float = 2000;
 	override function update(elapsed:Float) {
+		callOnLuas('onUpdate', [elapsed]);
 		if (FlxG.keys.justPressed.ESCAPE)
 		{
 			FlxG.sound.music.pause();
@@ -504,6 +545,7 @@ class EditorPlayState extends MusicBeatState
 		sectionTxt.text = 'Beat: ' + curSection;
 		beatTxt.text = 'Beat: ' + curBeat;
 		stepTxt.text = 'Step: ' + curStep;
+		callOnLuas('onUpdatePost', [elapsed]);
 		super.update(elapsed);
 	}
 	
@@ -512,6 +554,36 @@ class EditorPlayState extends MusicBeatState
 		vocals.play();
 
 		super.onFocus();
+	}
+
+	public function setOnLuas(variable:String, arg:Dynamic) {
+		#if LUA_ALLOWED
+		for (i in 0...luaArray.length) {
+			luaArray[i].set(variable, arg);
+		}
+		#end
+	}
+	public function callOnLuas(event:String, args:Array<Dynamic>, ignoreStops = true, exclusions:Array<String> = null):Dynamic {
+		var returnVal:Dynamic = FunkinLua.Function_Continue;
+		#if LUA_ALLOWED
+		if(exclusions == null) exclusions = [];
+		for (script in luaArray) {
+			if(exclusions.contains(script.scriptName))
+				continue;
+
+			var ret:Dynamic = script.call(event, args);
+			if(ret == FunkinLua.Function_StopLua && !ignoreStops)
+				break;
+			
+			// had to do this because there is a bug in haxe where Stop != Continue doesnt work
+			var bool:Bool = ret == FunkinLua.Function_Continue;
+			if(!bool && ret != 0) {
+				returnVal = cast ret;
+			}
+		}
+		#end
+		//trace(event, returnVal);
+		return returnVal;
 	}
 	
 	override public function onFocusLost():Void
@@ -529,6 +601,8 @@ class EditorPlayState extends MusicBeatState
 		{
 			notes.sort(FlxSort.byY, ClientPrefs.downScroll ? FlxSort.ASCENDING : FlxSort.DESCENDING);
 		}
+		setOnLuas('curBeat', curBeat); //DAWGG?????
+		callOnLuas('onBeatHit', []);
 	}
 
 	override function stepHit()
@@ -538,6 +612,8 @@ class EditorPlayState extends MusicBeatState
 		{
 			resyncVocals();
 		}
+		setOnLuas('curStep', curStep);
+		callOnLuas('onStepHit', []);
 	}
 
 	function resyncVocals():Void
@@ -1047,6 +1123,11 @@ class EditorPlayState extends MusicBeatState
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 		}
+		for (lua in luaArray) {
+			lua.call('onDestroy', []);
+			lua.stop();
+		}
+		luaArray = [];
 		super.destroy();
 	}
 }

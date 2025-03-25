@@ -25,9 +25,11 @@ class OutdatedState extends MusicBeatState
 		add(bg);
 
 		warnText = new FlxText(0, 0, FlxG.width,
-			"Sup bro, " + (ClientPrefs.dragonW ? "RAWR" : "") +  "i think you currently running a\n
+			(ClientPrefs.dragonW ? "Greetings, noble warrior! it appears that you are currently utilizing an\n
+			outdated version of Dragon Engine (" + MainMenuState.engineVersion + ").\n
+			For a more powerful and enhanced experience, please update to " + TitleState.updateVersion + "!"  : "Sup bro, i think you currently running a\n
 			outdated version of Dragon Engine (" + MainMenuState.engineVersion + "),\n
-			please update to " + TitleState.updateVersion + "!\n
+			please update to " + TitleState.updateVersion + "!") + "\n
 			Press ESCAPE to proceed anyway.\n
 			\n
 			Thank you for using the Engine." + (ClientPrefs.dragonW ? " Squeak!" : ""),
@@ -42,7 +44,7 @@ class OutdatedState extends MusicBeatState
 		if(!leftState) {
 			if (controls.ACCEPT) {
 				leftState = true;
-				CoolUtil.browserLoad("https://gamebanana.com/mods/553668");
+				CoolUtil.browserLoad("https://github.com/DibyoExcel/Dragon-Engine");//bruh i forgot change after release 1.5.8 :skull:
 			}
 			else if(controls.BACK) {
 				leftState = true;
@@ -53,7 +55,7 @@ class OutdatedState extends MusicBeatState
 				FlxG.sound.play(Paths.sound('cancelMenu'));
 				FlxTween.tween(warnText, {alpha: 0}, 1, {
 					onComplete: function (twn:FlxTween) {
-						MusicBeatState.switchState(new MainMenuState());
+					MusicBeatState.switchState(new MainMenuState());
 					}
 				});
 			}

@@ -1,4 +1,4 @@
-package;
+package pauseSetting;
 
 #if desktop
 import Discord.DiscordClient;
@@ -24,7 +24,7 @@ import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
 import Controls;
-
+import Song.SwagSong;
 #if sys
 import flash.media.Sound;
 import sys.FileSystem;
@@ -33,7 +33,7 @@ import sys.io.File;
 
 using StringTools;
 
-class GameplayChangersSubstate extends MusicBeatSubstate
+class GameplayChangersSubstate extends MusicBeatState
 {
 	private var curOption:GameplayOption = null;
 	private var curSelected:Int = 0;
@@ -42,6 +42,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 	private var grpOptions:FlxTypedGroup<Alphabet>;
 	private var checkboxGroup:FlxTypedGroup<CheckboxThingie>;
 	private var grpTexts:FlxTypedGroup<AttachedText>;
+	private var songType:SwagSong;
 	private var gamemodeMap:Map<String, Int> = [];
 	private var gamemodeArray:Array<String> = [ 'none', 'bothside', 'bothside v2', 'opponent' ];//default
 
@@ -115,7 +116,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 
 		var option:GameplayOption = new GameplayOption('Health Drain', 'healthdrain', 'bool', false);//My favorite build in mechanic
 		optionsArray.push(option);
-		var option:GameplayOption = new GameplayOption('Game Mode', 'gamemode', 'string', "none", gamemodeArray);//My favorite build in mechanic
+		var option:GameplayOption = new GameplayOption('Game Mode', 'gamemode', 'string', "none", [ 'none', 'bothside', 'bothside v2', 'opponent' ]);//My favorite build in mechanic
 		optionsArray.push(option);//goblog
 		var option:GameplayOption = new GameplayOption('Modchart Type', 'modcharttype', 'string', "none", [ 'none', 'wave note', 'fade note' ]);//Messing Around with this
 		optionsArray.push(option);
@@ -152,6 +153,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 	public function new()
 	{
 		super();
+
 		#if LUA_ALLOWED
 		//i hate this shit
 		var gamemodeThingy:Array<String> = [];
@@ -163,9 +165,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 		for(mod in Paths.getGlobalMods())
 			gamemodeThingy.push(Paths.mods(mod + '/gamemode/'));
 		#end
-
 		var key:Int = 0;
-
 		for (i in 0...gamemodeThingy.length) {
 			var directory:String =  gamemodeThingy[i];
 			if(FileSystem.exists(directory)) {
@@ -183,6 +183,13 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 			}
 		}
 		#end
+		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image((ClientPrefs.darkmode ? 'menuDesatDark' : 'menuDesat')));
+		bg.color = 0xffff00ff;
+		add(bg);
+
+		if (PlayState.SONG != null) {
+			songType = PlayState.SONG;
+		}
 
 		// avoids lagspikes while scrolling through menus!
 		grpOptions = new FlxTypedGroup<Alphabet>();
@@ -246,9 +253,10 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 		}
 
 		if (controls.BACK) {
-			close();
 			ClientPrefs.saveSettings();
 			FlxG.sound.play(Paths.sound('cancelMenu'));
+			StageData.loadDirectory(songType);
+			LoadingState.loadAndSwitchState(new PlayState());
 		}
 
 		if(nextAccept <= 0)

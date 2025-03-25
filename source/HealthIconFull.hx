@@ -5,13 +5,12 @@ import openfl.utils.Assets as OpenFlAssets;
 
 using StringTools;
 
-class HealthIcon extends FlxSprite
+class HealthIconFull extends FlxSprite
 {
 	public var sprTracker:FlxSprite;
 	private var isOldIcon:Bool = false;
 	private var isPlayer:Bool = false;
 	private var char:String = '';
-	public var winIcon:Bool = false;
 
 	public function new(char:String = 'bf', isPlayer:Bool = false)
 	{
@@ -44,22 +43,7 @@ class HealthIcon extends FlxSprite
 			var file:Dynamic = Paths.image(name);
 
 			loadGraphic(file); //Load stupidly first for getting the file size
-			var frameArray:Array<Int> = [];
-			var flipbook:Int = Math.round(width/height);//basicly flipbook from minecraft texture pack
-			loadGraphic(file, true, Math.floor(width / flipbook), Math.floor(height)); //Then load it fr
-			for (i in 0...flipbook) {
-				frameArray.push(i);
-			}
-			iconOffsets[0] = (width - 150) / flipbook;
-			iconOffsets[1] = (width - 150) / flipbook;
 			updateHitbox();
-			animation.add(char, frameArray, 0, false, isPlayer);
-			animation.play(char);
-			if (flipbook >= 3) {//for win icon //and when more than 3 you might can make weird stuff...but required lua
-				this.winIcon = true;
-			} else {
-				this.winIcon = false;
-			}
 			this.char = char;
 
 			antialiasing = ClientPrefs.globalAntialiasing;

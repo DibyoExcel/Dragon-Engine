@@ -1,4 +1,4 @@
-package options;
+package pauseSetting.options;
 
 #if desktop
 import Discord.DiscordClient;

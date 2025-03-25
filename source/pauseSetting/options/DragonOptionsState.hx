@@ -1,4 +1,4 @@
-package options;
+package pauseSetting.options;
 
 #if desktop
 import Discord.DiscordClient;
@@ -178,7 +178,7 @@ class DragonOptionsState extends BaseOptionsMenu
 	override public function close():Void {
 		super.close();
 		ClientPrefs.saveSettings();
-		FlxG.switchState(new options.MainOptionsState());
+		FlxG.switchState(new pauseSetting.MainOptionsState());
 		//trace("setting save!");
 	}
 	function changeAutoPause() {
@@ -186,7 +186,7 @@ class DragonOptionsState extends BaseOptionsMenu
 	}
 	function reloadSubstate() {
 		FlxG.state.closeSubState();
-		FlxG.state.openSubState(new DragonOptionsState());
+		FlxG.state.openSubState(new pauseSetting.options.DragonOptionsState());
 	}
 	function onChangeNoteSkin() {
 		trace("'" + ClientPrefs.dflnoteskin + "'");

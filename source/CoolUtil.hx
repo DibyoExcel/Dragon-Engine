@@ -138,4 +138,33 @@ class CoolUtil
 		FlxG.openURL(site);
 		#end
 	}
+	public static function averageColor(sprite:flixel.FlxSprite):Int {
+		if (sprite == null) {
+			return 0;
+		}
+		var totalR = 0;
+		var totalG = 0;
+		var totalB = 0;
+		var widthPixel = sprite.frameWidth;
+		var heightPixel = sprite.frameHeight;
+		var totalPixel = widthPixel * heightPixel;
+
+		for (x in 0...widthPixel) {
+			for (y in 0...heightPixel) {
+				var color = sprite.pixels.getPixel32(x, y);
+				
+				var red = (color >> 16) & 0xFF;
+				var green = (color >> 8) & 0xFF;
+				var blue = color & 0xFF;
+				
+				totalR += red;
+				totalG += green;
+				totalB += blue;
+			}
+		}
+		var avgRed = totalR / totalPixel;
+		var avgBlue = totalB / totalPixel;
+		var avgGreen = totalG / totalPixel;
+		return (Std.int(avgRed) << 16) | (Std.int(avgGreen) << 8) | Std.int(avgBlue);
+	}
 }

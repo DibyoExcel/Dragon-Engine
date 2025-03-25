@@ -71,6 +71,10 @@ class ClientPrefs {
 		'multNote' => 1,
 		'gamemode' => 'none',
 		'modcharttype' => 'none',
+		'disableLuaSong' => false,//Song folder with lua
+	 	'disableLuaScript' => false,//Scripts folder
+	 	'disableLuaStage' => false,//Stage lua
+		'disableLuaEvent' => false,
 		'opponent' => false
 	];
 
