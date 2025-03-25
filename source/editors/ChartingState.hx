@@ -306,7 +306,7 @@ class ChartingState extends MusicBeatState
 		Conductor.changeBPM(_song.bpm);
 		Conductor.mapBPMChanges(_song);
 
-		bpmTxt = new FlxText(1000, 50, 0, "", 16);
+		bpmTxt = new FlxText(10, 50, 0, "", 16);
 		bpmTxt.scrollFactor.set();
 		add(bpmTxt);
 
@@ -364,21 +364,17 @@ class ChartingState extends MusicBeatState
 		\nHold Shift to move 4x faster
 		\nHold Control and click on an arrow to select it
 		\nZ/X - Zoom in/out
-		\n
 		\nEsc - Test your chart inside Chart Editor
 		\nEnter - Play your chart
 		\nQ/E - Decrease/Increase Note Sustain Length
-		\nSpace - Stop/Resume song";
+		\nSpace - Stop/Resume song
+		\n Control+ ALT - Multiplace Notes";
 
-		var tipTextArray:Array<String> = text.split('\n');
-		for (i in 0...tipTextArray.length) {
-			var tipText:FlxText = new FlxText(UI_box.x, UI_box.y + UI_box.height + 8, 0, tipTextArray[i], 16);
-			tipText.y += i * 4;
-			tipText.setFormat(Paths.font("vcr.ttf"), 8, FlxColor.WHITE, LEFT/*, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK*/);
-			//tipText.borderSize = 2;
-			tipText.scrollFactor.set();
-			add(tipText);
-		}
+		var tipText:FlxText = new FlxText((UI_box.x+UI_box.width)+10, UI_box.y, 300, text, 15);
+		tipText.setFormat(Paths.font("vcr.ttf"), 15, FlxColor.WHITE, LEFT/*, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK*/);
+		//tipText.borderSize = 2;
+		tipText.scrollFactor.set();
+		add(tipText);
 		add(UI_box);
 
 		addSongUI();
@@ -527,14 +523,14 @@ class ChartingState extends MusicBeatState
 			saveEvents();
 		});
 
-		var clear_events:FlxButton = new FlxButton(320, 310, 'Clear events', function()
+		var clear_events:FlxButton = new FlxButton(0, (UI_box.height)+10, 'Clear events', function()
 			{
 				openSubState(new Prompt('This action will clear current progress.\n\nProceed?', 0, clearEvents, null,ignoreWarnings));
 			});
 		clear_events.color = FlxColor.RED;
 		clear_events.label.color = FlxColor.WHITE;
 
-		var clear_notes:FlxButton = new FlxButton(320, clear_events.y + 30, 'Clear notes', function()
+		var clear_notes:FlxButton = new FlxButton(0, clear_events.y + 30, 'Clear notes', function()
 			{
 				openSubState(new Prompt('This action will clear current progress.\n\nProceed?', 0, function(){for (sec in 0..._song.notes.length) {
 					_song.notes[sec].sectionNotes = [];
@@ -1313,7 +1309,7 @@ class ChartingState extends MusicBeatState
 
 			FlxG.sound.music.volume = vol;
 		};
-		mouseScrollingQuant = new FlxUICheckBox(10, 200, null, null, "Mouse Scrolling Quantization", 100);
+		mouseScrollingQuant = new FlxUICheckBox(10, 180, null, null, "Mouse Scrolling Quantization", 100);
 		if (FlxG.save.data.mouseScrollingQuant == null) FlxG.save.data.mouseScrollingQuant = false;
 		mouseScrollingQuant.checked = FlxG.save.data.mouseScrollingQuant;
 
@@ -1323,7 +1319,7 @@ class ChartingState extends MusicBeatState
 			mouseQuant = FlxG.save.data.mouseScrollingQuant;
 		};
 
-		check_vortex = new FlxUICheckBox(10, 160, null, null, "Vortex Editor (BETA)", 100);
+		check_vortex = new FlxUICheckBox(10, 150, null, null, "Vortex Editor (BETA)", 100);
 		if (FlxG.save.data.chart_vortex == null) FlxG.save.data.chart_vortex = false;
 		check_vortex.checked = FlxG.save.data.chart_vortex;
 
@@ -1333,6 +1329,7 @@ class ChartingState extends MusicBeatState
 			vortex = FlxG.save.data.chart_vortex;
 			reloadGridLayer();
 		};
+
 
 		check_warnings = new FlxUICheckBox(10, 120, null, null, "Ignore Progress Warnings", 100);
 		if (FlxG.save.data.ignoreWarnings == null) FlxG.save.data.ignoreWarnings = false;
@@ -1644,8 +1641,8 @@ class ChartingState extends MusicBeatState
 		for (i in 0...8){
 			strumLineNotes.members[i].y = strumLine.y;
 		}
-
-		FlxG.mouse.visible = true;//cause reasons. trust me
+		FlxG.mouse.visible = true;
+		//cause reasons. trust me
 		camPos.y = strumLine.y;
 		if(!disableAutoScrolling.checked) {
 			if (Math.ceil(strumLine.y) >= gridBG.height)
@@ -1684,27 +1681,27 @@ class ChartingState extends MusicBeatState
 
 		if (FlxG.mouse.justPressed)
 		{
-			if (FlxG.mouse.overlaps(curRenderedNotes))
+			if (FlxG.mouse.overlaps(curRenderedNotes) && !(FlxG.keys.pressed.ALT && FlxG.keys.pressed.CONTROL))//alt + ctrl for multiplace notes
 			{
 				curRenderedNotes.forEachAlive(function(note:Note)
 				{
 					if (FlxG.mouse.overlaps(note))
 					{
 						if (FlxG.keys.pressed.CONTROL)
-						{
-							selectNote(note);
-						}
-						else if (FlxG.keys.pressed.ALT)
-						{
-							selectNote(note);
-							curSelectedNote[3] = noteTypeIntMap.get(currentType);
-							updateGrid();
-						}
-						else
-						{
-							//trace('tryin to delete note...');
-							deleteNote(note);
-						}
+							{
+								selectNote(note);
+							}
+							else if (FlxG.keys.pressed.ALT)
+							{
+								selectNote(note);
+								curSelectedNote[3] = noteTypeIntMap.get(currentType);
+								updateGrid();
+							}
+							else
+							{
+								//trace('tryin to delete note...');
+								deleteNote(note);
+							}
 					}
 				});
 			}
@@ -1812,7 +1809,6 @@ class ChartingState extends MusicBeatState
 				}
 				PlayState.chartingMode = false;
 				MusicBeatState.switchState(new editors.MasterEditorMenu());
-				FlxG.sound.playMusic(Paths.music('freakyMenu'));
 				FlxG.mouse.visible = false;
 				return;
 			}
@@ -3030,7 +3026,7 @@ class ChartingState extends MusicBeatState
 		}
 		changeEventSelected();
 
-		if (FlxG.keys.pressed.CONTROL && noteData > -1)
+		if ((FlxG.keys.pressed.CONTROL && !FlxG.keys.pressed.ALT) && noteData > -1)//prevent both place when hold alt
 		{
 			_song.notes[curSec].sectionNotes.push([noteStrum, (noteData + 4) % 8, noteSus, noteTypeIntMap.get(daType)]);
 		}
