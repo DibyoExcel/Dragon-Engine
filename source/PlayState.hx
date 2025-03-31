@@ -2636,12 +2636,12 @@ class PlayState extends MusicBeatState
 				var swagNote:Note;
 				var noteDataSet:Int;
 				if (noteKey == 1) {
-					noteDataSet = 2+(PlayState.SONG.secOpt && daNoteData > 3 ? 4 : 0);
+					noteDataSet = 2;
 				} else if (noteKey == 2) {
-					noteDataSet = 1+(Math.round((daNoteData+1)/2)-1)+(PlayState.SONG.secOpt && daNoteData > 3 ? 4 : 0);
+					noteDataSet = 1+(Math.round((daNoteData+1)/2)-1);
 				} else if (noteKey == 3) {
 					if (daNoteData > 2) {
-						noteDataSet = 2+(PlayState.SONG.secOpt && daNoteData > 3 ? 4 : 0);
+						noteDataSet = 2;
 					} else {
 						noteDataSet = daNoteData;
 					}
@@ -2649,10 +2649,19 @@ class PlayState extends MusicBeatState
 					noteDataSet = daNoteData;
 				}
 				for (i in 0...multNote) {
-					var swagNote:Note = new Note(daStrumTime+(i*(100/(multNote))), noteDataSet, oldNote, null, null, gottaHitNote);
+					var check_opt = songNotes[3];
+					var should_opt:Int = -1;
+					var check_ply = songNotes[3];
+					var should_ply:Int = -1;
+					if (check_opt != null) {
+						should_opt = songNotes[3].indexOf("-opponent");
+					}
+					if (check_ply != null) {
+						should_ply = songNotes[3].indexOf("-player");
+					}
+					var gfSec = (section.gfSection && (songNotes[1]<4));
+					var swagNote:Note = new Note(daStrumTime+(i*(100/(multNote))), noteDataSet, oldNote, null, null, (songNotes[3] == "GF Sing Force Opponent"/**compatibility backward**/ || should_opt != -1 ? false : (should_ply != -1 ? true : gottaHitNote)), gfSec, songNotes[3]);
 					swagNote.sustainLength = songNotes[2];
-					swagNote.gfNote = (section.gfSection && (songNotes[1]<4));
-					swagNote.noteType = songNotes[3];
 					if(!Std.isOfType(songNotes[3], String)) swagNote.noteType = editors.ChartingState.noteTypeList[songNotes[3]]; //Backward compatibility + compatibility with Week 7 charts
 
 					swagNote.scrollFactor.set();
@@ -2660,20 +2669,6 @@ class PlayState extends MusicBeatState
 					var susLength:Float = swagNote.sustainLength;
 
 					susLength = susLength / Conductor.stepCrochet;
-					if (swagNote.noteType == 'GF Sing Force Opponent') {
-						swagNote.mustPress = false;
-					}
-					if (swagNote.gfNote && PlayState.SONG.secOpt && swagNote.mustPress == false) {
-						if (gamemode == "none") {
-							swagNote.noteData += 4;
-						}
-						if (PlayState.SONG.arrowSkinSec != null && PlayState.SONG.arrowSkinSec.length > 0) {
-							swagNote.texture = PlayState.SONG.arrowSkinSec;
-						}
-						if (PlayState.SONG.splashSkinSec != null && PlayState.SONG.splashSkinSec.length > 0) {
-							swagNote.noteSplashTexture = PlayState.SONG.splashSkinSec;
-						}
-					}
 					unspawnNotes.push(swagNote);
 
 					var floorSus:Int = Math.floor(susLength);
@@ -2696,27 +2691,12 @@ class PlayState extends MusicBeatState
 							} else {
 								sustainData = daNoteData;
 							}
-							var sustainNote:Note = new Note((daStrumTime + (Conductor.stepCrochet * susNote)+(i*(100/(multNote)))) + (Conductor.stepCrochet / FlxMath.roundDecimal(songSpeed, 2)), sustainData, oldNote, true, null, gottaHitNote);
-							sustainNote.gfNote = (section.gfSection && (songNotes[1]<4));
+							var sustainNote:Note = new Note((daStrumTime + (Conductor.stepCrochet * susNote)+(i*(100/(multNote)))) + (Conductor.stepCrochet / FlxMath.roundDecimal(songSpeed, 2)), sustainData, oldNote, true, null, (swagNote.noteType == "GF Sing Force Opponent" ? false : gottaHitNote), gfSec, swagNote.noteType);
 							sustainNote.noteType = swagNote.noteType;
 							sustainNote.scrollFactor.set();
 							swagNote.tail.push(sustainNote);
 							sustainNote.parent = swagNote;
 							unspawnNotes.push(sustainNote);
-							if (sustainNote.noteType == 'GF Sing Force Opponent') {
-								sustainNote.mustPress = false;
-							}
-							if (sustainNote.gfNote && PlayState.SONG.secOpt && sustainNote.mustPress == false) {
-								if (gamemode == 'none') {
-									sustainNote.noteData += 4;
-								}
-								if (PlayState.SONG.arrowSkinSec != null && PlayState.SONG.arrowSkinSec.length > 0) {
-									sustainNote.texture = PlayState.SONG.arrowSkinSec;
-								}
-								if (PlayState.SONG.splashSkinSec != null && PlayState.SONG.splashSkinSec.length > 0) {
-									sustainNote.noteSplashTexture = PlayState.SONG.splashSkinSec;
-								}
-							}
 							if (sustainNote.mustPress)
 							{
 								sustainNote.x += FlxG.width / 2; // general offset
@@ -2942,8 +2922,6 @@ class PlayState extends MusicBeatState
 				{
 					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X)-50)-(i*37), strumLine.y, i, player);
 					babyArrow.downScroll = ClientPrefs.downScroll;
-					babyArrow.x += (player == 0 ? babyArrow.width*(0.75/4) : 0);//fix x strum when small
-					babyArrow.y += (player == 0 ? babyArrow.height*(0.75/4) : 0);//fix y strum when small
 					if (gamemode == "bothside") {
 						babyArrow.visible = false;
 					}

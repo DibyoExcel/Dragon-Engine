@@ -63,7 +63,7 @@ class Note extends FlxSprite
 
 	public static var swagWidth:Float = 160 * 0.7;
 
-	private var colArray:Array<String> = ['purple', 'blue', 'green', 'red', 'purple', 'blue', 'green', 'red'];
+	private var colArray:Array<String> = ['purple', 'blue', 'green', 'red'];
 	private var pixelInt:Array<Int> = [0, 1, 2, 3];
 
 	// Lua shit
@@ -171,10 +171,6 @@ class Note extends FlxSprite
 				case 'GF Sing':
 					gfNote = true;
 				case 'GF Sing Force Opponent':
-					if (PlayState.SONG.arrowSkinSec != null && PlayState.SONG.arrowSkinSec.length > 0)
-					{
-						reloadNote('', PlayState.SONG.arrowSkinSec);
-					}
 					gfNote = true;
 			}
 			noteType = value;
@@ -185,7 +181,7 @@ class Note extends FlxSprite
 		return value;
 	}
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inEditor:Bool = false, mustPress:Bool = false)
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inEditor:Bool = false, mustPress:Bool = false, gfSec:Bool = false, noteType:String = '')
 	{
 		super();
 
@@ -197,6 +193,7 @@ class Note extends FlxSprite
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 		this.inEditor = inEditor;
+		this.gfNote = gfSec;
 
 		x += (ClientPrefs.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL : PlayState.STRUM_X) + 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
@@ -215,22 +212,36 @@ class Note extends FlxSprite
 			shader = colorSwap.shader;
 
 			x += swagWidth * (noteData);
-			if (!isSustainNote && noteData > -1 && noteData < 4)
+			if (!isSustainNote && noteData > -1 && noteData < 8)
 			{ // Doing this 'if' check to fix the warnings on Senpai songs
 				var animToPlay:String = '';
 				animToPlay = colArray[noteData % 4];
 				animation.play(animToPlay + 'Scroll');
 			}
 		}
+		this.noteType = noteType;
 		if (!mustPress)
 		{
-			if (noteData < 4 && PlayState.SONG.arrowSkinOpt != null || PlayState.SONG.arrowSkinOpt.length > 0)
+			if (!gfNote && PlayState.SONG.arrowSkinOpt != null || PlayState.SONG.arrowSkinOpt.length > 0)
 			{
 				texture = PlayState.SONG.arrowSkinOpt;
 			}
-			if (noteData < 4 && PlayState.SONG.splashSkinOpt != null && PlayState.SONG.splashSkinOpt.length > 0)
+			if (!gfNote && PlayState.SONG.splashSkinOpt != null && PlayState.SONG.splashSkinOpt.length > 0)
 			{
 				noteSplashTexture = PlayState.SONG.splashSkinOpt;
+			}
+			if (gfNote) {
+				if (PlayState.SONG.secOpt) {
+					this.noteData += 4;
+				}
+				if (PlayState.SONG.arrowSkinSec != null || PlayState.SONG.arrowSkinSec.length > 0)
+					{
+						texture = PlayState.SONG.arrowSkinSec;
+					}
+					if (PlayState.SONG.splashSkinSec != null && PlayState.SONG.splashSkinSec.length > 0)
+					{
+						noteSplashTexture = PlayState.SONG.splashSkinSec;
+					}
 			}
 		}
 
@@ -378,6 +389,13 @@ class Note extends FlxSprite
 		}
 		updateHitbox();
 
+		if (!mustPress && PlayState.SONG.secOpt) {
+			scale.x *= 0.75;
+			if (!isSustainNote) {
+				scale.y *= 0.75;
+			}
+		}
+
 		if (animName != null)
 			animation.play(animName, true);
 
@@ -390,29 +408,15 @@ class Note extends FlxSprite
 
 	function loadNoteAnims()
 	{
-		animation.addByPrefix(colArray[noteData] + 'Scroll', colArray[noteData] + '0');
+		animation.addByPrefix(colArray[noteData % 4] + 'Scroll', colArray[noteData % 4] + '0');
 
 		if (isSustainNote)
 		{
 			animation.addByPrefix('purpleholdend', 'pruple end hold'); // ?????
-			animation.addByPrefix(colArray[noteData] + 'holdend', colArray[noteData] + ' hold end');
-			animation.addByPrefix(colArray[noteData] + 'hold', colArray[noteData] + ' hold piece');
+			animation.addByPrefix(colArray[noteData%4] + 'holdend', colArray[noteData%4] + ' hold end');
+			animation.addByPrefix(colArray[noteData%4] + 'hold', colArray[noteData%4] + ' hold piece');
 		}
-		if (PlayState.SONG.secOpt)
-		{ // wtf
-			if (!mustPress)
-			{
-				setGraphicSize(Std.int((width * ClientPrefs.strumsize) * 0.75));
-			}
-			else
-			{
-				setGraphicSize(Std.int(width * ClientPrefs.strumsize));
-			}
-		}
-		else
-		{
-			setGraphicSize(Std.int(width * ClientPrefs.strumsize));
-		}
+		setGraphicSize(Std.int(width * ClientPrefs.strumsize));
 		updateHitbox();
 	}
 
@@ -420,12 +424,12 @@ class Note extends FlxSprite
 	{
 		if (isSustainNote)
 		{
-			animation.add(colArray[noteData] + 'holdend', [pixelInt[noteData] + 4]);
-			animation.add(colArray[noteData] + 'hold', [pixelInt[noteData]]);
+			animation.add(colArray[noteData % 4] + 'holdend', [pixelInt[noteData % 4] + 4]);
+			animation.add(colArray[noteData % 4] + 'hold', [pixelInt[noteData % 4]]);
 		}
 		else
 		{
-			animation.add(colArray[noteData] + 'Scroll', [pixelInt[noteData] + 4]);
+			animation.add(colArray[noteData % 4] + 'Scroll', [pixelInt[noteData % 4] + 4]);
 		}
 	}
 
