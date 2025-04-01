@@ -2649,20 +2649,21 @@ class PlayState extends MusicBeatState
 					noteDataSet = daNoteData;
 				}
 				for (i in 0...multNote) {
-					var check_opt = songNotes[3];
+					var noteTypeData:String = '';
+					if(!Std.isOfType(songNotes[3], String)) noteTypeData = editors.ChartingState.noteTypeList[songNotes[3]]; //Backward compatibility + compatibility with Week 7 charts
+					var check_opt = noteTypeData;
 					var should_opt:Int = -1;
-					var check_ply = songNotes[3];
+					var check_ply = noteTypeData;
 					var should_ply:Int = -1;
 					if (check_opt != null) {
-						should_opt = songNotes[3].indexOf("-opponent");
+						should_opt = noteTypeData.indexOf("-opponent");
 					}
 					if (check_ply != null) {
-						should_ply = songNotes[3].indexOf("-player");
+						should_ply = noteTypeData.indexOf("-player");
 					}
 					var gfSec = (section.gfSection && (songNotes[1]<4));
-					var swagNote:Note = new Note(daStrumTime+(i*(100/(multNote))), noteDataSet, oldNote, null, null, (songNotes[3] == "GF Sing Force Opponent"/**compatibility backward**/ || should_opt != -1 ? false : (should_ply != -1 ? true : gottaHitNote)), gfSec, songNotes[3]);
+					var swagNote:Note = new Note(daStrumTime+(i*(100/(multNote))), noteDataSet, oldNote, null, null, (songNotes[3] == "GF Sing Force Opponent"/**compatibility backward**/ || should_opt != -1 ? false : (should_ply != -1 ? true : gottaHitNote)), gfSec, noteTypeData);
 					swagNote.sustainLength = songNotes[2];
-					if(!Std.isOfType(songNotes[3], String)) swagNote.noteType = editors.ChartingState.noteTypeList[songNotes[3]]; //Backward compatibility + compatibility with Week 7 charts
 
 					swagNote.scrollFactor.set();
 
