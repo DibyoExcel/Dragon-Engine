@@ -2649,7 +2649,7 @@ class PlayState extends MusicBeatState
 					noteDataSet = daNoteData;
 				}
 				for (i in 0...multNote) {
-					var noteTypeData:String = '';
+					var noteTypeData:String = songNotes[3];
 					if(!Std.isOfType(songNotes[3], String)) noteTypeData = editors.ChartingState.noteTypeList[songNotes[3]]; //Backward compatibility + compatibility with Week 7 charts
 					var check_opt = noteTypeData;
 					var should_opt:Int = -1;

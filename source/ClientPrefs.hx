@@ -67,7 +67,7 @@ class ClientPrefs {
 		'practice' => false,
 		'botplay' => false,
 		'opponentplay' => false,
-		'notekey' => false,
+		'notekey' => 4,
 		'multNote' => 1,
 		'gamemode' => 'none',
 		'modcharttype' => 'none',
