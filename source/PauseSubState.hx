@@ -31,8 +31,6 @@ class PauseSubState extends MusicBeatSubstate
 	var skipTimeText:FlxText;
 	var skipTimeTracker:Alphabet;
 	var curTime:Float = Math.max(0, Conductor.songPosition);
-	var arrowSprite:Array<String> = [ 'Left', 'down', 'up', 'right' ];
-	var arrowSprites:Array<FlxSprite>;
 	var skinPly:String;
 	//var botplayText:FlxText;
 
@@ -148,20 +146,6 @@ class PauseSubState extends MusicBeatSubstate
 
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		add(grpMenuShit);
-		arrowSprites = new Array<FlxSprite>();
-		for (i in 0...4) {
-			var arrowSpr:FlxSprite = new FlxSprite(0+(i*112), -250);
-			arrowSpr.frames = Paths.getSparrowAtlas(PlayState.instance.playerStrums.members[i].texture);
-			arrowSpr.scale.set(ClientPrefs.strumsize, ClientPrefs.strumsize);
-			arrowSpr.scrollFactor.set();
-			arrowSpr.animation.addByPrefix('idle', 'arrow' + arrowSprite[i].toUpperCase());
-			arrowSpr.animation.addByPrefix('confirm', arrowSprite[i].toLowerCase() + ' confirm', ClientPrefs.fpsStrumAnim, false);
-			arrowSpr.animation.play('idle');
-			FlxTween.tween(arrowSpr, {y : 0}, 1+(i*0.25), { ease: FlxEase.quadOut });
-			add(arrowSpr);
-			arrowSprites.push(arrowSpr);
-			//trace(arrowSprites);
-		}
 
 		regenMenu();
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
@@ -177,53 +161,9 @@ class PauseSubState extends MusicBeatSubstate
 
 		super.update(elapsed);
 		updateSkipTextStuff();
-		var leftN = controls.NOTE_LEFT;
-		var downN = controls.NOTE_DOWN;
-		var upN = controls.NOTE_UP;
-		var rightN = controls.NOTE_RIGHT;
-		var leftNR = controls.NOTE_LEFT_R;
-		var downNR = controls.NOTE_DOWN_R;
-		var upNR = controls.NOTE_UP_R;
-		var rightNR = controls.NOTE_RIGHT_R;
 		var upP = controls.UI_UP_P;
 		var downP = controls.UI_DOWN_P;
 		var accepted = controls.ACCEPT;
-		 if (arrowSprites[0] != null) {
-			if (leftN) {
-				arrowSprites[0].animation.play("confirm");
-			} else if (leftNR) {
-				arrowSprites[0].animation.play("idle");
-			}
-			arrowSprites[0].centerOrigin();
-			arrowSprites[0].centerOffsets();
-		 }
-		 if (arrowSprites[1] != null) {
-			if (downN) {
-				arrowSprites[1].animation.play("confirm");
-			} else if (downNR) {
-				arrowSprites[1].animation.play("idle");
-			}
-			arrowSprites[1].centerOrigin();
-			arrowSprites[1].centerOffsets();
-		}
-		if (arrowSprites[2] != null) {
-			if (upN) {
-				arrowSprites[2].animation.play("confirm");
-			} else if (upNR) {
-				arrowSprites[2].animation.play("idle");
-			}
-			arrowSprites[2].centerOrigin();
-			arrowSprites[2].centerOffsets();
-		}
-		if (arrowSprites[3] != null) {
-			if (rightN) {
-				arrowSprites[3].animation.play("confirm");
-			} else if (rightNR) {
-				arrowSprites[3].animation.play("idle");
-			}
-			arrowSprites[3].centerOrigin();
-			arrowSprites[3].centerOffsets();
-		}
 		if (upP)
 		{
 			changeSelection(-1);

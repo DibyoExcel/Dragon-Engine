@@ -18,7 +18,6 @@ import flixel.util.FlxColor;
 import sys.FileSystem;
 import sys.io.File;
 #else
-import SUtil;
 #end
 
 using StringTools;

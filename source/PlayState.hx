@@ -3010,6 +3010,12 @@ class PlayState extends MusicBeatState
 			for (timer in modchartTimers) {
 				timer.active = false;
 			}
+			var tweenStuff = FunkinLua.indoTween;
+			for (i in tweenStuff) {
+				if (i != null) {
+					i.active = false;
+				}
+			}
 		}
 
 		super.openSubState(SubState);
@@ -3045,6 +3051,12 @@ class PlayState extends MusicBeatState
 			}
 			for (timer in modchartTimers) {
 				timer.active = true;
+			}
+			var tweenStuff = FunkinLua.indoTween;
+			for (i in tweenStuff) {
+				if (i != null) {
+					i.active = true;
+				}
 			}
 			paused = false;
 			callOnLuas('onResume', []);
@@ -3530,7 +3542,7 @@ class PlayState extends MusicBeatState
 						var strumX:Float = strumGroup.members[daNote.noteData].x;
 						var strumY:Float = strumGroup.members[daNote.noteData].y;
 						var strumAngle:Float = strumGroup.members[daNote.noteData].angle;
-						var strumDirection:Float = strumGroup.members[daNote.noteData].direction;
+						var strumDirection:Float = strumGroup.members[daNote.noteData].direction + daNote.direction;
 						var strumAlpha:Float = strumGroup.members[daNote.noteData].alpha;
 						var strumScroll:Bool = strumGroup.members[daNote.noteData].downScroll;
 

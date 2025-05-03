@@ -98,6 +98,7 @@ class Note extends FlxSprite
 	public var distance:Float = 2000; // plan on doing scroll directions soon -bb
 
 	public var hitsoundDisabled:Bool = false;
+	public var direction:Float = 0;
 
 	private function set_multSpeed(value:Float):Float
 	{

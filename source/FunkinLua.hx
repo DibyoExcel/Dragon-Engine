@@ -33,7 +33,9 @@ import flixel.math.FlxMath;
 import flixel.util.FlxSave;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.system.FlxAssets.FlxShader;
+#if windows
 import hxwindowmode.WindowColorMode;
+#end
 
 #if (!flash && sys)
 import flixel.addons.display.FlxRuntimeShader;
@@ -72,6 +74,9 @@ class FunkinLua {
 	public var camTarget:FlxCamera;
 	public var scriptName:String = '';
 	public var closed:Bool = false;
+	//reset stuff
+	var windowArray:Array<Dynamic> =[ 0, 0, 1280, 720, false, false ];//x, y, width, height, maximized, fullscreen
+	public static var indoTween:Array<FlxTween> = [];//it should not break if use setWindow too much
 
 	#if hscript
 	public static var hscript:HScript = null;
@@ -109,6 +114,12 @@ class FunkinLua {
 
 		trace('lua file loaded succesfully:' + script);
 
+		windowArray[0] = Lib.application.window.x;
+		windowArray[1] = Lib.application.window.y;
+		windowArray[2] = Lib.application.window.width;
+		windowArray[3] = Lib.application.window.height;
+		windowArray[4] = FlxG.fullscreen;
+		windowArray[5] = Lib.application.window.maximized;
 		// Lua shit
 		set('Function_StopLua', Function_StopLua);
 		set('Function_Stop', Function_Stop);
@@ -1058,33 +1069,111 @@ class FunkinLua {
 				WindowColorMode.setWindowColorMode(dark);
 				WindowColorMode.redrawWindowHeader();
 			});
+			//Little deprecated but i never remove
 			Lua_helper.add_callback(lua, "setWindowX", function(value:Int, duration:Float = 0, ease:String) {
+				if (indoTween[0] != null) {
+					indoTween[0].cancel();
+				}
 				if (duration != 0) {
-					FlxTween.tween(Lib.application.window, {x: value}, duration, {ease: getFlxEaseByString(ease)});
+					indoTween[0] = FlxTween.tween(Lib.application.window, {x: value}, duration, {ease: getFlxEaseByString(ease)});
 				} else {
 					Lib.application.window.x = value;
 				}
 			});
 			Lua_helper.add_callback(lua, "setWindowY", function(value:Int, duration:Float = 0, ease:String) {
+				if (indoTween[1] != null) {
+					indoTween[1].cancel();
+				}
 				if (duration != 0) {
-					FlxTween.tween(Lib.application.window, {y: value}, duration, {ease: getFlxEaseByString(ease)});
+					indoTween[1] = FlxTween.tween(Lib.application.window, {y: value}, duration, {ease: getFlxEaseByString(ease)});
 				} else {
 					Lib.application.window.y = value;
 				}
 			});
 			Lua_helper.add_callback(lua, "setWindowWidth", function(value:Int, duration:Float = 0, ease:String) {
+				if (indoTween[2] != null) {
+					indoTween[2].cancel();
+				}
 				if (duration != 0) {
-					FlxTween.tween(Lib.application.window, {width: value}, duration, {ease: getFlxEaseByString(ease)});
+					indoTween[2] = FlxTween.tween(Lib.application.window, {width: value}, duration, {ease: getFlxEaseByString(ease)});
 				} else {
 					Lib.application.window.width = value;
 				}
 			});
 			Lua_helper.add_callback(lua, "setWindowHeight", function(value:Int, duration:Float = 0, ease:String) {
+				if (indoTween[3] != null) {
+					indoTween[3].cancel();
+				}
 				if (duration != 0) {
-					FlxTween.tween(Lib.application.window, {height: value}, duration, {ease: getFlxEaseByString(ease)});
+					indoTween[3] = FlxTween.tween(Lib.application.window, {height: value}, duration, {ease: getFlxEaseByString(ease)});
 				} else {
 					Lib.application.window.height = value;
 				}
+			});
+			//new window function
+			Lua_helper.add_callback(lua, "setWindowProperty", function(x:Null<Int> = null, y:Null<Int> = null, width:Null<Float> = null, height:Null<Float> = null, duration:Float = 0, ease:String, scale:Bool = false) {
+				for (i in indoTween) {
+					if (i != null) {
+						i.cancel();
+					}
+				}
+				if (duration != 0) {
+					if (x != null) {
+						indoTween[0] = FlxTween.tween(Lib.application.window, {x: x}, duration, {ease: getFlxEaseByString(ease)});
+					}
+					if (y != null) {
+						indoTween[1] = FlxTween.tween(Lib.application.window, {y: y}, duration, {ease: getFlxEaseByString(ease)});
+					}
+					if (width != null) {
+						if (scale) {
+							indoTween[2] = FlxTween.tween(Lib.application.window, {width: Math.round(width*Lib.application.window.display.bounds.width)}, duration, {ease: getFlxEaseByString(ease)});
+						} else {
+							indoTween[2] = FlxTween.tween(Lib.application.window, {width: Math.round(width)}, duration, {ease: getFlxEaseByString(ease)});
+						}
+					}
+					if (height != null) {
+						if (scale) {
+							indoTween[3] = FlxTween.tween(Lib.application.window, {height: Math.round(height*Lib.application.window.display.bounds.height)}, duration, {ease: getFlxEaseByString(ease)});
+						} else {
+							indoTween[3] = FlxTween.tween(Lib.application.window, {height: Math.round(height)}, duration, {ease: getFlxEaseByString(ease)});
+						}
+					}
+				} else {
+					if (x != null) {
+						Lib.application.window.x = x;
+					}
+					if (y != null) {
+						Lib.application.window.y = y;
+					}
+					if (width != null) {
+						if (scale) {
+							Lib.application.window.width = Math.round(width*Lib.application.window.display.bounds.width);
+						} else {
+							Lib.application.window.width = Math.round(width);
+						}
+					}
+					if (height != null) {
+						if (scale) {
+							Lib.application.window.height = Math.round(height*Lib.application.window.display.bounds.height);
+						} else {
+							Lib.application.window.height = Math.round(height);
+						}
+					}
+				}
+			});
+			//reset 
+			Lua_helper.add_callback(lua, "resetWindow", function() {
+				for (i in indoTween) {
+					if (i != null) {
+						i.cancel();
+					}
+				}
+				Lib.application.window.x = Std.int(windowArray[0]);
+				Lib.application.window.y = Std.int(windowArray[1]);
+				Lib.application.window.width = Std.int(windowArray[2]);
+				Lib.application.window.height = Std.int(windowArray[3]);
+				FlxG.fullscreen = windowArray[4];
+				Lib.application.window.maximized = windowArray[5];
 			});
 			Lua_helper.add_callback(lua, "setWindowBorderColor", function(r:Int = 255, g:Int = 0, b:Int = 0, setHeader:Bool = true, setBorder:Bool = true) {
 				WindowColorMode.setWindowBorderColor([r, g, b], setHeader, setBorder);
