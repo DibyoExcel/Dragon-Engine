@@ -99,6 +99,9 @@ class Note extends FlxSprite
 
 	public var hitsoundDisabled:Bool = false;
 	public var direction:Float = 0;
+	public var flipScroll(default, set):Bool = false;//flip between scroll
+
+
 
 	private function set_multSpeed(value:Float):Float
 	{
@@ -112,7 +115,7 @@ class Note extends FlxSprite
 	{
 		if (isSustainNote && !animation.curAnim.name.endsWith('end'))
 		{
-			scale.y *= ratio;
+			scale.y *= (ratio);
 			updateHitbox();
 		}
 	}
@@ -173,6 +176,8 @@ class Note extends FlxSprite
 					gfNote = true;
 				case 'GF Sing Force Opponent':
 					gfNote = true;
+				case 'Flip Scroll':
+					flipScroll = true;
 			}
 			noteType = value;
 		}
@@ -202,48 +207,49 @@ class Note extends FlxSprite
 		this.strumTime = strumTime;
 		if (!inEditor)
 			this.strumTime += ClientPrefs.noteOffset;
-
+		
 		this.noteData = noteData;
-
+		
 		if (noteData > -1)
-		{
-			noteSplashTexture = PlayState.SONG.splashSkin;
-			texture = '';
+			{
+				var skin:String = PlayState.SONG.splashSkin;
+			var skinOpt:String = PlayState.SONG.splashSkinOpt;
+			var skinSec:String = PlayState.SONG.splashSkinSec;
+			if (skin.length < 1 || skin == null) {
+				skin = "noteSplashes";
+			}
+			if (skinOpt.length < 1 || skinOpt == null) {
+				skinOpt = skin;
+			}
+			if (skinSec.length < 1 || skinSec == null) {
+				skinSec = skinOpt;
+			}
 			colorSwap = new ColorSwap();
 			shader = colorSwap.shader;
-
+			this.noteType = noteType;
+			texture = '';
+			if (mustPress) {
+				noteSplashTexture = skin;
+			} else {
+				if (gfNote) {
+					noteSplashTexture = skinSec;
+				} else {
+					noteSplashTexture = skinOpt;
+				}
+			}
+			
 			x += swagWidth * (noteData);
 			if (!isSustainNote && noteData > -1 && noteData < 8)
-			{ // Doing this 'if' check to fix the warnings on Senpai songs
+				{ // Doing this 'if' check to fix the warnings on Senpai songs
 				var animToPlay:String = '';
 				animToPlay = colArray[noteData % 4];
 				animation.play(animToPlay + 'Scroll');
 			}
 		}
-		this.noteType = noteType;
-		if (!mustPress)
+		var gamemode = PlayState.instance.gamemode;
+		if (!mustPress && gfNote && PlayState.SONG.secOpt && !(gamemode == 'opponent' || gamemode == "bothside" || gamemode == "bothside v2")) //sorry another gamemode not support :(
 		{
-			if (!gfNote && PlayState.SONG.arrowSkinOpt != null || PlayState.SONG.arrowSkinOpt.length > 0)
-			{
-				texture = PlayState.SONG.arrowSkinOpt;
-			}
-			if (!gfNote && PlayState.SONG.splashSkinOpt != null && PlayState.SONG.splashSkinOpt.length > 0)
-			{
-				noteSplashTexture = PlayState.SONG.splashSkinOpt;
-			}
-			if (gfNote) {
-				if (PlayState.SONG.secOpt) {
-					this.noteData += 4;
-				}
-				if (PlayState.SONG.arrowSkinSec != null || PlayState.SONG.arrowSkinSec.length > 0)
-					{
-						texture = PlayState.SONG.arrowSkinSec;
-					}
-					if (PlayState.SONG.splashSkinSec != null && PlayState.SONG.splashSkinSec.length > 0)
-					{
-						noteSplashTexture = PlayState.SONG.splashSkinSec;
-					}
-			}
+			this.noteData += 4;
 		}
 
 		// trace(prevNote);
@@ -274,7 +280,7 @@ class Note extends FlxSprite
 			if (prevNote.isSustainNote)
 			{
 				prevNote.animation.play(colArray[prevNote.noteData % 4] + 'hold');
-				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.05;
+				prevNote.scale.y *= (Conductor.stepCrochet / 100 * 1.05);
 				if (PlayState.instance != null)
 				{
 					prevNote.scale.y *= PlayState.instance.songSpeed;
@@ -323,9 +329,34 @@ class Note extends FlxSprite
 			suffix = '';
 
 		var skin:String = texture;
-		if (texture.length < 1)
+		var skinOG:String = PlayState.SONG.arrowSkin;
+		var skinOpt:String = PlayState.SONG.arrowSkinOpt;
+		var skinSec:String = PlayState.SONG.arrowSkinSec;
+		if (texture.length < 1 || texture == null)
 		{
-			skin = PlayState.SONG.arrowSkin;
+			if (mustPress) {
+				skin = PlayState.SONG.arrowSkin;
+			} else {
+				if (gfNote) {
+					if (skinSec.length < 1 || skinSec == null) {
+						if (skinOpt.length < 1 || skinOpt == null) {
+							skin = skinOG;
+						} else {
+							skin = skinOpt;
+						}
+					} else {
+						skin = PlayState.SONG.arrowSkinSec;
+					}
+				} else {
+					if (skinOpt.length < 1 || skinOpt == null) {
+						skin = skinOG;
+					} else {
+						skin = skinOpt;
+					}
+					skin = PlayState.SONG.arrowSkinOpt;
+				}
+			}
+			
 			if (skin == null || skin.length < 1)
 			{
 				skin = ClientPrefs.dflnoteskin;
@@ -390,7 +421,8 @@ class Note extends FlxSprite
 		}
 		updateHitbox();
 
-		if (!mustPress && PlayState.SONG.secOpt) {
+	var gamemode = PlayState.instance.gamemode;
+		if (!mustPress && PlayState.SONG.secOpt && !(gamemode == 'opponent' || gamemode == "bothside" || gamemode == "bothside v2")) {
 			scale.x *= 0.75;
 			if (!isSustainNote) {
 				scale.y *= 0.75;
@@ -467,5 +499,15 @@ class Note extends FlxSprite
 			if (alpha > 0.3)
 				alpha = 0.3;
 		}
+	}
+
+	function set_flipScroll(value:Bool):Bool {
+		if (flipScroll != value) {
+			if (isSustainNote && prevNote != null) {
+				flipY = !flipY;
+			}
+		}
+		flipScroll = value;
+		return value;
 	}
 }

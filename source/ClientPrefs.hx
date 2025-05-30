@@ -48,6 +48,7 @@ class ClientPrefs {
 	public static var checkForUpdates:Bool = true;
 	public static var comboStacking = true;
 	public static var noteSplashesOpt:Bool = true;
+	public static var notesStrum:Bool = false;
 	public static var gameplaySettings:Map<String, Dynamic> = [
 		'scrollspeed' => 1.0,
 		'scrolltype' => 'multiplicative', 
@@ -124,6 +125,7 @@ class ClientPrefs {
 
 	public static function saveSettings() {
 		FlxG.save.data.downScroll = downScroll;
+		FlxG.save.data.notesStrum = notesStrum;
 		FlxG.save.data.startPause = startPause;
 		FlxG.save.data.disableOGCredit = disableOGCredit;
 		FlxG.save.data.keyStrokeAlpha = keyStrokeAlpha;
@@ -187,6 +189,9 @@ class ClientPrefs {
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.notesStrum != null) {
+			notesStrum = FlxG.save.data.notesStrum;
 		}
 		if(FlxG.save.data.startPause != null) {
 			startPause = FlxG.save.data.startPause;

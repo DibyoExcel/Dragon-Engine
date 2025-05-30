@@ -12,13 +12,17 @@ class HealthIcon extends FlxSprite
 	private var isPlayer:Bool = false;
 	private var char:String = '';
 	public var winIcon:Bool = false;
+	public var isCustom:Bool = false;//enable this if you want custom change icon system to your own
+	public var fullIcon(default, set):Bool = false;
 
-	public function new(char:String = 'bf', isPlayer:Bool = false)
+
+
+	public function new(char:String = 'bf', isPlayer:Bool = false, full:Bool = false)
 	{
 		super();
 		isOldIcon = (char == 'bf-old');
 		this.isPlayer = isPlayer;
-		changeIcon(char);
+		changeIcon(char, full);
 		scrollFactor.set();
 	}
 
@@ -36,7 +40,7 @@ class HealthIcon extends FlxSprite
 	}
 
 	private var iconOffsets:Array<Float> = [0, 0];
-	public function changeIcon(char:String) {
+	public function changeIcon(char:String, full:Bool = false) {
 		if(this.char != char) {
 			var name:String = 'icons/' + char;
 			if(!Paths.fileExists('images/' + name + '.png', IMAGE)) name = 'icons/icon-' + char; //Older versions of psych engine's support
@@ -44,21 +48,24 @@ class HealthIcon extends FlxSprite
 			var file:Dynamic = Paths.image(name);
 
 			loadGraphic(file); //Load stupidly first for getting the file size
-			var frameArray:Array<Int> = [];
-			var flipbook:Int = Math.round(width/height);//basicly flipbook from minecraft texture pack
-			loadGraphic(file, true, Math.floor(width / flipbook), Math.floor(height)); //Then load it fr
-			for (i in 0...flipbook) {
-				frameArray.push(i);
-			}
-			iconOffsets[0] = (width - 150) / flipbook;
-			iconOffsets[1] = (width - 150) / flipbook;
-			updateHitbox();
-			animation.add(char, frameArray, 0, false, isPlayer);
-			animation.play(char);
-			if (flipbook >= 3) {//for win icon //and when more than 3 you might can make weird stuff...but required lua
-				this.winIcon = true;
-			} else {
-				this.winIcon = false;
+			if (!full) {
+
+				var frameArray:Array<Int> = [];
+				var flipbook:Int = Math.round(width/height);//basicly flipbook from minecraft texture pack
+				loadGraphic(file, true, Math.floor(width / flipbook), Math.floor(height)); //Then load it fr
+				for (i in 0...flipbook) {
+					frameArray.push(i);
+				}
+				iconOffsets[0] = (width - 150) / flipbook;
+				iconOffsets[1] = (width - 150) / flipbook;
+				updateHitbox();
+				animation.add(char, frameArray, 0, false, isPlayer);
+				animation.play(char);
+				if (flipbook >= 3) {//for win icon //and when more than 3 you might can make weird stuff...but required lua
+					this.winIcon = true;
+				} else {
+					this.winIcon = false;
+				}
 			}
 			this.char = char;
 
@@ -78,5 +85,13 @@ class HealthIcon extends FlxSprite
 
 	public function getCharacter():String {
 		return char;
+	}
+
+	function set_fullIcon(value:Bool):Bool {
+		if (fullIcon != value) {
+			fullIcon = value;
+			changeIcon(char, value);
+		}
+		return value;
 	}
 }

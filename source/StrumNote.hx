@@ -14,14 +14,42 @@ class StrumNote extends FlxSprite
 	public var direction:Float = 90;//plan on doing scroll directions soon -bb
 	public var downScroll:Bool = false;//plan on doing scroll directions soon -bb
 	public var sustainReduce:Bool = true;
+	public var animConfirm:String = "confirm";//'confirm', 'static', 'pressed', 'notes'
 	
 	private var player:Int;
 	
 	public var texture(default, set):String = null;
 	private function set_texture(value:String):String {
+		if (value == null) {
+			value = '';
+		}
+		var skin:String = PlayState.SONG.arrowSkin;
+		var skinOpt:String = PlayState.SONG.arrowSkinOpt;
+		var skinSec:String = PlayState.SONG.arrowSkinSec;
+		if (skin.length < 1 || skin == null) {
+			skin = ClientPrefs.dflnoteskin;
+		}
+		//if opponent notes didt iput it ill use player skin/default. if sec opt not set texture it ill use opponent texture. bruh idk how to explain this
+		if(skinOpt == null || skinOpt.length < 1) {
+			skinOpt = skin;
+		}
+		if(skinSec == null || skinSec.length < 1) {
+			skinSec = skinOpt;
+		}
+		if (value == '' || value.length < 1) {
+			if (player == 1) {
+				value = skin;
+			} else {
+				if (noteData > 3) {
+					value = skinSec;
+				} else {
+					value = skinOpt;
+				}
+			}
+		}
 		if(texture != value) {
 			texture = value;
-			reloadNote();
+			reloadNote(texture);
 		}
 		return value;
 	}
@@ -33,49 +61,22 @@ class StrumNote extends FlxSprite
 		this.player = player;
 		this.noteData = leData;
 		super(x, y);
-
-		var skin:String = PlayState.SONG.arrowSkin;
-		var skinOpt:String = PlayState.SONG.arrowSkinOpt;
-		var skinSec:String = PlayState.SONG.arrowSkinSec;
-		if(PlayState.SONG.arrowSkin != null && PlayState.SONG.arrowSkin.length > 0) {
-			skin = PlayState.SONG.arrowSkin;
-		} else {
-			skin = ClientPrefs.dflnoteskin;
-		}
-		if(PlayState.SONG.arrowSkinOpt != null && PlayState.SONG.arrowSkinOpt.length > 0) {
-			skinOpt = PlayState.SONG.arrowSkinOpt;
-		} else {
-			skinOpt = skin;
-		}
-		if(PlayState.SONG.arrowSkinSec != null && PlayState.SONG.arrowSkinSec.length > 0) {
-			skinSec = PlayState.SONG.arrowSkinSec;
-		} else {
-			skinSec = skin;
-		}
-		if (player == 0) {
-			if (noteData > 3) {
-				texture = skinSec;
-			} else {
-				texture = skinOpt;
-			}
-		} else {
-			texture = skin;
-		}
+		texture = '';
 
 		scrollFactor.set();
 	}
 
-	public function reloadNote()
+	public function reloadNote(image:String = '')
 	{
 		var lastAnim:String = null;
 		if(animation.curAnim != null) lastAnim = animation.curAnim.name;
 
 		if(PlayState.isPixelStage)
 		{
-			loadGraphic(Paths.image('pixelUI/' + texture));
+			loadGraphic(Paths.image('pixelUI/' + image));
 			width = width / 4;
 			height = height / 5;
-			loadGraphic(Paths.image('pixelUI/' + texture), true, Math.floor(width), Math.floor(height));
+			loadGraphic(Paths.image('pixelUI/' + image), true, Math.floor(width), Math.floor(height));
 
 			antialiasing = false;
 			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
@@ -89,32 +90,37 @@ class StrumNote extends FlxSprite
 				case 0:
 					animation.add('static', [0]);
 					animation.add('pressed', [4, 8], (ClientPrefs.fpsStrumAnim)/2, false);
+					animation.add('notes', [4]);
 					animation.add('confirm', [12, 16], ClientPrefs.fpsStrumAnim, false);
 				case 1:
 					animation.add('static', [1]);
 					animation.add('pressed', [5, 9], (ClientPrefs.fpsStrumAnim)/2, false);
+					animation.add('notes', [5]);
 					animation.add('confirm', [13, 17], ClientPrefs.fpsStrumAnim, false);
 				case 2:
 					animation.add('static', [2]);
 					animation.add('pressed', [6, 10], (ClientPrefs.fpsStrumAnim)/2, false);
+					animation.add('notes', [6]);
 					animation.add('confirm', [14, 18], (ClientPrefs.fpsStrumAnim)/2, false);
 				case 3:
 					animation.add('static', [3]);
 					animation.add('pressed', [7, 11], (ClientPrefs.fpsStrumAnim)/2, false);
+					animation.add('notes', [7]);
 					animation.add('confirm', [15, 19], ClientPrefs.fpsStrumAnim, false);
 			}
 		}
 		else
 		{
-			frames = Paths.getSparrowAtlas(texture);
+			frames = Paths.getSparrowAtlas(image);
 			animation.addByPrefix('green', 'arrowUP');
 			animation.addByPrefix('blue', 'arrowDOWN');
 			animation.addByPrefix('purple', 'arrowLEFT');
 			animation.addByPrefix('red', 'arrowRIGHT');
-
-			antialiasing = ClientPrefs.globalAntialiasing;
+			
 			
 			setGraphicSize(Std.int(width * ClientPrefs.strumsize));
+			antialiasing = ClientPrefs.globalAntialiasing;
+			
 
 			switch (Math.abs(noteData) % 4)
 			{
@@ -122,18 +128,22 @@ class StrumNote extends FlxSprite
 					animation.addByPrefix('static', 'arrowLEFT');
 					animation.addByPrefix('pressed', 'left press', ClientPrefs.fpsStrumAnim, false);
 					animation.addByPrefix('confirm', 'left confirm', ClientPrefs.fpsStrumAnim, false);
-				case 1:
+					animation.addByPrefix('notes', 'purple0', ClientPrefs.fpsStrumAnim, false);
+					case 1:
 					animation.addByPrefix('static', 'arrowDOWN');
 					animation.addByPrefix('pressed', 'down press', ClientPrefs.fpsStrumAnim, false);
 					animation.addByPrefix('confirm', 'down confirm', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('notes', 'blue0', ClientPrefs.fpsStrumAnim, false);
 				case 2:
 					animation.addByPrefix('static', 'arrowUP');
 					animation.addByPrefix('pressed', 'up press', ClientPrefs.fpsStrumAnim, false);
 					animation.addByPrefix('confirm', 'up confirm', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('notes', 'green0', ClientPrefs.fpsStrumAnim, false);
 				case 3:
 					animation.addByPrefix('static', 'arrowRIGHT');
 					animation.addByPrefix('pressed', 'right press', ClientPrefs.fpsStrumAnim, false);
 					animation.addByPrefix('confirm', 'right confirm', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('notes', 'red0', ClientPrefs.fpsStrumAnim, false);
 			}
 		}
 		updateHitbox();
@@ -165,7 +175,7 @@ class StrumNote extends FlxSprite
 			}
 		}
 		//if(animation.curAnim != null){ //my bad i was upset
-		if(animation.curAnim.name == 'confirm' && !PlayState.isPixelStage) {
+		if(animation.curAnim.name == animConfirm && !PlayState.isPixelStage) {
 			centerOrigin();
 		//}
 		}
@@ -175,12 +185,13 @@ class StrumNote extends FlxSprite
 
 	public function playAnim(anim:String, ?force:Bool = false) {
 		animation.play(anim, force);
-		centerOffsets();
 		centerOrigin();
+		centerOffsets();
 		if(animation.curAnim == null || animation.curAnim.name == 'static') {
 			colorSwap.hue = 0;
 			colorSwap.saturation = 0;
 			colorSwap.brightness = 0;
+
 		} else {
 			if (noteData > -1 && noteData % 4 < ClientPrefs.arrowHSV.length)
 			{
@@ -189,7 +200,7 @@ class StrumNote extends FlxSprite
 				colorSwap.brightness = ClientPrefs.arrowHSV[noteData % 4][2] / 100;
 			}
 
-			if(animation.curAnim.name == 'confirm' && !PlayState.isPixelStage) {
+			if(animation.curAnim.name == animConfirm && !PlayState.isPixelStage) {
 				centerOrigin();
 			}
 		}

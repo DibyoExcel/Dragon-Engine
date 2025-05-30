@@ -118,7 +118,7 @@ class GameplayChangersSubstate extends MusicBeatState
 		optionsArray.push(option);
 		var option:GameplayOption = new GameplayOption('Game Mode', 'gamemode', 'string', "none", [ 'none', 'bothside', 'bothside v2', 'opponent' ]);//My favorite build in mechanic
 		optionsArray.push(option);//goblog
-		var option:GameplayOption = new GameplayOption('Modchart Type', 'modcharttype', 'string', "none", [ 'none', 'wave note', 'fade note' ]);//Messing Around with this
+		var option:GameplayOption = new GameplayOption('Modchart', 'modcharttype', 'string', "none", [ 'none', 'wave note', 'fade note', 'random flip scroll', 'random direction scroll ' ]);//Messing Around with this
 		optionsArray.push(option);
 		var option:GameplayOption = new GameplayOption('Note Multiplier', //Name
 			'multNote', //Save data variable name

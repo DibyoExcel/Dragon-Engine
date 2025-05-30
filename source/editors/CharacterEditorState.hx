@@ -72,7 +72,7 @@ class CharacterEditorState extends MusicBeatState
 	private var camMenu:FlxCamera;
 
 	var changeBGbutton:FlxButton;
-	var leHealthIcon:HealthIconFull;
+	var leHealthIcon:HealthIcon;
 	var characterList:Array<String> = [];
 
 	var cameraFollowPointer:FlxSprite;
@@ -119,7 +119,7 @@ class CharacterEditorState extends MusicBeatState
 		add(healthBarBG);
 		healthBarBG.cameras = [camHUD];
 
-		leHealthIcon = new HealthIconFull(char.healthIcon, false);
+		leHealthIcon = new HealthIcon(char.healthIcon, false, true);
 		leHealthIcon.y = FlxG.height - 150;
 		leHealthIcon.x = 100;
 		add(leHealthIcon);
