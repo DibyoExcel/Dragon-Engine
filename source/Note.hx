@@ -246,10 +246,12 @@ class Note extends FlxSprite
 				animation.play(animToPlay + 'Scroll');
 			}
 		}
-		var gamemode = PlayState.instance.gamemode;
-		if (!mustPress && gfNote && PlayState.SONG.secOpt && !(gamemode == 'opponent' || gamemode == "bothside" || gamemode == "bothside v2")) //sorry another gamemode not support :(
-		{
-			this.noteData += 4;
+		if (!inEditor) {
+			var gamemode = PlayState.instance.gamemode;
+			if (!mustPress && gfNote && PlayState.SONG.secOpt && !(gamemode == 'opponent' || gamemode == "bothside" || gamemode == "bothside v2")) //sorry another gamemode not support :(
+			{
+				this.noteData += 4;
+			}
 		}
 
 		// trace(prevNote);
@@ -335,7 +337,7 @@ class Note extends FlxSprite
 		if (texture.length < 1 || texture == null)
 		{
 			if (mustPress) {
-				skin = PlayState.SONG.arrowSkin;
+				skin = skinOG;
 			} else {
 				if (gfNote) {
 					if (skinSec.length < 1 || skinSec == null) {
@@ -345,15 +347,15 @@ class Note extends FlxSprite
 							skin = skinOpt;
 						}
 					} else {
-						skin = PlayState.SONG.arrowSkinSec;
+						skin = skinSec;
 					}
 				} else {
+					//no gf
 					if (skinOpt.length < 1 || skinOpt == null) {
 						skin = skinOG;
 					} else {
 						skin = skinOpt;
 					}
-					skin = PlayState.SONG.arrowSkinOpt;
 				}
 			}
 			
@@ -421,11 +423,13 @@ class Note extends FlxSprite
 		}
 		updateHitbox();
 
-	var gamemode = PlayState.instance.gamemode;
-		if (!mustPress && PlayState.SONG.secOpt && !(gamemode == 'opponent' || gamemode == "bothside" || gamemode == "bothside v2")) {
-			scale.x *= 0.75;
-			if (!isSustainNote) {
-				scale.y *= 0.75;
+		if (!inEditor) {
+			var gamemode = PlayState.instance.gamemode;
+			if (!mustPress && PlayState.SONG.secOpt && !(gamemode == 'opponent' || gamemode == "bothside" || gamemode == "bothside v2")) {
+				scale.x *= 0.75;
+				if (!isSustainNote) {
+					scale.y *= 0.75;
+				}
 			}
 		}
 

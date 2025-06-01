@@ -2836,17 +2836,6 @@ class ChartingState extends MusicBeatState
 			} else if(daSus != null) {
 				note.x += GRID_SIZE * 4;
 			}
-			if ((_song.notes[curSec].mustHitSection && daNoteInfo >= 0 && daNoteInfo < 4) || (!_song.notes[curSec].mustHitSection && daNoteInfo > 3 && daNoteInfo <= 7)) {
-				if (PlayState.SONG.arrowSkinOpt != null) {
-					note.texture = PlayState.SONG.arrowSkinOpt;
-				}
-			}
-		} else {
-			if ((_song.notes[curSec].mustHitSection && daNoteInfo > 3 && daNoteInfo <= 7) || (!_song.notes[curSec].mustHitSection && daNoteInfo >= 0 && daNoteInfo < 4)) {
-				if (PlayState.SONG.arrowSkinOpt != null) {
-					note.texture = PlayState.SONG.arrowSkinOpt;
-				}
-			}
 		}
 
 		var beats:Float = getSectionBeats(isNextSection ? 1 : 0);
