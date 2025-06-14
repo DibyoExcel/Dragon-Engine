@@ -1224,12 +1224,13 @@ class PlayState extends MusicBeatState
 		iconP2.visible = !ClientPrefs.hideHud;
 		iconP2.alpha = ClientPrefs.healthBarAlpha;
 		add(iconP2);
-
-		iconP3 = new HealthIcon(gf.healthIcon, false);
-		iconP3.y = healthBar.y - 75;
-		iconP3.visible = !ClientPrefs.hideHud && PlayState.SONG.secOpt;
-		iconP3.alpha = ClientPrefs.healthBarAlpha;
-		add(iconP3);
+		if (gf != null) {
+			iconP3 = new HealthIcon(gf.healthIcon, false);
+			iconP3.y = healthBar.y - 75;
+			iconP3.visible = !ClientPrefs.hideHud && PlayState.SONG.secOpt;
+			iconP3.alpha = ClientPrefs.healthBarAlpha;
+			add(iconP3);
+		}
 		reloadHealthBarColors();
 
 		scoreTxt = new FlxText(0, healthBarBG.y + 36, FlxG.width, "", 20);
