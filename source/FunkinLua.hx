@@ -1738,6 +1738,21 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "getSongPosition", function() {
 			return Conductor.songPosition;
 		});
+		Lua_helper.add_callback(lua, "setSecondOpponent", function(value:Null<Bool> = null, transition:Bool = true, trasitionOpt:Bool = true) {
+			if (value != null) {
+				PlayState.instance.changeSecOpt(value, transition, trasitionOpt);
+			}
+		});
+		Lua_helper.add_callback(lua, "createCustomStrum", function(tag:String= '', data:Int = 4, camera:String = 'hud', sfX:Float = 0, sfY:Float = 0, downscroll:Null<Bool> = null) {
+			if (tag != null || tag != '') {
+				PlayState.instance.createStrum(tag, data, camera, sfX, sfY, downscroll);
+			}
+		});
+		Lua_helper.add_callback(lua, "removeStrum", function(tag:String= '') {
+			if (tag != null || tag != '') {
+				PlayState.instance.removeStrum(tag);
+			}
+		});
 
 		Lua_helper.add_callback(lua, "getCharacterX", function(type:String) {
 			switch(type.toLowerCase()) {
@@ -3270,7 +3285,7 @@ class FunkinLua {
 		return NORMAL;
 	}
 
-	function cameraFromString(cam:String):FlxCamera {
+	public static function cameraFromString(cam:String):FlxCamera {
 		switch(cam.toLowerCase()) {
 			case 'camhud' | 'hud': return PlayState.instance.camHUD;
 			case 'camother' | 'other': return PlayState.instance.camOther;

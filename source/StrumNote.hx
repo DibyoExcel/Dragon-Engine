@@ -15,6 +15,10 @@ class StrumNote extends FlxSprite
 	public var downScroll:Bool = false;//plan on doing scroll directions soon -bb
 	public var sustainReduce:Bool = true;
 	public var animConfirm:String = "confirm";//'confirm', 'static', 'pressed', 'notes'
+	public var fieldName:String = '';//only use for remove object and target of 'customStrum'
+	public var memberID:Int =0; //only use target 'customStrum'
+	public var camTarget(default, set):String = 'hud';
+	public var scrollFactorCam(default,set):Array<Float> = [0.0, 0.0];//only can see in camGame
 	
 	private var player:Int;
 	
@@ -63,7 +67,7 @@ class StrumNote extends FlxSprite
 		super(x, y);
 		texture = '';
 
-		scrollFactor.set();
+		scrollFactor.set(scrollFactorCam[0], scrollFactorCam[1]);
 	}
 
 	public function reloadNote(image:String = '')
@@ -204,5 +208,21 @@ class StrumNote extends FlxSprite
 				centerOrigin();
 			}
 		}
+	}
+	function set_camTarget(value:String):String {
+		if (camTarget != value) {
+			cameras = [FunkinLua.cameraFromString(value)];
+			camTarget = value;
+		}
+		return value;
+	}
+
+	function set_scrollFactorCam(value:Array<Float>):Array<Float> {
+		if (scrollFactorCam[0] != value[0] || scrollFactorCam[1] != value[1]) {
+			scrollFactor.set(value[0], value[1]);
+			scrollFactorCam[0] = value[0];
+			scrollFactorCam[1] = value[1];
+		}
+		return value;
 	}
 }

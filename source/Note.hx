@@ -56,7 +56,7 @@ class Note extends FlxSprite
 	public var inEditor:Bool = false;
 
 	public var animSuffix:String = '';
-	public var gfNote:Bool = false;
+	public var gfNote(default, set):Bool = false;
 	public var earlyHitMult:Float = 0.5;
 	public var lateHitMult:Float = 1;
 	public var lowPriority:Bool = false;
@@ -100,6 +100,14 @@ class Note extends FlxSprite
 	public var hitsoundDisabled:Bool = false;
 	public var direction:Float = 0;
 	public var flipScroll(default, set):Bool = false;//flip between scroll
+	private var noteScale:Float = 1.0;
+	public var customField:Bool = false;
+	public var fieldTarget:String = '';//warning if not exist it might set 'customField' to false(hopefully)
+	public var camTarget(default, set):String = 'hud';
+	public var scrollFactorCam(default,set):Array<Float> = [0.0, 0.0];//only can see in camGame
+	public var noteSplashCam:String = 'hud';//notesplash on specific cam
+	public var noteSplashScale:Float = 1.0;
+	public var noteSplashScrollFactor:Array<Float> = [1, 1];//dont ask why 1 cuz is default of note splash
 
 
 
@@ -145,7 +153,7 @@ class Note extends FlxSprite
 			{
 				case 'Hurt Note':
 					ignoreNote = mustPress;
-					reloadNote('HURT');
+					texture = "HURTNOTE_assets";
 					noteSplashTexture = 'HURTnoteSplashes';
 					colorSwap.hue = 0;
 					colorSwap.saturation = 0;
@@ -199,8 +207,7 @@ class Note extends FlxSprite
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 		this.inEditor = inEditor;
-		this.gfNote = gfSec;
-
+		
 		x += (ClientPrefs.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL : PlayState.STRUM_X) + 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
@@ -213,30 +220,42 @@ class Note extends FlxSprite
 		if (noteData > -1)
 			{
 				var skin:String = PlayState.SONG.splashSkin;
-			var skinOpt:String = PlayState.SONG.splashSkinOpt;
-			var skinSec:String = PlayState.SONG.splashSkinSec;
-			if (skin.length < 1 || skin == null) {
-				skin = "noteSplashes";
-			}
-			if (skinOpt.length < 1 || skinOpt == null) {
-				skinOpt = skin;
-			}
-			if (skinSec.length < 1 || skinSec == null) {
-				skinSec = skinOpt;
-			}
-			colorSwap = new ColorSwap();
-			shader = colorSwap.shader;
-			this.noteType = noteType;
-			texture = '';
-			if (mustPress) {
-				noteSplashTexture = skin;
-			} else {
-				if (gfNote) {
-					noteSplashTexture = skinSec;
-				} else {
-					noteSplashTexture = skinOpt;
+				var skinOpt:String = PlayState.SONG.splashSkinOpt;
+				var skinSec:String = PlayState.SONG.splashSkinSec;
+				if (skin.length < 1 || skin == null) {
+					skin = "noteSplashes";
 				}
-			}
+				if (skinOpt.length < 1 || skinOpt == null) {
+					skinOpt = skin;
+				}
+				if (skinSec.length < 1 || skinSec == null) {
+					if (skinOpt.length < 1 || skinOpt == null) {
+						skinSec = skin;
+					} else {
+						skinSec = skinOpt;
+					}
+					skinSec = skinOpt;
+				}
+				if (PlayState.SONG.secOpt && !mustPress) {
+					noteScale = 0.75;
+				}
+				texture = '';
+				colorSwap = new ColorSwap();
+				shader = colorSwap.shader;
+				if (mustPress) {
+					noteSplashTexture = skin;
+				} else {
+					if (PlayState.SONG.secOpt) {
+						noteSplashScale = 0.75;
+					}
+					if (gfNote) {
+						noteSplashTexture = skinSec;
+					} else {
+						noteSplashTexture = skinOpt;
+					}
+				}
+				this.gfNote = gfSec;
+				this.noteType = noteType;
 			
 			x += swagWidth * (noteData);
 			if (!isSustainNote && noteData > -1 && noteData < 8)
@@ -244,13 +263,6 @@ class Note extends FlxSprite
 				var animToPlay:String = '';
 				animToPlay = colArray[noteData % 4];
 				animation.play(animToPlay + 'Scroll');
-			}
-		}
-		if (!inEditor) {
-			var gamemode = PlayState.instance.gamemode;
-			if (!mustPress && gfNote && PlayState.SONG.secOpt && !(gamemode == 'opponent' || gamemode == "bothside" || gamemode == "bothside v2")) //sorry another gamemode not support :(
-			{
-				this.noteData += 4;
 			}
 		}
 
@@ -309,11 +321,13 @@ class Note extends FlxSprite
 		}
 		x += offsetX;
 		if (!inEditor) {
-			if (PlayState.instance.gamemode == "opponent" && mustPress)
-			{
-				rating = "sick"; // uuuuhhhhhh
-			}
+			var opponentGamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
+			if (opponentGamemode == "opponent" && mustPress)
+				{
+					rating = "sick"; // uuuuhhhhhh
+				}
 		}
+		scrollFactor.set(scrollFactorCam[0], scrollFactorCam[1]);
 	}
 
 	var lastNoteOffsetXForPixelAutoAdjusting:Float = 0;
@@ -415,31 +429,32 @@ class Note extends FlxSprite
 		{
 			frames = Paths.getSparrowAtlas(blahblah);
 			loadNoteAnims();
+			setGraphicSize(Std.int(width * ClientPrefs.strumsize));
 			antialiasing = ClientPrefs.globalAntialiasing;
 		}
 		if (isSustainNote)
 		{
 			scale.y = lastScaleY;
 		}
-		updateHitbox();
-
-		if (!inEditor) {
-			var gamemode = PlayState.instance.gamemode;
-			if (!mustPress && PlayState.SONG.secOpt && !(gamemode == 'opponent' || gamemode == "bothside" || gamemode == "bothside v2")) {
-				scale.x *= 0.75;
-				if (!isSustainNote) {
-					scale.y *= 0.75;
-				}
-			}
-		}
-
 		if (animName != null)
 			animation.play(animName, true);
+		
+		updateHitbox();
 
+		
 		if (inEditor)
 		{
 			setGraphicSize(ChartingState.GRID_SIZE, ChartingState.GRID_SIZE);
 			updateHitbox();
+		}
+		if (!inEditor) {
+			var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
+			if (!mustPress && PlayState.SONG.secOpt && !(gamemode == 'opponent' || gamemode == "bothside" || gamemode == "bothside v2")) {
+				scale.x *= noteScale;
+				if (!isSustainNote) {
+					scale.y *= noteScale;
+				}
+			}
 		}
 	}
 
@@ -453,8 +468,6 @@ class Note extends FlxSprite
 			animation.addByPrefix(colArray[noteData%4] + 'holdend', colArray[noteData%4] + ' hold end');
 			animation.addByPrefix(colArray[noteData%4] + 'hold', colArray[noteData%4] + ' hold piece');
 		}
-		setGraphicSize(Std.int(width * ClientPrefs.strumsize));
-		updateHitbox();
 	}
 
 	function loadPixelNoteAnims()
@@ -474,26 +487,29 @@ class Note extends FlxSprite
 	{
 		super.update(elapsed);
 		if (!inEditor) {
-			if ((PlayState.instance.gamemode != "opponent" ? (PlayState.instance.gamemode == "bothside v2" || PlayState.instance.gamemode == "bothside" ? true : mustPress) : !mustPress))
-			{
-				// ok river
-				if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * lateHitMult)
-					&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * earlyHitMult))
-					canBeHit = true;
+			var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
+			if (gamemode != null) {
+				if ((gamemode != "opponent" ? (gamemode == "bothside v2" || gamemode == "bothside" ? true : mustPress) : !mustPress))
+				{
+					// ok river
+					if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * lateHitMult)
+						&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * earlyHitMult))
+						canBeHit = true;
+					else
+						canBeHit = false;
+
+					if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
+						tooLate = true;
+				}
 				else
+				{
 					canBeHit = false;
 
-				if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
-					tooLate = true;
-			}
-			else
-			{
-				canBeHit = false;
-
-				if (strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * earlyHitMult))
-				{
-					if ((isSustainNote && prevNote.wasGoodHit) || strumTime <= Conductor.songPosition)
-						wasGoodHit = true;
+					if (strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * earlyHitMult))
+					{
+						if ((isSustainNote && prevNote.wasGoodHit) || strumTime <= Conductor.songPosition)
+							wasGoodHit = true;
+					}
 				}
 			}
 		}
@@ -512,6 +528,86 @@ class Note extends FlxSprite
 			}
 		}
 		flipScroll = value;
+		return value;
+	}
+
+	function set_gfNote(value:Bool):Bool {//BETTER SYSTEM!
+		if (gfNote != value) {
+			gfNote = value;
+			reloadNote('', texture);
+			if (noteType != 'Hurt Note') {
+				var skin:String = PlayState.SONG.splashSkin;
+				var skinOpt:String = PlayState.SONG.splashSkinOpt;
+				var skinSec:String = PlayState.SONG.splashSkinSec;
+				if (skin.length < 1 || skin == null) {
+					skin = "noteSplashes";
+				}
+				if (skinOpt.length < 1 || skinOpt == null) {
+					skinOpt = skin;
+				}
+				if (skinSec.length < 1 || skinSec == null || !PlayState.SONG.secOpt) {
+					if (skinOpt.length < 1 || skinOpt == null) {
+						skinSec = skin;
+					} else {
+						skinSec = skinOpt;
+					}
+					skinSec = skinOpt;
+				}
+				if (gfNote && !mustPress) {
+					noteSplashTexture = skinSec;
+				} else {
+					noteSplashTexture = skinOpt;
+				}
+			}
+			if (!inEditor) {
+				var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
+				if (!mustPress && gfNote && PlayState.SONG.secOpt && !(gamemode == 'opponent' || gamemode == "bothside" || gamemode == "bothside v2")) //sorry another gamemode not support :(
+				{
+					if (value) {
+						if (noteData < 4) {
+							this.noteData += 4;
+						}
+					} else {
+						if (noteData > 3) {
+							this.noteData -= 4;
+						}
+					}
+				}
+			}
+		}
+		return value;
+	}
+	public function onChangeSecOpt(value:Bool = false) {
+		if (value) {
+			noteScale = 0.75;
+			noteSplashScale = 0.75;
+			if (gfNote && noteData < 4 && !mustPress) {
+				noteData += 4;
+			}
+		} else {
+			if (gfNote && noteData >= 4 && !mustPress) {
+				noteData -= 4;
+			}
+			noteScale = 1.0;
+			noteSplashScale = 1.0;
+		}
+ 		reloadNote('', texture);
+	}
+
+	function set_camTarget(value:String):String {
+		if (camTarget != value) {
+			cameras = [FunkinLua.cameraFromString(value)];
+			camTarget = value;
+		}
+		return value;
+	}
+
+	function set_scrollFactorCam(value:Array<Float>):Array<Float> {
+		if (scrollFactorCam[0] != value[0] || scrollFactorCam[1] != value[1]) {
+			scrollFactor.set(value[0], value[1]);
+			scrollFactorCam[0] = value[0];
+			scrollFactorCam[1] = value[1];
+		}
 		return value;
 	}
 }

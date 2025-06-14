@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -25,7 +26,7 @@ class NoteSplash extends FlxSprite
 		antialiasing = ClientPrefs.globalAntialiasing;
 	}
 
-	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0) {
+	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0, cam:String = 'hud', scale:Float = 1, sfX:Float = 1.0, sfY:Float = 1.0) {
 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
 		alpha = ClientPrefs.noteSplashAlpha;
 
@@ -33,6 +34,11 @@ class NoteSplash extends FlxSprite
 			texture = 'noteSplashes';
 			if(PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0) texture = PlayState.SONG.splashSkin;
 		}
+		setGraphicSize(Std.int(width*scale), Std.int(height*scale));
+		if (cam != null) {
+			cameras = [FunkinLua.cameraFromString(cam)];
+		}
+		scrollFactor.set(sfX, sfY);
 
 		if(textureLoaded != texture) {
 			loadAnims(texture);
@@ -47,7 +53,7 @@ class NoteSplash extends FlxSprite
 		if(animation.curAnim != null)animation.curAnim.frameRate = ClientPrefs.fpsStrumAnim + FlxG.random.int(-2, 2);
 	}
 
-	public function setupNoteSplashOpt(x:Float, y:Float, note:Int = 0, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0) {
+	public function setupNoteSplashOpt(x:Float, y:Float, note:Int = 0, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0, cam:String = 'hud', scale:Float = 1, sfX:Float = 1.0, sfY:Float = 1.0) {
 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
 		alpha = ClientPrefs.noteSplashAlpha;
 
@@ -55,9 +61,11 @@ class NoteSplash extends FlxSprite
 			texture = 'noteSplashes';
 			if(PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0) texture = PlayState.SONG.splashSkin;
 		}
-		if (PlayState.SONG.secOpt) {
-			setGraphicSize(Std.int(width*0.75), Std.int(height*0.75));
+		setGraphicSize(Std.int(width*scale), Std.int(height*scale));
+		if (cam != null) {
+			cameras = [FunkinLua.cameraFromString(cam)];
 		}
+		scrollFactor.set(sfX, sfY);
 
 		if(textureLoaded != texture) {
 			loadAnims(texture);
