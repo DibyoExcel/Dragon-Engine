@@ -3628,6 +3628,10 @@ class PlayState extends MusicBeatState
 							daNote.distance = (-0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed * daNote.multSpeed);
 						}
 
+						if (daNote.isSustainNote) {
+							daNote.flipY = strumScroll;
+						}
+
 						var angleDir = strumDirection * Math.PI / 180;
 						if (daNote.copyAngle)
 							daNote.angle = strumDirection - 90 + strumAngle;
