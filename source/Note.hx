@@ -327,7 +327,9 @@ class Note extends FlxSprite
 					rating = "sick"; // uuuuhhhhhh
 				}
 		}
-		scrollFactor.set(scrollFactorCam[0], scrollFactorCam[1]);
+		if (!inEditor) {
+			scrollFactor.set(scrollFactorCam[0], scrollFactorCam[1]);
+		}
 	}
 
 	var lastNoteOffsetXForPixelAutoAdjusting:Float = 0;
