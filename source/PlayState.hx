@@ -356,6 +356,8 @@ class PlayState extends MusicBeatState
 	public static var lastScore:Array<FlxSprite> = [];
 	private var gamemodeMap:Map<String, Int> = [];
 
+	public var mergeHealthColor(default, set):Bool = false;
+
 	var tempSecOpt = false;
 
 	override public function create()
@@ -1231,6 +1233,7 @@ class PlayState extends MusicBeatState
 			iconP3.alpha = ClientPrefs.healthBarAlpha;
 			add(iconP3);
 		}
+		mergeHealthColor = PlayState.SONG.secOpt;
 		reloadHealthBarColors();
 
 		scoreTxt = new FlxText(0, healthBarBG.y + 36, FlxG.width, "", 20);
@@ -1658,7 +1661,7 @@ class PlayState extends MusicBeatState
 	}
 
 	public function reloadHealthBarColors() {
-		healthBar.createFilledBar(FlxColor.fromRGB(Math.floor((dad.healthColorArray[0]+(PlayState.SONG.secOpt ? gf.healthColorArray[0] : 0))/(PlayState.SONG.secOpt ? 2 : 1)), Math.floor((dad.healthColorArray[1]+(PlayState.SONG.secOpt ? gf.healthColorArray[1] : 0))/(PlayState.SONG.secOpt ? 2 : 1)), Math.floor((dad.healthColorArray[2]+(PlayState.SONG.secOpt ? gf.healthColorArray[2] : 0))/(PlayState.SONG.secOpt ? 2 : 1))),
+		healthBar.createFilledBar(FlxColor.fromRGB(Math.floor((dad.healthColorArray[0]+(mergeHealthColor && gf != null ? gf.healthColorArray[0] : 0))/(mergeHealthColor && gf != null ? 2 : 1)), Math.floor((dad.healthColorArray[1]+(mergeHealthColor && gf != null ? gf.healthColorArray[1] : 0))/(mergeHealthColor && gf != null ? 2 : 1)), Math.floor((dad.healthColorArray[2]+(mergeHealthColor && gf != null ? gf.healthColorArray[2] : 0))/(mergeHealthColor && gf != null ? 2 : 1))),
 			FlxColor.fromRGB(boyfriend.healthColorArray[0], boyfriend.healthColorArray[1], boyfriend.healthColorArray[2]));
 
 		healthBar.updateBar();
@@ -2785,6 +2788,15 @@ class PlayState extends MusicBeatState
 		}
 		checkEventNote();
 		generatedMusic = true;
+	
+	}
+	function set_mergeHealthColor(value:Bool):Bool {
+		if (mergeHealthColor != value) {
+			mergeHealthColor = value;
+			iconP3.visible = value;
+			reloadHealthBarColors();
+		}
+		return value;
 	}
 
 	function eventPushed(event:EventNote) {
@@ -5931,6 +5943,7 @@ class PlayState extends MusicBeatState
 			if (PlayState.SONG.secOpt != value) {
 				PlayState.SONG.secOpt = value;
 				iconP3.visible = value;
+				mergeHealthColor = value;
 				reloadHealthBarColors();
 				for (i in notes) {
 					i.onChangeSecOpt(value);
