@@ -599,10 +599,12 @@ class Note extends FlxSprite
 	}
 
 	function set_camTarget(value:String):String {
-		if (camTarget != value) {
+		if (camTarget != value && value != '') {
 			cameras = [FunkinLua.cameraFromString(value)];
-			camTarget = value;
+		} else if (value == '') {
+			cameras = null;
 		}
+		camTarget = value;
 		return value;
 	}
 

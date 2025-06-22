@@ -262,6 +262,8 @@ class EditorPlayState extends MusicBeatState
 						var gfSec = (section.gfSection && (songNotes[1]<4) || should_gf != -1);
 						var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, null, null, (songNotes[3] == "GF Sing Force Opponent"/**compatibility backward**/ || should_opt != -1 ? false : (should_ply != -1 ? true : gottaHitNote)), gfSec, noteType);
 						swagNote.sustainLength = songNotes[2];
+						swagNote.camTarget = '';//set to active cam;
+						swagNote.noteSplashCam = '';//set to active cam;
 						swagNote.scrollFactor.set();
 
 						var susLength:Float = swagNote.sustainLength;
@@ -277,6 +279,8 @@ class EditorPlayState extends MusicBeatState
 
 								var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + (Conductor.stepCrochet / FlxMath.roundDecimal(PlayState.SONG.speed, 2)), daNoteData, oldNote, true, null, (songNotes[3] == "GF Sing Force Opponent"/**compatibility backward**/ || should_opt != -1 ? false : (should_ply != -1 ? true : gottaHitNote)), gfSec, swagNote.noteType);
 								sustainNote.scrollFactor.set();
+								sustainNote.camTarget = '';//set to active cam;
+								sustainNote.noteSplashCam = '';//set to active cam;
 								unspawnNotes.push(sustainNote);
 
 								if (sustainNote.mustPress)
@@ -464,6 +468,10 @@ class EditorPlayState extends MusicBeatState
 							}
 						}
 					}
+				}
+
+				if (daNote.isSustainNote) {
+					daNote.flipY = ClientPrefs.downScroll;
 				}
 
 				if (!daNote.mustPress && daNote.wasGoodHit && !daNote.hitByOpponent && !daNote.ignoreNote)

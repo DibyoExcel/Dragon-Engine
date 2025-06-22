@@ -26,7 +26,7 @@ class NoteSplash extends FlxSprite
 		antialiasing = ClientPrefs.globalAntialiasing;
 	}
 
-	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0, cam:String = 'hud', scale:Float = 1, sfX:Float = 1.0, sfY:Float = 1.0) {
+	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0, cam:String = '', scale:Float = 1, sfX:Float = 1.0, sfY:Float = 1.0) {
 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
 		alpha = ClientPrefs.noteSplashAlpha;
 
@@ -35,7 +35,7 @@ class NoteSplash extends FlxSprite
 			if(PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0) texture = PlayState.SONG.splashSkin;
 		}
 		setGraphicSize(Std.int(width*scale), Std.int(height*scale));
-		if (cam != null) {
+		if (cam != null && cam != '') {
 			cameras = [FunkinLua.cameraFromString(cam)];
 		}
 		scrollFactor.set(sfX, sfY);
@@ -53,7 +53,7 @@ class NoteSplash extends FlxSprite
 		if(animation.curAnim != null)animation.curAnim.frameRate = ClientPrefs.fpsStrumAnim + FlxG.random.int(-2, 2);
 	}
 
-	public function setupNoteSplashOpt(x:Float, y:Float, note:Int = 0, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0, cam:String = 'hud', scale:Float = 1, sfX:Float = 1.0, sfY:Float = 1.0) {
+	public function setupNoteSplashOpt(x:Float, y:Float, note:Int = 0, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0, cam:String = '', scale:Float = 1, sfX:Float = 1.0, sfY:Float = 1.0) {
 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
 		alpha = ClientPrefs.noteSplashAlpha;
 
@@ -62,7 +62,7 @@ class NoteSplash extends FlxSprite
 			if(PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0) texture = PlayState.SONG.splashSkin;
 		}
 		setGraphicSize(Std.int(width*scale), Std.int(height*scale));
-		if (cam != null) {
+		if (cam != null || cam != '') {
 			cameras = [FunkinLua.cameraFromString(cam)];
 		}
 		scrollFactor.set(sfX, sfY);
