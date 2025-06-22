@@ -481,7 +481,7 @@ class EditorPlayState extends MusicBeatState
 					if (!daNote.isSustainNote)
 					{
 						if (!daNote.noteSplashDisabled) {
-							spawnNoteSplashOnNote(daNote, false);
+							spawnNoteSplashOnNote(daNote, daNote.mustPress);
 						}
 						daNote.kill();
 						notes.remove(daNote, true);
@@ -752,7 +752,7 @@ class EditorPlayState extends MusicBeatState
 					--songMisses;
 					if(!note.isSustainNote) {
 						if(!note.noteSplashDisabled) {
-							spawnNoteSplashOnNote(note);
+							spawnNoteSplashOnNote(note, note.mustPress);
 						}
 					}
 
@@ -845,7 +845,7 @@ class EditorPlayState extends MusicBeatState
 
 		if(daRating == 'sick' && !note.noteSplashDisabled)
 		{
-			spawnNoteSplashOnNote(note);
+			spawnNoteSplashOnNote(note, note.mustPress);
 		}
 		//songScore += score;
 
@@ -1098,7 +1098,7 @@ class EditorPlayState extends MusicBeatState
 		}
 
 		var splash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
-		splash.setupNoteSplash(x, y, data, skin, hue, sat, brt);
+		splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.camTarget, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1]);
 		grpNoteSplashes.add(splash);
 	}
 	

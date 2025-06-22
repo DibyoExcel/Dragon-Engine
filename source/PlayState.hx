@@ -4598,7 +4598,7 @@ class PlayState extends MusicBeatState
 
 		if(daRating.noteSplash && !note.noteSplashDisabled)
 		{
-			spawnNoteSplashOnNote(note, ((gamemode == "opponent" || (gamemode == "bothside v2" || gamemode == "bothside" && !note.mustPress)) ? false : true));
+			spawnNoteSplashOnNote(note, note.mustPress);
 		}
 
 		if(!practiceMode && !cpuControlled) {
@@ -5096,7 +5096,7 @@ class PlayState extends MusicBeatState
 					health += note.hitHealth * healthGain;
 				}
 			if(!note.noteSplashDisabled && !note.isSustainNote) {
-				spawnNoteSplashOnNote(note, ((gamemode == "opponent" || (gamemode == "bothside v2" && !note.mustPress)) ? true : false));
+				spawnNoteSplashOnNote(note, note.mustPress);
 			}
 			if (Paths.formatToSongPath(SONG.song) != 'tutorial')
 				camZooming = true;
@@ -5164,7 +5164,7 @@ class PlayState extends MusicBeatState
 			if(note.hitCausesMiss && gamemode != 'opponent') {
 				noteMiss(note);
 				if(!note.noteSplashDisabled && !note.isSustainNote) {
-					spawnNoteSplashOnNote(note, ((gamemode == "opponent" || ((gamemode == "bothside v2" || gamemode == "bothside") && note.mustPress)) ? true : false));
+					spawnNoteSplashOnNote(note, note.mustPress);
 				}
 
 				if(!note.noMissAnimation)

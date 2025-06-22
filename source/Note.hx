@@ -183,6 +183,9 @@ class Note extends FlxSprite
 				case 'GF Sing':
 					gfNote = true;
 				case 'GF Sing Force Opponent':
+					if (inEditor) {
+						mustPress = false; 
+					}
 					gfNote = true;
 				case 'Flip Scroll':
 					flipScroll = true;
@@ -242,10 +245,11 @@ class Note extends FlxSprite
 				texture = '';
 				colorSwap = new ColorSwap();
 				shader = colorSwap.shader;
+				var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
 				if (mustPress) {
 					noteSplashTexture = skin;
 				} else {
-					if (PlayState.SONG.secOpt) {
+					if (PlayState.SONG.secOpt && !(gamemode == 'opponent' || gamemode == "bothside" || gamemode == "bothside v2")) {
 						noteSplashScale = 0.75;
 					}
 					if (gfNote) {
