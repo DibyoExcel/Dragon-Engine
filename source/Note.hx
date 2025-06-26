@@ -599,10 +599,12 @@ class Note extends FlxSprite
 	}
 
 	function set_camTarget(value:String):String {
-		if (camTarget != value && value != '') {
-			cameras = [FunkinLua.cameraFromString(value)];
-		} else if (value == '') {
-			cameras = null;
+		if (camTarget != value) {
+			if (value != '') {
+				cameras = [FunkinLua.cameraFromString(value)];
+			} else {
+				cameras = null;
+			}
 		}
 		camTarget = value;
 		return value;
@@ -611,9 +613,9 @@ class Note extends FlxSprite
 	function set_scrollFactorCam(value:Array<Float>):Array<Float> {
 		if (scrollFactorCam[0] != value[0] || scrollFactorCam[1] != value[1]) {
 			scrollFactor.set(value[0], value[1]);
-			scrollFactorCam[0] = value[0];
-			scrollFactorCam[1] = value[1];
 		}
+		scrollFactorCam[0] = value[0];
+		scrollFactorCam[1] = value[1];
 		return value;
 	}
 }

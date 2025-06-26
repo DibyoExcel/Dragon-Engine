@@ -993,7 +993,7 @@ class EditorPlayState extends MusicBeatState
 						// FlxG.log.add(i);
 			
 						var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll || gamemode == "bothside" ? STRUM_X_MIDDLESCROLL : STRUM_X, strumLine.y, i, player);
-			
+						babyArrow.camTarget = '';
 						if (player == 1)
 						{
 							if (gamemode == "bothside") {
@@ -1023,7 +1023,7 @@ class EditorPlayState extends MusicBeatState
 					for (i in 0...8)
 					{
 						var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X)-50)-(i*37), strumLine.y, i, player);
-						babyArrow.downScroll = ClientPrefs.downScroll;
+						babyArrow.camTarget ='';
 						if (ClientPrefs.notesStrum) {
 							babyArrow.animConfirm = "notes";
 						}
@@ -1047,7 +1047,7 @@ class EditorPlayState extends MusicBeatState
 					for (i in 0...4)
 						{
 							var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, strumLine.y, i, player);
-							babyArrow.downScroll = ClientPrefs.downScroll;
+							babyArrow.camTarget ='';
 							if (ClientPrefs.notesStrum) {
 								babyArrow.animConfirm = "notes";
 							}

@@ -3614,6 +3614,8 @@ class PlayState extends MusicBeatState
 					} 
 					if (strumGroup != null) {//try prevent crash when change gamemode throught script:D
 						var strumX:Float = strumGroup.members[daNote.noteData].x;
+						var strumSC:Array<Float> = strumGroup.members[daNote.noteData].scrollFactorCam;
+						var strumCam:String = strumGroup.members[daNote.noteData].camTarget;
 						var strumY:Float = strumGroup.members[daNote.noteData].y;
 						var strumAngle:Float = strumGroup.members[daNote.noteData].angle;
 						var strumDirection:Float = strumGroup.members[daNote.noteData].direction;
@@ -3628,6 +3630,9 @@ class PlayState extends MusicBeatState
 						strumAngle += daNote.offsetAngle;
 						strumAlpha *= daNote.multAlpha;
 						strumDirection += daNote.direction;
+						daNote.camTarget = strumCam;
+						daNote.noteSplashCam = strumCam;
+						daNote.scrollFactorCam = strumSC;
 
 						if (strumScroll) //Downscroll
 						{
@@ -5950,14 +5955,7 @@ class PlayState extends MusicBeatState
 				for (i in unspawnNotes) {
 					i.onChangeSecOpt(value);
 				}
-				for (i in 0...opponentStrums.length) {
-					var obj= opponentStrums.members[0];
-					obj.kill();
-					opponentStrums.remove(obj, true);
-					obj.destroy();
-					obj = null;
-				}
-				for (i in 0...opponentStrums.length) {
+				while (opponentStrums.length > 0) {
 					var obj= opponentStrums.members[0];
 					obj.kill();
 					opponentStrums.remove(obj, true);
@@ -5965,7 +5963,7 @@ class PlayState extends MusicBeatState
 					obj.destroy();
 					obj = null;
 				}
-				for (i in 0...playerStrums.length) {
+				while (playerStrums.length > 0) {
 					var obj= playerStrums.members[0];
 					obj.kill();
 					playerStrums.remove(obj, true);
@@ -5992,7 +5990,7 @@ class PlayState extends MusicBeatState
 
 	public function gamemodeChanger(name:String = "none", t:Bool = true):Void {
 		if (!PlayState.SONG.secOpt) {//not support on 2nd opt strums D:
-			for (i in 0...opponentStrums.length) {
+			while (opponentStrums.length > 0) {
 				var obj= opponentStrums.members[0];
 				obj.kill();
 				opponentStrums.remove(obj, true);
@@ -6000,7 +5998,7 @@ class PlayState extends MusicBeatState
 				obj.destroy();
 				obj = null;
 			}
-			for (i in 0...playerStrums.length) {
+			while (playerStrums.length > 0) {
 				var obj= playerStrums.members[0];
 				obj.kill();
 				playerStrums.remove(obj, true);
@@ -6054,7 +6052,7 @@ class PlayState extends MusicBeatState
 	}
 	public function removeStrum(tag:String = '') {
 		if (tag != '' || strumGroupMap.exists(tag)) {
-			for (i in 0...strumGroupMap.get(tag).length) {
+			while (strumGroupMap.get(tag).length > 0) {
 				var obj = strumGroupMap.get(tag).members[0];
 				obj.kill();
 				strumGroupMap.get(tag).remove(obj, true);
