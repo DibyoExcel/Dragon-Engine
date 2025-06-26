@@ -1,0 +1,117 @@
+body {
+    background-image: url('background.png');
+    background-size: cover;
+    background-position: center;
+    margin: 0;
+    height: 100vh;
+    background-attachment: fixed;
+    font-family: "Mojangles";
+}
+
+
+a{
+    color: rgb(255, 0, 0);
+    text-decoration: none;
+}
+
+a:hover{
+    color: rgb(255, 0, 255);
+    text-shadow: 0 0 10px #ff00ff;
+}
+
+h3 {
+    color: white;
+}
+h2 {
+    color: white;
+}
+
+h3.luafunction{
+    color: #00ff00;
+}
+
+h1 {
+    color: white;
+}
+
+p {
+    color: white;
+    font-size: large;
+}
+
+h3.title{
+    font-size: medium;
+}
+
+@font-face {
+    font-family: "Mojangles";
+    src: url('Fonts/Mojangles.ttf');
+}
+
+div.coolbrur {
+    background-color: rgba(255, 0, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+header.title{
+    background-color: rgba(255, 0, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid white;
+    display: flex;
+    gap: 10px;
+    top: 0;
+    position: sticky;
+    z-index: 1000;
+    box-shadow: 0 5px 5px rgba(0,0, 0, 0.5);
+}
+
+div.luaborder{
+    border: 1px solid rgb(0, 255,0);
+    width: fit-content;
+    max-width: 100%;
+    min-width: 35%;
+    box-shadow: 0 10px 10px rgba(0,0, 0, 0.5);
+    background-color: rgba(255, 0, 255, 0.1);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+}
+
+div.border_content{
+    border: 1px solid rgb(0, 255,0);
+    width: 55%;
+    margin-left: 25px;
+    margin-right: 25px;
+    box-shadow: 0 10px 10px rgba(0,0, 0, 0.5);
+    background-color: rgba(255, 0, 255, 0.1);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+}
+
+img.content{
+    width: 100%;
+}
+
+div.marginlua{
+    margin-left: 25px;
+    margin-right: 25px;
+}
+
+div.margin_content{
+    margin: 25px;
+    gap: 25px;
+    display: flex;
+    flex-direction: column;
+}
+
+div.lualist{
+    margin: 25px;
+    gap: 25px;
+    display: flex;
+    flex-direction: column;
+}
+
+iframe.youtube{
+    aspect-ratio: 16 /9;
+    border: 2.5px solid rgb(255, 0,0);
+
+}
