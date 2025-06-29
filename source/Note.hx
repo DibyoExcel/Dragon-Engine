@@ -557,7 +557,7 @@ class Note extends FlxSprite
 					}
 					skinSec = skinOpt;
 				}
-				if (gfNote && !mustPress) {
+				if (gfNote && !mustPress && (noteSplashTexture == null || noteSplashTexture.length < 1)) {
 					noteSplashTexture = skinSec;
 				} else {
 					noteSplashTexture = skinOpt;
