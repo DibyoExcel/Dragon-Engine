@@ -582,18 +582,20 @@ class Note extends FlxSprite
 		return value;
 	}
 	public function onChangeSecOpt(value:Bool = false) {
-		if (value) {
-			noteScale = 0.75;
-			noteSplashScale = 0.75;
-			if (gfNote && noteData < 4 && !mustPress) {
-				noteData += 4;
+		if (!mustPress) {
+			if (value) {
+				noteScale = 0.75;
+				noteSplashScale = 0.75;
+				if (gfNote && noteData < 4) {
+					noteData += 4;
+				}
+			} else {
+				noteScale = 1.0;
+				noteSplashScale = 1.0;
+				if (gfNote && noteData >= 4) {
+					noteData -= 4;
+				}
 			}
-		} else {
-			if (gfNote && noteData >= 4 && !mustPress) {
-				noteData -= 4;
-			}
-			noteScale = 1.0;
-			noteSplashScale = 1.0;
 		}
  		reloadNote('', texture);
 	}
