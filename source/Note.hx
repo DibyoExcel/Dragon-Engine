@@ -246,6 +246,8 @@ class Note extends FlxSprite
 				colorSwap = new ColorSwap();
 				shader = colorSwap.shader;
 				var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
+				this.gfNote = gfSec;
+				this.noteType = noteType;
 				if (mustPress) {
 					noteSplashTexture = skin;
 				} else {
@@ -258,8 +260,6 @@ class Note extends FlxSprite
 						noteSplashTexture = skinOpt;
 					}
 				}
-				this.gfNote = gfSec;
-				this.noteType = noteType;
 			
 			x += swagWidth * (noteData);
 			if (!isSustainNote && noteData > -1 && noteData < 8)
@@ -549,7 +549,7 @@ class Note extends FlxSprite
 				if (skinOpt.length < 1 || skinOpt == null) {
 					skinOpt = skin;
 				}
-				if (skinSec.length < 1 || skinSec == null || !PlayState.SONG.secOpt) {
+				if (skinSec.length < 1 || skinSec == null) {
 					if (skinOpt.length < 1 || skinOpt == null) {
 						skinSec = skin;
 					} else {
