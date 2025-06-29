@@ -557,10 +557,12 @@ class Note extends FlxSprite
 					}
 					skinSec = skinOpt;
 				}
-				if (gfNote && !mustPress && (noteSplashTexture == null || noteSplashTexture.length < 1)) {
-					noteSplashTexture = skinSec;
-				} else {
-					noteSplashTexture = skinOpt;
+				if (noteSplashTexture == null || noteSplashTexture.length < 1) {
+					if (gfNote && !mustPress) {
+						noteSplashTexture = skinSec;
+					} else {
+						noteSplashTexture = skinOpt;
+					}
 				}
 			}
 			if (!inEditor) {
