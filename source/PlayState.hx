@@ -389,41 +389,7 @@ class PlayState extends MusicBeatState
 		disableLuaScript = ClientPrefs.getGameplaySetting('disableLuaScript', false);
 		disableLuaStage = ClientPrefs.getGameplaySetting('disableLuaStage', false);
 		disableLuaEvent = ClientPrefs.getGameplaySetting('disableLuaEvent', false);
-		if (gamemode == "bothside v2") {
-			keysArray = [
-				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')),
-				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')),
-				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')),
-				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right')),
-				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left_2')),
-				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down_2')),
-				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up_2')),
-				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right_2'))
-			];
-			controlArray = [
-				'NOTE_LEFT',
-				'NOTE_DOWN',
-				'NOTE_UP',
-				'NOTE_RIGHT',
-				'NOTE_LEFT_2',
-				'NOTE_DOWN_2',
-				'NOTE_UP_2',
-				'NOTE_RIGHT_2'
-			];
-		} else {
-			keysArray = [
-				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')),
-				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')),
-				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')),
-				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right'))
-			];
-			controlArray = [
-				'NOTE_LEFT',
-				'NOTE_DOWN',
-				'NOTE_UP',
-				'NOTE_RIGHT'
-			];
-		}
+		setKey();
 
 		//Ratings
 		ratingsData.push(new Rating('sick')); //default rating
@@ -1514,31 +1480,17 @@ class PlayState extends MusicBeatState
 		if (ClientPrefs.extUI) {
 			keyPressUI = new FlxTypedGroup<FlxSprite>();
 			keyPressUIF = new FlxTypedGroup<FlxSprite>();
-			for (i in 0...4) {
-				var notePressUISpr = new FlxSprite(50+(i*50), FlxG.height/2).makeGraphic(50, 50);
+			for (i in 0...keysArray.length) {
+				var notePressUISpr = new FlxSprite(50+(i*Std.int((50*(4/keysArray.length)))), FlxG.height/2).makeGraphic(Std.int((50*(4/keysArray.length))), Std.int((50*(4/keysArray.length))));
 				notePressUISpr.cameras = [ camHUD ];
-				notePressUISpr.color = colorOrder[i];
+				notePressUISpr.color = colorOrder[i%colorOrder.length];
 				notePressUISpr.alpha = ClientPrefs.keyStrokeAlpha;
 				keyPressUI.add(notePressUISpr);
-				var notePressUISprF = new FlxSprite(50+(i*50), FlxG.height/2).makeGraphic(50, 50);
+				var notePressUISprF = new FlxSprite(50+(i*Std.int((50*(4/keysArray.length)))), FlxG.height/2).makeGraphic(Std.int((50*(4/keysArray.length))), Std.int((50*(4/keysArray.length))));
 				//notePressUISprF.color = colorOrder[i];
 				notePressUISprF.cameras = [ camHUD ];
 				notePressUISprF.alpha = 0;
 				keyPressUIF.add(notePressUISprF);
-			}
-			if (gamemode == "bothside v2") {
-				for (i in 0...4) {
-					var notePressUISpr = new FlxSprite(50+(i*50), (FlxG.height/2)-50).makeGraphic(50, 50);
-					notePressUISpr.cameras = [ camHUD ];
-					notePressUISpr.color = colorOrder[i];
-					notePressUISpr.alpha = ClientPrefs.keyStrokeAlpha;
-					keyPressUI.add(notePressUISpr);
-					var notePressUISprF = new FlxSprite(50+(i*50), (FlxG.height/2)-50).makeGraphic(50, 50);
-					//notePressUISprF.color = colorOrder[i];
-					notePressUISprF.cameras = [ camHUD ];
-					notePressUISprF.alpha = 0;
-					keyPressUIF.add(notePressUISprF);
-				}
 			}
 			add(keyPressUI);
 			add(keyPressUIF);
@@ -2909,7 +2861,7 @@ class PlayState extends MusicBeatState
 			if(!ClientPrefs.opponentStrums) targetAlpha = 0;
 		else if(ClientPrefs.middleScroll) targetAlpha = 0.35;
 		}
-		if (!PlayState.SONG.secOpt || gamemode == 'opponent' || gamemode == "bothside" || gamemode == "bothside v2") {
+		if (!PlayState.SONG.secOpt) {
 			for (i in 0...4)
 				{
 					// FlxG.log.add(i);
@@ -2993,15 +2945,14 @@ class PlayState extends MusicBeatState
 						}
 						opponentStrums.add(babyArrow);
 					}
-				
 					strumLineNotes.add(babyArrow);
 					babyArrow.postAddedToGroup();
 					}
 				} else {
-			// Loop for playerStrums (only 4 arrows)
-				for (i in 0...4)
+			// Loop for playerStrums (only 4 arrows if not bothside with 2nd strums)
+				for (i in 0...(PlayState.SONG.secOpt && gamemode == 'bothside' ? 8 : 4))
 					{
-						var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, strumLine.y, i, player);
+						var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll || gamemode == 'bothside' ? STRUM_X_MIDDLESCROLL-(PlayState.SONG.secOpt && gamemode == 'bothside' ? 160 : 0) : STRUM_X, strumLine.y, i, player);
 						babyArrow.downScroll = ClientPrefs.downScroll;
 						if (ClientPrefs.notesStrum) {
 							babyArrow.animConfirm = "notes";
@@ -3022,6 +2973,10 @@ class PlayState extends MusicBeatState
 						}
 					
 						strumLineNotes.add(babyArrow);
+						if (gamemode == "bothside") {
+							opponentStrums.add(babyArrow);
+							strumLineNotes.add(babyArrow);//ehhh
+						}
 						babyArrow.postAddedToGroup();
 					}
 			}				
@@ -4799,7 +4754,7 @@ class PlayState extends MusicBeatState
 				{
 					if (strumsBlocked[daNote.noteData + (gamemode == "bothside v2" && !daNote.mustPress ? playerStrums.length : 0)] != true && (daNote.canBeHit && (((gamemode == 'opponent') || (gamemode == "bothside v2" && key > 3)) ? !daNote.mustPress : (gamemode == "bothside" ? true : daNote.mustPress)) && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote && (gamemode == "opponent"  ? !daNote.ignoreNote : !daNote.blockHit) && !daNote.autoPress) && !daNote.customField)//when player play as opponent the player cant press ignore note(based opponent itself), you cant press autoPress notes
 					{
-						if(daNote.noteData == key%4)
+						if(daNote.noteData == key-((gamemode == 'bothside v2' && !daNote.mustPress) ? playerStrums.length : 0))
 						{
 							sortedNotesList.push(daNote);
 							//notesDatas.push(daNote.noteData);
@@ -4847,7 +4802,7 @@ class PlayState extends MusicBeatState
 				Conductor.songPosition = lastTime;
 			}
 
-			var spr:StrumNote = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key%4] : playerStrums.members[key%4]) : opponentStrums.members[key%4]);
+			var spr:StrumNote = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key-playerStrums.length] : playerStrums.members[key]) : opponentStrums.members[key]);
 			if(strumsBlocked[key] != true && spr != null && spr.animation.curAnim.name != spr.animConfirm)
 			{
 				spr.playAnim('pressed');
@@ -4879,7 +4834,7 @@ class PlayState extends MusicBeatState
 		var key:Int = getKeyFromEvent(eventKey);
 		if(!cpuControlled && startedCountdown && !paused && key > -1)
 		{
-			var spr:StrumNote = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key%4] : playerStrums.members[key%4]) : opponentStrums.members[key%4]);
+			var spr:StrumNote = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key-playerStrums.length] : playerStrums.members[key]) : opponentStrums.members[key]);
 			if(spr != null)
 			{
 				spr.playAnim('static');
@@ -5985,44 +5940,108 @@ class PlayState extends MusicBeatState
 					setOnLuas('defaultOpponentStrumY' + i, opponentStrums.members[i].y-20);//eh
 				}
 			}
+			setKey();
+			var lastCount = keyPressUI.length;
+			if (lastCount != keysArray.length) {
+				while (keyPressUI.length > 0) {
+					var obj = keyPressUI.members[0];
+					obj.kill();
+					keyPressUI.remove(obj, true);
+					obj.destroy();
+					obj = null;
+				}
+			}
+			if (lastCount != keysArray.length) {
+				while (keyPressUIF.length > 0) {
+					var obj = keyPressUIF.members[0];
+					obj.kill();
+					keyPressUIF.remove(obj, true);
+					obj.destroy();
+					obj = null;
+				}
+			}
+			if (lastCount != keysArray.length) {
+				for (i in 0...keysArray.length) {
+					var notePressUISpr = new FlxSprite(50+(i*Std.int((50*(4/keysArray.length)))), FlxG.height/2).makeGraphic(Std.int((50*(4/keysArray.length))), Std.int((50*(4/keysArray.length))));
+					notePressUISpr.cameras = [ camHUD ];
+					notePressUISpr.color = colorOrder[i%colorOrder.length];
+					notePressUISpr.alpha = ClientPrefs.keyStrokeAlpha;
+					keyPressUI.add(notePressUISpr);
+					var notePressUISprF = new FlxSprite(50+(i*Std.int((50*(4/keysArray.length)))), FlxG.height/2).makeGraphic(Std.int((50*(4/keysArray.length))), Std.int((50*(4/keysArray.length))));
+					//notePressUISprF.color = colorOrder[i];
+					notePressUISprF.cameras = [ camHUD ];
+					notePressUISprF.alpha = 0;
+					keyPressUIF.add(notePressUISprF);
+				}
+			}
+			callOnLuas('onChangeOpponent', [value]);
 		}
 	}
-
+	
 	public function gamemodeChanger(name:String = "none", t:Bool = true):Void {
-		if (!PlayState.SONG.secOpt) {//not support on 2nd opt strums D:
-			while (opponentStrums.length > 0) {
-				var obj= opponentStrums.members[0];
+		while (opponentStrums.length > 0) {
+			var obj= opponentStrums.members[0];
+			obj.kill();
+			opponentStrums.remove(obj, true);
+			strumLineNotes.remove(obj, true);
+			obj.destroy();
+			obj = null;
+		}
+		while (playerStrums.length > 0) {
+			var obj= playerStrums.members[0];
+			obj.kill();
+			playerStrums.remove(obj, true);
+			strumLineNotes.remove(obj, true);
+			obj.destroy();
+			obj = null;
+		}
+		
+		if (gamemode != name) {
+			this.gamemode = name;
+		}
+		if (gamemode != "bothside") {
+			generateStaticArrows(0, t);
+		}
+		generateStaticArrows(1, t);
+		for (i in 0...playerStrums.length) {
+			setOnLuas('defaultPlayerStrumX' + i, playerStrums.members[i].x-20);
+			setOnLuas('defaultPlayerStrumY' + i, playerStrums.members[i].y-20);
+		}
+		for (i in 0...opponentStrums.length) {
+			setOnLuas('defaultOpponentStrumX' + i, opponentStrums.members[i].x-20);
+			setOnLuas('defaultOpponentStrumY' + i, opponentStrums.members[i].y-20);//eh
+		}
+		var lastCount = keysArray.length;
+		setKey();
+		if (lastCount != keysArray.length) {
+			while (keyPressUI.length > 0) {
+				var obj = keyPressUI.members[0];
 				obj.kill();
-				opponentStrums.remove(obj, true);
-				strumLineNotes.remove(obj, true);
+				keyPressUI.remove(obj, true);
 				obj.destroy();
 				obj = null;
 			}
-			while (playerStrums.length > 0) {
-				var obj= playerStrums.members[0];
+			while (keyPressUIF.length > 0) {
+				var obj = keyPressUIF.members[0];
 				obj.kill();
-				playerStrums.remove(obj, true);
-				strumLineNotes.remove(obj, true);
+				keyPressUIF.remove(obj, true);
 				obj.destroy();
 				obj = null;
 			}
-			
-			if (gamemode != name) {
-				this.gamemode = name;
-			}
-			if (gamemode != "bothside") {
-				generateStaticArrows(0, t);
-			}
-			generateStaticArrows(1, t);
-			for (i in 0...playerStrums.length) {
-				setOnLuas('defaultPlayerStrumX' + i, playerStrums.members[i].x-20);
-				setOnLuas('defaultPlayerStrumY' + i, playerStrums.members[i].y-20);
-			}
-			for (i in 0...opponentStrums.length) {
-				setOnLuas('defaultOpponentStrumX' + i, opponentStrums.members[i].x-20);
-				setOnLuas('defaultOpponentStrumY' + i, opponentStrums.members[i].y-20);//eh
+			for (i in 0...keysArray.length) {
+				var notePressUISpr = new FlxSprite(50+(i*Std.int((50*(4/keysArray.length)))), FlxG.height/2).makeGraphic(Std.int((50*(4/keysArray.length))), Std.int((50*(4/keysArray.length))));
+				notePressUISpr.cameras = [ camHUD ];
+				notePressUISpr.color = colorOrder[i%colorOrder.length];
+				notePressUISpr.alpha = ClientPrefs.keyStrokeAlpha;
+				keyPressUI.add(notePressUISpr);
+				var notePressUISprF = new FlxSprite(50+(i*Std.int((50*(4/keysArray.length)))), FlxG.height/2).makeGraphic(Std.int((50*(4/keysArray.length))), Std.int((50*(4/keysArray.length))));
+				//notePressUISprF.color = colorOrder[i];
+				notePressUISprF.cameras = [ camHUD ];
+				notePressUISprF.alpha = 0;
+				keyPressUIF.add(notePressUISprF);
 			}
 		}
+		callOnLuas('onChangeGamemode', [gamemode]);
 	}
 	public function createStrum(tag:String= '', data:Int = 4, camera:String = 'hud', sfX:Float = 0, sfY:Float = 0, downScroll:Null<Bool> = null) {
 		//trace("trigger");
@@ -6064,4 +6083,147 @@ class PlayState extends MusicBeatState
 			strumGroupMap.remove(tag);
 		}
 	}
+	private function setKey() {
+		keysArray = [];
+		controlArray = [];
+		if (gamemode == 'bothside v2') {
+			if (PlayState.SONG.secOpt) {
+				keysArray = [
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left_OPT')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down_OPT')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up_OPT')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right_OPT')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left_OPT2')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down_OPT2')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up_OPT2')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right_OPT2'))
+				];
+				controlArray = [
+					'NOTE_LEFT',
+					'NOTE_DOWN',
+					'NOTE_UP',
+					'NOTE_RIGHT',
+					'NOTE_LEFT_OPT',
+					'NOTE_DOWN_OPT',
+					'NOTE_UP_OPT',
+					'NOTE_RIGHT_OPT',
+					'NOTE_LEFT_OPT2',
+					'NOTE_DOWN_OPT2',
+					'NOTE_UP_OPT2',
+					'NOTE_RIGHT_OPT2'
+				];
+			} else {
+				keysArray = [
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left_2')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down_2')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up_2')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right_2'))
+				];
+				controlArray = [
+					'NOTE_LEFT',
+					'NOTE_DOWN',
+					'NOTE_UP',
+					'NOTE_RIGHT',
+					'NOTE_LEFT_2',
+					'NOTE_DOWN_2',
+					'NOTE_UP_2',
+					'NOTE_RIGHT_2'
+				];
+			}
+		} else if (gamemode == 'opponent') {
+			if (PlayState.SONG.secOpt) {
+				keysArray = [
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left_OPT')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down_OPT')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up_OPT')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right_OPT')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left_OPT2')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down_OPT2')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up_OPT2')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right_OPT2'))
+				];
+				controlArray = [
+					'NOTE_LEFT_OPT',
+					'NOTE_DOWN_OPT',
+					'NOTE_UP_OPT',
+					'NOTE_RIGHT_OPT',
+					'NOTE_LEFT_OPT2',
+					'NOTE_DOWN_OPT2',
+					'NOTE_UP_OPT2',
+					'NOTE_RIGHT_OPT2'
+				];
+			} else {
+				keysArray = [
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right'))
+				];
+				controlArray = [
+					'NOTE_LEFT',
+					'NOTE_DOWN',
+					'NOTE_UP',
+					'NOTE_RIGHT'
+				];
+			}
+		} else if (gamemode == 'bothside') {
+			if (PlayState.SONG.secOpt) {
+				keysArray = [
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left_OPT')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down_OPT')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up_OPT')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right_OPT')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left_OPT2')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down_OPT2')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up_OPT2')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right_OPT2'))
+				];
+				controlArray = [
+					'NOTE_LEFT_OPT',
+					'NOTE_DOWN_OPT',
+					'NOTE_UP_OPT',
+					'NOTE_RIGHT_OPT',
+					'NOTE_LEFT_OPT2',
+					'NOTE_DOWN_OPT2',
+					'NOTE_UP_OPT2',
+					'NOTE_RIGHT_OPT2'
+				];
+			} else {
+				keysArray = [
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')),
+					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right'))
+				];
+				controlArray = [
+					'NOTE_LEFT',
+					'NOTE_DOWN',
+					'NOTE_UP',
+					'NOTE_RIGHT'
+				];	
+			}
+		} else {
+			keysArray = [
+				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')),
+				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')),
+				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')),
+				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right'))
+			];
+			controlArray = [
+				'NOTE_LEFT',
+				'NOTE_DOWN',
+				'NOTE_UP',
+				'NOTE_RIGHT'
+			];	
+		}
+	}
 }
+

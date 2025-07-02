@@ -119,6 +119,12 @@
                                 <h3 class="luafunction">set between 2nd strums or not.<br>value:toggle of wnd strums or normal<br>trasition: should add strums transition for player.<br>trasition2: should add strums transition for opponent.</h3>
                                 </div>
                             </div>
+                            <div class="luaborder borderpurple">
+                                <div class="marginlua">
+                                    <h2 class="luaname">changeGamemode(name:String = 'none', transition:Bool = true)(1.5.9.2+)</h2>
+                                <h3 class="luafunction">set gamemode.<br>name: name of gamemode.<br>transition: Transition notes(only for build in gamemode).</h3>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <br>
@@ -171,6 +177,24 @@
                                 <div class="marginlua">
                                     <h2 class="luaname">opponentNoteMissPress(noteData:Int)(1.5.7+)</h2>
                                     <h3 class="luafunction">same as noteMiss(noteData:Int) but for opponent and most use for opponent gamemode.</h3>
+                                </div>
+                            </div>
+                            <div class="luaborder borderpurple">
+                                <div class="marginlua">
+                                    <h2 class="luaname">opponentNoteMissPress(noteData:Int)(1.5.7+)</h2>
+                                    <h3 class="luafunction">same as noteMiss(noteData:Int) but for opponent and most use for opponent gamemode.</h3>
+                                </div>
+                            </div>
+                            <div class="luaborder borderpurple">
+                                <div class="marginlua">
+                                    <h2 class="luaname">onChangeGamemode(name:String)(1.6.0.6+)</h2>
+                                    <h3 class="luafunction">function when change gamemode(from changeGamemode()).</h3>
+                                </div>
+                            </div>
+                            <div class="luaborder borderpurple">
+                                <div class="marginlua">
+                                    <h2 class="luaname">onChangeOpponent(name:String)(1.6.0.6+)</h2>
+                                    <h3 class="luafunction">function when change 2nd strums(from setSecondOpponent()).</h3>
                                 </div>
                             </div>
                         </div>

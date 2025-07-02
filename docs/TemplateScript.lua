@@ -97,6 +97,11 @@ function opponentNoteHittemp(id, direction, noteType, isSustainNote)
 	-- isSustainNote: If it's a hold note, can be either true or false
 end
 
+function onChangeGamemode(name)---function called when change gamemode throught lua(kinda useless bruh)
+end
+function onChangeOpponent(name)---function called when change 2nd strums throught lua(also kinda useless too)
+end
+
 function goodNoteHit(id, direction, noteType, isSustainNote)
 	-- Works the same as opponentNoteHittemp, but for Opponent's notes being hit
 end

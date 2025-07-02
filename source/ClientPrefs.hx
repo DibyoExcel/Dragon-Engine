@@ -94,10 +94,20 @@ class ClientPrefs {
 		'note_up'		=> [W, UP],
 		'note_right'	=> [D, RIGHT],
 		//2 for opponent( bothside >.<)
-		'note_left_2'		=> [J, LEFT],
-		'note_down_2'		=> [K, DOWN],
+		'note_left_2'	=> [J, LEFT],
+		'note_down_2'	=> [K, DOWN],
 		'note_up_2'		=> [I, UP],
 		'note_right_2'	=> [L, RIGHT],
+
+		//2nd notes
+		'note_left_OPT'		=> [A, LEFT],
+		'note_down_OPT'		=> [S, DOWN],
+		'note_up_OPT'		=> [W, UP],
+		'note_right_OPT'	=> [D, RIGHT],
+		'note_left_OPT2'	=> [J, LEFT],
+		'note_down_OPT2'	=> [K, DOWN],
+		'note_up_OPT2'		=> [I, UP],
+		'note_right_OPT2'	=> [L, RIGHT],
 
 		'ui_left'		=> [A, LEFT],
 		'ui_down'		=> [S, DOWN],

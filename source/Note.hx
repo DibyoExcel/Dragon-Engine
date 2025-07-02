@@ -239,7 +239,8 @@ class Note extends FlxSprite
 					}
 					skinSec = skinOpt;
 				}
-				if (PlayState.SONG.secOpt && !mustPress) {
+				var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
+				if (PlayState.SONG.secOpt && !mustPress && !(gamemode == "bothside")) {
 					noteScale = 0.75;
 				}
 				texture = '';
@@ -251,7 +252,7 @@ class Note extends FlxSprite
 				if (mustPress) {
 					noteSplashTexture = skin;
 				} else {
-					if (PlayState.SONG.secOpt && !(gamemode == 'opponent' || gamemode == "bothside" || gamemode == "bothside v2")) {
+					if (PlayState.SONG.secOpt && !(gamemode == "bothside")) {
 						noteSplashScale = 0.75;
 					}
 					if (gfNote) {
@@ -453,7 +454,7 @@ class Note extends FlxSprite
 		}
 		if (!inEditor) {
 			var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
-			if (!mustPress && PlayState.SONG.secOpt && !(gamemode == 'opponent' || gamemode == "bothside" || gamemode == "bothside v2")) {
+			if (!mustPress) {
 				scale.x *= noteScale;
 				if (!isSustainNote) {
 					scale.y *= noteScale;
@@ -567,7 +568,7 @@ class Note extends FlxSprite
 			}
 			if (!inEditor) {
 				var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
-				if (!mustPress && gfNote && PlayState.SONG.secOpt && !(gamemode == 'opponent' || gamemode == "bothside" || gamemode == "bothside v2")) //sorry another gamemode not support :(
+				if (!mustPress && gfNote && PlayState.SONG.secOpt)
 				{
 					if (value) {
 						if (noteData < 4) {
@@ -585,15 +586,20 @@ class Note extends FlxSprite
 	}
 	public function onChangeSecOpt(value:Bool = false) {
 		if (!mustPress) {
+			var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
 			if (value) {
-				noteScale = 0.75;
-				noteSplashScale = 0.75;
+				if (!(gamemode == "bothside")) {
+					noteScale = 0.75;
+					noteSplashScale = 0.75;
+				}
 				if (gfNote && noteData < 4) {
 					noteData += 4;
 				}
 			} else {
-				noteScale = 1.0;
-				noteSplashScale = 1.0;
+				if (!(gamemode == "bothside")) {
+					noteScale = 1.0;
+					noteSplashScale = 1.0;
+				}
 				if (gfNote && noteData >= 4) {
 					noteData -= 4;
 				}
