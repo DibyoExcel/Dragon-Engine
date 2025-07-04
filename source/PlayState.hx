@@ -5946,37 +5946,39 @@ class PlayState extends MusicBeatState
 				}
 			}
 			setKey();
-			var lastCount = keyPressUI.length;
-			if (lastCount != keysArray.length) {
-				while (keyPressUI.length > 0) {
-					var obj = keyPressUI.members[0];
-					obj.kill();
-					keyPressUI.remove(obj, true);
-					obj.destroy();
-					obj = null;
+			if (ClientPrefs.extUI) {
+				var lastCount = keyPressUI.length;
+				if (lastCount != keysArray.length) {
+					while (keyPressUI.length > 0) {
+						var obj = keyPressUI.members[0];
+						obj.kill();
+						keyPressUI.remove(obj, true);
+						obj.destroy();
+						obj = null;
+					}
 				}
-			}
-			if (lastCount != keysArray.length) {
-				while (keyPressUIF.length > 0) {
-					var obj = keyPressUIF.members[0];
-					obj.kill();
-					keyPressUIF.remove(obj, true);
-					obj.destroy();
-					obj = null;
+				if (lastCount != keysArray.length) {
+					while (keyPressUIF.length > 0) {
+						var obj = keyPressUIF.members[0];
+						obj.kill();
+						keyPressUIF.remove(obj, true);
+						obj.destroy();
+						obj = null;
+					}
 				}
-			}
-			if (lastCount != keysArray.length) {
-				for (i in 0...keysArray.length) {
-					var notePressUISpr = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
-					notePressUISpr.cameras = [ camHUD ];
-					notePressUISpr.color = colorOrder[i%colorOrder.length];
-					notePressUISpr.alpha = ClientPrefs.keyStrokeAlpha;
-					keyPressUI.add(notePressUISpr);
-					var notePressUISprF = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
-					//notePressUISprF.color = colorOrder[i];
-					notePressUISprF.cameras = [ camHUD ];
-					notePressUISprF.alpha = 0;
-					keyPressUIF.add(notePressUISprF);
+				if (lastCount != keysArray.length) {
+					for (i in 0...keysArray.length) {
+						var notePressUISpr = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
+						notePressUISpr.cameras = [ camHUD ];
+						notePressUISpr.color = colorOrder[i%colorOrder.length];
+						notePressUISpr.alpha = ClientPrefs.keyStrokeAlpha;
+						keyPressUI.add(notePressUISpr);
+						var notePressUISprF = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
+						//notePressUISprF.color = colorOrder[i];
+						notePressUISprF.cameras = [ camHUD ];
+						notePressUISprF.alpha = 0;
+						keyPressUIF.add(notePressUISprF);
+					}
 				}
 			}
 			callOnLuas('onChangeOpponent', [value]);
@@ -6016,34 +6018,36 @@ class PlayState extends MusicBeatState
 			setOnLuas('defaultOpponentStrumX' + i, opponentStrums.members[i].x-20);
 			setOnLuas('defaultOpponentStrumY' + i, opponentStrums.members[i].y-20);//eh
 		}
-		var lastCount = keysArray.length;
 		setKey();
-		if (lastCount != keysArray.length) {
-			while (keyPressUI.length > 0) {
-				var obj = keyPressUI.members[0];
-				obj.kill();
-				keyPressUI.remove(obj, true);
-				obj.destroy();
-				obj = null;
-			}
-			while (keyPressUIF.length > 0) {
-				var obj = keyPressUIF.members[0];
-				obj.kill();
-				keyPressUIF.remove(obj, true);
-				obj.destroy();
-				obj = null;
-			}
-			for (i in 0...keysArray.length) {
-				var notePressUISpr = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
-				notePressUISpr.cameras = [ camHUD ];
-				notePressUISpr.color = colorOrder[i%colorOrder.length];
-				notePressUISpr.alpha = ClientPrefs.keyStrokeAlpha;
-				keyPressUI.add(notePressUISpr);
-				var notePressUISprF = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
-				//notePressUISprF.color = colorOrder[i];
-				notePressUISprF.cameras = [ camHUD ];
-				notePressUISprF.alpha = 0;
-				keyPressUIF.add(notePressUISprF);
+		if (ClientPrefs.extUI) {
+			var lastCount = keysArray.length;
+			if (lastCount != keysArray.length) {
+				while (keyPressUI.length > 0) {
+					var obj = keyPressUI.members[0];
+					obj.kill();
+					keyPressUI.remove(obj, true);
+					obj.destroy();
+					obj = null;
+				}
+				while (keyPressUIF.length > 0) {
+					var obj = keyPressUIF.members[0];
+					obj.kill();
+					keyPressUIF.remove(obj, true);
+					obj.destroy();
+					obj = null;
+				}
+				for (i in 0...keysArray.length) {
+					var notePressUISpr = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
+					notePressUISpr.cameras = [ camHUD ];
+					notePressUISpr.color = colorOrder[i%colorOrder.length];
+					notePressUISpr.alpha = ClientPrefs.keyStrokeAlpha;
+					keyPressUI.add(notePressUISpr);
+					var notePressUISprF = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
+					//notePressUISprF.color = colorOrder[i];
+					notePressUISprF.cameras = [ camHUD ];
+					notePressUISprF.alpha = 0;
+					keyPressUIF.add(notePressUISprF);
+				}
 			}
 		}
 		callOnLuas('onChangeGamemode', [gamemode]);

@@ -232,7 +232,9 @@ class FunkinLua {
 		set('shadersEnabled', ClientPrefs.shaders);
 		set('scriptName', scriptName);
 		set('currentModDirectory', Paths.currentModDirectory);
-
+		//dge setting var
+		set('extraui', ClientPrefs.extUI);
+		
 		#if windows
 		set('buildTarget', 'windows');
 		#elseif linux
