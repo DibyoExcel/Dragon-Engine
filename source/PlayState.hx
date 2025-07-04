@@ -307,7 +307,7 @@ class PlayState extends MusicBeatState
 	// how big to stretch the pixel art assets
 	public static var daPixelZoom:Float = 6;
 	private var singAnimations:Array<String> = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT', 'singLEFT', 'singDOWN', 'singUP', 'singRIGHT'];
-
+	
 	public var inCutscene:Bool = false;
 	public var skipCountdown:Bool = false;
 	var songLength:Float = 0;
@@ -315,10 +315,13 @@ class PlayState extends MusicBeatState
 	public var boyfriendCameraOffset:Array<Float> = null;
 	public var opponentCameraOffset:Array<Float> = null;
 	public var girlfriendCameraOffset:Array<Float> = null;
+	//DGE stuff
 	public var keyPressUI:FlxTypedGroup<FlxSprite>;
 	public var keyPressUIF:FlxTypedGroup<FlxSprite>;
 	public var colorOrder:Array<Int> = [ FlxColor.MAGENTA, FlxColor.CYAN, FlxColor.LIME, FlxColor.RED ];
+	public var mergeHealthColor(default, set):Bool = false;
 	public var oldTransitionNotes:Bool = false;
+	public var fieldNameAsPlayer:String = '';//empty as default
 
 	#if desktop
 	// Discord RPC variables
@@ -356,7 +359,6 @@ class PlayState extends MusicBeatState
 	public static var lastScore:Array<FlxSprite> = [];
 	private var gamemodeMap:Map<String, Int> = [];
 
-	public var mergeHealthColor(default, set):Bool = false;
 
 	var tempSecOpt = false;
 
@@ -1481,12 +1483,12 @@ class PlayState extends MusicBeatState
 			keyPressUI = new FlxTypedGroup<FlxSprite>();
 			keyPressUIF = new FlxTypedGroup<FlxSprite>();
 			for (i in 0...keysArray.length) {
-				var notePressUISpr = new FlxSprite(50+(i*Std.int((50*(4/keysArray.length)))), FlxG.height/2).makeGraphic(Std.int((50*(4/keysArray.length))), Std.int((50*(4/keysArray.length))));
+				var notePressUISpr = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
 				notePressUISpr.cameras = [ camHUD ];
 				notePressUISpr.color = colorOrder[i%colorOrder.length];
 				notePressUISpr.alpha = ClientPrefs.keyStrokeAlpha;
 				keyPressUI.add(notePressUISpr);
-				var notePressUISprF = new FlxSprite(50+(i*Std.int((50*(4/keysArray.length)))), FlxG.height/2).makeGraphic(Std.int((50*(4/keysArray.length))), Std.int((50*(4/keysArray.length))));
+				var notePressUISprF = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
 				//notePressUISprF.color = colorOrder[i];
 				notePressUISprF.cameras = [ camHUD ];
 				notePressUISprF.alpha = 0;
@@ -3147,6 +3149,9 @@ class PlayState extends MusicBeatState
 			iconP1.swapOldIcon();
 		}*/
 		callOnLuas('onUpdate', [elapsed]);
+		if (!strumGroupMap.exists(fieldNameAsPlayer)) {
+			fieldNameAsPlayer = '';
+		}
 		if (modcharttype == "wave note") {
 			for (i in notes) {
 				var dy = i.distance;
@@ -3672,7 +3677,7 @@ class PlayState extends MusicBeatState
 							opponentNoteHit(daNote);
 						}
 
-					if((gamemode != "opponent" ? !daNote.blockHit && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && cpuControlled && daNote.canBeHit && !(daNote.autoPress || daNote.customField)) {
+					if((gamemode != "opponent" ? !daNote.blockHit && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && cpuControlled && daNote.canBeHit && !(daNote.autoPress || (fieldNameAsPlayer == '' ? daNote.customField : daNote.fieldTarget != fieldNameAsPlayer))) {
 						if(daNote.isSustainNote) {
 							if(daNote.canBeHit) {
 								goodNoteHit(daNote);
@@ -3683,7 +3688,7 @@ class PlayState extends MusicBeatState
 						}
 					}
 					//custom field player(bot)
-					if((gamemode != "opponent" ? !daNote.blockHit && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && (daNote.autoPress || daNote.customField) && daNote.canBeHit) {
+					if((gamemode != "opponent" ? !daNote.blockHit && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && (daNote.autoPress || (fieldNameAsPlayer == '' ? daNote.customField : daNote.fieldTarget != fieldNameAsPlayer)) && daNote.canBeHit) {
 						if(daNote.isSustainNote) {
 							if(daNote.canBeHit) {
 								goodNoteHit(daNote);
@@ -3696,7 +3701,7 @@ class PlayState extends MusicBeatState
 					// Kill extremely late notes and cause misses
 					if (Conductor.songPosition > noteKillOffset + daNote.strumTime)
 					{
-						if ((gamemode != 'opponent' ? ((gamemode == "bothside" || gamemode == "bothside v2") ? true : daNote.mustPress) : !daNote.mustPress) && !cpuControlled && !daNote.ignoreNote && !endingSong && (daNote.tooLate || !daNote.wasGoodHit) && !(daNote.autoPress || daNote.customField)) {
+						if ((gamemode != 'opponent' ? ((gamemode == "bothside" || gamemode == "bothside v2") ? true : daNote.mustPress) : !daNote.mustPress) && !cpuControlled && !daNote.ignoreNote && !endingSong && (daNote.tooLate || !daNote.wasGoodHit) && !(daNote.autoPress || (fieldNameAsPlayer == '' ? daNote.customField : daNote.fieldTarget != fieldNameAsPlayer))) {
 							noteMiss(daNote);
 						}
 
@@ -4752,7 +4757,7 @@ class PlayState extends MusicBeatState
 				var sortedNotesList:Array<Note> = [];
 				notes.forEachAlive(function(daNote:Note)
 				{
-					if (strumsBlocked[daNote.noteData + (gamemode == "bothside v2" && !daNote.mustPress ? playerStrums.length : 0)] != true && (daNote.canBeHit && (((gamemode == 'opponent') || (gamemode == "bothside v2" && key > 3)) ? !daNote.mustPress : (gamemode == "bothside" ? true : daNote.mustPress)) && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote && (gamemode == "opponent"  ? !daNote.ignoreNote : !daNote.blockHit) && !daNote.autoPress) && !daNote.customField)//when player play as opponent the player cant press ignore note(based opponent itself), you cant press autoPress notes
+					if (strumsBlocked[daNote.noteData + (gamemode == "bothside v2" && !daNote.mustPress ? playerStrums.length : 0)] != true && (daNote.canBeHit && (((gamemode == 'opponent') || (gamemode == "bothside v2" && key > 3)) ? !daNote.mustPress : (gamemode == "bothside" ? true : daNote.mustPress)) && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote && (gamemode == "opponent"  ? !daNote.ignoreNote : !daNote.blockHit) && !daNote.autoPress) && !((fieldNameAsPlayer == '' ? daNote.customField : daNote.fieldTarget != fieldNameAsPlayer)))//when player play as opponent the player cant press ignore note(based opponent itself), you cant press autoPress notes
 					{
 						if(daNote.noteData == key-((gamemode == 'bothside v2' && !daNote.mustPress) ? playerStrums.length : 0))
 						{
@@ -4802,7 +4807,7 @@ class PlayState extends MusicBeatState
 				Conductor.songPosition = lastTime;
 			}
 
-			var spr:StrumNote = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key-playerStrums.length] : playerStrums.members[key]) : opponentStrums.members[key]);
+			var spr:StrumNote = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key-playerStrums.length] : (fieldNameAsPlayer == '' ? playerStrums.members[key] : strumGroupMap.get(fieldNameAsPlayer).members[key])) : (fieldNameAsPlayer == '' ? opponentStrums.members[key] : strumGroupMap.get(fieldNameAsPlayer).members[key]));
 			if(strumsBlocked[key] != true && spr != null && spr.animation.curAnim.name != spr.animConfirm)
 			{
 				spr.playAnim('pressed');
@@ -4834,7 +4839,7 @@ class PlayState extends MusicBeatState
 		var key:Int = getKeyFromEvent(eventKey);
 		if(!cpuControlled && startedCountdown && !paused && key > -1)
 		{
-			var spr:StrumNote = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key-playerStrums.length] : playerStrums.members[key]) : opponentStrums.members[key]);
+			var spr:StrumNote = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key-playerStrums.length] : (fieldNameAsPlayer == '' ? playerStrums.members[key] : strumGroupMap.get(fieldNameAsPlayer).members[key])) : (fieldNameAsPlayer == '' ? opponentStrums.members[key] : strumGroupMap.get(fieldNameAsPlayer).members[key]));
 			if(spr != null)
 			{
 				spr.playAnim('static');
@@ -5247,7 +5252,7 @@ class PlayState extends MusicBeatState
 					StrumPlayAnim(!note.mustPress ? true : false, Std.int(Math.abs(note.noteData)), time, note.customField, note.fieldTarget);
 				}
 			} else {
-				if (note.autoPress || note.customField) {
+				if (note.autoPress || (fieldNameAsPlayer == '' ? note.customField : note.fieldTarget != fieldNameAsPlayer)) {
 					var time:Float = 0.15;
 					if(note.isSustainNote && !note.animation.curAnim.name.endsWith('end')) {
 						time += 0.15;
@@ -5962,12 +5967,12 @@ class PlayState extends MusicBeatState
 			}
 			if (lastCount != keysArray.length) {
 				for (i in 0...keysArray.length) {
-					var notePressUISpr = new FlxSprite(50+(i*Std.int((50*(4/keysArray.length)))), FlxG.height/2).makeGraphic(Std.int((50*(4/keysArray.length))), Std.int((50*(4/keysArray.length))));
+					var notePressUISpr = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
 					notePressUISpr.cameras = [ camHUD ];
 					notePressUISpr.color = colorOrder[i%colorOrder.length];
 					notePressUISpr.alpha = ClientPrefs.keyStrokeAlpha;
 					keyPressUI.add(notePressUISpr);
-					var notePressUISprF = new FlxSprite(50+(i*Std.int((50*(4/keysArray.length)))), FlxG.height/2).makeGraphic(Std.int((50*(4/keysArray.length))), Std.int((50*(4/keysArray.length))));
+					var notePressUISprF = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
 					//notePressUISprF.color = colorOrder[i];
 					notePressUISprF.cameras = [ camHUD ];
 					notePressUISprF.alpha = 0;
@@ -6029,12 +6034,12 @@ class PlayState extends MusicBeatState
 				obj = null;
 			}
 			for (i in 0...keysArray.length) {
-				var notePressUISpr = new FlxSprite(50+(i*Std.int((50*(4/keysArray.length)))), FlxG.height/2).makeGraphic(Std.int((50*(4/keysArray.length))), Std.int((50*(4/keysArray.length))));
+				var notePressUISpr = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
 				notePressUISpr.cameras = [ camHUD ];
 				notePressUISpr.color = colorOrder[i%colorOrder.length];
 				notePressUISpr.alpha = ClientPrefs.keyStrokeAlpha;
 				keyPressUI.add(notePressUISpr);
-				var notePressUISprF = new FlxSprite(50+(i*Std.int((50*(4/keysArray.length)))), FlxG.height/2).makeGraphic(Std.int((50*(4/keysArray.length))), Std.int((50*(4/keysArray.length))));
+				var notePressUISprF = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
 				//notePressUISprF.color = colorOrder[i];
 				notePressUISprF.cameras = [ camHUD ];
 				notePressUISprF.alpha = 0;
