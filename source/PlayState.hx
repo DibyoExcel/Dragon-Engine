@@ -3507,29 +3507,25 @@ class PlayState extends MusicBeatState
 		}
 		doDeathCheck();
 
-		if (unspawnNotes[0] != null)
-		{
-			var time:Float = spawnTime;
-			if(songSpeed < 1) time /= songSpeed;
-			if(unspawnNotes[0].multSpeed < 1) time /= unspawnNotes[0].multSpeed;
-
-			while (unspawnNotes.length > 0 && unspawnNotes[0].strumTime - Conductor.songPosition < time)
+		for (i in 0...unspawnNotes.length) {
+			if (unspawnNotes[i] != null)
 			{
-				var dunceNote:Note = unspawnNotes[0];
-				notes.insert(0, dunceNote);
-				dunceNote.spawned=true;
-				callOnLuas('onSpawnNote', [notes.members.indexOf(dunceNote), dunceNote.noteData, dunceNote.noteType, dunceNote.isSustainNote]);
-				/*if (gamemode == "bothside" && !dunceNote.mustPress) {//gamemode set but not itterupt with lua
-					dunceNote.mustPress = true;
-					dunceNote.isDad = true;
+				var time:Float = spawnTime;
+				if (songSpeed < 1) time /= songSpeed;
+				if(unspawnNotes[i].multSpeed < 1) time /= unspawnNotes[i].multSpeed;
+	
+				if (unspawnNotes.length > 0 && unspawnNotes[i].strumTime - Conductor.songPosition < time && (ClientPrefs.limitSpawn ? notes.length < ClientPrefs.limitSpawnNotes : true))
+				{
+					var dunceNote:Note = unspawnNotes[i];
+					notes.insert(0, dunceNote);
+					dunceNote.spawned=true;
+					callOnLuas('onSpawnNote', [notes.members.indexOf(dunceNote), dunceNote.noteData, dunceNote.noteType, dunceNote.isSustainNote]);
+					var index:Int = unspawnNotes.indexOf(dunceNote);
+					unspawnNotes.splice(index, 1);
 				}
-				/*if (gamemode == 'opponent') {
-					dunceNote.mustPress = !dunceNote.mustPress;
-				}*/
-				var index:Int = unspawnNotes.indexOf(dunceNote);
-				unspawnNotes.splice(index, 1);
 			}
 		}
+
 
 		if (generatedMusic && !inCutscene)
 		{

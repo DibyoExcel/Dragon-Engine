@@ -8,6 +8,8 @@ import Controls;
 
 class ClientPrefs {
 	public static var downScroll:Bool = false;
+	public static var limitSpawn:Bool = false;
+	public static var limitSpawnNotes:Int = 50;//ummmm
 	public static var startPause:Bool = false;
 	public static var disableOGCredit:Bool = false;
 	public static var keyStrokeAlpha:Float = 1;
@@ -134,8 +136,9 @@ class ClientPrefs {
 	}
 
 	public static function saveSettings() {
-		FlxG.save.data.downScroll = downScroll;
 		FlxG.save.data.notesStrum = notesStrum;
+		FlxG.save.data.limitSpawn = limitSpawn;
+		FlxG.save.data.limitSpawnNotes = limitSpawnNotes;
 		FlxG.save.data.startPause = startPause;
 		FlxG.save.data.disableOGCredit = disableOGCredit;
 		FlxG.save.data.keyStrokeAlpha = keyStrokeAlpha;
@@ -199,6 +202,12 @@ class ClientPrefs {
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.limitSpawn != null) {
+			limitSpawn = FlxG.save.data.limitSpawn;
+		}
+		if(FlxG.save.data.limitSpawnNotes != null) {
+			limitSpawnNotes = FlxG.save.data.limitSpawnNotes;
 		}
 		if(FlxG.save.data.notesStrum != null) {
 			notesStrum = FlxG.save.data.notesStrum;

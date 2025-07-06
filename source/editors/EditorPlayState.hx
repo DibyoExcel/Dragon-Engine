@@ -364,22 +364,24 @@ class EditorPlayState extends MusicBeatState
 			Conductor.songPosition += elapsed * 1000;
 		}
 
-		if (unspawnNotes[0] != null)
-		{
-			var time:Float = spawnTime;
-			if(PlayState.SONG.speed < 1) time /= PlayState.SONG.speed;
-			if(unspawnNotes[0].multSpeed < 1) time /= unspawnNotes[0].multSpeed;
-
-			while (unspawnNotes.length > 0 && unspawnNotes[0].strumTime - Conductor.songPosition < time)
+		for (i in 0...unspawnNotes.length) {
+			if (unspawnNotes[i] != null)
 			{
-				var dunceNote:Note = unspawnNotes[0];
-				notes.insert(0, dunceNote);
-				dunceNote.spawned = true;
-
-				var index:Int = unspawnNotes.indexOf(dunceNote);
-				unspawnNotes.splice(index, 1);
+				var time:Float = spawnTime;
+				if(PlayState.SONG.speed < 1) time /= PlayState.SONG.speed;
+				if(unspawnNotes[i].multSpeed < 1) time /= unspawnNotes[i].multSpeed;
+	
+				if (unspawnNotes.length > 0 && unspawnNotes[i].strumTime - Conductor.songPosition < time && (ClientPrefs.limitSpawn ? notes.length < ClientPrefs.limitSpawnNotes : true))
+				{
+					var dunceNote:Note = unspawnNotes[i];
+					notes.insert(0, dunceNote);
+					dunceNote.spawned=true;
+					var index:Int = unspawnNotes.indexOf(dunceNote);
+					unspawnNotes.splice(index, 1);
+				}
 			}
 		}
+
 		
 		if (generatedMusic)
 		{

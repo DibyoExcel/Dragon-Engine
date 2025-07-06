@@ -179,6 +179,22 @@ class DragonOptionsState extends BaseOptionsMenu
 			true);
 		addOption(option);
 		#end
+		var option:Option = new Option('Limit Notes Spawn',
+			"Should Note has limit to spawn?",
+			'limitSpawn',
+			'bool',
+			false);
+
+		addOption(option);
+		
+		var option:Option = new Option('Limit Notes Spawn Number',
+			"How Much Limit notes to spawn.",
+			'limitSpawnNotes',
+			'int',
+			50);
+		option.minValue = 5;
+		option.scrollSpeed = 20;
+		addOption(option);
 		super();
 	}
 	override public function close():Void {
