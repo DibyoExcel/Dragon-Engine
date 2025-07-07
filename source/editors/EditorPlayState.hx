@@ -29,6 +29,7 @@ class EditorPlayState extends MusicBeatState
 	private var comboGroup:FlxTypedGroup<FlxSprite>;
 	public var strumLineNotes:FlxTypedGroup<StrumNote>;
 	public var opponentStrums:FlxTypedGroup<StrumNote>;
+	public var gfStrums:FlxTypedGroup<StrumNote>;
 	public var playerStrums:FlxTypedGroup<StrumNote>;
 	public var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
 	public static var STRUM_X = 42;
@@ -94,6 +95,7 @@ class EditorPlayState extends MusicBeatState
 
 		strumLineNotes = new FlxTypedGroup<StrumNote>();
 		opponentStrums = new FlxTypedGroup<StrumNote>();
+		gfStrums = new FlxTypedGroup<StrumNote>();
 		playerStrums = new FlxTypedGroup<StrumNote>();
 		add(strumLineNotes);
 
@@ -408,9 +410,15 @@ class EditorPlayState extends MusicBeatState
 					strumY = playerStrums.members[daNote.noteData].y;
 					strumAlpha = playerStrums.members[daNote.noteData].alpha;
 				} else {
-					strumX = opponentStrums.members[daNote.noteData].x;
-					strumY = opponentStrums.members[daNote.noteData].y;
-					strumAlpha = opponentStrums.members[daNote.noteData].alpha;
+					if (daNote.gfNote && PlayState.SONG.secOpt) {
+						strumX = gfStrums.members[daNote.noteData].x;
+						strumY = gfStrums.members[daNote.noteData].y;
+						strumAlpha = gfStrums.members[daNote.noteData].alpha;
+					} else {
+						strumX = opponentStrums.members[daNote.noteData].x;
+						strumY = opponentStrums.members[daNote.noteData].y;
+						strumAlpha = opponentStrums.members[daNote.noteData].alpha;
+					}
 				}
 
 				strumX += daNote.offsetX;
@@ -485,7 +493,7 @@ class EditorPlayState extends MusicBeatState
 					if(daNote.isSustainNote && !daNote.animation.curAnim.name.endsWith('end')) {
 						time += 0.15;
 					}
-					StrumPlayAnim(true, Std.int(Math.abs(daNote.noteData)), time);
+					StrumPlayAnim(true, Std.int(Math.abs(daNote.noteData)), time, daNote);
 					daNote.hitByOpponent = true;
 
 					if (!daNote.isSustainNote)
@@ -989,7 +997,7 @@ class EditorPlayState extends MusicBeatState
 
 	private function generateStaticArrows(player:Int, t:Bool = true):Void
 		{
-			if (!PlayState.SONG.secOpt || gamemode == 'opponent' || gamemode == "bothside" || gamemode == "bothside v2") {
+			if (!PlayState.SONG.secOpt) {
 				for (i in 0...4)
 					{
 						// FlxG.log.add(i);
@@ -1038,6 +1046,9 @@ class EditorPlayState extends MusicBeatState
 									babyArrow.x += (FlxG.width / 2 + 25)-99;
 								}
 							}
+							if (i > 3) {
+								gfStrums.add(babyArrow);
+							}
 							opponentStrums.add(babyArrow);
 						}
 					
@@ -1046,7 +1057,7 @@ class EditorPlayState extends MusicBeatState
 						}
 					} else {
 				// Loop for playerStrums (only 4 arrows)
-					for (i in 0...4)
+					for (i in 0...(PlayState.SONG.secOpt && gamemode == 'bothside' ? 8 : 4))
 						{
 							var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, strumLine.y, i, player);
 							babyArrow.camTarget ='';
@@ -1057,6 +1068,12 @@ class EditorPlayState extends MusicBeatState
 							if (player == 1)
 							{
 								playerStrums.add(babyArrow);
+								if (gamemode == 'bothside') {
+									opponentStrums.add(babyArrow);
+									if (PlayState.SONG.secOpt && i > 3) {
+										gfStrums.add(babyArrow);
+									}
+								} 
 							}
 						
 							strumLineNotes.add(babyArrow);
@@ -1068,10 +1085,10 @@ class EditorPlayState extends MusicBeatState
 
 
 	// For Opponent's notes glow
-	function StrumPlayAnim(isDad:Bool, id:Int, time:Float) {
+	function StrumPlayAnim(isDad:Bool, id:Int, time:Float, ?note:Note) {
 		var spr:StrumNote = null;
 		if(isDad) {
-			spr = opponentStrums.members[id];
+			spr = (note.gfNote && PlayState.SONG.secOpt ? gfStrums.members[id] : opponentStrums.members[id]);
 		} else {
 			spr = playerStrums.members[id];
 		}
@@ -1086,7 +1103,7 @@ class EditorPlayState extends MusicBeatState
 	// Note splash shit, duh
 	function spawnNoteSplashOnNote(note:Note, player:Bool = true) {
 		if(ClientPrefs.noteSplashes && note != null) {
-			var strum:StrumNote = (player ? playerStrums.members[note.noteData] : opponentStrums.members[note.noteData]);
+			var strum:StrumNote = (player ? playerStrums.members[note.noteData] : (note.gfNote && PlayState.SONG.secOpt ? gfStrums.members[note.noteData] : opponentStrums.members[note.noteData]));
 			if(strum != null) {
 				spawnNoteSplash(strum.x, strum.y, note.noteData, note);
 			}

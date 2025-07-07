@@ -566,21 +566,6 @@ class Note extends FlxSprite
 					}
 				}
 			}
-			if (!inEditor) {
-				var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
-				if (!mustPress && gfNote && PlayState.SONG.secOpt)
-				{
-					if (value) {
-						if (noteData < 4) {
-							this.noteData += 4;
-						}
-					} else {
-						if (noteData > 3) {
-							this.noteData -= 4;
-						}
-					}
-				}
-			}
 		}
 		return value;
 	}
@@ -592,20 +577,14 @@ class Note extends FlxSprite
 					noteScale = 0.75;
 					noteSplashScale = 0.75;
 				}
-				if (gfNote && noteData < 4) {
-					noteData += 4;
-				}
 			} else {
 				if (!(gamemode == "bothside")) {
 					noteScale = 1.0;
 					noteSplashScale = 1.0;
 				}
-				if (gfNote && noteData >= 4) {
-					noteData -= 4;
-				}
 			}
+			reloadNote('', texture);
 		}
- 		reloadNote('', texture);
 	}
 
 	function set_camTarget(value:String):String {

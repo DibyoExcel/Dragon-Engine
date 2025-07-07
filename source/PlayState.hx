@@ -182,6 +182,7 @@ class PlayState extends MusicBeatState
 	public var strumLineNotes:FlxTypedGroup<StrumNote>;
 	public var playerStrums:FlxTypedGroup<StrumNote>;
 	public var opponentStrums:FlxTypedGroup<StrumNote>;
+	public var gfStrums:FlxTypedGroup<StrumNote>;
 	public var customStrum:FlxTypedGroup<StrumNote>;//if it might only advanced know this
 	public var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
 	public var grpNoteSplashesOpt:FlxTypedGroup<NoteSplash>;
@@ -1130,6 +1131,7 @@ class PlayState extends MusicBeatState
 		splashOpt.alpha = 0.0;
 		playerStrums = new FlxTypedGroup<StrumNote>();
 		opponentStrums = new FlxTypedGroup<StrumNote>();
+		gfStrums = new FlxTypedGroup<StrumNote>();
 
 		// startCountdown();
 
@@ -2205,14 +2207,25 @@ class PlayState extends MusicBeatState
 				generateStaticArrows(0);
 			}
 			generateStaticArrows(1);
-			for (i in 0...playerStrums.length) {
-				setOnLuas('defaultPlayerStrumX' + i, playerStrums.members[i].x);
-				setOnLuas('defaultPlayerStrumY' + i, playerStrums.members[i].y-(oldTransitionNotes ? 20 : 0));
+			if (playerStrums.length > 0) {
+				for (i in 0...playerStrums.length) {
+					setOnLuas('defaultPlayerStrumX' + i, playerStrums.members[i].x);
+					setOnLuas('defaultPlayerStrumY' + i, playerStrums.members[i].y-(oldTransitionNotes ? 20 : 0));
+				}
 			}
-			for (i in 0...opponentStrums.length) {
-				setOnLuas('defaultOpponentStrumX' + i, opponentStrums.members[i].x);
-				setOnLuas('defaultOpponentStrumY' + i, opponentStrums.members[i].y-(oldTransitionNotes ? 20 : 0));//eh
-				//if(ClientPrefs.middleScroll) opponentStrums.members[i].visible = false;
+			if (opponentStrums.length > 0) {
+				for (i in 0...opponentStrums.length) {
+					setOnLuas('defaultOpponentStrumX' + i, opponentStrums.members[i].x);
+					setOnLuas('defaultOpponentStrumY' + i, opponentStrums.members[i].y-(oldTransitionNotes ? 20 : 0));//eh
+					//if(ClientPrefs.middleScroll) opponentStrums.members[i].visible = false;
+				}
+			}
+			if (gfStrums.length > 0) {
+				for (i in 0...gfStrums.length) {
+					setOnLuas('defaultGfStrumX' + i, gfStrums.members[i].x);
+					setOnLuas('defaultGfStrumY' + i, gfStrums.members[i].y-(oldTransitionNotes ? 20 : 0));//eh
+					//if(ClientPrefs.middleScroll) gfStrums.members[i].visible = false;
+				}
 			}
 
 			startedCountdown = true;
@@ -2946,6 +2959,9 @@ class PlayState extends MusicBeatState
 							}
 						}
 						opponentStrums.add(babyArrow);
+						if ( i > 3) {
+							gfStrums.add(babyArrow);
+						}
 					}
 					strumLineNotes.add(babyArrow);
 					babyArrow.postAddedToGroup();
@@ -2977,6 +2993,9 @@ class PlayState extends MusicBeatState
 						strumLineNotes.add(babyArrow);
 						if (gamemode == "bothside") {
 							opponentStrums.add(babyArrow);
+							if (i > 3) {
+								gfStrums.add(babyArrow);
+							}
 							strumLineNotes.add(babyArrow);//ehhh
 						}
 						babyArrow.postAddedToGroup();
@@ -3565,7 +3584,11 @@ class PlayState extends MusicBeatState
 						}
 					} else {
 						if(!daNote.mustPress) {
-							strumGroup = opponentStrums;
+							if (daNote.gfNote && PlayState.SONG.secOpt) {
+								strumGroup = gfStrums;
+							} else {
+								strumGroup = opponentStrums;
+							}
 						}
 					} 
 					if (strumGroup != null) {//try prevent crash when change gamemode throught script:D
@@ -5096,7 +5119,7 @@ class PlayState extends MusicBeatState
 				time += 0.15;
 			}
 			if (note.playStrumAnim) {
-				StrumPlayAnim((gamemode == "opponent" || ((gamemode == "bothside v2" || gamemode == "bothside") && note.mustPress) ? false : true), Std.int(Math.abs(note.noteData)), time, note.customField, note.fieldTarget);
+				StrumPlayAnim((gamemode == "opponent" || ((gamemode == "bothside v2" || gamemode == "bothside") && note.mustPress) ? false : true), Std.int(Math.abs(note.noteData)), time, note.customField, note.fieldTarget, note);
 			}
 			note.hitByOpponent = true;
 	
@@ -5245,7 +5268,7 @@ class PlayState extends MusicBeatState
 					time += 0.15;
 				}
 				if (note.playStrumAnim) {
-					StrumPlayAnim(!note.mustPress ? true : false, Std.int(Math.abs(note.noteData)), time, note.customField, note.fieldTarget);
+					StrumPlayAnim(!note.mustPress ? true : false, Std.int(Math.abs(note.noteData)), time, note.customField, note.fieldTarget, note);
 				}
 			} else {
 				if (note.autoPress || (fieldNameAsPlayer == '' ? note.customField : note.fieldTarget != fieldNameAsPlayer)) {
@@ -5254,7 +5277,7 @@ class PlayState extends MusicBeatState
 						time += 0.15;
 					}
 					if (note.playStrumAnim) {
-						StrumPlayAnim(!note.mustPress ? true : false, Std.int(Math.abs(note.noteData)), time, note.customField, note.fieldTarget);
+						StrumPlayAnim(!note.mustPress ? true : false, Std.int(Math.abs(note.noteData)), time, note.customField, note.fieldTarget, note);
 					}
 				} else {
 					var spr = (!note.customField ? ((gamemode == "opponent" || (gamemode == 'bothside v2' && !note.mustPress)) ? opponentStrums.members[note.noteData] : playerStrums.members[note.noteData]) : strumGroupMap.get(note.fieldTarget).members[note.noteData]);
@@ -5294,7 +5317,7 @@ class PlayState extends MusicBeatState
 				}
 			} else {
 				if (ClientPrefs.noteSplashesOpt) {
-					var strum:StrumNote = (!note.customField ? opponentStrums.members[note.noteData] : strumGroupMap.get(note.fieldTarget).members[note.noteData]);
+					var strum:StrumNote = (!note.customField ? (note.gfNote && PlayState.SONG.secOpt ? gfStrums.members[note.noteData] : opponentStrums.members[note.noteData]) : strumGroupMap.get(note.fieldTarget).members[note.noteData]);
 					if(strum != null) {
 						spawnNoteSplashOpt(strum.x, strum.y, note.noteData, note);
 					}
@@ -5743,10 +5766,10 @@ class PlayState extends MusicBeatState
 		#end
 	}
 
-	function StrumPlayAnim(isDad:Bool, id:Int, time:Float, custom:Bool = false, ft:String = '') {
+	function StrumPlayAnim(isDad:Bool, id:Int, time:Float, custom:Bool = false, ft:String = '', ?note:Note) {
 		var spr:StrumNote = null;
 		if(isDad) {
-			spr = (custom ? strumGroupMap.get(ft).members[id] : opponentStrums.members[id]);
+			spr = (custom ? strumGroupMap.get(ft).members[id] : (note.gfNote && PlayState.SONG.secOpt ? gfStrums.members[id] : opponentStrums.members[id]));
 			if(spr != null && (!ClientPrefs.clsstrum)) {
 				spr.playAnim(spr.animConfirm, true);
 				spr.resetAnim = time;
@@ -5906,10 +5929,14 @@ class PlayState extends MusicBeatState
 				mergeHealthColor = value;
 				reloadHealthBarColors();
 				for (i in notes) {
-					i.onChangeSecOpt(value);
+					if (!i.mustPress) {
+						i.onChangeSecOpt(value);
+					}
 				}
 				for (i in unspawnNotes) {
-					i.onChangeSecOpt(value);
+					if (!i.mustPress) {
+						i.onChangeSecOpt(value);
+					}
 				}
 				while (opponentStrums.length > 0) {
 					var obj= opponentStrums.members[0];
@@ -5927,57 +5954,77 @@ class PlayState extends MusicBeatState
 					obj.destroy();
 					obj = null;
 				}
+				while (gfStrums.length > 0) {
+					var obj= gfStrums.members[0];
+					obj.kill();
+					gfStrums.remove(obj, true);
+					strumLineNotes.remove(obj, true);
+					obj.destroy();
+					obj = null;
+				}
 				//regenerate strums
 				if (gamemode != "bothside") {
 					generateStaticArrows(0, t2);
 				}
 				generateStaticArrows(1, t);
-				for (i in 0...playerStrums.length) {
-					setOnLuas('defaultPlayerStrumX' + i, playerStrums.members[i].x-20);
-					setOnLuas('defaultPlayerStrumY' + i, playerStrums.members[i].y-20);
+				if (playerStrums.length > 0) {
+					for (i in 0...playerStrums.length) {
+						setOnLuas('defaultPlayerStrumX' + i, playerStrums.members[i].x);
+						setOnLuas('defaultPlayerStrumY' + i, playerStrums.members[i].y-(oldTransitionNotes ? 20 : 0));
+					}
 				}
-				for (i in 0...opponentStrums.length) {
-					setOnLuas('defaultOpponentStrumX' + i, opponentStrums.members[i].x-20);
-					setOnLuas('defaultOpponentStrumY' + i, opponentStrums.members[i].y-20);//eh
+				if (opponentStrums.length > 0) {
+					for (i in 0...opponentStrums.length) {
+						setOnLuas('defaultOpponentStrumX' + i, opponentStrums.members[i].x);
+						setOnLuas('defaultOpponentStrumY' + i, opponentStrums.members[i].y-(oldTransitionNotes ? 20 : 0));//eh
+						//if(ClientPrefs.middleScroll) opponentStrums.members[i].visible = false;
+					}
 				}
+				if (gfStrums.length > 0) {
+					for (i in 0...gfStrums.length) {
+						setOnLuas('defaultGfStrumX' + i, gfStrums.members[i].x);
+						setOnLuas('defaultGfStrumY' + i, gfStrums.members[i].y-(oldTransitionNotes ? 20 : 0));//eh
+						//if(ClientPrefs.middleScroll) gfStrums.members[i].visible = false;
+					}
+				}
+				setKey();
+				if (ClientPrefs.extUI) {
+					var lastCount = keyPressUI.length;
+					if (lastCount != keysArray.length) {
+						while (keyPressUI.length > 0) {
+							var obj = keyPressUI.members[0];
+							obj.kill();
+							keyPressUI.remove(obj, true);
+							obj.destroy();
+							obj = null;
+						}
+					}
+					if (lastCount != keysArray.length) {
+						while (keyPressUIF.length > 0) {
+							var obj = keyPressUIF.members[0];
+							obj.kill();
+							keyPressUIF.remove(obj, true);
+							obj.destroy();
+							obj = null;
+						}
+					}
+					if (lastCount != keysArray.length) {
+						for (i in 0...keysArray.length) {
+							var notePressUISpr = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
+							notePressUISpr.cameras = [ camHUD ];
+							notePressUISpr.color = colorOrder[i%colorOrder.length];
+							notePressUISpr.alpha = ClientPrefs.keyStrokeAlpha;
+							keyPressUI.add(notePressUISpr);
+							var notePressUISprF = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
+							//notePressUISprF.color = colorOrder[i];
+							notePressUISprF.cameras = [ camHUD ];
+							notePressUISprF.alpha = 0;
+							keyPressUIF.add(notePressUISprF);
+						}
+					}
+				}
+				callOnLuas('onChangeOpponent', [value]);
 			}
-			setKey();
-			if (ClientPrefs.extUI) {
-				var lastCount = keyPressUI.length;
-				if (lastCount != keysArray.length) {
-					while (keyPressUI.length > 0) {
-						var obj = keyPressUI.members[0];
-						obj.kill();
-						keyPressUI.remove(obj, true);
-						obj.destroy();
-						obj = null;
-					}
-				}
-				if (lastCount != keysArray.length) {
-					while (keyPressUIF.length > 0) {
-						var obj = keyPressUIF.members[0];
-						obj.kill();
-						keyPressUIF.remove(obj, true);
-						obj.destroy();
-						obj = null;
-					}
-				}
-				if (lastCount != keysArray.length) {
-					for (i in 0...keysArray.length) {
-						var notePressUISpr = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
-						notePressUISpr.cameras = [ camHUD ];
-						notePressUISpr.color = colorOrder[i%colorOrder.length];
-						notePressUISpr.alpha = ClientPrefs.keyStrokeAlpha;
-						keyPressUI.add(notePressUISpr);
-						var notePressUISprF = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
-						//notePressUISprF.color = colorOrder[i];
-						notePressUISprF.cameras = [ camHUD ];
-						notePressUISprF.alpha = 0;
-						keyPressUIF.add(notePressUISprF);
-					}
-				}
-			}
-			callOnLuas('onChangeOpponent', [value]);
 		}
 	}
 	
@@ -5998,6 +6045,14 @@ class PlayState extends MusicBeatState
 			obj.destroy();
 			obj = null;
 		}
+		while (gfStrums.length > 0) {
+			var obj= gfStrums.members[0];
+			obj.kill();
+			gfStrums.remove(obj, true);
+			strumLineNotes.remove(obj, true);
+			obj.destroy();
+			obj = null;
+		}
 		
 		if (gamemode != name) {
 			this.gamemode = name;
@@ -6006,13 +6061,25 @@ class PlayState extends MusicBeatState
 			generateStaticArrows(0, t);
 		}
 		generateStaticArrows(1, t);
-		for (i in 0...playerStrums.length) {
-			setOnLuas('defaultPlayerStrumX' + i, playerStrums.members[i].x-20);
-			setOnLuas('defaultPlayerStrumY' + i, playerStrums.members[i].y-20);
+		if (playerStrums.length > 0) {
+			for (i in 0...playerStrums.length) {
+				setOnLuas('defaultPlayerStrumX' + i, playerStrums.members[i].x);
+				setOnLuas('defaultPlayerStrumY' + i, playerStrums.members[i].y-(oldTransitionNotes ? 20 : 0));
+			}
 		}
-		for (i in 0...opponentStrums.length) {
-			setOnLuas('defaultOpponentStrumX' + i, opponentStrums.members[i].x-20);
-			setOnLuas('defaultOpponentStrumY' + i, opponentStrums.members[i].y-20);//eh
+		if (opponentStrums.length > 0) {
+			for (i in 0...opponentStrums.length) {
+				setOnLuas('defaultOpponentStrumX' + i, opponentStrums.members[i].x);
+				setOnLuas('defaultOpponentStrumY' + i, opponentStrums.members[i].y-(oldTransitionNotes ? 20 : 0));//eh
+				//if(ClientPrefs.middleScroll) opponentStrums.members[i].visible = false;
+			}
+		}
+		if (gfStrums.length > 0) {
+			for (i in 0...gfStrums.length) {
+				setOnLuas('defaultGfStrumX' + i, gfStrums.members[i].x);
+				setOnLuas('defaultGfStrumY' + i, gfStrums.members[i].y-(oldTransitionNotes ? 20 : 0));//eh
+				//if(ClientPrefs.middleScroll) gfStrums.members[i].visible = false;
+			}
 		}
 		setKey();
 		if (ClientPrefs.extUI) {
