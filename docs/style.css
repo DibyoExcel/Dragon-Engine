@@ -77,9 +77,6 @@ div.border_content{
     overflow: hidden;
 }
 div.luaborder{
-    min-width: 25%;
-    max-width: 85%;
-    transition: 0.1s;
     overflow: hidden;
 }
 div.borderpurple{
@@ -122,6 +119,11 @@ div.margin_content{
 
 div.lualist{
     gap: 25px;
+}
+
+div.luafunction {
+    min-width: 25%;
+    max-width: 85%;
 }
 
 iframe.youtube{
