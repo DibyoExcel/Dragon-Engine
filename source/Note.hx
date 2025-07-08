@@ -100,7 +100,7 @@ class Note extends FlxSprite
 	public var hitsoundDisabled:Bool = false;
 	public var direction:Float = 0;
 	public var flipScroll(default, set):Bool = false;//flip between scroll
-	private var noteScale:Float = 1.0;
+	public var noteScale(default, set):Float = 1.0;
 	public var customField:Bool = false;
 	public var fieldTarget:String = '';//warning if not exist it might set 'customField' to false(hopefully)
 	public var camTarget(default, set):String = 'hud';
@@ -132,7 +132,10 @@ class Note extends FlxSprite
 	{
 		if (texture != value)
 		{
+			var lasScale = noteScale;
+			noteScale = 1;
 			reloadNote('', value);
+			noteScale = lasScale;
 		}
 		texture = value;
 		return value;
@@ -240,10 +243,10 @@ class Note extends FlxSprite
 					skinSec = skinOpt;
 				}
 				var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
+				texture = '';
 				if (PlayState.SONG.secOpt && !mustPress && !(gamemode == "bothside")) {
 					noteScale = 0.75;
 				}
-				texture = '';
 				colorSwap = new ColorSwap();
 				shader = colorSwap.shader;
 				var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
@@ -452,15 +455,6 @@ class Note extends FlxSprite
 			setGraphicSize(ChartingState.GRID_SIZE, ChartingState.GRID_SIZE);
 			updateHitbox();
 		}
-		if (!inEditor) {
-			var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
-			if (!mustPress) {
-				scale.x *= noteScale;
-				if (!isSustainNote) {
-					scale.y *= noteScale;
-				}
-			}
-		}
 	}
 
 	function loadNoteAnims()
@@ -540,6 +534,9 @@ class Note extends FlxSprite
 		if (gfNote != value) {
 			gfNote = value;
 			reloadNote('', texture);
+			if (PlayState.SONG.secOpt) {//purpose trigger
+				noteScale = 0.75;
+			}
 			if (noteType != 'Hurt Note') {
 				var skin:String = PlayState.SONG.splashSkin;
 				var skinOpt:String = PlayState.SONG.splashSkinOpt;
@@ -583,11 +580,10 @@ class Note extends FlxSprite
 					noteSplashScale = 1.0;
 				}
 			}
-			reloadNote('', texture);
 		}
 	}
 
-	function set_camTarget(value:String):String {
+	private function set_camTarget(value:String):String {
 		if (camTarget != value) {
 			if (value != '') {
 				cameras = [FunkinLua.cameraFromString(value)];
@@ -599,12 +595,27 @@ class Note extends FlxSprite
 		return value;
 	}
 
-	function set_scrollFactorCam(value:Array<Float>):Array<Float> {
+	private function set_scrollFactorCam(value:Array<Float>):Array<Float> {
 		if (scrollFactorCam[0] != value[0] || scrollFactorCam[1] != value[1]) {
 			scrollFactor.set(value[0], value[1]);
 		}
 		scrollFactorCam[0] = value[0];
 		scrollFactorCam[1] = value[1];
+		return value;
+	}
+
+	private function set_noteScale(value:Float):Float {
+		var ratio = value / noteScale;
+		if (!inEditor) {
+			var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
+			if (!mustPress) {
+				scale.x *= ratio;
+				if (!isSustainNote) {
+					scale.y *= ratio;
+				}
+			}
+		}
+		noteScale = value;
 		return value;
 	}
 }
