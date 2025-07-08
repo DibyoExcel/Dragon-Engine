@@ -11,11 +11,17 @@ class NoteSplash extends FlxSprite
 	private var idleAnim:String;
 	private var textureLoaded:String = null;
 
-	public function new(x:Float = 0, y:Float = 0, ?note:Int = 0) {
+	public function new(x:Float = 0, y:Float = 0, ?note:Int = 0, ?type:String = 'bf') {
 		super(x, y);
 
 		var skin:String = 'noteSplashes';
-		if(PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0) skin = PlayState.SONG.splashSkin;
+		if (type == 'bf') {
+			if(PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0) skin = PlayState.SONG.splashSkin;
+		} else if (type == 'opt') {
+			if(PlayState.SONG.splashSkinOpt != null && PlayState.SONG.splashSkinOpt.length > 0) skin = PlayState.SONG.splashSkinOpt;
+		} else if (type == 'gf') {
+			if(PlayState.SONG.splashSkinSec != null && PlayState.SONG.splashSkinSec.length > 0) skin = PlayState.SONG.splashSkinSec;
+		}
 
 		loadAnims(skin);
 		

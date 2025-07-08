@@ -533,7 +533,10 @@ class Note extends FlxSprite
 	function set_gfNote(value:Bool):Bool {//BETTER SYSTEM!
 		if (gfNote != value) {
 			gfNote = value;
+			var lastScale = noteScale;
+			noteScale = 1;
 			reloadNote('', texture);
+			noteScale = lastScale;
 			if (PlayState.SONG.secOpt) {//purpose trigger
 				noteScale = 0.75;
 			}

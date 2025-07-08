@@ -1125,10 +1125,13 @@ class PlayState extends MusicBeatState
 
 		var splash:NoteSplash = new NoteSplash(100, 100, 0);
 		grpNoteSplashes.add(splash);
-		var splashOpt:NoteSplash = new NoteSplash(100, 100, 0);
+		var splashOpt:NoteSplash = new NoteSplash(100, 100, 0, 'opt');//precache note splash?
+		var splashGf:NoteSplash = new NoteSplash(100, 100, 0, 'gf');
 		grpNoteSplashesOpt.add(splashOpt);
+		grpNoteSplashesOpt.add(splashGf);
 		splash.alpha = 0.0;
 		splashOpt.alpha = 0.0;
+		splashGf.alpha = 0.0;
 		playerStrums = new FlxTypedGroup<StrumNote>();
 		opponentStrums = new FlxTypedGroup<StrumNote>();
 		gfStrums = new FlxTypedGroup<StrumNote>();
