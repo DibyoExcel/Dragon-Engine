@@ -228,14 +228,14 @@ class Note extends FlxSprite
 				var skin:String = PlayState.SONG.splashSkin;
 				var skinOpt:String = PlayState.SONG.splashSkinOpt;
 				var skinSec:String = PlayState.SONG.splashSkinSec;
-				if (skin.length < 1 || skin == null) {
+				if (skin == null || skin.length < 1) {
 					skin = "noteSplashes";
 				}
-				if (skinOpt.length < 1 || skinOpt == null) {
+				if (skinOpt == null || skinOpt.length < 1) {
 					skinOpt = skin;
 				}
-				if (skinSec.length < 1 || skinSec == null) {
-					if (skinOpt.length < 1 || skinOpt == null) {
+				if (skinSec == null || skinSec.length < 1) {
+					if (skinOpt == null || skinOpt.length < 1) {
 						skinSec = skin;
 					} else {
 						skinSec = skinOpt;
@@ -356,14 +356,14 @@ class Note extends FlxSprite
 		var skinOG:String = PlayState.SONG.arrowSkin;
 		var skinOpt:String = PlayState.SONG.arrowSkinOpt;
 		var skinSec:String = PlayState.SONG.arrowSkinSec;
-		if (texture.length < 1 || texture == null)
+		if (texture == null || texture.length < 1)
 		{
 			if (mustPress) {
 				skin = skinOG;
 			} else {
 				if (gfNote) {
-					if (skinSec.length < 1 || skinSec == null) {
-						if (skinOpt.length < 1 || skinOpt == null) {
+					if (skinSec == null || skinSec.length < 1) {
+						if (skinOpt == null || skinOpt.length < 1) {
 							skin = skinOG;
 						} else {
 							skin = skinOpt;
@@ -373,7 +373,7 @@ class Note extends FlxSprite
 					}
 				} else {
 					//no gf
-					if (skinOpt.length < 1 || skinOpt == null) {
+					if (skinOpt == null || skinOpt.length < 1) {
 						skin = skinOG;
 					} else {
 						skin = skinOpt;
@@ -544,14 +544,14 @@ class Note extends FlxSprite
 				var skin:String = PlayState.SONG.splashSkin;
 				var skinOpt:String = PlayState.SONG.splashSkinOpt;
 				var skinSec:String = PlayState.SONG.splashSkinSec;
-				if (skin.length < 1 || skin == null) {
+				if (skin == null || skin.length < 1) {
 					skin = "noteSplashes";
 				}
-				if (skinOpt.length < 1 || skinOpt == null) {
+				if (skinOpt == null || skinOpt.length < 1) {
 					skinOpt = skin;
 				}
-				if (skinSec.length < 1 || skinSec == null) {
-					if (skinOpt.length < 1 || skinOpt == null) {
+				if (skinSec == null || skinSec.length < 1) {
+					if (skinOpt == null || skinOpt.length < 1) {
 						skinSec = skin;
 					} else {
 						skinSec = skinOpt;

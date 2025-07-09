@@ -25,6 +25,30 @@
         <meta name="twitter:image" content="https://raw.githubusercontent.com/DibyoExcel/Dragon-Engine/refs/heads/main/draconisteam/iconOG.png">
     </head>
     <body>
+        <script>
+            function playGame() {
+                const target = document.getElementById('fnfgame');
+                target.src = "fnfhtml5/index.html";
+                target.style.display = "block";
+                const fullBtn = document.getElementById('fullscreenbtn');
+                fullBtn.style.display = "block";
+                const nobutton = document.getElementById('playbutton');
+                nobutton.style.display = "none";
+            }
+            function enterFullScreen() {
+                const target = document.getElementById('fnfgame');
+                if (target.requestFullscreen) {
+                    target.requestFullscreen();
+                } else if (target.webkitRequestFullscreen) {
+                    target.webkitRequestFullscreen(); //safari
+                } else if (target.mozRequestFullScreen) {
+                    target.mozRequestFullScreen(); //mozzilla
+                } else if (target.msRequestFullscreen) {
+                    target.msRequestFullscreen();//edge
+                }
+                target.focus();
+            }
+        </script>
         <header class = "title">
             <img src="https://raw.githubusercontent.com/DibyoExcel/Dragon-Engine/refs/heads/main/draconisteam/iconOG.png" width="50px", height="50px" alt="DGE Logo">
             <h3 class="title" translate="no">
@@ -41,7 +65,7 @@
                 <div class="margin_content center">
                     <h1>2nd Opponent Strums(1.5.5+)</h1>
                     <img class="content" src="https://raw.githubusercontent.com/DibyoExcel/Dragon-Engine/refs/heads/main/art%20feature/2nd%20strum.png">
-                    <iframe class="youtube" src="https://www.youtube.com/embed/f3ZaQddsKXo?si=8Wt3ldNEBXsD74vF&amp;start=70" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    <iframe class="youtube ratio" src="https://www.youtube.com/embed/f3ZaQddsKXo?si=8Wt3ldNEBXsD74vF&amp;start=70" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                     <p class="tip">Open Chart editor. open Song tab and turn on called "Has 2nd Strums"</p>
                     <img class="content" src="tips/2ndstrum.png">
                 </div>
@@ -53,9 +77,9 @@
                     <h1>Custom Field(1.6.0+)</h1>
                     <img class="content" src="https://github.com/DibyoExcel/Dragon-Engine/blob/main/art%20feature/custom%20field%20(1).png?raw=true">
                     <img class="content" src="https://github.com/DibyoExcel/Dragon-Engine/blob/main/art%20feature/custom%20field%20(2).png?raw=true">
-                    <iframe class="youtube" src="https://www.youtube.com/embed/UzcQmOmcZso?si=UcazVJCg5nslGzQn&amp;start=138" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    <iframe class="youtube ratio" src="https://www.youtube.com/embed/UzcQmOmcZso?si=UcazVJCg5nslGzQn&amp;start=138" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                     <p>Reference: </p>
-                    <iframe class="youtube" src="https://www.youtube.com/embed/aq9H0PGS_1g?si=KnG47DYuDdZ3X-n3" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    <iframe class="youtube ratio" src="https://www.youtube.com/embed/aq9H0PGS_1g?si=KnG47DYuDdZ3X-n3" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                     <p class="tip">how to use it <a href="https://github.com/DibyoExcel/Dragon-Engine/tree/main/tamplate">Learn More(Lua)</a></p>
                 </div>
             </div>
@@ -269,6 +293,14 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+            <div class="border_content">
+                <div class="margin_content center">
+                    <h3>HTML5 Version(I reommended use Windows version)</h3>
+                    <button onclick="playGame()" id="playbutton">▶</button>
+                    <button onclick="enterFullScreen()" id="fullscreenbtn" style="display: none;">🗖</button>
+                    <iframe id='fnfgame' src="" class="ratio" width="100%" style="display: none;" allowfullscreen>
                 </div>
             </div>
             <br>

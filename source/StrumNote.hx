@@ -30,7 +30,7 @@ class StrumNote extends FlxSprite
 		var skin:String = PlayState.SONG.arrowSkin;
 		var skinOpt:String = PlayState.SONG.arrowSkinOpt;
 		var skinSec:String = PlayState.SONG.arrowSkinSec;
-		if (skin.length < 1 || skin == null) {
+		if (skin == null || skin.length < 1) {
 			skin = ClientPrefs.dflnoteskin;
 		}
 		//if opponent notes didt iput it ill use player skin/default. if sec opt not set texture it ill use opponent texture. bruh idk how to explain this

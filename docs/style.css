@@ -127,10 +127,13 @@ div.luafunction {
 }
 
 iframe.youtube{
-    aspect-ratio: 16 /9;
     border-radius: 10px;
     width: 85%;
     border: 5px solid rgb(255, 0,0);
+}
+
+iframe.ratio{
+    aspect-ratio: 16 /9;
 }
 
 @media screen and (max-width: 720px) and (orientation: portrait) {
