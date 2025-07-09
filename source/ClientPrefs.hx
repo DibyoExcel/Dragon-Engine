@@ -153,6 +153,7 @@ class ClientPrefs {
 		FlxG.save.data.longNoteAlpha = longNoteAlpha;
 		FlxG.save.data.noteSplashAlpha = noteSplashAlpha;
 		FlxG.save.data.fpsStrumAnim = fpsStrumAnim;
+		FlxG.save.data.downScroll = downScroll;
 		FlxG.save.data.middleScroll = middleScroll;
 		FlxG.save.data.opponentStrums = opponentStrums;
 		FlxG.save.data.showFPS = showFPS;
