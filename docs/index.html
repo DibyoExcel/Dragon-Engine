@@ -273,7 +273,7 @@
             </div>
             <div class="border_content">
                 <div class="margin_content center">
-                    <h3>HTML5 Version(I reommended use Windows version)</h3>
+                    <h3>HTML5 Version (I reommended to use Windows version)</h3>
                     <iframe id='fnfgame' src="" class="ratio" width="85%" allowfullscreen></iframe>
                     <button onclick='
                     const target = document.getElementById("fnfgame");
@@ -283,7 +283,7 @@
                     const nobutton = document.getElementById("playbutton");
                     nobutton.style.display = "none";
                     ' id="playbutton">
-                        <img src="https://github.com/DibyoExcel/Dragon-Engine/blob/main/assets/shared/images/eventArrow.png?raw=true" width="50px" height="50px">
+                        <img src="https://img.icons8.com/?size=100&id=397&format=png&color=000000" width="50px" height="50px">
                     </button>
                     <div id="iframebutton" style="gap: 25px; display: none;">
                         <button onclick='
@@ -298,8 +298,8 @@
                             target.msRequestFullscreen();//edge
                         }
                         target.focus();
-                        '>
-                            <div style="width: 50px; height: 40px; border: 2.5px solid black; border-top: 5px solid black;"></div>
+                        ' class="fullscreen">
+                            <img src="https://img.icons8.com/?size=100&id=38034&format=png&color=000000" width="50px" height="50px">
                         </button>
                         <button onclick='
                         const target = document.getElementById("fnfgame");
@@ -308,8 +308,14 @@
                         fullBtn.style.display = "none";
                         const nobutton = document.getElementById("playbutton");
                         nobutton.style.display = "block";
-                        '>
-                            <div style="width: 50px; height: 40px; background-color: red;"></div>
+                        ' class="shutdown">
+                            <img src="https://img.icons8.com/?size=100&id=1456&format=png&color=000000" width="50px" height="50px">
+                        </button>
+                        <button onclick='
+                        const target = document.getElementById("fnfgame");
+                        target.src= target.src;
+                        ' class="restart">
+                            <img src="https://img.icons8.com/?size=100&id=1457&format=png&color=000000" width="50px" height="50px">
                         </button>
                     </div>
                 </div>

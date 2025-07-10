@@ -157,3 +157,19 @@ iframe#fnfgame{
     border: 5px solid cyan;
     background-color: black;
 }
+
+button.shutdown{
+    background-color: red;
+}
+
+button.restart{
+    background-color: orange;
+}
+
+button.fullscreen{
+    background-color: green;
+}
+
+button#playbutton{
+    background-color: rgb(0, 255,0);
+}
