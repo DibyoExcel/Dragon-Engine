@@ -25,30 +25,6 @@
         <meta name="twitter:image" content="https://raw.githubusercontent.com/DibyoExcel/Dragon-Engine/refs/heads/main/draconisteam/iconOG.png">
     </head>
     <body>
-        <script>
-            function playGame() {
-                const target = document.getElementById('fnfgame');
-                target.src = "fnfhtml5/index.html";
-                target.style.display = "block";
-                const fullBtn = document.getElementById('fullscreenbtn');
-                fullBtn.style.display = "block";
-                const nobutton = document.getElementById('playbutton');
-                nobutton.style.display = "none";
-            }
-            function enterFullScreen() {
-                const target = document.getElementById('fnfgame');
-                if (target.requestFullscreen) {
-                    target.requestFullscreen();
-                } else if (target.webkitRequestFullscreen) {
-                    target.webkitRequestFullscreen(); //safari
-                } else if (target.mozRequestFullScreen) {
-                    target.mozRequestFullScreen(); //mozzilla
-                } else if (target.msRequestFullscreen) {
-                    target.msRequestFullscreen();//edge
-                }
-                target.focus();
-            }
-        </script>
         <header class = "title">
             <img src="https://raw.githubusercontent.com/DibyoExcel/Dragon-Engine/refs/heads/main/draconisteam/iconOG.png" width="50px", height="50px" alt="DGE Logo">
             <h3 class="title" translate="no">
@@ -298,9 +274,44 @@
             <div class="border_content">
                 <div class="margin_content center">
                     <h3>HTML5 Version(I reommended use Windows version)</h3>
-                    <button onclick="playGame()" id="playbutton">▶</button>
-                    <button onclick="enterFullScreen()" id="fullscreenbtn" style="display: none;">🗖</button>
-                    <iframe id='fnfgame' src="" class="ratio" width="100%" style="display: none;" allowfullscreen>
+                    <iframe id='fnfgame' src="" class="ratio" width="85%" allowfullscreen></iframe>
+                    <button onclick='
+                    const target = document.getElementById("fnfgame");
+                    target.src = "fnfhtml5/index.html";
+                    const fullBtn = document.getElementById("iframebutton");
+                    fullBtn.style.display = "flex";
+                    const nobutton = document.getElementById("playbutton");
+                    nobutton.style.display = "none";
+                    ' id="playbutton">
+                        <img src="https://github.com/DibyoExcel/Dragon-Engine/blob/main/assets/shared/images/eventArrow.png?raw=true" width="50px" height="50px">
+                    </button>
+                    <div id="iframebutton" style="gap: 25px; display: none;">
+                        <button onclick='
+                        const target = document.getElementById("fnfgame");
+                        if (target.requestFullscreen) {
+                            target.requestFullscreen();
+                        } else if (target.webkitRequestFullscreen) {
+                            target.webkitRequestFullscreen(); //safari
+                        } else if (target.mozRequestFullScreen) {
+                            target.mozRequestFullScreen(); //mozzilla
+                        } else if (target.msRequestFullscreen) {
+                            target.msRequestFullscreen();//edge
+                        }
+                        target.focus();
+                        '>
+                            <div style="width: 50px; height: 40px; border: 2.5px solid black; border-top: 5px solid black;"></div>
+                        </button>
+                        <button onclick='
+                        const target = document.getElementById("fnfgame");
+                        target.src= "";
+                        const fullBtn = document.getElementById("iframebutton");
+                        fullBtn.style.display = "none";
+                        const nobutton = document.getElementById("playbutton");
+                        nobutton.style.display = "block";
+                        '>
+                            <div style="width: 50px; height: 40px; background-color: red;"></div>
+                        </button>
+                    </div>
                 </div>
             </div>
             <br>
