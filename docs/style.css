@@ -151,3 +151,9 @@ iframe.ratio{
 * {
     cursor: url('img/cursor.png'), auto !important;
 }
+
+iframe#fnfgame{
+    border-radius: 10px;
+    border: 5px solid cyan;
+    background-color: black;
+}
