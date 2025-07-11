@@ -154,8 +154,8 @@ iframe.ratio{
 
 iframe#fnfgame{
     border-radius: 10px;
-    border: 5px solid cyan;
-    background-color: black;
+    border: 5px solid silver;
+    border-bottom: 50px solid silver;
 }
 
 button.shutdown{

@@ -298,10 +298,11 @@
             <div class="border_content">
                 <div class="margin_content center">
                     <h3>HTML5 Version (I recommended to use Windows version)</h3>
-                    <iframe id='fnfgame' src="" class="ratio" width="85%" allowfullscreen></iframe>
+                    <iframe id='fnfgame' src="about:blank" class="ratio" width="85%" allowfullscreen style="background-color: black;"></iframe>
                     <button onclick='
                     const target = document.getElementById("fnfgame");
                     target.src = "fnfhtml5/index.html";
+                    target.style.backgroundColor = "white";
                     const fullBtn = document.getElementById("iframebutton");
                     fullBtn.style.display = "flex";
                     const nobutton = document.getElementById("playbutton");
@@ -327,7 +328,8 @@
                         </button>
                         <button onclick='
                         const target = document.getElementById("fnfgame");
-                        target.src= "";
+                        target.src= "about:blank";
+                        target.style.backgroundColor = "black";
                         const fullBtn = document.getElementById("iframebutton");
                         fullBtn.style.display = "none";
                         const nobutton = document.getElementById("playbutton");
