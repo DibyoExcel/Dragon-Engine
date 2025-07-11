@@ -217,26 +217,50 @@
                             </div>
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
-                                    <h2 class="luaname">defaultGfStrum0(1.6.0.9+)</h2>
+                                    <h2 class="luaname">defaultGfStrumX0(1.6.0.9+)</h2>
                                     <h3 class="luafunction">default strums x 0 of gfStrums.</h3>
                                 </div>
                             </div>
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
-                                    <h2 class="luaname">defaultGfStrum1(1.6.0.9+)</h2>
+                                    <h2 class="luaname">defaultGfStrumX1(1.6.0.9+)</h2>
                                     <h3 class="luafunction">default strums x 1 of gfStrums.</h3>
                                 </div>
                             </div>
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
-                                    <h2 class="luaname">defaultGfStrum2(1.6.0.9+)</h2>
+                                    <h2 class="luaname">defaultGfStrumX2(1.6.0.9+)</h2>
                                     <h3 class="luafunction">default strums x 2 of gfStrums.</h3>
                                 </div>
                             </div>
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
-                                    <h2 class="luaname">defaultGfStrum3(1.6.0.9+)</h2>
+                                    <h2 class="luaname">defaultGfStrumX3(1.6.0.9+)</h2>
                                     <h3 class="luafunction">default strums x 3 of gfStrums.</h3>
+                                </div>
+                            </div>
+                            <div class="luaborder borderpurple">
+                                <div class="marginlua">
+                                    <h2 class="luaname">defaultGfStrumY0(1.6.0.9+)</h2>
+                                    <h3 class="luafunction">default strums y 0 of gfStrums.</h3>
+                                </div>
+                            </div>
+                            <div class="luaborder borderpurple">
+                                <div class="marginlua">
+                                    <h2 class="luaname">defaultGfStrumY1(1.6.0.9+)</h2>
+                                    <h3 class="luafunction">default strums y 1 of gfStrums.</h3>
+                                </div>
+                            </div>
+                            <div class="luaborder borderpurple">
+                                <div class="marginlua">
+                                    <h2 class="luaname">defaultGfStrumY2(1.6.0.9+)</h2>
+                                    <h3 class="luafunction">default strums y 2 of gfStrums.</h3>
+                                </div>
+                            </div>
+                            <div class="luaborder borderpurple">
+                                <div class="marginlua">
+                                    <h2 class="luaname">defaultGfStrumY3(1.6.0.9+)</h2>
+                                    <h3 class="luafunction">default strums y 3 of gfStrums.</h3>
                                 </div>
                             </div>
                         </div>
@@ -282,7 +306,7 @@
                     fullBtn.style.display = "flex";
                     const nobutton = document.getElementById("playbutton");
                     nobutton.style.display = "none";
-                    ' id="playbutton">
+                    ' id="playbutton" class="button">
                         <img src="https://img.icons8.com/?size=100&id=397&format=png&color=000000" width="50px" height="50px">
                     </button>
                     <div id="iframebutton" style="gap: 25px; display: none;">
@@ -298,7 +322,7 @@
                             target.msRequestFullscreen();//edge
                         }
                         target.focus();
-                        ' class="fullscreen">
+                        ' class="fullscreen button">
                             <img src="https://img.icons8.com/?size=100&id=38034&format=png&color=000000" width="50px" height="50px">
                         </button>
                         <button onclick='
@@ -308,13 +332,13 @@
                         fullBtn.style.display = "none";
                         const nobutton = document.getElementById("playbutton");
                         nobutton.style.display = "block";
-                        ' class="shutdown">
+                        ' class="shutdown button">
                             <img src="https://img.icons8.com/?size=100&id=1456&format=png&color=000000" width="50px" height="50px">
                         </button>
                         <button onclick='
                         const target = document.getElementById("fnfgame");
                         target.src= target.src;
-                        ' class="restart">
+                        ' class="restart button">
                             <img src="https://img.icons8.com/?size=100&id=1457&format=png&color=000000" width="50px" height="50px">
                         </button>
                     </div>
