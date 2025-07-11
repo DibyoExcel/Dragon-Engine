@@ -4241,6 +4241,18 @@ class PlayState extends MusicBeatState
 						}
 					});
 				}
+			case 'Change Gamemode':
+				if (value1.length < 1 || value1 == null) value1 = 'none';
+				if (value2.length < 1 || value2 == null) value2 = '1';
+				var cool = Std.int(Std.parseFloat(value2));
+				gamemodeChanger(value1, cool == 1);
+
+			case 'Change Second Strums':
+				if (value1.length < 1 || value1 == null) value1 = '1';
+				if (value2.length < 1 || value2 == null) value2 = '1, 1';
+				var cool = Std.int(Std.parseFloat(value1));
+				var dataval2:Array<String> = value2.split(',');
+				changeSecOpt(cool == 1, Std.int(Std.parseFloat(dataval2[0])) == 1, Std.int(Std.parseFloat(dataval2[1])) == 1);
 
 			case 'Set Property':
 				var killMe:Array<String> = value1.split('.');
@@ -5970,21 +5982,27 @@ class PlayState extends MusicBeatState
 					generateStaticArrows(0, t2);
 				}
 				generateStaticArrows(1, t);
-				if (playerStrums.length > 0) {
-					for (i in 0...playerStrums.length) {
+				for (i in 0...playerStrums.length) {
+					setOnLuas('defaultPlayerStrumX' + i, 0);
+					setOnLuas('defaultPlayerStrumY' + i, 0);
+					if (playerStrums.length > 0) {
 						setOnLuas('defaultPlayerStrumX' + i, playerStrums.members[i].x);
 						setOnLuas('defaultPlayerStrumY' + i, playerStrums.members[i].y-(oldTransitionNotes ? 20 : 0));
 					}
 				}
-				if (opponentStrums.length > 0) {
-					for (i in 0...opponentStrums.length) {
+				for (i in 0...opponentStrums.length) {
+					setOnLuas('defaultOpponentStrumX' + i, 0);
+					setOnLuas('defaultOpponentStrumY' + i, 0);
+					if (opponentStrums.length > 0) {
 						setOnLuas('defaultOpponentStrumX' + i, opponentStrums.members[i].x);
 						setOnLuas('defaultOpponentStrumY' + i, opponentStrums.members[i].y-(oldTransitionNotes ? 20 : 0));//eh
 						//if(ClientPrefs.middleScroll) opponentStrums.members[i].visible = false;
 					}
 				}
-				if (gfStrums.length > 0) {
-					for (i in 0...gfStrums.length) {
+				for (i in 0...gfStrums.length) {
+					setOnLuas('defaultGfStrumX' + i, 0);
+					setOnLuas('defaultGfStrumY' + i, 0);
+					if (gfStrums.length > 0) {
 						setOnLuas('defaultGfStrumX' + i, gfStrums.members[i].x);
 						setOnLuas('defaultGfStrumY' + i, gfStrums.members[i].y-(oldTransitionNotes ? 20 : 0));//eh
 						//if(ClientPrefs.middleScroll) gfStrums.members[i].visible = false;
@@ -6026,7 +6044,7 @@ class PlayState extends MusicBeatState
 						}
 					}
 				}
-				callOnLuas('onChangeOpponent', [value]);
+				callOnLuas('onChangeOpponent', [value, t, t2]);
 			}
 		}
 	}
@@ -6064,21 +6082,27 @@ class PlayState extends MusicBeatState
 			generateStaticArrows(0, t);
 		}
 		generateStaticArrows(1, t);
-		if (playerStrums.length > 0) {
-			for (i in 0...playerStrums.length) {
+		for (i in 0...playerStrums.length) {
+			setOnLuas('defaultPlayerStrumX' + i, 0);
+			setOnLuas('defaultPlayerStrumY' + i, 0);
+			if (playerStrums.length > 0) {
 				setOnLuas('defaultPlayerStrumX' + i, playerStrums.members[i].x);
 				setOnLuas('defaultPlayerStrumY' + i, playerStrums.members[i].y-(oldTransitionNotes ? 20 : 0));
 			}
 		}
-		if (opponentStrums.length > 0) {
-			for (i in 0...opponentStrums.length) {
+		for (i in 0...opponentStrums.length) {
+			setOnLuas('defaultOpponentStrumX' + i, 0);
+			setOnLuas('defaultOpponentStrumY' + i, 0);
+			if (opponentStrums.length > 0) {
 				setOnLuas('defaultOpponentStrumX' + i, opponentStrums.members[i].x);
 				setOnLuas('defaultOpponentStrumY' + i, opponentStrums.members[i].y-(oldTransitionNotes ? 20 : 0));//eh
 				//if(ClientPrefs.middleScroll) opponentStrums.members[i].visible = false;
 			}
 		}
-		if (gfStrums.length > 0) {
-			for (i in 0...gfStrums.length) {
+		for (i in 0...gfStrums.length) {
+			setOnLuas('defaultGfStrumX' + i, 0);
+			setOnLuas('defaultGfStrumY' + i, 0);
+			if (gfStrums.length > 0) {
 				setOnLuas('defaultGfStrumX' + i, gfStrums.members[i].x);
 				setOnLuas('defaultGfStrumY' + i, gfStrums.members[i].y-(oldTransitionNotes ? 20 : 0));//eh
 				//if(ClientPrefs.middleScroll) gfStrums.members[i].visible = false;
@@ -6116,7 +6140,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
-		callOnLuas('onChangeGamemode', [gamemode]);
+		callOnLuas('onChangeGamemode', [gamemode, t]);
 	}
 	public function createStrum(tag:String= '', data:Int = 4, camera:String = 'hud', sfX:Float = 0, sfY:Float = 0, downScroll:Null<Bool> = null) {
 		//trace("trigger");

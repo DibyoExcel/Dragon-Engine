@@ -122,7 +122,7 @@
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
                                     <h2 class="luaname">changeGamemode(name:String = 'none', transition:Bool = true)(1.5.9.2+)</h2>
-                                <h3 class="luafunction">set gamemode.<br>name: name of gamemode.<br>transition: Transition notes(only for build in gamemode).</h3>
+                                <h3 class="luafunction">set gamemode.<br>name: name of gamemode.<br>transition: Transition notes.</h3>
                                 </div>
                             </div>
                         </div>
@@ -187,14 +187,14 @@
                             </div>
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
-                                    <h2 class="luaname">onChangeGamemode(name:String)(1.6.0.6+)</h2>
-                                    <h3 class="luafunction">function when change gamemode(from changeGamemode()).</h3>
+                                    <h2 class="luaname">onChangeGamemode(name:String, transition:Bool)(1.6.0.6+)</h2>
+                                    <h3 class="luafunction">function when change gamemode(from changeGamemode())<br>name: returning the gamemode name after change.<br>transition(1.6.1.2+):return bool after change gamemode transition.</h3>
                                 </div>
                             </div>
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
-                                    <h2 class="luaname">onChangeOpponent(name:String)(1.6.0.6+)</h2>
-                                    <h3 class="luafunction">function when change 2nd strums(from setSecondOpponent()).</h3>
+                                    <h2 class="luaname">onChangeOpponent(dualstrum:Bool, transition:Bool, transition2:Bool)(1.6.0.6+)</h2>
+                                    <h3 class="luafunction">function when change 2nd strums(from setSecondOpponent()).<br>dualstrum:returning bool of 2nd strums mode after change.<br>transition(1.6.1.2+): returning bool of transition after change.<br>transition2(1.6.1.2+): returning bool off transition2 after change.</h3>
                                 </div>
                             </div>
                         </div>
@@ -218,49 +218,49 @@
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
                                     <h2 class="luaname">defaultGfStrumX0(1.6.0.9+)</h2>
-                                    <h3 class="luafunction">default strums x 0 of gfStrums.(2nd strums mode required)</h3>
+                                    <h3 class="luafunction">default strums x 0 of gfStrums.(Only if)</h3>
                                 </div>
                             </div>
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
                                     <h2 class="luaname">defaultGfStrumX1(1.6.0.9+)</h2>
-                                    <h3 class="luafunction">default strums x 1 of gfStrums.(2nd strums mode required)</h3>
+                                    <h3 class="luafunction">default strums x 1 of gfStrums.(Only if)</h3>
                                 </div>
                             </div>
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
                                     <h2 class="luaname">defaultGfStrumX2(1.6.0.9+)</h2>
-                                    <h3 class="luafunction">default strums x 2 of gfStrums.(2nd strums mode required)</h3>
+                                    <h3 class="luafunction">default strums x 2 of gfStrums.(Only if)</h3>
                                 </div>
                             </div>
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
                                     <h2 class="luaname">defaultGfStrumX3(1.6.0.9+)</h2>
-                                    <h3 class="luafunction">default strums x 3 of gfStrums.(2nd strums mode required)</h3>
+                                    <h3 class="luafunction">default strums x 3 of gfStrums.(Only if)</h3>
                                 </div>
                             </div>
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
                                     <h2 class="luaname">defaultGfStrumY0(1.6.0.9+)</h2>
-                                    <h3 class="luafunction">default strums y 0 of gfStrums.(2nd strums mode required)</h3>
+                                    <h3 class="luafunction">default strums y 0 of gfStrums.(Only if)</h3>
                                 </div>
                             </div>
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
                                     <h2 class="luaname">defaultGfStrumY1(1.6.0.9+)</h2>
-                                    <h3 class="luafunction">default strums y 1 of gfStrums.(2nd strums mode required)</h3>
+                                    <h3 class="luafunction">default strums y 1 of gfStrums.(Only if)</h3>
                                 </div>
                             </div>
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
                                     <h2 class="luaname">defaultGfStrumY2(1.6.0.9+)</h2>
-                                    <h3 class="luafunction">default strums y 2 of gfStrums.(2nd strums mode required)</h3>
+                                    <h3 class="luafunction">default strums y 2 of gfStrums.(Only if)</h3>
                                 </div>
                             </div>
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
                                     <h2 class="luaname">defaultGfStrumY3(1.6.0.9+)</h2>
-                                    <h3 class="luafunction">default strums y 3 of gfStrums.(2nd strums mode required)</h3>
+                                    <h3 class="luafunction">default strums y 3 of gfStrums.(Only if)</h3>
                                 </div>
                             </div>
                         </div>
