@@ -98,6 +98,7 @@ class Note extends FlxSprite
 	public var distance:Float = 2000; // plan on doing scroll directions soon -bb
 
 	public var hitsoundDisabled:Bool = false;
+	//dge core
 	public var direction:Float = 0;
 	public var flipScroll(default, set):Bool = false;//flip between scroll
 	public var noteScale(default, set):Float = 1.0;
@@ -108,6 +109,7 @@ class Note extends FlxSprite
 	public var noteSplashCam:String = 'hud';//notesplash on specific cam
 	public var noteSplashScale:Float = 1.0;
 	public var noteSplashScrollFactor:Array<Float> = [1, 1];//dont ask why 1 cuz is default of note splash
+	public var offsetStrumTime:Float = 0;
 
 
 
@@ -242,16 +244,14 @@ class Note extends FlxSprite
 					}
 					skinSec = skinOpt;
 				}
-				var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
 				texture = '';
+				var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
 				if (PlayState.SONG.secOpt && !mustPress && !(gamemode == "bothside")) {
 					noteScale = 0.75;
 				}
 				colorSwap = new ColorSwap();
 				shader = colorSwap.shader;
-				var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
 				this.gfNote = gfSec;
-				this.noteType = noteType;
 				if (mustPress) {
 					noteSplashTexture = skin;
 				} else {
@@ -336,6 +336,7 @@ class Note extends FlxSprite
 		if (!inEditor) {
 			scrollFactor.set(scrollFactorCam[0], scrollFactorCam[1]);
 		}
+		this.noteType = noteType;
 	}
 
 	var lastNoteOffsetXForPixelAutoAdjusting:Float = 0;

@@ -2863,7 +2863,7 @@ class PlayState extends MusicBeatState
 
 	function sortByShit(Obj1:Note, Obj2:Note):Int
 	{
-		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.strumTime, Obj2.strumTime);
+		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.strumTime + Obj1.offsetStrumTime, Obj2.strumTime + Obj2.offsetStrumTime);
 	}
 
 	function sortByTime(Obj1:EventNote, Obj2:EventNote):Int
@@ -3536,7 +3536,7 @@ class PlayState extends MusicBeatState
 				if (songSpeed < 1) time /= songSpeed;
 				if(unspawnNotes[i].multSpeed < 1) time /= unspawnNotes[i].multSpeed;
 	
-				if (unspawnNotes.length > 0 && unspawnNotes[i].strumTime - Conductor.songPosition < time && (ClientPrefs.limitSpawn ? notes.length < ClientPrefs.limitSpawnNotes : true))
+				if (unspawnNotes.length > 0 && (unspawnNotes[i].strumTime + unspawnNotes[i].offsetStrumTime) - Conductor.songPosition < time && (ClientPrefs.limitSpawn ? notes.length < ClientPrefs.limitSpawnNotes : true))
 				{
 					var dunceNote:Note = unspawnNotes[i];
 					notes.insert(0, dunceNote);
@@ -3619,12 +3619,12 @@ class PlayState extends MusicBeatState
 						if (strumScroll) //Downscroll
 						{
 							//daNote.y = (strumY + 0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed);
-							daNote.distance = (0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed * daNote.multSpeed);
+							daNote.distance = (0.45 * (Conductor.songPosition - daNote.strumTime + daNote.offsetStrumTime) * songSpeed * daNote.multSpeed);
 						}
 						else //Upscroll
 						{
 							//daNote.y = (strumY - 0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed);
-							daNote.distance = (-0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed * daNote.multSpeed);
+							daNote.distance = (-0.45 * (Conductor.songPosition - daNote.strumTime + daNote.offsetStrumTime) * songSpeed * daNote.multSpeed);
 						}
 						if (daNote.isSustainNote) {
 							daNote.flipY = strumScroll;
@@ -3705,7 +3705,7 @@ class PlayState extends MusicBeatState
 								goodNoteHit(daNote);
 								
 							}
-						} else if(daNote.strumTime <= Conductor.songPosition || daNote.isSustainNote) {
+						} else if((daNote.strumTime + daNote.offsetStrumTime) <= Conductor.songPosition || daNote.isSustainNote) {
 							goodNoteHit(daNote);
 						}
 					}
@@ -3715,13 +3715,13 @@ class PlayState extends MusicBeatState
 							if(daNote.canBeHit) {
 								goodNoteHit(daNote);
 							}
-						} else if(daNote.strumTime <= Conductor.songPosition || daNote.isSustainNote) {
+						} else if((daNote.strumTime + daNote.offsetStrumTime) <= Conductor.songPosition || daNote.isSustainNote) {
 							goodNoteHit(daNote);
 						}
 					}
 
 					// Kill extremely late notes and cause misses
-					if (Conductor.songPosition > noteKillOffset + daNote.strumTime)
+					if (Conductor.songPosition > noteKillOffset + (daNote.strumTime + daNote.offsetStrumTime))
 					{
 						if ((gamemode != 'opponent' ? ((gamemode == "bothside" || gamemode == "bothside v2") ? true : daNote.mustPress) : !daNote.mustPress) && !cpuControlled && !daNote.ignoreNote && !endingSong && (daNote.tooLate || !daNote.wasGoodHit) && !(daNote.autoPress || (fieldNameAsPlayer == '' ? daNote.customField : daNote.fieldTarget != fieldNameAsPlayer))) {
 							noteMiss(daNote);
@@ -4357,12 +4357,12 @@ class PlayState extends MusicBeatState
 		//Should kill you if you tried to cheat
 		if(!startingSong) {
 			notes.forEach(function(daNote:Note) {
-				if(daNote.strumTime < songLength - Conductor.safeZoneOffset) {
+				if((daNote.strumTime + daNote.offsetStrumTime) < songLength - Conductor.safeZoneOffset) {
 					health -= 0.05 * healthLoss;
 				}
 			});
 			for (daNote in unspawnNotes) {
-				if(daNote.strumTime < songLength - Conductor.safeZoneOffset) {
+				if((daNote.strumTime + daNote.offsetStrumTime) < songLength - Conductor.safeZoneOffset) {
 					health -= 0.05 * healthLoss;
 				}
 			}
@@ -4569,7 +4569,7 @@ class PlayState extends MusicBeatState
 
 	private function popUpScore(note:Note = null):Void
 	{
-		var noteDiff:Float = Math.abs(note.strumTime - Conductor.songPosition + ClientPrefs.ratingOffset);
+		var noteDiff:Float = Math.abs((note.strumTime + note.offsetStrumTime) - Conductor.songPosition + ClientPrefs.ratingOffset);
 		//trace(noteDiff, ' ' + Math.abs(note.strumTime - Conductor.songPosition));
 
 		// boyfriend.playAnim('hey');
@@ -4807,7 +4807,7 @@ class PlayState extends MusicBeatState
 					for (epicNote in sortedNotesList)
 					{
 						for (doubleNote in pressNotes) {
-							if (Math.abs(doubleNote.strumTime - epicNote.strumTime) < 1) {
+							if (Math.abs((doubleNote.strumTime + doubleNote.offsetStrumTime) - (epicNote.strumTime + epicNote.offsetStrumTime)) < 1) {
 								doubleNote.kill();
 								notes.remove(doubleNote, true);
 								doubleNote.destroy();
@@ -4864,7 +4864,7 @@ class PlayState extends MusicBeatState
 		else if (!a.lowPriority && b.lowPriority)
 			return -1;
 
-		return FlxSort.byValues(FlxSort.ASCENDING, a.strumTime, b.strumTime);
+		return FlxSort.byValues(FlxSort.ASCENDING, a.strumTime + a.offsetStrumTime, b.strumTime + b.offsetStrumTime);
 	}
 
 	private function onKeyRelease(event:KeyboardEvent):Void
@@ -4990,7 +4990,7 @@ class PlayState extends MusicBeatState
 	function noteMiss(daNote:Note):Void { //You didn't hit the key and let it go offscreen, also used by Hurt Notes
 		//Dupe note remove
 		notes.forEachAlive(function(note:Note) {
-			if (daNote != note && (gamemode != 'opponent' ? ((gamemode == "bothside" || gamemode == "bothside v2") ?  true : daNote.mustPress) : !daNote.mustPress) && daNote.noteData == note.noteData && daNote.isSustainNote == note.isSustainNote && Math.abs(daNote.strumTime - note.strumTime) < 1) {
+			if (daNote != note && (gamemode != 'opponent' ? ((gamemode == "bothside" || gamemode == "bothside v2") ?  true : daNote.mustPress) : !daNote.mustPress) && daNote.noteData == note.noteData && daNote.isSustainNote == note.isSustainNote && Math.abs((daNote.strumTime + daNote.offsetStrumTime) - (note.strumTime + note.offsetStrumTime)) < 1) {
 				note.kill();
 				notes.remove(note, true);
 				note.destroy();

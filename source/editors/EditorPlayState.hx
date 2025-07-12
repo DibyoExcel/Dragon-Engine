@@ -339,7 +339,7 @@ class EditorPlayState extends MusicBeatState
 
 	function sortByShit(Obj1:Note, Obj2:Note):Int
 	{
-		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.strumTime, Obj2.strumTime);
+		return FlxSort.byValues(FlxSort.ASCENDING, (Obj1.strumTime + Obj1.offsetStrumTime), (Obj2.strumTime + Obj2.offsetStrumTime));
 	}
 
 	private function endSong() {
@@ -373,7 +373,7 @@ class EditorPlayState extends MusicBeatState
 				if(PlayState.SONG.speed < 1) time /= PlayState.SONG.speed;
 				if(unspawnNotes[i].multSpeed < 1) time /= unspawnNotes[i].multSpeed;
 	
-				if (unspawnNotes.length > 0 && unspawnNotes[i].strumTime - Conductor.songPosition < time && (ClientPrefs.limitSpawn ? notes.length < ClientPrefs.limitSpawnNotes : true))
+				if (unspawnNotes.length > 0 && (unspawnNotes[i].strumTime + unspawnNotes[i].offsetStrumTime) - Conductor.songPosition < time && (ClientPrefs.limitSpawn ? notes.length < ClientPrefs.limitSpawnNotes : true))
 				{
 					var dunceNote:Note = unspawnNotes[i];
 					notes.insert(0, dunceNote);
@@ -433,7 +433,7 @@ class EditorPlayState extends MusicBeatState
 				}
 				if(daNote.copyY) {
 					if (ClientPrefs.downScroll) {
-						daNote.y = (strumY + 0.45 * (Conductor.songPosition - daNote.strumTime) * PlayState.SONG.speed);
+						daNote.y = (strumY + 0.45 * (Conductor.songPosition - (daNote.strumTime + daNote.offsetStrumTime)) * PlayState.SONG.speed);
 						if (daNote.isSustainNote) {
 							//Jesus fuck this took me so much mother fucking time AAAAAAAAAA
 							if (daNote.animation.curAnim.name.endsWith('end')) {
@@ -462,7 +462,7 @@ class EditorPlayState extends MusicBeatState
 							}
 						}
 					} else {
-						daNote.y = (strumY - 0.45 * (Conductor.songPosition - daNote.strumTime) * PlayState.SONG.speed);
+						daNote.y = (strumY - 0.45 * (Conductor.songPosition - (daNote.strumTime + daNote.offsetStrumTime)) * PlayState.SONG.speed);
 
 						if(daNote.mustPress || !daNote.ignoreNote)
 						{
@@ -507,7 +507,7 @@ class EditorPlayState extends MusicBeatState
 					}
 				}
 
-				if (Conductor.songPosition > (noteKillOffset / PlayState.SONG.speed) + daNote.strumTime)
+				if (Conductor.songPosition > (noteKillOffset / PlayState.SONG.speed) + (daNote.strumTime + daNote.offsetStrumTime))
 				{
 					if (daNote.mustPress)
 					{
@@ -515,7 +515,7 @@ class EditorPlayState extends MusicBeatState
 						{
 							//Dupe note remove
 							notes.forEachAlive(function(note:Note) {
-								if (daNote != note && daNote.mustPress && daNote.noteData == note.noteData && daNote.isSustainNote == note.isSustainNote && Math.abs(daNote.strumTime - note.strumTime) < 10) {
+								if (daNote != note && daNote.mustPress && daNote.noteData == note.noteData && daNote.isSustainNote == note.isSustainNote && Math.abs((daNote.strumTime + daNote.offsetStrumTime) - (note.strumTime + note.offsetStrumTime)) < 10) {
 									note.kill();
 									notes.remove(note, true);
 									note.destroy();
@@ -630,7 +630,7 @@ class EditorPlayState extends MusicBeatState
 					for (epicNote in sortedNotesList)
 					{
 						for (doubleNote in pressNotes) {
-							if (Math.abs(doubleNote.strumTime - epicNote.strumTime) < 1) {
+							if (Math.abs((doubleNote.strumTime + doubleNote.offsetStrumTime) - (epicNote.strumTime + epicNote.offsetStrumTime)) < 1) {
 								doubleNote.kill();
 								notes.remove(doubleNote, true);
 								doubleNote.destroy();
@@ -670,7 +670,7 @@ class EditorPlayState extends MusicBeatState
 		else if (!a.lowPriority && b.lowPriority)
 			return -1;
 
-		return FlxSort.byValues(FlxSort.ASCENDING, a.strumTime, b.strumTime);
+		return FlxSort.byValues(FlxSort.ASCENDING, (a.strumTime + a.offsetStrumTime), (b.strumTime + b.offsetStrumTime));
 	}
 
 	private function onKeyRelease(event:KeyboardEvent):Void
@@ -829,7 +829,7 @@ class EditorPlayState extends MusicBeatState
 	var COMBO_Y:Float = 340;
 	private function popUpScore(note:Note = null):Void
 	{
-		var noteDiff:Float = Math.abs(note.strumTime - Conductor.songPosition + ClientPrefs.ratingOffset);
+		var noteDiff:Float = Math.abs((note.strumTime + note.offsetStrumTime) - Conductor.songPosition + ClientPrefs.ratingOffset);
 
 		vocals.volume = 1;
 
