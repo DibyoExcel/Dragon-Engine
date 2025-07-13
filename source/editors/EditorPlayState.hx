@@ -279,7 +279,7 @@ class EditorPlayState extends MusicBeatState
 							{
 								oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
-								var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + (Conductor.stepCrochet / FlxMath.roundDecimal(PlayState.SONG.speed, 2)), daNoteData, oldNote, true, null, (songNotes[3] == "GF Sing Force Opponent"/**compatibility backward**/ || should_opt != -1 ? false : (should_ply != -1 ? true : gottaHitNote)), gfSec, swagNote.noteType);
+								var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + (Conductor.stepCrochet / FlxMath.roundDecimal(PlayState.SONG.speed, 2)), daNoteData, oldNote, true, null, (songNotes[3] == "GF Sing Force Opponent"/**compatibility backward**/ || should_opt != -1 ? false : (should_ply != -1 ? true : gottaHitNote)), gfSec, swagNote.noteType, susNote == (floorSus));
 								sustainNote.scrollFactor.set();
 								sustainNote.camTarget = '';//set to active cam;
 								sustainNote.noteSplashCam = '';//set to active cam;

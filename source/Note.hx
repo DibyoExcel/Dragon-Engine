@@ -23,8 +23,6 @@ class Note extends FlxSprite
 	public var extraData:Map<String, Dynamic> = [];
 
 	public var strumTime:Float = 0;
-	public var autoPress:Bool = false; // auto press like cpuController behavior but specific notes
-	public var playStrumAnim:Bool = true; // play strums anim when hit this notes
 	public var mustPress:Bool = false;
 	public var isDad:Bool = false; // For Player play as opponent
 	public var noteData:Int = 0;
@@ -99,6 +97,8 @@ class Note extends FlxSprite
 
 	public var hitsoundDisabled:Bool = false;
 	//dge core
+	public var autoPress:Bool = false; // auto press like cpuController behavior but specific notes
+	public var playStrumAnim:Bool = true; // play strums anim when hit this notes
 	public var direction:Float = 0;
 	public var flipScroll(default, set):Bool = false;//flip between scroll
 	public var noteScale(default, set):Float = 1.0;
@@ -110,6 +110,7 @@ class Note extends FlxSprite
 	public var noteSplashScale:Float = 1.0;
 	public var noteSplashScrollFactor:Array<Float> = [1, 1];//dont ask why 1 cuz is default of note splash
 	public var offsetStrumTime:Float = 0;
+	public var sustainTail:Bool = false;
 
 
 
@@ -203,7 +204,7 @@ class Note extends FlxSprite
 		return value;
 	}
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inEditor:Bool = false, mustPress:Bool = false, gfSec:Bool = false, noteType:String = '')
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inEditor:Bool = false, mustPress:Bool = false, gfSec:Bool = false, noteType:String = '', tail:Bool = false)
 	{
 		super();
 
@@ -212,6 +213,7 @@ class Note extends FlxSprite
 		var skin:String = PlayState.SONG.splashSkin;
 		var skinOpt:String = PlayState.SONG.splashSkinOpt;
 		var skinSec:String = PlayState.SONG.splashSkinSec;
+		sustainTail = tail;
 
 		if (prevNote == null)
 			prevNote = this;
@@ -241,17 +243,12 @@ class Note extends FlxSprite
 			animation.play(animToPlay + 'Scroll');
 		}
 
-		if (PlayState.SONG.secOpt && !(gamemode == "bothside") && !mustPress) {
-			noteScale = 0.75;
-			noteSplashScale = 0.75;
-		}
-
 		// trace(prevNote);
 
 		if (prevNote != null)
 			prevNote.nextNote = this;
 
-		if (isSustainNote && prevNote != null)
+		if (isSustainNote)
 		{
 			multAlpha = ClientPrefs.longNoteAlpha;
 			alpha = ClientPrefs.longNoteAlpha;
@@ -260,7 +257,7 @@ class Note extends FlxSprite
 			offsetX += (width / 2);
 			copyAngle = false;
 
-			animation.play(colArray[noteData % 4] + 'holdend');
+			animation.play(colArray[noteData % 4] + (tail ? 'holdend': 'hold'));
 
 			updateHitbox();
 
@@ -268,23 +265,18 @@ class Note extends FlxSprite
 
 			if (PlayState.isPixelStage)
 				offsetX += 30;
-
-			if (prevNote.isSustainNote)
-			{
-				prevNote.animation.play(colArray[prevNote.noteData % 4] + 'hold');
-				prevNote.scale.y *= (Conductor.stepCrochet / 100 * 1.05);
+			if (!tail) {
+				scale.y *= (Conductor.stepCrochet / 100 * 1.05);
 				if (PlayState.instance != null)
 				{
-					prevNote.scale.y *= PlayState.instance.songSpeed;
+					scale.y *= PlayState.instance.songSpeed;
 				}
-
 				if (PlayState.isPixelStage)
 				{
-					prevNote.scale.y *= 1.19;
-					prevNote.scale.y *= (6 / height); // Auto adjust note size
+					scale.y *= 1.19;
+					scale.y *= (6 / height); // Auto adjust note size
 				}
-				prevNote.updateHitbox();
-				// prevNote.setGraphicSize();
+				updateHitbox();
 			}
 
 			if (PlayState.isPixelStage)
@@ -333,6 +325,10 @@ class Note extends FlxSprite
 			}
 		}
 		this.noteType = noteType;
+		if (PlayState.SONG.secOpt && !(gamemode == "bothside") && !mustPress) {
+			noteScale = 0.75;
+			noteSplashScale = 0.75;
+		}
 	}
 	
 	var lastNoteOffsetXForPixelAutoAdjusting:Float = 0;
@@ -519,7 +515,7 @@ class Note extends FlxSprite
 
 	function set_flipScroll(value:Bool):Bool {
 		if (flipScroll != value) {
-			if (isSustainNote && prevNote != null) {
+			if (isSustainNote) {
 				flipY = !flipY;
 			}
 		}
@@ -534,7 +530,7 @@ class Note extends FlxSprite
 			noteScale = 1;
 			reloadNote('', texture);
 			noteScale = lastScale;
-			if (PlayState.SONG.secOpt) {//purpose trigger
+			if (PlayState.SONG.secOpt || !mustPress) {//purpose trigger
 				noteScale = 0.75;
 			}
 			if (noteType != 'Hurt Note') {

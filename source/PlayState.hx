@@ -2683,7 +2683,7 @@ class PlayState extends MusicBeatState
 							} else {
 								sustainData = daNoteData;
 							}
-							sustainNote = new Note((daStrumTime + (Conductor.stepCrochet * susNote)+(i*(100/(multNote)))) + (Conductor.stepCrochet / FlxMath.roundDecimal(songSpeed, 2)), sustainData, oldNote, true, null, (swagNote.noteType == "GF Sing Force Opponent" ? false : gottaHitNote), gfSec, swagNote.noteType);
+							sustainNote = new Note((daStrumTime + (Conductor.stepCrochet * susNote)+(i*(100/(multNote)))) + (Conductor.stepCrochet / FlxMath.roundDecimal(songSpeed, 2)), sustainData, oldNote, true, null, (swagNote.noteType == "GF Sing Force Opponent" ? false : gottaHitNote), gfSec, swagNote.noteType, susNote == (floorSus));
 								sustainNote.noteType = swagNote.noteType;
 								if (modcharttype == 'random flip scroll') {
 									sustainNote.flipScroll = swagNote.flipScroll;
