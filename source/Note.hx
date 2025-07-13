@@ -208,6 +208,10 @@ class Note extends FlxSprite
 		super();
 
 		this.mustPress = mustPress;
+		var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
+		var skin:String = PlayState.SONG.splashSkin;
+		var skinOpt:String = PlayState.SONG.splashSkinOpt;
+		var skinSec:String = PlayState.SONG.splashSkinSec;
 
 		if (prevNote == null)
 			prevNote = this;
@@ -224,54 +228,22 @@ class Note extends FlxSprite
 			this.strumTime += ClientPrefs.noteOffset;
 		
 		this.noteData = noteData;
+
+		texture = '';
+		colorSwap = new ColorSwap();
+		shader = colorSwap.shader;
 		
-		if (noteData > -1)
-			{
-				var skin:String = PlayState.SONG.splashSkin;
-				var skinOpt:String = PlayState.SONG.splashSkinOpt;
-				var skinSec:String = PlayState.SONG.splashSkinSec;
-				if (skin == null || skin.length < 1) {
-					skin = "noteSplashes";
-				}
-				if (skinOpt == null || skinOpt.length < 1) {
-					skinOpt = skin;
-				}
-				if (skinSec == null || skinSec.length < 1) {
-					if (skinOpt == null || skinOpt.length < 1) {
-						skinSec = skin;
-					} else {
-						skinSec = skinOpt;
-					}
-					skinSec = skinOpt;
-				}
-				texture = '';
-				var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
-				if (PlayState.SONG.secOpt && !mustPress && !(gamemode == "bothside")) {
-					noteScale = 0.75;
-				}
-				colorSwap = new ColorSwap();
-				shader = colorSwap.shader;
-				this.gfNote = gfSec;
-				if (mustPress) {
-					noteSplashTexture = skin;
-				} else {
-					if (PlayState.SONG.secOpt && !(gamemode == "bothside")) {
-						noteSplashScale = 0.75;
-					}
-					if (gfNote) {
-						noteSplashTexture = skinSec;
-					} else {
-						noteSplashTexture = skinOpt;
-					}
-				}
-			
-			x += swagWidth * (noteData);
-			if (!isSustainNote && noteData > -1 && noteData < 8)
-				{ // Doing this 'if' check to fix the warnings on Senpai songs
-				var animToPlay:String = '';
-				animToPlay = colArray[noteData % 4];
-				animation.play(animToPlay + 'Scroll');
-			}
+		x += swagWidth * (noteData);
+		if (!isSustainNote && noteData > -1 && noteData < 8)
+			{ // Doing this 'if' check to fix the warnings on Senpai songs
+			var animToPlay:String = '';
+			animToPlay = colArray[noteData % 4];
+			animation.play(animToPlay + 'Scroll');
+		}
+
+		if (PlayState.SONG.secOpt && !(gamemode == "bothside") && !mustPress) {
+			noteScale = 0.75;
+			noteSplashScale = 0.75;
 		}
 
 		// trace(prevNote);
@@ -336,9 +308,33 @@ class Note extends FlxSprite
 		if (!inEditor) {
 			scrollFactor.set(scrollFactorCam[0], scrollFactorCam[1]);
 		}
+		this.gfNote = gfSec;
+		if (skin == null || skin.length < 1) {
+			skin = "noteSplashes";
+		}
+		if (skinOpt == null || skinOpt.length < 1) {
+			skinOpt = skin;
+		}
+		if (skinSec == null || skinSec.length < 1) {
+			if (skinOpt == null || skinOpt.length < 1) {
+				skinSec = skin;
+			} else {
+				skinSec = skinOpt;
+			}
+			skinSec = skinOpt;
+		}
+		if (mustPress) {
+			noteSplashTexture = skin;
+		} else {
+			if (gfNote) {
+				noteSplashTexture = skinSec;
+			} else {
+				noteSplashTexture = skinOpt;
+			}
+		}
 		this.noteType = noteType;
 	}
-
+	
 	var lastNoteOffsetXForPixelAutoAdjusting:Float = 0;
 	var lastNoteScaleToo:Float = 1;
 
