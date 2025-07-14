@@ -300,7 +300,24 @@
                     <h3>HTML5 Version (I recommended to use Windows version)</h3>
                     <div class="tv_container" style="width: 85%;">
                         <iframe id='fnfgame' src="about:blank" class="ratio" allowfullscreen style="background-color: black;"></iframe>
-                        <div class="name" style="font-family: 'Mojangles';">TOSHIWYRM</div>
+                        <div class="name" style="font-family: 'Mojangles';">
+                            TOSHIWYRM
+                        </div>
+                        <button onclick='
+                        const target2 = document.getElementById("fnfgame");
+                        if (target2.requestFullscreen) {
+                            target2.requestFullscreen();
+                        } else if (target2.webkitRequestFullscreen) {
+                            target2.webkitRequestFullscreen(); //safari
+                        } else if (target2.mozRequestFullScreen) {
+                            target2.mozRequestFullScreen(); //mozzilla
+                        } else if (target2.msRequestFullscreen) {
+                            target2.msRequestFullscreen();//edge
+                        }
+                        target2.focus();
+                        ' class="fullscreen button" id="fullscreen_btn" style="position: absolute; right: 15px; bottom: 10px; display: none;">
+                            <img src="https://img.icons8.com/?size=100&id=38034&format=png&color=000000" width="20px" height="20px">
+                        </button>
                     </div>
                     <button onclick='
                     const target = document.getElementById("fnfgame");
@@ -308,6 +325,8 @@
                     target.style.backgroundColor = "white";
                     const fullBtn = document.getElementById("iframebutton");
                     fullBtn.style.display = "flex";
+                    const fullBtn1 = document.getElementById("fullscreen_btn");
+                    fullBtn1.style.display = "block";
                     const nobutton = document.getElementById("playbutton");
                     nobutton.style.display = "none";
                     ' id="playbutton" class="button">
@@ -316,25 +335,12 @@
                     <div id="iframebutton" style="gap: 25px; display: none;">
                         <button onclick='
                         const target = document.getElementById("fnfgame");
-                        if (target.requestFullscreen) {
-                            target.requestFullscreen();
-                        } else if (target.webkitRequestFullscreen) {
-                            target.webkitRequestFullscreen(); //safari
-                        } else if (target.mozRequestFullScreen) {
-                            target.mozRequestFullScreen(); //mozzilla
-                        } else if (target.msRequestFullscreen) {
-                            target.msRequestFullscreen();//edge
-                        }
-                        target.focus();
-                        ' class="fullscreen button">
-                            <img src="https://img.icons8.com/?size=100&id=38034&format=png&color=000000" width="50px" height="50px">
-                        </button>
-                        <button onclick='
-                        const target = document.getElementById("fnfgame");
                         target.src= "about:blank";
                         target.style.backgroundColor = "black";
                         const fullBtn = document.getElementById("iframebutton");
                         fullBtn.style.display = "none";
+                        const fullBtn1 = document.getElementById("fullscreen_btn");
+                        fullBtn1.style.display = "none";
                         const nobutton = document.getElementById("playbutton");
                         nobutton.style.display = "block";
                         ' class="shutdown button">
