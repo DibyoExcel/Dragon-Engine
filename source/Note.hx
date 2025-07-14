@@ -301,6 +301,7 @@ class Note extends FlxSprite
 			scrollFactor.set(scrollFactorCam[0], scrollFactorCam[1]);
 		}
 		this.gfNote = gfSec;
+		this.noteType = noteType;
 		if (skin == null || skin.length < 1) {
 			skin = "noteSplashes";
 		}
@@ -324,7 +325,6 @@ class Note extends FlxSprite
 				noteSplashTexture = skinOpt;
 			}
 		}
-		this.noteType = noteType;
 		if (PlayState.SONG.secOpt && !(gamemode == "bothside") && !mustPress) {
 			noteScale = 0.75;
 			noteSplashScale = 0.75;

@@ -75,6 +75,7 @@ div.border_content{
     background-color: rgba(255, 0, 255, 0.1);
     backdrop-filter: blur(10px);
     overflow: hidden;
+    border-radius: 10px;
 }
 div.luaborder{
     overflow: hidden;
@@ -170,7 +171,7 @@ div.name {
     transform: translateX(-50%);
     height: 50px;
     line-height: 50px;
-    font-size: 20px;
+    font-size: 17.5px;
     color: silver;
     pointer-events: none;
   }

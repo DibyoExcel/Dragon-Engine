@@ -19,6 +19,8 @@
       height: 100vh;
       margin: 0;
       background-image: linear-gradient(45deg, #300030, #200020);
+      background-position: center;
+      background-size: cover;
     }
 
     h1 {
@@ -69,17 +71,29 @@
       font-size: 0.9rem;
       color: #eecbf2;
     }
+    #iframedan{
+      border-radius: 10px;
+      border: 5px solid silver;
+    }
   </style>
   <script>
     function openLocalPage() {
       const input = document.getElementById('search-input').value.trim().toLowerCase();
       const status = document.getElementById('status');
+      const queryTarget = new URLSearchParams(window.location.search).get('query.iframe');
       if (!input) {
         status.innerText = "⚠️ Please enter a valid page name or path.";
         return;
       }
       status.innerText = `🔮 Opening "${input}"...`;
-      window.location.href = input;
+      if (queryTarget == 'true') {
+        const iframetar = document.getElementById('iframedan');
+        iframetar.style.display = 'block';
+        iframetar.src = input;
+        status.innerText = ``;
+      } else {
+        window.location.href = input;
+      }
     }
   </script>
 </head>
@@ -90,5 +104,6 @@
     <button onclick="openLocalPage()">Launch</button>
   </div>
   <div class="status" id="status"></div>
+  <iframe src="about:blank" style="display: none; aspect-ratio: 16/9;" id="iframedan" width="1000px"></iframe>
 </body>
 </html>
