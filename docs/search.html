@@ -65,6 +65,13 @@
       background-color: #ff4fe0;
     }
 
+    div.borderpurple{
+    border: 5px solid rgb(44,8,99);
+    border-radius: 10px;
+    box-shadow: 0 10px 10px rgba(0,0, 0, 0.5);
+    background-color: rgb(27,12,27);
+}
+
     .status {
       margin-top: 25px;
       font-style: italic;
@@ -73,6 +80,13 @@
     }
     div#iframedan{
       position: relative;
+      aspect-ratio: 16/9;
+      transition: all 0.25s;
+      width: 900px;
+    }
+    div#iframedan:hover{
+      transition: all 0.25s;
+      width: 1000px;
     }
     iframe#iframecok{
       border-radius: 10px;
@@ -131,11 +145,15 @@
     <button onclick="openLocalPage()">Launch</button>
   </div>
   <div class="status" id="status"></div>
-  <div style="display: none; aspect-ratio: 16/9; width: 1000px;" id="iframedan">
+  <div id="iframedan">
     <iframe id="iframecok" src="about:blank" allowfullscreen width="100%" height="100%"></iframe>
     <button class="fullscreen-btn" onclick="makeFullscreen()">
       <img src="https://img.icons8.com/?size=100&id=38034&format=png&color=000000" width="20px" height="20px">
     </button>
   </div>
+  <br>
+  <div class="borderpurple">
+    <h3 class="end">End of Page.</h3>
+</div>
 </body>
 </html>

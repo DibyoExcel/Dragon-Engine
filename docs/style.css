@@ -19,7 +19,7 @@ a:hover{
     text-shadow: 0 0 10px #00ff00;
 }
 
-a.hidden{
+button.hidden{
     display: none;
 }
 
@@ -159,12 +159,13 @@ iframe#fnfgame{
     border-bottom: 50px solid black;
 }
 
-div.tv_container {
+div#tv_container {
     position: relative;
     text-align: center;
+    overflow: hidden;
 }
 
-div.name {
+div.brand_name {
     position: absolute;
     bottom: 0;
     left: 50%;
