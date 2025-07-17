@@ -64,8 +64,6 @@ class ChartingState extends MusicBeatState
 	public var animAssets:Array<String> = [ "Left", 'Down', 'Up', 'Right' ];
 	private var optChar:FlxSprite;
 	private var plyChar:FlxSprite;
-	private var stopOptChar:Timer;
-	private var stopPlyChar:Timer;
 	public static var noteTypeList:Array<String> = //Used for backwards compatibility with 0.1 - 0.3.2 charts, though, you should add your hardcoded custom note types here too.
 	[
 		'',
@@ -136,11 +134,11 @@ class ChartingState extends MusicBeatState
 
 	var dummyArrow:FlxSprite;
 
-	var curRenderedSustains:FlxTypedGroup<FlxSprite>;
+	var curRenderedSustains:FlxTypedGroup<Note>;
 	var curRenderedNotes:FlxTypedGroup<Note>;
 	var curRenderedNoteType:FlxTypedGroup<FlxText>;
 
-	var nextRenderedSustains:FlxTypedGroup<FlxSprite>;
+	var nextRenderedSustains:FlxTypedGroup<Note>;
 	var nextRenderedNotes:FlxTypedGroup<Note>;
 
 	var gridBG:FlxSprite;
@@ -285,11 +283,11 @@ class ChartingState extends MusicBeatState
 		leftIcon.setPosition(GRID_SIZE + 10, -100);
 		rightIcon.setPosition(GRID_SIZE * 5.2, -100);
 
-		curRenderedSustains = new FlxTypedGroup<FlxSprite>();
+		curRenderedSustains = new FlxTypedGroup<Note>();
 		curRenderedNotes = new FlxTypedGroup<Note>();
 		curRenderedNoteType = new FlxTypedGroup<FlxText>();
 
-		nextRenderedSustains = new FlxTypedGroup<FlxSprite>();
+		nextRenderedSustains = new FlxTypedGroup<Note>();
 		nextRenderedNotes = new FlxTypedGroup<Note>();
 
 		if(curSec >= _song.notes.length) curSec = _song.notes.length - 1;
@@ -483,23 +481,11 @@ class ChartingState extends MusicBeatState
 		{
 			openSubState(new Prompt('This action will clear current progress.\n\nProceed?', 0, function(){
 				loadJson(_song.song.toLowerCase()); }, null,ignoreWarnings));
-				if (stopOptChar != null) {
-					stopOptChar.stop();
-				}
-				if (stopPlyChar != null) {
-					stopPlyChar.stop();
-				}
 		});
 
 		var loadAutosaveBtn:FlxButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, 'Load Autosave', function()
 		{
 			PlayState.SONG = Song.parseJSONshit(FlxG.save.data.autosave);
-			if (stopOptChar != null) {
-				stopOptChar.stop();
-			}
-			if (stopPlyChar != null) {
-				stopPlyChar.stop();
-			}
 			MusicBeatState.resetState();
 		});
 
@@ -1764,23 +1750,11 @@ class ChartingState extends MusicBeatState
 			if (FlxG.keys.justPressed.ESCAPE)
 			{
 				autosaveSong();
-				if (stopOptChar != null) {
-					stopOptChar.stop();
-				}
-				if (stopPlyChar != null) {
-					stopPlyChar.stop();
-				}
 				LoadingState.loadAndSwitchState(new editors.EditorPlayState(sectionStartTime()));
 			}
 			if (FlxG.keys.justPressed.ENTER)
 			{
 				autosaveSong();
-				if (stopOptChar != null) {
-					stopOptChar.stop();
-				}
-				if (stopPlyChar != null) {
-					stopPlyChar.stop();
-				}
 				FlxG.mouse.visible = false;
 				PlayState.SONG = _song;
 				FlxG.sound.music.stop();
@@ -1804,12 +1778,6 @@ class ChartingState extends MusicBeatState
 
 
 			if (FlxG.keys.justPressed.BACKSPACE) {
-				if (stopOptChar != null) {
-					stopOptChar.stop();
-				}
-				if (stopPlyChar != null) {
-					stopPlyChar.stop();
-				}
 				PlayState.chartingMode = false;
 				MusicBeatState.switchState(new editors.MasterEditorMenu());
 				FlxG.sound.playMusic(Paths.music('freakyMenu'));
@@ -2138,26 +2106,59 @@ class ChartingState extends MusicBeatState
 					var noteDataToCheck:Int = note.noteData;
 					if (!note.mustPress) {
 						optChar.animation.play("sing"+animAssets[note.noteData].toUpperCase(), true);
-						if (stopOptChar != null) {
-							stopOptChar.stop();
-						}
-						stopOptChar = new Timer(Math.floor(note.sustainLength)+500);
-						stopOptChar.run = function() {
-							optChar.animation.play("idle");
-						};
 					} else {
 						plyChar.animation.play("sing"+animAssets[note.noteData].toUpperCase(), true);
-						if (stopPlyChar != null) {
-							stopPlyChar.stop();
-						}
-						stopPlyChar = new Timer(Math.floor(note.sustainLength)+150);
-						stopPlyChar.run = function() {
-							plyChar.animation.play("idle");
-						};
 					}
 					if(noteDataToCheck > -1 && note.mustPress != _song.notes[curSec].mustHitSection) noteDataToCheck += 4;
 						strumLineNotes.members[noteDataToCheck].playAnim('confirm', true);
-						strumLineNotes.members[noteDataToCheck].resetAnim = (note.sustainLength / 1000) + 0.15;
+						strumLineNotes.members[noteDataToCheck].resetAnim = 0.15;
+					if(!playedSound[data]) {
+						if((playSoundBf.checked && note.mustPress) || (playSoundDad.checked && !note.mustPress)){
+							var soundToPlay = 'hitsound';
+							if(_song.player1 == 'gf') { //Easter egg
+								soundToPlay = 'GF_' + Std.string(data + 1);
+							}
+
+							FlxG.sound.play(Paths.sound(soundToPlay)).pan = note.noteData < 4? -0.3 : 0.3; //would be coolio
+							playedSound[data] = true;
+						}
+
+						data = note.noteData;
+						if(note.mustPress != _song.notes[curSec].mustHitSection)
+						{
+							data += 4;
+						}
+					}
+				}
+			}
+		});
+		curRenderedSustains.forEachAlive(function(note:Note) {
+			note.alpha = 1;
+			if(curSelectedNote != null) {
+				var noteDataToCheck:Int = note.noteData;
+				if(noteDataToCheck > -1 && note.mustPress != _song.notes[curSec].mustHitSection) noteDataToCheck += 4;
+
+				if (curSelectedNote[0] == note.strumTime && ((curSelectedNote[2] == null && noteDataToCheck < 0) || (curSelectedNote[2] != null && curSelectedNote[1] == noteDataToCheck)))
+				{
+					colorSine += elapsed;
+					var colorVal:Float = 0.7 + Math.sin(Math.PI * colorSine) * 0.3;
+					note.color = FlxColor.fromRGBFloat(colorVal, colorVal, colorVal, 0.999); //Alpha can't be 100% or the color won't be updated for some reason, guess i will die
+				}
+			}
+
+			if(note.strumTime <= Conductor.songPosition) {
+				note.alpha = 0.4;
+				if(note.strumTime > lastConductorPos && FlxG.sound.music.playing && note.noteData > -1) {
+					var data:Int = note.noteData % 4;
+					var noteDataToCheck:Int = note.noteData;
+					if (!note.mustPress) {
+						optChar.animation.play("sing"+animAssets[note.noteData].toUpperCase(), true);
+					} else {
+						plyChar.animation.play("sing"+animAssets[note.noteData].toUpperCase(), true);
+					}
+					if(noteDataToCheck > -1 && note.mustPress != _song.notes[curSec].mustHitSection) noteDataToCheck += 4;
+						strumLineNotes.members[noteDataToCheck].playAnim('confirm', true);
+						strumLineNotes.members[noteDataToCheck].resetAnim = 0.15;
 					if(!playedSound[data]) {
 						if((playSoundBf.checked && note.mustPress) || (playSoundDad.checked && !note.mustPress)){
 							var soundToPlay = 'hitsound';
@@ -2190,6 +2191,12 @@ class ChartingState extends MusicBeatState
 		}
 		optChar.y = (((FlxG.height - (optChar.height)))+strumLine.y)-((optChar.height*0.1)/2);
 		plyChar.y = (((FlxG.height - (plyChar.height)))+strumLine.y)-((plyChar.height/10)/2);
+		if (plyChar.animation.finished && plyChar.animation.curAnim.name != 'idle') {
+			plyChar.animation.play('idle');
+		}
+		if (optChar.animation.finished && optChar.animation.curAnim.name != 'idle') {
+			optChar.animation.play('idle');
+		}
 		lastConductorPos = Conductor.songPosition;
 		super.update(elapsed);
 	}
@@ -2726,7 +2733,15 @@ class ChartingState extends MusicBeatState
 			curRenderedNotes.add(note);
 			if (note.sustainLength > 0)
 			{
-				curRenderedSustains.add(setupSusNote(note, beats));
+				var susLength:Float = note.sustainLength;
+				susLength = susLength / Conductor.stepCrochet;
+				var floorSus:Int = Math.floor(susLength);
+				var susNoteType:Note;
+				if (floorSus > 0) {
+					for (i in 0...floorSus+1) {
+						curRenderedSustains.add(setupSustainNote((note.strumTime + (Conductor.stepCrochet * i))+Conductor.stepCrochet, i, note, floorSus));
+					}
+				}
 			}
 
 			if(i[3] != null && note.noteType != null && note.noteType.length > 0) {
@@ -2780,7 +2795,15 @@ class ChartingState extends MusicBeatState
 				nextRenderedNotes.add(note);
 				if (note.sustainLength > 0)
 				{
-					nextRenderedSustains.add(setupSusNote(note, beats));
+					var susLength:Float = note.sustainLength;
+					susLength = susLength / Conductor.stepCrochet;
+					var floorSus:Int = Math.floor(susLength);
+					var susNoteType:Note;
+					if (floorSus > 0) {
+						for (i in 0...floorSus+1) {
+							nextRenderedSustains.add(setupSustainNote((note.strumTime + (Conductor.stepCrochet * i))+Conductor.stepCrochet, i, note, floorSus));
+						}
+					}
 				}
 			}
 		}
@@ -2860,14 +2883,19 @@ class ChartingState extends MusicBeatState
 		return retStr;
 	}
 
-	function setupSusNote(note:Note, beats:Float):FlxSprite {
-		var height:Int = Math.floor(FlxMath.remapToRange(note.sustainLength, 0, Conductor.stepCrochet * 16, 0, GRID_SIZE * 16 * zoomList[curZoom]) + (GRID_SIZE * zoomList[curZoom]) - GRID_SIZE / 2);
-		var minHeight:Int = Std.int((GRID_SIZE * zoomList[curZoom] / 2) + GRID_SIZE / 2);
-		var colorN:Array<Int> = [ FlxColor.MAGENTA, FlxColor.CYAN, FlxColor.LIME, FlxColor.RED ];
-		if(height < minHeight) height = minHeight;
-		if(height < 1) height = 1; //Prevents error of invalid height
-		var spr:FlxSprite = new FlxSprite(note.x + (GRID_SIZE * 0.5) - 4, note.y + GRID_SIZE / 2).makeGraphic(8, height, colorN[note.noteData%4]);
-		return spr;
+	function setupSusNote(note:Note, beats:Float):Note {
+		//now this is useless
+		
+		return note;
+	}
+
+	function setupSustainNote(strumTime:Float, susNote, note:Note, tail:Int):Note {
+		var susNoteType:Note = new Note(strumTime, note.noteData, null, true, true, note.mustPress, note.gfNote, note.noteType, susNote == tail);
+		susNoteType.x = note.x+((GRID_SIZE-(GRID_SIZE*0.25))/2);
+		susNoteType.y = note.y + (susNote*(GRID_SIZE*zoomList[curZoom]));
+		susNoteType.setGraphicSize(Std.int(GRID_SIZE*0.25), Std.int(GRID_SIZE*zoomList[curZoom]));
+		susNoteType.updateHitbox();
+		return susNoteType;
 	}
 
 	private function addSection(sectionBeats:Float = 4):Void

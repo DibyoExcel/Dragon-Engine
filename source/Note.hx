@@ -250,7 +250,7 @@ class Note extends FlxSprite
 
 		if (isSustainNote)
 		{
-			multAlpha = ClientPrefs.longNoteAlpha;
+			multAlpha = (inEditor ? 1 : ClientPrefs.longNoteAlpha);
 			alpha = ClientPrefs.longNoteAlpha;
 			hitsoundDisabled = true;
 
