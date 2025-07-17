@@ -4793,7 +4793,7 @@ class PlayState extends MusicBeatState
 				{
 					if (strumsBlocked[daNote.noteData + (gamemode == "bothside v2" && !daNote.mustPress ? playerStrums.length : 0)] != true && (daNote.canBeHit && (((gamemode == 'opponent') || (gamemode == "bothside v2" && key > 3)) ? !daNote.mustPress : (gamemode == "bothside" ? true : daNote.mustPress)) && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote && (gamemode == "opponent"  ? !daNote.ignoreNote : !daNote.blockHit) && !daNote.autoPress) && !((fieldNameAsPlayer == '' ? daNote.customField : daNote.fieldTarget != fieldNameAsPlayer)))//when player play as opponent the player cant press ignore note(based opponent itself), you cant press autoPress notes
 					{
-						if(daNote.noteData == key-((gamemode == 'bothside v2' && !daNote.mustPress) ? playerStrums.length : 0))
+						if(daNote.noteData == key-((gamemode == 'bothside v2' && !daNote.mustPress) ? playerStrums.length : ((gamemode == 'opponent' && !daNote.mustPress && PlayState.SONG.secOpt && daNote.gfNote) ? gfStrums.length : 0)))
 						{
 							sortedNotesList.push(daNote);
 							//notesDatas.push(daNote.noteData);
@@ -5295,7 +5295,7 @@ class PlayState extends MusicBeatState
 						StrumPlayAnim(!note.mustPress ? true : false, Std.int(Math.abs(note.noteData)), time, note.customField, note.fieldTarget, note);
 					}
 				} else {
-					var spr = (!note.customField ? ((gamemode == "opponent" || (gamemode == 'bothside v2' && !note.mustPress)) ? opponentStrums.members[note.noteData] : playerStrums.members[note.noteData]) : strumGroupMap.get(note.fieldTarget).members[note.noteData]);
+					var spr = (!note.customField ? ((gamemode == "opponent" || !note.mustPress) ? (note.gfNote && PlayState.SONG.secOpt ? gfStrums.members[note.noteData] : opponentStrums.members[note.noteData]) : playerStrums.members[note.noteData]) : strumGroupMap.get(note.fieldTarget).members[note.noteData]);
 					if(spr != null)
 					{
 						if (note.playStrumAnim) {
