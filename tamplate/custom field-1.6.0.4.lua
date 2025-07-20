@@ -32,8 +32,8 @@ function onStepHit()
         removeStrum("tamplateStrum")--remove strum in mid song
         for i=0, getProperty('unspawnNotes.length')-1 do
             --change back to hud
-            setPropertyFromGroup("unspawnNotes", i, "camTarget", 'hud')
-            setPropertyFromGroup("unspawnNotes", i, "noteSplashCam", 'hud')
+            --setPropertyFromGroup("unspawnNotes", i, "camTarget", 'hud')
+            --setPropertyFromGroup("unspawnNotes", i, "noteSplashCam", 'hud')
         end
     end
 end

@@ -316,13 +316,15 @@ class Note extends FlxSprite
 			}
 			skinSec = skinOpt;
 		}
-		if (mustPress) {
-			noteSplashTexture = skin;
-		} else {
-			if (gfNote) {
-				noteSplashTexture = skinSec;
+		if (noteSplashTexture == null || noteSplashTexture.length < 1) {
+			if (mustPress) {
+				noteSplashTexture = skin;
 			} else {
-				noteSplashTexture = skinOpt;
+				if (gfNote) {
+					noteSplashTexture = skinSec;
+				} else {
+					noteSplashTexture = skinOpt;
+				}
 			}
 		}
 		if (PlayState.SONG.secOpt && !(gamemode == "bothside") && !mustPress) {
@@ -530,7 +532,7 @@ class Note extends FlxSprite
 			noteScale = 1;
 			reloadNote('', texture);
 			noteScale = lastScale;
-			if (PlayState.SONG.secOpt || !mustPress) {//purpose trigger
+			if (PlayState.SONG.secOpt && !mustPress) {//purpose trigger
 				noteScale = 0.75;
 			}
 			if (noteType != 'Hurt Note') {

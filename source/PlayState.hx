@@ -133,7 +133,7 @@ class PlayState extends MusicBeatState
 	public var modchartSaves:Map<String, FlxSave> = new Map();
 	#end
 	
-	public var strumGroupMap:Map<String, FlxTypedGroup<StrumNote>>;
+	public var strumGroupMap:Map<String, FlxTypedGroup<StrumNote>> = new Map();
 	public var BF_X:Float = 770;
 	public var BF_Y:Float = 100;
 	public var DAD_X:Float = 100;
@@ -468,12 +468,6 @@ class PlayState extends MusicBeatState
 
 		GameOverSubstate.resetVariables();
 		var songName:String = Paths.formatToSongPath(SONG.song);
-		if (PlayState.SONG.arrowSkinOpt != null && PlayState.SONG.arrowSkinOpt.length > 0) {
-			precacheList.set(PlayState.SONG.arrowSkinOpt, "image");
-		}
-		if (PlayState.SONG.splashSkinOpt != null && PlayState.SONG.splashSkinOpt.length > 0) {
-			precacheList.set(PlayState.SONG.splashSkinOpt, "image");
-		}
 		curStage = SONG.stage;
 		//trace('stage is: ' + curStage);
 		if(SONG.stage == null || SONG.stage.length < 1) {
@@ -4793,7 +4787,7 @@ class PlayState extends MusicBeatState
 				{
 					if (strumsBlocked[daNote.noteData + (gamemode == "bothside v2" && !daNote.mustPress ? playerStrums.length : 0)] != true && (daNote.canBeHit && (((gamemode == 'opponent') || (gamemode == "bothside v2" && key > 3)) ? !daNote.mustPress : (gamemode == "bothside" ? true : daNote.mustPress)) && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote && (gamemode == "opponent"  ? !daNote.ignoreNote : !daNote.blockHit) && !daNote.autoPress) && !((fieldNameAsPlayer == '' ? daNote.customField : daNote.fieldTarget != fieldNameAsPlayer)))//when player play as opponent the player cant press ignore note(based opponent itself), you cant press autoPress notes
 					{
-						if(daNote.noteData == key-((gamemode == 'bothside v2' && !daNote.mustPress) ? playerStrums.length : ((gamemode == 'opponent' && !daNote.mustPress && PlayState.SONG.secOpt && daNote.gfNote) ? gfStrums.length : 0)))
+						if(daNote.noteData == key-((gamemode == 'bothside v2' && !daNote.mustPress) ? playerStrums.length : ((gamemode == 'opponent' && !daNote.mustPress && PlayState.SONG.secOpt && daNote.gfNote) ? opponentStrums.length : 0)))
 						{
 							sortedNotesList.push(daNote);
 							//notesDatas.push(daNote.noteData);
