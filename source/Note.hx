@@ -7,6 +7,10 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
+#if sys
+import sys.FileSystem;
+import sys.io.File;
+#end
 
 using StringTools;
 
@@ -111,6 +115,7 @@ class Note extends FlxSprite
 	public var noteSplashScrollFactor:Array<Float> = [1, 1];//dont ask why 1 cuz is default of note splash
 	public var offsetStrumTime:Float = 0;
 	public var sustainTail:Bool = false;
+	public var animConfirm:String = '';//static, confirm, notes
 
 
 
@@ -189,9 +194,6 @@ class Note extends FlxSprite
 				case 'GF Sing':
 					gfNote = true;
 				case 'GF Sing Force Opponent':
-					if (inEditor) {
-						mustPress = false; 
-					}
 					gfNote = true;
 				case 'Flip Scroll':
 					flipScroll = true;
@@ -201,12 +203,14 @@ class Note extends FlxSprite
 		noteSplashHue = colorSwap.hue;
 		noteSplashSat = colorSwap.saturation;
 		noteSplashBrt = colorSwap.brightness;
+		runConfig(value);
 		return value;
 	}
 
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inEditor:Bool = false, mustPress:Bool = false, gfSec:Bool = false, noteType:String = '', tail:Bool = false)
 	{
 		super();
+		
 
 		this.mustPress = mustPress;
 		var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
@@ -331,6 +335,7 @@ class Note extends FlxSprite
 			noteScale = 0.75;
 			noteSplashScale = 0.75;
 		}
+		runConfig(noteType);
 	}
 	
 	var lastNoteOffsetXForPixelAutoAdjusting:Float = 0;
@@ -615,5 +620,51 @@ class Note extends FlxSprite
 		}
 		noteScale = value;
 		return value;
+	}
+	private function runConfig(value:String = '') {
+		#if MODS_ALLOWED
+		//also affected if change note in midgame
+		var jsonRa:String = '';
+		var haxeRa:Dynamic = {};
+		if (FileSystem.exists(Paths.mods('custom_notetypes/all.json'))) {//high priority
+			jsonRa = File.getContent(Paths.mods('custom_notetypes/all.json'));
+			haxeRa = haxe.Json.parse(jsonRa);
+			var jokowi = Reflect.fields(haxeRa);
+			for (hidup in jokowi) {
+				var SDM = hidup.split('.');
+				var val = Reflect.field(haxeRa, hidup);
+				if (SDM.length <= 1) {
+					Reflect.setProperty(this, hidup, val);
+				} else {
+					//get this shit from FunkinLua.hx
+					var target = Reflect.getProperty(this, SDM[0]);
+					for (key in 1...SDM.length-1) {
+						target = Reflect.getProperty(target, SDM[key]);
+					}
+					Reflect.setProperty(target, SDM[SDM.length-1], val);
+				}
+			}
+		} else {
+			if (FileSystem.exists(Paths.mods('custom_notetypes/' + value + '.json'))) {
+				jsonRa = File.getContent(Paths.mods('custom_notetypes/' + value + '.json'));
+				haxeRa = haxe.Json.parse(jsonRa);
+				var wati = Reflect.fields(haxeRa);
+				for (mega in wati) {
+					var SDM = mega.split('.');
+					var val = Reflect.field(haxeRa, mega);
+					if (SDM.length <= 1) {
+						Reflect.setProperty(this, mega, val);
+					} else {
+						//get this shit from FunkinLua.hx
+						var target = Reflect.getProperty(this, SDM[0]);
+						for (key in 1...SDM.length-1) {
+							target = Reflect.getProperty(target, SDM[key]);
+						}
+						Reflect.setProperty(target, SDM[SDM.length-1], val);
+					}
+				}
+			}
+		}
+		#end
 	}
 }

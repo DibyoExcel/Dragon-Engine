@@ -598,7 +598,13 @@ class EditorPlayState extends MusicBeatState
 		if (key > -1 && (FlxG.keys.checkStatus(eventKey, JUST_PRESSED) || ClientPrefs.controllerMode))
 		{
 			if(generatedMusic)
-			{
+				{
+					var spr:StrumNote = playerStrums.members[key];
+				if(spr != null)
+				{
+					spr.playAnim('pressed');
+					spr.resetAnim = 0;
+				}
 				//more accurate hit time for the ratings?
 				var lastTime:Float = Conductor.songPosition;
 				Conductor.songPosition = FlxG.sound.music.time;
@@ -654,12 +660,7 @@ class EditorPlayState extends MusicBeatState
 				Conductor.songPosition = lastTime;
 			}
 
-			var spr:StrumNote = playerStrums.members[key];
-			if(spr != null && spr.animation.curAnim.name != 'confirm')
-			{
-				spr.playAnim('pressed');
-				spr.resetAnim = 0;
-			}
+			
 		}
 	}
 
@@ -798,7 +799,7 @@ class EditorPlayState extends MusicBeatState
 			{
 				if (Math.abs(note.noteData) == spr.ID)
 				{
-					spr.playAnim('confirm', true);
+					spr.playAnim((note.animConfirm.length < 1 ? spr.animConfirm : note.animConfirm), true);
 				}
 			});
 
@@ -1094,7 +1095,7 @@ class EditorPlayState extends MusicBeatState
 		}
 
 		if(spr != null) {
-			spr.playAnim('confirm', true);
+			spr.playAnim((note.animConfirm.length < 1 ? spr.animConfirm : note.animConfirm), true);
 			spr.resetAnim = time;
 		}
 	}
