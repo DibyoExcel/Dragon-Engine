@@ -8,6 +8,13 @@ import Controls;
 
 class ClientPrefs {
 	public static var downScroll:Bool = false;
+	public static var arrowRGB:Array<Array<Array<Int>>> = [
+		//R(RGB), G(RGB), B(RGB)
+		[ [ 194, 75,  153 ], [ 255, 255, 255 ], [ 60, 31, 86 ] ],
+		[ [ 0, 255, 255 ], [ 255, 255, 255 ], [ 21, 66, 183 ] ],
+		[ [ 18, 250, 5 ], [ 255, 255, 255 ], [ 10, 68, 71 ] ],
+		[ [ 249, 57, 63 ], [ 255, 255, 255 ], [ 101, 16, 56 ] ] 
+	];
 	public static var limitSpawn:Bool = false;
 	public static var limitSpawnNotes:Int = 50;//ummmm
 	public static var startPause:Bool = false;
@@ -136,6 +143,7 @@ class ClientPrefs {
 	}
 
 	public static function saveSettings() {
+		FlxG.save.data.arrowRGB = arrowRGB;
 		FlxG.save.data.notesStrum = notesStrum;
 		FlxG.save.data.limitSpawn = limitSpawn;
 		FlxG.save.data.limitSpawnNotes = limitSpawnNotes;
@@ -203,6 +211,9 @@ class ClientPrefs {
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.arrowRGB != null) {
+			arrowRGB = FlxG.save.data.arrowRGB;
 		}
 		if(FlxG.save.data.limitSpawn != null) {
 			limitSpawn = FlxG.save.data.limitSpawn;

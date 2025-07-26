@@ -7,6 +7,7 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
+import RGBPalette;
 #if sys
 import sys.FileSystem;
 import sys.io.File;
@@ -24,7 +25,7 @@ typedef EventNote =
 
 class Note extends FlxSprite
 {
-	public var extraData:Map<String, Dynamic> = [];
+	public var extraData:Map<String, Dynamic> = new Map<String, Dynamic>();
 
 	public var strumTime:Float = 0;
 	public var mustPress:Bool = false;
@@ -116,6 +117,12 @@ class Note extends FlxSprite
 	public var offsetStrumTime:Float = 0;
 	public var sustainTail:Bool = false;
 	public var animConfirm:String = '';//static, confirm, notes
+	public var RGBPalette:RGBPalette;
+	public var useRGBPalette(default, set):Bool = true;
+	public var noteSplashUseRGBPalette:Bool = true;
+	public var noteSplashRed:Int;
+	public var noteSplashGreen:Int;
+	public var noteSplashBlue:Int;
 
 
 
@@ -151,11 +158,14 @@ class Note extends FlxSprite
 
 	private function set_noteType(value:String):String
 	{
-		if (noteData > -1 && noteData < ClientPrefs.arrowHSV.length)
+		if (noteData > -1)
 		{
 			colorSwap.hue = ClientPrefs.arrowHSV[noteData & 4][0] / 360;
 			colorSwap.saturation = ClientPrefs.arrowHSV[noteData & 4][1] / 100;
 			colorSwap.brightness = ClientPrefs.arrowHSV[noteData & 4][2] / 100;
+			RGBPalette.r = FlxColor.fromRGB(ClientPrefs.arrowRGB[noteData % 4][0][0], ClientPrefs.arrowRGB[noteData % 4][0][1], ClientPrefs.arrowRGB[noteData % 4][0][2]);
+			RGBPalette.g = FlxColor.fromRGB(ClientPrefs.arrowRGB[noteData % 4][1][0], ClientPrefs.arrowRGB[noteData % 4][1][1], ClientPrefs.arrowRGB[noteData % 4][1][2]);
+			RGBPalette.b = FlxColor.fromRGB(ClientPrefs.arrowRGB[noteData % 4][2][0], ClientPrefs.arrowRGB[noteData % 4][2][1], ClientPrefs.arrowRGB[noteData % 4][2][2]);
 		}
 
 		if (noteData > -1 && noteType != value)
@@ -164,11 +174,14 @@ class Note extends FlxSprite
 			{
 				case 'Hurt Note':
 					ignoreNote = mustPress;
-					texture = "HURTNOTE_assets";
-					noteSplashTexture = 'HURTnoteSplashes';
+					//texture = "HURTNOTE_assets";
+					noteSplashTexture = 'noteSplashesElectric';
 					colorSwap.hue = 0;
 					colorSwap.saturation = 0;
 					colorSwap.brightness = 0;
+					RGBPalette.r = 0x101010;
+					RGBPalette.g = 0xff0000;
+					RGBPalette.b = 0x990022;
 					lowPriority = true;
 
 					if (isSustainNote)
@@ -203,6 +216,9 @@ class Note extends FlxSprite
 		noteSplashHue = colorSwap.hue;
 		noteSplashSat = colorSwap.saturation;
 		noteSplashBrt = colorSwap.brightness;
+		noteSplashRed = RGBPalette.r;
+		noteSplashGreen = RGBPalette.g;
+		noteSplashBlue = RGBPalette.b;
 		runConfig(value);
 		return value;
 	}
@@ -237,7 +253,12 @@ class Note extends FlxSprite
 
 		texture = '';
 		colorSwap = new ColorSwap();
-		shader = colorSwap.shader;
+		RGBPalette = new RGBPalette();
+		if (useRGBPalette) {
+			shader = RGBPalette.shader;
+		} else {
+			shader = colorSwap.shader;
+		}
 		
 		x += swagWidth * (noteData);
 		if (!isSustainNote && noteData > -1 && noteData < 8)
@@ -619,6 +640,17 @@ class Note extends FlxSprite
 			}
 		}
 		noteScale = value;
+		return value;
+	}
+	private function set_useRGBPalette(value:Bool):Bool {
+		if (useRGBPalette != value) {
+			useRGBPalette = value;
+			if (value) {
+				shader = RGBPalette.shader;
+			} else {
+				shader = colorSwap.shader;
+			}
+		}
 		return value;
 	}
 	private function runConfig(value:String = '') {

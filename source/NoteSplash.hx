@@ -7,9 +7,11 @@ import flixel.graphics.frames.FlxAtlasFrames;
 
 class NoteSplash extends FlxSprite
 {
-	public var colorSwap:ColorSwap = null;
+	public var colorSwap:ColorSwap = new ColorSwap();
 	private var idleAnim:String;
 	private var textureLoaded:String = null;
+	public var RGBPalette:RGBPalette = new RGBPalette();
+	
 
 	public function new(x:Float = 0, y:Float = 0, ?note:Int = 0, ?type:String = 'bf') {
 		super(x, y);
@@ -25,14 +27,13 @@ class NoteSplash extends FlxSprite
 
 		loadAnims(skin);
 		
-		colorSwap = new ColorSwap();
 		shader = colorSwap.shader;
 
 		setupNoteSplash(x, y, note);
 		antialiasing = ClientPrefs.globalAntialiasing;
 	}
 
-	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0, cam:String = '', scale:Float = 1, sfX:Float = 1.0, sfY:Float = 1.0) {
+	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0, cam:String = '', scale:Float = 1, sfX:Float = 1.0, sfY:Float = 1.0, ?noteData:Note) {
 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
 		alpha = ClientPrefs.noteSplashAlpha;
 
@@ -49,9 +50,20 @@ class NoteSplash extends FlxSprite
 		if(textureLoaded != texture) {
 			loadAnims(texture);
 		}
-		colorSwap.hue = hueColor;
-		colorSwap.saturation = satColor;
-		colorSwap.brightness = brtColor;
+		if (noteData != null) {
+
+			if (noteData.noteSplashUseRGBPalette) {
+				shader = RGBPalette.shader;
+				RGBPalette.r = noteData.noteSplashRed;
+				RGBPalette.g = noteData.noteSplashGreen;
+				RGBPalette.b = noteData.noteSplashBlue;
+			} else {
+				shader = colorSwap.shader;
+				colorSwap.hue = hueColor;
+				colorSwap.saturation = satColor;
+				colorSwap.brightness = brtColor;
+			}
+		}
 		offset.set(10, 10);
 
 		var animNum:Int = FlxG.random.int(1, 2);
@@ -59,7 +71,7 @@ class NoteSplash extends FlxSprite
 		if(animation.curAnim != null)animation.curAnim.frameRate = ClientPrefs.fpsStrumAnim + FlxG.random.int(-2, 2);
 	}
 
-	public function setupNoteSplashOpt(x:Float, y:Float, note:Int = 0, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0, cam:String = '', scale:Float = 1, sfX:Float = 1.0, sfY:Float = 1.0) {
+	public function setupNoteSplashOpt(x:Float, y:Float, note:Int = 0, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0, cam:String = '', scale:Float = 1, sfX:Float = 1.0, sfY:Float = 1.0, ?noteData:Note) {
 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
 		alpha = ClientPrefs.noteSplashAlpha;
 
@@ -76,9 +88,17 @@ class NoteSplash extends FlxSprite
 		if(textureLoaded != texture) {
 			loadAnims(texture);
 		}
-		colorSwap.hue = hueColor;
-		colorSwap.saturation = satColor;
-		colorSwap.brightness = brtColor;
+		if (noteData.noteSplashUseRGBPalette) {
+			shader = RGBPalette.shader;
+			RGBPalette.r = noteData.noteSplashRed;
+			RGBPalette.g = noteData.noteSplashGreen;
+			RGBPalette.b = noteData.noteSplashBlue;
+		} else {
+			shader = colorSwap.shader;
+			colorSwap.hue = hueColor;
+			colorSwap.saturation = satColor;
+			colorSwap.brightness = brtColor;
+		}
 		offset.set(10, 10);
 
 		var animNum:Int = FlxG.random.int(1, 2);

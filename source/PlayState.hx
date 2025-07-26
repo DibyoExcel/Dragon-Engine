@@ -370,7 +370,9 @@ class PlayState extends MusicBeatState
 
 		// for lua
 		instance = this;
-
+		for  (i in 0...4) {
+			colorOrder[i] = FlxColor.fromRGB(ClientPrefs.arrowRGB[i][0][0], ClientPrefs.arrowRGB[i][0][1], ClientPrefs.arrowRGB[i][0][2]);
+		}
 		debugKeysChart = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_1'));
 		debugKeysCharacter = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_2'));
 		PauseSubState.songName = null; //Reset to default
@@ -5357,7 +5359,7 @@ class PlayState extends MusicBeatState
 		}
 
 		var splash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
-		splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.noteSplashCam, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1]);
+		splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.noteSplashCam, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1], note);
 		grpNoteSplashes.add(splash);
 	}
 
@@ -5382,7 +5384,7 @@ class PlayState extends MusicBeatState
 		}
 
 		var splashOpt:NoteSplash = grpNoteSplashesOpt.recycle(NoteSplash);
-		splashOpt.setupNoteSplashOpt(x, y, data, skin, hue, sat, brt, note.noteSplashCam, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1]);
+		splashOpt.setupNoteSplashOpt(x, y, data, skin, hue, sat, brt, note.noteSplashCam, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1], note);
 		grpNoteSplashesOpt.add(splashOpt);
 	}
 
