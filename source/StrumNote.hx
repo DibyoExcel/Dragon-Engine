@@ -1,6 +1,5 @@
 package;
 
-import flixel.util.FlxColor;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -20,9 +19,6 @@ class StrumNote extends FlxSprite
 	public var memberID:Int =0; //only use target 'customStrum'
 	public var camTarget(default, set):String = 'hud';
 	public var scrollFactorCam(default,set):Array<Float> = [0.0, 0.0];//only can see in camGame
-	public var RGBPalette:RGBPalette;
-	public var useRGBPalette(default, set):Bool = true;
-	public var useShaderStatic(default, set):Bool = false;//using shader even strums is static animation
 	
 	private var player:Int;
 	
@@ -64,12 +60,7 @@ class StrumNote extends FlxSprite
 
 	public function new(x:Float, y:Float, leData:Int, player:Int) {
 		colorSwap = new ColorSwap();
-		RGBPalette = new RGBPalette();
-		if (useRGBPalette) {
-			shader = RGBPalette.shader;
-		} else {
-			shader = colorSwap.shader;
-		}
+		shader = colorSwap.shader;
 		noteData = leData;
 		this.player = player;
 		this.noteData = leData;
@@ -177,9 +168,6 @@ class StrumNote extends FlxSprite
 		x += 50;
 		x += ((FlxG.width / 2) * player);
 		ID = noteData;
-		if (ClientPrefs.dflnoteskin == "NOTE_minecraft_assets") {
-			useShaderStatic = true;
-		}
 	}
 
 	override function update(elapsed:Float) {
@@ -207,23 +195,10 @@ class StrumNote extends FlxSprite
 			colorSwap.hue = 0;
 			colorSwap.saturation = 0;
 			colorSwap.brightness = 0;
-			if (useRGBPalette) {
-				if (!useShaderStatic) {
-					shader = null;
-				}
-			}
 
 		} else {
-			if (useRGBPalette) {
-				shader = RGBPalette.shader;
-			} else {
-				shader = colorSwap.shader;
-			}
-			if (noteData > -1)
+			if (noteData > -1 && noteData % 4 < ClientPrefs.arrowHSV.length)
 			{
-				RGBPalette.r = FlxColor.fromRGB(ClientPrefs.arrowRGB[noteData % 4][0][0], ClientPrefs.arrowRGB[noteData % 4][0][1], ClientPrefs.arrowRGB[noteData % 4][0][2]);
-				RGBPalette.g = FlxColor.fromRGB(ClientPrefs.arrowRGB[noteData % 4][1][0], ClientPrefs.arrowRGB[noteData % 4][1][1], ClientPrefs.arrowRGB[noteData % 4][1][2]);
-				RGBPalette.b = FlxColor.fromRGB(ClientPrefs.arrowRGB[noteData % 4][2][0], ClientPrefs.arrowRGB[noteData % 4][2][1], ClientPrefs.arrowRGB[noteData % 4][2][2]);
 				colorSwap.hue = ClientPrefs.arrowHSV[noteData % 4][0] / 360;
 				colorSwap.saturation = ClientPrefs.arrowHSV[noteData % 4][1] / 100;
 				colorSwap.brightness = ClientPrefs.arrowHSV[noteData % 4][2] / 100;
@@ -252,35 +227,6 @@ class StrumNote extends FlxSprite
 		}
 		scrollFactorCam[0] = value[0];
 		scrollFactorCam[1] = value[1];
-		return value;
-	}
-	private function set_useRGBPalette(value:Bool):Bool {
-		if (value != useRGBPalette) {
-			useRGBPalette = value;
-			if (value) {
-				if (animation.curAnim.name != 'static') {
-					shader = RGBPalette.shader;
-				} else {
-					shader = null;
-				}
-			} else {
-				shader = colorSwap.shader;
-			}
-		}
-		return value;
-	}
-
-	function set_useShaderStatic(value:Bool):Bool {
-		if (value != useShaderStatic) {
-			useShaderStatic = value;
-			if (value) {
-				if (animation.curAnim.name == 'static') {
-					shader = RGBPalette.shader;
-				} else {
-					shader = null;
-				}
-			}
-		}
 		return value;
 	}
 }

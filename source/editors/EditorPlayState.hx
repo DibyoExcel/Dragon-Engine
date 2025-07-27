@@ -1126,7 +1126,7 @@ class EditorPlayState extends MusicBeatState
 		}
 
 		var splash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
-		splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.camTarget, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1], note);
+		splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.camTarget, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1]);
 		grpNoteSplashes.add(splash);
 	}
 	

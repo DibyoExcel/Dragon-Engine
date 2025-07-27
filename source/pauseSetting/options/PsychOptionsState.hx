@@ -29,16 +29,14 @@ using StringTools;
 
 class PsychOptionsState extends MusicBeatState
 {
-	var options:Array<String> = ['Note Colors(RGB Pallete)', 'Note Colors(Color Swap)', 'Controls', 'Adjust Delay and Combo', 'Graphics', 'Visuals and UI', 'Gameplay'];
+	var options:Array<String> = ['Note Colors', 'Controls', 'Adjust Delay and Combo', 'Graphics', 'Visuals and UI', 'Gameplay',];
 	private var grpOptions:FlxTypedGroup<Alphabet>;
 	private static var curSelected:Int = 0;
 	public static var menuBG:FlxSprite;
 
 	function openSelectedSubstate(label:String) {
 		switch(label) {
-			case 'Note Colors(RGB Pallete)':
-				openSubState(new pauseSetting.options.NotesColorSubState());
-			case 'Note Colors(Color Swap)':
+			case 'Note Colors':
 				openSubState(new pauseSetting.options.NotesSubState());
 			case 'Controls':
 				openSubState(new pauseSetting.options.ControlsSubState());
