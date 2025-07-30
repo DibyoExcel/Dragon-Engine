@@ -131,7 +131,11 @@ class Note extends FlxSprite
 	{
 		if (isSustainNote && !animation.curAnim.name.endsWith('end'))
 		{
-			scale.y *= (ratio);
+			if (scale.y == 0) {
+				scale.y += ratio;
+			} else {
+				scale.y *= (ratio);
+			}
 			updateHitbox();
 		}
 	}
@@ -335,7 +339,8 @@ class Note extends FlxSprite
 			noteScale = 0.75;
 			noteSplashScale = 0.75;
 		}
-		runConfig(noteType);
+		//sorry
+		//runConfig(noteType);
 	}
 	
 	var lastNoteOffsetXForPixelAutoAdjusting:Float = 0;
@@ -622,7 +627,7 @@ class Note extends FlxSprite
 		return value;
 	}
 	private function runConfig(value:String = '') {
-		#if MODS_ALLOWED
+		#if (MODS_ALLOWED && sys)
 		//also affected if change note in midgame
 		var jsonRa:String = '';
 		var haxeRa:Dynamic = {};
@@ -644,24 +649,22 @@ class Note extends FlxSprite
 					Reflect.setProperty(target, SDM[SDM.length-1], val);
 				}
 			}
-		} else {
-			if (FileSystem.exists(Paths.mods('custom_notetypes/' + value + '.json'))) {
-				jsonRa = File.getContent(Paths.mods('custom_notetypes/' + value + '.json'));
-				haxeRa = haxe.Json.parse(jsonRa);
-				var wati = Reflect.fields(haxeRa);
-				for (mega in wati) {
-					var SDM = mega.split('.');
-					var val = Reflect.field(haxeRa, mega);
-					if (SDM.length <= 1) {
-						Reflect.setProperty(this, mega, val);
-					} else {
-						//get this shit from FunkinLua.hx
-						var target = Reflect.getProperty(this, SDM[0]);
-						for (key in 1...SDM.length-1) {
-							target = Reflect.getProperty(target, SDM[key]);
-						}
-						Reflect.setProperty(target, SDM[SDM.length-1], val);
+		} else if (FileSystem.exists(Paths.mods('custom_notetypes/' + value + '.json'))) {
+			jsonRa = File.getContent(Paths.mods('custom_notetypes/' + value + '.json'));
+			haxeRa = haxe.Json.parse(jsonRa);
+			var wati = Reflect.fields(haxeRa);
+			for (mega in wati) {
+				var SDM = mega.split('.');
+				var val = Reflect.field(haxeRa, mega);
+				if (SDM.length <= 1) {
+					Reflect.setProperty(this, mega, val);
+				} else {
+					//get this shit from FunkinLua.hx
+					var target = Reflect.getProperty(this, SDM[0]);
+					for (key in 1...SDM.length-1) {
+						target = Reflect.getProperty(target, SDM[key]);
 					}
+					Reflect.setProperty(target, SDM[SDM.length-1], val);
 				}
 			}
 		}

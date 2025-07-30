@@ -1574,12 +1574,13 @@ class PlayState extends MusicBeatState
 	{
 		if(generatedMusic)
 		{
+			if (value == 0) value = 0.01;
 			var ratio:Float = value / songSpeed; //funny word huh
-			for (note in notes) note.resizeByRatio(ratio);
-			for (note in unspawnNotes) note.resizeByRatio(ratio);
+			for (note in notes) note.resizeByRatio(Math.abs(ratio));
+			for (note in unspawnNotes) note.resizeByRatio(Math.abs(ratio));
 		}
 		songSpeed = value;
-		noteKillOffset = 350 / songSpeed;
+		noteKillOffset = 350 / Math.abs(songSpeed);
 		return value;
 	}
 
@@ -3039,6 +3040,9 @@ class PlayState extends MusicBeatState
 					i.active = false;
 				}
 			}
+			if (FunkinLua.tSongSpeed != null) {
+				FunkinLua.tSongSpeed.active = false;
+			}
 		}
 
 		super.openSubState(SubState);
@@ -3080,6 +3084,9 @@ class PlayState extends MusicBeatState
 				if (i != null) {
 					i.active = true;
 				}
+			}
+			if (FunkinLua.tSongSpeed != null) {
+				FunkinLua.tSongSpeed.active = true;
 			}
 			paused = false;
 			callOnLuas('onResume', []);
@@ -3491,10 +3498,8 @@ class PlayState extends MusicBeatState
 
 					if(ClientPrefs.timeBarType != 'Song Name') {
 
-						if (ClientPrefs.timeBarType == 'Time Elapsed') {
-
-							timeTxt.text = FlxStringUtil.formatTime(secondsTotal, false);
-						} else if (ClientPrefs.timeBarType == 'Time Percent') {
+						timeTxt.text = FlxStringUtil.formatTime(secondsTotal, false);
+						if (ClientPrefs.timeBarType == 'Time Percent') {
 
 							timeTxt.text = Math.floor(songPercent * 10000)/100 + '%';
 						}
@@ -3527,7 +3532,7 @@ class PlayState extends MusicBeatState
 			if (unspawnNotes[i] != null)
 			{
 				var time:Float = spawnTime;
-				if (songSpeed < 1) time /= songSpeed;
+				if (Math.abs(songSpeed) < 1 && songSpeed == 0) time /= Math.abs(songSpeed);
 				if(unspawnNotes[i].multSpeed < 1) time /= unspawnNotes[i].multSpeed;
 	
 				if (unspawnNotes.length > 0 && (unspawnNotes[i].strumTime + unspawnNotes[i].offsetStrumTime) - Conductor.songPosition < time && (ClientPrefs.limitSpawn ? notes.length < ClientPrefs.limitSpawnNotes : true))
@@ -3597,6 +3602,10 @@ class PlayState extends MusicBeatState
 						var strumDirection:Float = strumGroup.members[daNote.noteData].direction;
 						var strumAlpha:Float = strumGroup.members[daNote.noteData].alpha;
 						var strumScroll:Bool = strumGroup.members[daNote.noteData].downScroll;
+						if (songSpeed < 0) {
+							strumScroll = !strumScroll;
+						}
+						//flip against flipScroll
 						if (daNote.flipScroll) {//idk this effience code?
 							strumScroll = !strumScroll;//just flip the scroll when detect 'flipScroll'
 						}
@@ -3609,16 +3618,15 @@ class PlayState extends MusicBeatState
 						daNote.camTarget = strumCam;
 						daNote.noteSplashCam = strumCam;
 						daNote.scrollFactorCam = strumSC;
-
 						if (strumScroll) //Downscroll
 						{
 							//daNote.y = (strumY + 0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed);
-							daNote.distance = (0.45 * (Conductor.songPosition - daNote.strumTime + daNote.offsetStrumTime) * songSpeed * daNote.multSpeed);
+							daNote.distance = (0.45 * (Conductor.songPosition - daNote.strumTime + daNote.offsetStrumTime) * Math.abs(songSpeed) * daNote.multSpeed);
 						}
 						else //Upscroll
 						{
 							//daNote.y = (strumY - 0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed);
-							daNote.distance = (-0.45 * (Conductor.songPosition - daNote.strumTime + daNote.offsetStrumTime) * songSpeed * daNote.multSpeed);
+							daNote.distance = (-0.45 * (Conductor.songPosition - daNote.strumTime + daNote.offsetStrumTime) * Math.abs(songSpeed) * daNote.multSpeed);
 						}
 						if (daNote.isSustainNote) {
 							daNote.flipY = strumScroll;
@@ -3642,16 +3650,16 @@ class PlayState extends MusicBeatState
 							if(strumScroll && daNote.isSustainNote)
 							{
 								if (daNote.animation.curAnim.name.endsWith('end')) {
-									daNote.y += 10.5 * (fakeCrochet / 400) * 1.5 * (songSpeed*daNote.multSpeed) + (46 * ((songSpeed*daNote.multSpeed) - 1));
-									daNote.y -= 46 * (1 - (fakeCrochet / 600)) * (songSpeed*daNote.multSpeed);
+									daNote.y += 10.5 * (fakeCrochet / 400) * 1.5 * (Math.abs(songSpeed)*daNote.multSpeed) + (46 * ((Math.abs(songSpeed)*daNote.multSpeed) - 1));
+									daNote.y -= 46 * (1 - (fakeCrochet / 600)) * (Math.abs(songSpeed)*daNote.multSpeed);
 									if(PlayState.isPixelStage) {
 										daNote.y += 8 + (6 - daNote.originalHeightForCalcs) * PlayState.daPixelZoom;
 									} else {
 										daNote.y -= 19;
 									}
 								}
-								daNote.y += (Note.swagWidth / 2) - (60.5 * ((songSpeed*daNote.multSpeed) - 1));
-								daNote.y += 27.5 * ((SONG.bpm / 100) - 1) * ((songSpeed*daNote.multSpeed) - 1);
+								daNote.y += (Note.swagWidth / 2) - (60.5 * ((Math.abs(songSpeed)*daNote.multSpeed) - 1));
+								daNote.y += 27.5 * ((SONG.bpm / 100) - 1) * ((Math.abs(songSpeed)*daNote.multSpeed) - 1);
 							}
 						}
 						var center:Float = strumY + Note.swagWidth / 2;

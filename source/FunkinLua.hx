@@ -33,7 +33,7 @@ import flixel.math.FlxMath;
 import flixel.util.FlxSave;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.system.FlxAssets.FlxShader;
-#if windows
+#if WINDOW_COLOR
 import hxwindowmode.WindowColorMode;
 #end
 
@@ -77,6 +77,7 @@ class FunkinLua {
 	//reset stuff
 	var windowArray:Array<Dynamic> =[ 0, 0, 1280, 720, false, false ];//x, y, width, height, maximized, fullscreen
 	public static var indoTween:Array<FlxTween> = [];//it should not break if use setWindow too much
+	public static var tSongSpeed:FlxTween;
 
 	#if hscript
 	public static var hscript:HScript = null;
@@ -97,7 +98,7 @@ class FunkinLua {
 			var resultStr:String = Lua.tostring(lua, result);
 			if(resultStr != null && result != 0) {
 				trace('Error on lua script! ' + resultStr);
-				#if windows
+				#if desktop
 				lime.app.Application.current.window.alert(resultStr, 'Error on lua script!');
 				#else
 				luaTrace('Error loading lua script: "$script"\n' + resultStr, true, false, FlxColor.RED);
@@ -1059,18 +1060,28 @@ class FunkinLua {
 			}
 		});
 		#if WINDOW_ABILITY
-			Lua_helper.add_callback(lua, "setWindowDarkMode", function() {
-				WindowColorMode.setDarkMode();
-				WindowColorMode.redrawWindowHeader();
-			});
-			Lua_helper.add_callback(lua, "setWindowLightMode", function() {
-				WindowColorMode.setLightMode();
-				WindowColorMode.redrawWindowHeader();
-			});
-			Lua_helper.add_callback(lua, "setWindowColorMode", function(dark:Bool = true) {
-				WindowColorMode.setWindowColorMode(dark);
-				WindowColorMode.redrawWindowHeader();
-			});
+			#if WINDOW_COLOR
+				Lua_helper.add_callback(lua, "setWindowDarkMode", function() {
+					WindowColorMode.setDarkMode();
+					WindowColorMode.redrawWindowHeader();
+				});
+				Lua_helper.add_callback(lua, "setWindowLightMode", function() {
+					WindowColorMode.setLightMode();
+					WindowColorMode.redrawWindowHeader();
+				});
+				Lua_helper.add_callback(lua, "setWindowColorMode", function(dark:Bool = true) {
+					WindowColorMode.setWindowColorMode(dark);
+					WindowColorMode.redrawWindowHeader();
+				});
+				Lua_helper.add_callback(lua, "setWindowBorderColor", function(r:Int = 255, g:Int = 0, b:Int = 0, setHeader:Bool = true, setBorder:Bool = true) {
+					WindowColorMode.setWindowBorderColor([r, g, b], setHeader, setBorder);
+					WindowColorMode.redrawWindowHeader();
+				});
+				Lua_helper.add_callback(lua, "setWindowTitleColor", function(r:Int = 255, g:Int = 0, b:Int = 0) {
+					WindowColorMode.setWindowTitleColor([r, g, b]);
+					WindowColorMode.redrawWindowHeader();
+				});
+			#end
 			//Little deprecated but i never remove
 			Lua_helper.add_callback(lua, "setWindowX", function(value:Int, duration:Float = 0, ease:String) {
 				if (indoTween[0] != null) {
@@ -1176,14 +1187,6 @@ class FunkinLua {
 				Lib.application.window.height = Std.int(windowArray[3]);
 				FlxG.fullscreen = windowArray[4];
 				Lib.application.window.maximized = windowArray[5];
-			});
-			Lua_helper.add_callback(lua, "setWindowBorderColor", function(r:Int = 255, g:Int = 0, b:Int = 0, setHeader:Bool = true, setBorder:Bool = true) {
-				WindowColorMode.setWindowBorderColor([r, g, b], setHeader, setBorder);
-				WindowColorMode.redrawWindowHeader();
-			});
-			Lua_helper.add_callback(lua, "setWindowTitleColor", function(r:Int = 255, g:Int = 0, b:Int = 0) {
-				WindowColorMode.setWindowTitleColor([r, g, b]);
-				WindowColorMode.redrawWindowHeader();
 			});
 			Lua_helper.add_callback(lua, "getResolutionWidth", function() {
 				return Lib.application.window.display.bounds.width;
@@ -2942,6 +2945,16 @@ class FunkinLua {
 		});
 		Lua_helper.add_callback(lua, "changeGamemode", function(name:String = "none", transition:Bool = true) {
 			PlayState.instance.gamemodeChanger(name, transition);
+		});
+		Lua_helper.add_callback(lua, "changeSongSpeed", function(value:Float, dur, ease:String) {
+			if (tSongSpeed != null) {
+				tSongSpeed.cancel();
+			}
+			if (dur > 0) {
+				tSongSpeed = FlxTween.tween(PlayState.instance, {songSpeed: value}, dur, {ease: getFlxEaseByString(ease)});
+			} else {
+				PlayState.instance.songSpeed = value;
+			}
 		});
 
 		call('onCreate', []);
