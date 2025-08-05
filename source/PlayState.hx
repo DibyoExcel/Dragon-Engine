@@ -323,6 +323,7 @@ class PlayState extends MusicBeatState
 	public var mergeHealthColor(default, set):Bool = false;
 	public var oldTransitionNotes:Bool = false;
 	public var fieldNameAsPlayer:String = '';//empty as default
+	public var keyCount:Int = 4;
 
 	#if desktop
 	// Discord RPC variables
@@ -4801,7 +4802,7 @@ class PlayState extends MusicBeatState
 				{
 					if (strumsBlocked[daNote.noteData + (gamemode == "bothside v2" && !daNote.mustPress ? playerStrums.length : 0)] != true && (daNote.canBeHit && (((gamemode == 'opponent') || (gamemode == "bothside v2" && key > 3)) ? !daNote.mustPress : (gamemode == "bothside" ? true : daNote.mustPress)) && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote && (gamemode == "opponent"  ? !daNote.ignoreNote : !daNote.blockHit) && !daNote.autoPress) && !((fieldNameAsPlayer == '' ? daNote.customField : daNote.fieldTarget != fieldNameAsPlayer)))//when player play as opponent the player cant press ignore note(based opponent itself), you cant press autoPress notes
 					{
-						if(daNote.noteData == key-((gamemode == 'bothside v2' && !daNote.mustPress) ? playerStrums.length : ((gamemode == 'opponent' && !daNote.mustPress && PlayState.SONG.secOpt && daNote.gfNote) ? opponentStrums.length : 0)))
+						if(daNote.noteData == key%keyCount)
 						{
 							sortedNotesList.push(daNote);
 							//notesDatas.push(daNote.noteData);
