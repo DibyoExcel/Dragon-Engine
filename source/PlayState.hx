@@ -323,6 +323,7 @@ class PlayState extends MusicBeatState
 	public var mergeHealthColor(default, set):Bool = false;
 	public var oldTransitionNotes:Bool = false;
 	public var fieldNameAsPlayer:String = '';//empty as default
+	public var keyCount:Int = 4;
 
 	#if desktop
 	// Discord RPC variables
@@ -2678,7 +2679,7 @@ class PlayState extends MusicBeatState
 							} else {
 								sustainData = daNoteData;
 							}
-							sustainNote = new Note((daStrumTime + (Conductor.stepCrochet * susNote)+(i*(100/(multNote)))) + (Conductor.stepCrochet / FlxMath.roundDecimal(songSpeed, 2)), sustainData, oldNote, true, null, (swagNote.noteType == "GF Sing Force Opponent" ? false : gottaHitNote), gfSec, swagNote.noteType, susNote == (floorSus));
+							sustainNote = new Note((daStrumTime + (Conductor.stepCrochet * susNote)+(i*(100/(multNote)))) + (Conductor.stepCrochet / FlxMath.roundDecimal(Math.abs(songSpeed), 2)), sustainData, oldNote, true, null, (swagNote.noteType == "GF Sing Force Opponent" ? false : gottaHitNote), gfSec, swagNote.noteType, susNote == (floorSus));
 								sustainNote.noteType = swagNote.noteType;
 								if (modcharttype == 'random flip scroll') {
 									sustainNote.flipScroll = swagNote.flipScroll;
@@ -4799,9 +4800,9 @@ class PlayState extends MusicBeatState
 				var sortedNotesList:Array<Note> = [];
 				notes.forEachAlive(function(daNote:Note)
 				{
-					if (strumsBlocked[daNote.noteData + (gamemode == "bothside v2" && !daNote.mustPress ? playerStrums.length : 0)] != true && (daNote.canBeHit && (((gamemode == 'opponent') || (gamemode == "bothside v2" && key > 3)) ? !daNote.mustPress : (gamemode == "bothside" ? true : daNote.mustPress)) && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote && (gamemode == "opponent"  ? !daNote.ignoreNote : !daNote.blockHit) && !daNote.autoPress) && !((fieldNameAsPlayer == '' ? daNote.customField : daNote.fieldTarget != fieldNameAsPlayer)))//when player play as opponent the player cant press ignore note(based opponent itself), you cant press autoPress notes
+					if (strumsBlocked[daNote.noteData + ((gamemode == "bothside v2" && !daNote.mustPress ? keyCount : 0)+(!daNote.mustPress && daNote.gfNote && PlayState.SONG.secOpt ? keyCount : 0))] != true && (daNote.canBeHit && (((gamemode == 'opponent') || (gamemode == "bothside v2" && key >= keyCount)) ? !daNote.mustPress : (gamemode == "bothside" ? true : daNote.mustPress)) && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote && (gamemode == "opponent"  ? !daNote.ignoreNote : !daNote.blockHit) && !daNote.autoPress) && !((fieldNameAsPlayer == '' ? daNote.customField : daNote.fieldTarget != fieldNameAsPlayer)))//when player play as opponent the player cant press ignore note(based opponent itself), you cant press autoPress notes
 					{
-						if(daNote.noteData == key-((gamemode == 'bothside v2' && !daNote.mustPress) ? playerStrums.length : ((gamemode == 'opponent' && !daNote.mustPress && PlayState.SONG.secOpt && daNote.gfNote) ? opponentStrums.length : 0)))
+						if(daNote.noteData == key-(((daNote.gfNote && !daNote.mustPress) && PlayState.SONG.secOpt ? keyCount : 0)+(daNote.mustPress && gamemode=='bothside v2' ? keyCount : 0)))
 						{
 							sortedNotesList.push(daNote);
 							//notesDatas.push(daNote.noteData);
@@ -4937,7 +4938,7 @@ class PlayState extends MusicBeatState
 			notes.forEachAlive(function(daNote:Note)
 			{
 				// hold note functions
-				if (strumsBlocked[daNote.noteData+((gamemode == "bothside v2" && !daNote.mustPress) ? playerStrums.length : 0)] != true && daNote.isSustainNote && parsedHoldArray[daNote.noteData+(gamemode == "bothside v2" && !daNote.mustPress ? playerStrums.length : 0)] && daNote.canBeHit
+				if (strumsBlocked[daNote.noteData+(((gamemode == "bothside v2" && !daNote.mustPress) ? keyCount : 0)+(!daNote.mustPress && daNote.gfNote && PlayState.SONG.secOpt ? keyCount : 0))] != true && daNote.isSustainNote && parsedHoldArray[daNote.noteData+(((gamemode == "bothside v2" && !daNote.mustPress) ? keyCount : 0)+(!daNote.mustPress && daNote.gfNote && PlayState.SONG.secOpt ? keyCount : 0))] && daNote.canBeHit
 				&& (gamemode != 'opponent' ? (gamemode == "bothside v2" || gamemode == "bothside" ? true : daNote.mustPress) : !daNote.mustPress) && !daNote.tooLate && !daNote.wasGoodHit && (gamemode == 'opponent' || ((gamemode == "bothside v2" || gamemode == "bothside") && !daNote.mustPress) ? !daNote.ignoreNote : !daNote.blockHit)) {
 					goodNoteHit(daNote);
 				}
