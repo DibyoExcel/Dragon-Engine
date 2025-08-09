@@ -19,6 +19,7 @@ class StrumNote extends FlxSprite
 	public var memberID:Int =0; //only use target 'customStrum'
 	public var camTarget(default, set):String = 'hud';
 	public var scrollFactorCam(default,set):Array<Float> = [0.0, 0.0];//only can see in camGame
+	private var gfType:Bool = false;
 	
 	private var player:Int;
 	
@@ -27,6 +28,28 @@ class StrumNote extends FlxSprite
 		if (value == null) {
 			value = '';
 		}
+		if(texture != value) {
+			texture = value;
+			reloadNote(texture);
+		}
+		return value;
+	}
+
+	public function new(x:Float, y:Float, leData:Int, player:Int, gf:Bool = false) {
+		colorSwap = new ColorSwap();
+		shader = colorSwap.shader;
+		noteData = leData;
+		this.player = player;
+		this.noteData = leData;
+		super(x, y);
+		gfType = gf;
+		texture = '';
+
+		scrollFactor.set(scrollFactorCam[0], scrollFactorCam[1]);
+	}
+
+	public function reloadNote(image:String = '')
+	{
 		var skin:String = PlayState.SONG.arrowSkin;
 		var skinOpt:String = PlayState.SONG.arrowSkinOpt;
 		var skinSec:String = PlayState.SONG.arrowSkinSec;
@@ -38,40 +61,22 @@ class StrumNote extends FlxSprite
 			skinOpt = skin;
 		}
 		if(skinSec == null || skinSec.length < 1) {
+			if(skinOpt == null || skinOpt.length < 1) {
+				skinOpt = skin;
+			}
 			skinSec = skinOpt;
 		}
-		if (value == '' || value.length < 1) {
+		if (image == '' || image.length < 1) {
 			if (player == 1) {
-				value = skin;
+				image = skin;
 			} else {
-				if (noteData > 3) {
-					value = skinSec;
+				if (gfType) {
+					image = skinSec;
 				} else {
-					value = skinOpt;
+					image = skinOpt;
 				}
 			}
 		}
-		if(texture != value) {
-			texture = value;
-			reloadNote(texture);
-		}
-		return value;
-	}
-
-	public function new(x:Float, y:Float, leData:Int, player:Int) {
-		colorSwap = new ColorSwap();
-		shader = colorSwap.shader;
-		noteData = leData;
-		this.player = player;
-		this.noteData = leData;
-		super(x, y);
-		texture = '';
-
-		scrollFactor.set(scrollFactorCam[0], scrollFactorCam[1]);
-	}
-
-	public function reloadNote(image:String = '')
-	{
 		var lastAnim:String = null;
 		if(animation.curAnim != null) lastAnim = animation.curAnim.name;
 

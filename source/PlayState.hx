@@ -2931,7 +2931,7 @@ class PlayState extends MusicBeatState
 			if (player == 0) {
 				for (i in 0...8)
 				{
-					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X)-50)-(i*37), strumLine.y, i, player);
+					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X)-50)-(i*37), strumLine.y, i, player, i>3);
 					babyArrow.downScroll = ClientPrefs.downScroll;
 					if (ClientPrefs.notesStrum) {
 						babyArrow.animConfirm = "notes";
@@ -2969,7 +2969,7 @@ class PlayState extends MusicBeatState
 			// Loop for playerStrums (only 4 arrows if not bothside with 2nd strums)
 				for (i in 0...(PlayState.SONG.secOpt && gamemode == 'bothside' ? 8 : 4))
 					{
-						var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll || gamemode == 'bothside' ? STRUM_X_MIDDLESCROLL-(PlayState.SONG.secOpt && gamemode == 'bothside' ? 160 : 0) : STRUM_X, strumLine.y, i, player);
+						var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll || gamemode == 'bothside' ? STRUM_X_MIDDLESCROLL-(PlayState.SONG.secOpt && gamemode == 'bothside' ? 160 : 0) : STRUM_X, strumLine.y, i, player, i>3);
 						babyArrow.downScroll = ClientPrefs.downScroll;
 						if (ClientPrefs.notesStrum) {
 							babyArrow.animConfirm = "notes";
@@ -3594,7 +3594,7 @@ class PlayState extends MusicBeatState
 							}
 						}
 					} 
-					if (strumGroup != null) {//try prevent crash when change gamemode throught script:D
+					if (strumGroup != null && (daNote.noteData < strumGroup.length) && daNote.noteData >= 0) {//try prevent crash when change gamemode throught script or out ranged noteData:D
 						var strumX:Float = strumGroup.members[daNote.noteData].x;
 						var strumSC:Array<Float> = strumGroup.members[daNote.noteData].scrollFactorCam;
 						var strumCam:String = strumGroup.members[daNote.noteData].camTarget;
@@ -6170,6 +6170,9 @@ class PlayState extends MusicBeatState
 				}
 			}
 			strumGroupMap.set(tag, strumTamp);
+			if (!variables.exists('customStrums@' + tag)) {
+				variables.set('customStrums@' + tag, strumTamp);
+			}
 		}
 	}
 	public function removeStrum(tag:String = '') {
@@ -6184,6 +6187,9 @@ class PlayState extends MusicBeatState
 			}
 			//sstrumGroupMap.get(tag) = null;
 			strumGroupMap.remove(tag);
+			if (variables.exists('customStrums@' + tag)) {
+				variables.remove('customStrums@' + tag);
+			}
 		}
 	}
 	private function setKey() {

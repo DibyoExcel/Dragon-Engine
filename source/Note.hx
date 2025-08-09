@@ -318,9 +318,7 @@ class Note extends FlxSprite
 		}
 		if (skinSec == null || skinSec.length < 1) {
 			if (skinOpt == null || skinOpt.length < 1) {
-				skinSec = skin;
-			} else {
-				skinSec = skinOpt;
+				skinOpt = skin;
 			}
 			skinSec = skinOpt;
 		}
@@ -668,6 +666,8 @@ class Note extends FlxSprite
 				}
 			}
 		}
+		jsonRa = null;
+		haxeRa = null;
 		#end
 	}
 }

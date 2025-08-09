@@ -1,3 +1,9 @@
+:root{
+    --sidebar-size: 300px;
+    --header-height: 50px;
+    --header-logo-size: 40px;
+    --font-type: "Mojangles";
+}
 body {
     background-image: url('background.png');
     background-size: cover;
@@ -5,7 +11,12 @@ body {
     margin: 0;
     height: 100vh;
     background-attachment: fixed;
-    font-family: "Mojangles";
+    font-family: var(--font-type);
+}
+
+img.header_logo{
+    width: var(--header-logo-size);
+    height: var(--header-logo-size);
 }
 
 
@@ -56,21 +67,66 @@ h3.title{
 header.title{
     background-color: rgba(255, 0, 255, 0.1);
     backdrop-filter: blur(10px);
-    border: 1px solid white;
+    border-bottom: 1px solid white;
     display: flex;
     gap: 10px;
     top: 0;
-    position: sticky;
+    position: fixed;
+    width: 100vw;
     z-index: 1000;
     box-shadow: 0 5px 5px rgba(0,0, 0, 0.5);
+    height: var(--header-height);
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+div.content{
+    margin-top: var(--header-height);
+}
+
+.padding_side{
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+div.hamburger{
+    background-color: rgba(255, 0, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid white;
+    border-right: 1px solid white;
+    width: var(--sidebar-size);
+    top: var(--header-height);
+    height: calc(100vh - var(--header-height));
+    left:  calc( (-1 * var(--sidebar-size)) + -1px);
+    transition: left 0.5s ease-in-out;
+}
+
+div.hamburger.open{
+    left: 0;
+    transition: left 0.5s ease-in-out;
+    user-select: none;
+}
+
+a.sidebar_link{
+    padding: 10px;
+    border: 1px solid white;
+    margin: 5px;
+    color: white;
+}
+
+a.sidebar_link:hover{
+    text-shadow: none;
+    border: 1px solid #f0f;
+    color: #f0f;
 }
 
 
 
 div.border_content{
     border: 1px solid rgb(0, 255,0);
+    padding: 25px;
     width: 85%;
-    margin: 25px;
     box-shadow: 0 10px 10px rgba(0,0, 0, 0.5);
     background-color: rgba(255, 0, 255, 0.1);
     backdrop-filter: blur(10px);
@@ -80,7 +136,7 @@ div.border_content{
 div.luaborder{
     overflow: hidden;
 }
-div.borderpurple{
+.borderpurple{
     border: 5px solid rgb(44,8,99);
     border-radius: 10px;
     box-shadow: 0 10px 10px rgba(0,0, 0, 0.5);
@@ -100,6 +156,7 @@ div.center{
     justify-content: center;
     align-items: center;
     text-align: center;
+    justify-items: center;
 }
 
 

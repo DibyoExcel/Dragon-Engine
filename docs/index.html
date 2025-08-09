@@ -26,7 +26,12 @@
     </head>
     <body translate="no">
         <header class = "title">
-            <img src="https://raw.githubusercontent.com/DibyoExcel/Dragon-Engine/refs/heads/main/draconisteam/iconOG.png" width="50px", height="50px" alt="DGE Logo">
+            <div style="color: white; background-color: rgba(0,0,0,0); border: none;" onclick="
+            document.getElementById('hamburger').classList.toggle('open');
+                ">
+                <img class="header_logo" src="https://img.icons8.com/?size=100&id=36389&format=png&color=ffffff" alt="menu">
+            </div>
+            <img class="header_logo" src="https://raw.githubusercontent.com/DibyoExcel/Dragon-Engine/refs/heads/main/draconisteam/iconOG.png" alt="DGE Logo">
             <h3 class="title">
                 <span style="color: rgb(121, 0, 255);">Dragon</span>
                 <span style="color: rgb(0, 255, 0);">Engine</span>
@@ -36,305 +41,27 @@
             presssound.currentTime = 0;
             presssound.play();
             ' class="hidden">
-                <img src="https://raw.githubusercontent.com/DibyoExcel/Dragon-Engine/refs/heads/main/assets/preload/images/unknownMod.png" width="50px", height="50px" alt="?">
+                <img class="header_logo" src="https://raw.githubusercontent.com/DibyoExcel/Dragon-Engine/refs/heads/main/assets/preload/images/unknownMod.png" alt="?">
             </button>
         </header>
-        <div class="content center">
-            <p>Hello! Welcome to Dragon Engine Documentation🐲.<br>Thing Dragon Engine have here.</p>
-            <div class="border_content">
-                <div class="margin_content center">
-                    <h1>2nd Opponent Strums(1.5.5+)</h1>
-                    <img class="content" src="https://raw.githubusercontent.com/DibyoExcel/Dragon-Engine/refs/heads/main/art%20feature/2nd%20strum.png">
-                    <iframe class="youtube ratio" src="https://www.youtube.com/embed/f3ZaQddsKXo?si=8Wt3ldNEBXsD74vF&amp;start=70" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                    <p class="tip">Open Chart editor. open Song tab and turn on called "Has 2nd Strums"</p>
-                    <img class="content" src="tips/2ndstrum.png">
-                </div>
-            </div>
-            <br>
-            <br>
-            <div class="border_content">
-                <div class="margin_content center">
-                    <h1>Custom Field(1.6.0+)</h1>
-                    <img class="content" src="https://github.com/DibyoExcel/Dragon-Engine/blob/main/art%20feature/custom%20field%20(1).png?raw=true">
-                    <img class="content" src="https://github.com/DibyoExcel/Dragon-Engine/blob/main/art%20feature/custom%20field%20(2).png?raw=true">
-                    <iframe class="youtube ratio" src="https://www.youtube.com/embed/UzcQmOmcZso?si=UcazVJCg5nslGzQn&amp;start=138" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                    <p>Reference: </p>
-                    <iframe class="youtube ratio" src="https://www.youtube.com/embed/aq9H0PGS_1g?si=KnG47DYuDdZ3X-n3" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                    <p class="tip">how to use it <a href="https://github.com/DibyoExcel/Dragon-Engine/tree/main/tamplate">Learn More(Lua)</a></p>
-                </div>
-            </div>
-            <br>
-            <div class="border_content">
-                <div class="margin_content center">
-                    <div class="luafunction" id="setfunc">
-                        <h1>Lua Set Function:</h1>
-                        <div class="lualist center">
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">setWindowDarkMode()(1.5.7+)</h2>
-                                    <h3 class="luafunction">set window border to darkmode.</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">setWindowLightMode()(1.5.7+)</h2>
-                                <h3 class="luafunction">set window border to lightmode.</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">setWindowX(value:Int, duration:Float = 0.0, ease:String)(1.5.8+)(Deprecated)</h2>
-                                <h3 class="luafunction">set window X property.<br>value: any int number for x window position.<br>duration: duration for transition.<br>ease: The tweening method used, example: 'linear', 'circInOut'. <a href="https://api.haxeflixel.com/flixel/tweens/FlxEase.html">All Tween Method</a>.</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">setWindowY(value:Int, duration:Float = 0.0, ease:String)(1.5.8+)(Deprecated)</h2>
-                                <h3 class="luafunction">set window Y property.<br>value: any int number for y window position.<br>duration: duration for transition.<br>ease: The tweening method used, example: 'linear', 'circInOut'. <a href="https://api.haxeflixel.com/flixel/tweens/FlxEase.html">All Tween Method</a>.</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">setWindowWidth(value:Int, duration:Float = 0.0, ease:String)(1.5.8+)(Deprecated)</h2>
-                                <h3 class="luafunction">set window Width property.<br>value: any int number for width window.<br>duration: duration for transition.<br>ease: The tweening method used, example: 'linear', 'circInOut'. <a href="https://api.haxeflixel.com/flixel/tweens/FlxEase.html">All Tween Method</a>.</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">setWindowHeight(value:Int, duration:Float = 0.0, ease:String)(1.5.8+)(Deprecated)</h2>
-                                <h3 class="luafunction">set window Height property.<br>value: any int number for height window.<br>duration: duration for transition.<br>ease: The tweening method used, example: 'linear', 'circInOut'. <a href="https://api.haxeflixel.com/flixel/tweens/FlxEase.html">All Tween Method</a></h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">setWindowProperty(x:Null&lt;Int&gt;, y:Null&lt;Int&gt;, width:Null&lt;Float&gt;, height:Null&lt;Float&gt;, duration:Float = 0, ease:String, scale:Bool = false)(1.5.9.5+)</h2>
-                                <h3 class="luafunction">set window property.<br>x: window x position(leave empty to ignore).<br>y: window y position(leave empty to ignore).<br>width: window width(leave empty to ignore).<br>height: window height(leave empty to ignore).<br>duration: duration for transition.<br>ease: The tweening method used, example: 'linear', 'circInOut'. <a href="https://api.haxeflixel.com/flixel/tweens/FlxEase.html">All Tween Method</a>.<br>scale: if checked it will use mutliple screen resolution(0 to 1(max)).</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">resetWindow()</h2>
-                                <h3 class="luafunction">reset window to last window property before load song.</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">setSecondOpponent(value:Bool, trasition:Bool, trasition2:Bool)(1.6.0+)</h2>
-                                <h3 class="luafunction">set between 2nd strums or not.<br>value:toggle of wnd strums or normal<br>trasition: should add strums transition for player.<br>trasition2: should add strums transition for opponent.</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">changeGamemode(name:String = 'none', transition:Bool = true)(1.5.9.2+)</h2>
-                                <h3 class="luafunction">set gamemode.<br>name: name of gamemode.<br>transition: Transition notes.</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">changeSongSpeed(value:Float, duration:Float = 0, ease:String)(1.6.1.8+)</h2>
-                                <h3 class="luafunction">set song scroll speed.<br>value: number the scroll speed.<br>duration: duration of transition change scroll speed.<br>ease: The tweening method used, example: 'linear', 'circInOut'. <a href="https://api.haxeflixel.com/flixel/tweens/FlxEase.html">All Tween Method</a>.</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="luafunction" id="objfunc">
-                        <h1>Lua Object Function:</h1>
-                        <div class="lualist center">
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">createCustomStrum(tag:String, data:Int = 4, camera:String = 'hud', scroilX:Float = 0, scrollY:Float = 0, downscroll:Null&lt;Bool&gt;)</h2>
-                                <h3 class="luafunction">tag: tag of for custom field.<br>data: how much strum to spawn.<br>camera: camera target to custom field(selection: 'game', 'hud', 'other').<br>scrollX : scroll speed of x.<br>scrollY : scroll speed of y.<br>downscroll: should up scroll?(if not set it use setting use)</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">removeStrum(tag:String)</h2>
-                                <h3 class="luafunction">tag: name of custom field to remove.</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="luafunction" id="getfunc">
-                        <h1>Lua Get Function:</h1>
-                        <div class="lualist center">
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">getResolutionWidth()(1.5.8+)</h2>
-                                <h3 class="luafunction">returning monitor width resolution. Shortcut of `getPropertyFromClass('openfl.Lib', 'application.application.window.display.bounds.width')`</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">getResolutionHeight()(1.5.8+)</h2>
-                                <h3 class="luafunction">returning monitor height resolution. Shortcut of `getPropertyFromClass('openfl.Lib', 'application.application.window.display.bounds.height')`</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="luafunction" id="callfunc">
-                        <h1>Lua Callback Function:</h1>
-                        <div class="lualist center">
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">opponentNoteMiss(id:Int, noteData:Int, noteType:String, isSustainNote:Bool)(1.5.7+)</h2>
-                                    <h3 class="luafunction">same as noteMiss(id:Int, noteData:Int, noteType:String, isSustainNote:Bool) but for opponent and most use for bothside and opponent gamemode.</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">opponentNoteMissPress(noteData:Int)(1.5.7+)</h2>
-                                    <h3 class="luafunction">same as noteMiss(noteData:Int) but for opponent and most use for opponent gamemode.</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">opponentNoteMissPress(noteData:Int)(1.5.7+)</h2>
-                                    <h3 class="luafunction">same as noteMiss(noteData:Int) but for opponent and most use for opponent gamemode.</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">onChangeGamemode(name:String, transition:Bool)(1.6.0.6+)</h2>
-                                    <h3 class="luafunction">function when change gamemode(from changeGamemode())<br>name: returning the gamemode name after change.<br>transition(1.6.1.2+):return bool after change gamemode transition.</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">onChangeOpponent(dualstrum:Bool, transition:Bool, transition2:Bool)(1.6.0.6+)</h2>
-                                    <h3 class="luafunction">function when change 2nd strums(from setSecondOpponent()).<br>dualstrum:returning bool of 2nd strums mode after change.<br>transition(1.6.1.2+): returning bool of transition after change.<br>transition2(1.6.1.2+): returning bool off transition2 after change.</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="luafunction" id="varfunc">
-                        <h1>Lua Variable Function:</h1>
-                        <div class="lualist center">
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">gamemode(1.5.9+)</h2>
-                                    <h3 class="luafunction">name of currently gamemode use.</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">extraui(1.6.0.7+)</h2>
-                                    <h3 class="luafunction">variable of "extra ui" setting.</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">defaultGfStrumX0(1.6.0.9+)</h2>
-                                    <h3 class="luafunction">default strums x 0 of gfStrums.(Only if)</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">defaultGfStrumX1(1.6.0.9+)</h2>
-                                    <h3 class="luafunction">default strums x 1 of gfStrums.(Only if)</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">defaultGfStrumX2(1.6.0.9+)</h2>
-                                    <h3 class="luafunction">default strums x 2 of gfStrums.(Only if)</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">defaultGfStrumX3(1.6.0.9+)</h2>
-                                    <h3 class="luafunction">default strums x 3 of gfStrums.(Only if)</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">defaultGfStrumY0(1.6.0.9+)</h2>
-                                    <h3 class="luafunction">default strums y 0 of gfStrums.(Only if)</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">defaultGfStrumY1(1.6.0.9+)</h2>
-                                    <h3 class="luafunction">default strums y 1 of gfStrums.(Only if)</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">defaultGfStrumY2(1.6.0.9+)</h2>
-                                    <h3 class="luafunction">default strums y 2 of gfStrums.(Only if)</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">defaultGfStrumY3(1.6.0.9+)</h2>
-                                    <h3 class="luafunction">default strums y 3 of gfStrums.(Only if)</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <br>
-            <div class="border_content">
-                <div class="margin_content center">
-                    <div class="luafunction">
-                        <h1>Note Type Prefix:</h1>
-                        <div class="lualist center">
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">-opponent</h2>
-                                    <h3 class="luafunction">set note type to opponent side. Example: notetypename-opponent</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">-player</h2>
-                                    <h3 class="luafunction">set note type to player side. Example: notetypename-player</h3>
-                                </div>
-                            </div>
-                            <div class="luaborder borderpurple">
-                                <div class="marginlua">
-                                    <h2 class="luaname">-gf</h2>
-                                    <h3 class="luafunction">set note type to gf note. Example: notetypename-gf. also can combine with -player or -opponent Example: notetypename-gf-opponent</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="border_content">
-                <div class="margin_content center">
-                    <h3>HTML5 Version (I recommended to use Windows version)</h3>
-                    <div id="tv_container" style="width: 85%; pointer-events: none;">
-                        <iframe id='fnfgame' src="about:blank" class="ratio" allowfullscreen style="background-color: black;"></iframe>
-                        <div class="brand_name" style="font-family: 'Mojangles';">
-                            TOSHIWYRM
-                        </div>
-                        <button onclick='enterFullscreen(); press();' class="fullscreen button" id="fullscreen_btn" style="position: absolute; right: 10px; top: 10px; display: none;">
-                            <img src="https://img.icons8.com/?size=100&id=38034&format=png&color=000000" width="20px" height="20px">
-                        </button>
-                    </div>
-                    <button onclick='play(); press();' id="playbutton" class="button">
-                        <img src="https://img.icons8.com/?size=100&id=397&format=png&color=000000" width="50px" height="50px">
-                    </button>
-                    <div id="iframebutton" style="gap: 25px; display: none;">
-                        <button onclick='shutdown(); press();' class="shutdown button">
-                            <img src="https://img.icons8.com/?size=100&id=1456&format=png&color=000000" width="50px" height="50px">
-                        </button>
-                        <button onclick='restart(); press();' class="restart button">
-                            <img src="https://img.icons8.com/?size=100&id=1457&format=png&color=000000" width="50px" height="50px">
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <br>
-            <div class="borderpurple">
-                <h3 class="end">End of Page.</h3>
+        <div style="display: flex; margin-top: 50px;">
+            <div class="hamburger" id="hamburger" style="position: fixed; z-index: 1000; overflow-y: auto; display: flex; flex-direction: column; gap: 2px">
+                <a class="sidebar_link" href="/">Introduction</a>
+                <p style="text-decoration: underline;">Features</p>
+                <a class="sidebar_link" href="/secoptstrums/">2nd Opponent Strums</a>
+                <a class="sidebar_link" href="/customfield/">Custom Field</a>
+                <a class="sidebar_link" href="/luafunction/">Lua Function</a>
+                <a class="sidebar_link" href="/noteprefix/">Notetype Prefix</a>
+                <a class="sidebar_link" href="/html5/">HTML5 Version</a>
+                <p style="text-decoration: underline;">Extras</p>
+                <a class="sidebar_link" href="/draconis/">Draconis Mods</a>
             </div>
         </div>
-        <script src="mechanic_ui.js"></script>
+        <div class="content center">
+            <div class="border_content">
+                <h1>Introduction</h1>
+                <img src="https://raw.githubusercontent.com/DibyoExcel/Dragon-Engine/refs/heads/main/draconisteam/iconOG.png" width="85%">
+                <h3>This engine modified Psych Engine 0.6.3 with better modding feature.</h3>
+            </div>
     </body>
 </html>

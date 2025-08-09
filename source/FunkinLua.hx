@@ -235,6 +235,8 @@ class FunkinLua {
 		set('currentModDirectory', Paths.currentModDirectory);
 		//dge setting var
 		set('extraui', ClientPrefs.extUI);
+		set('darkmode', ClientPrefs.darkmode);
+		set('startPause', ClientPrefs.startPause);
 		
 		#if windows
 		set('buildTarget', 'windows');
@@ -1011,10 +1013,17 @@ class FunkinLua {
 		});
 		Lua_helper.add_callback(lua, "getPropertyFromGroup", function(obj:String, index:Int, variable:Dynamic) {
 			var shitMyPants:Array<String> = obj.split('.');
+			var isMap:Array<String> = obj.split('@');
 			var realObject:Dynamic = Reflect.getProperty(getInstance(), obj);
 			if(shitMyPants.length>1)
 				realObject = getPropertyLoopThingWhatever(shitMyPants, true, false);
-
+			if (isMap.length > 1) {
+				if (isMap[0] == 'customStrums' && PlayState.instance.strumGroupMap.exists(isMap[1])) {
+					realObject = PlayState.instance.strumGroupMap.get(isMap[1]);
+				} else {
+					return null;
+				}
+			}
 
 			if(Std.isOfType(realObject, FlxTypedGroup))
 			{
@@ -1041,9 +1050,18 @@ class FunkinLua {
 		});
 		Lua_helper.add_callback(lua, "setPropertyFromGroup", function(obj:String, index:Int, variable:Dynamic, value:Dynamic) {
 			var shitMyPants:Array<String> = obj.split('.');
+			var isMap:Array<String> = obj.split('@');
 			var realObject:Dynamic = Reflect.getProperty(getInstance(), obj);
 			if(shitMyPants.length>1)
 				realObject = getPropertyLoopThingWhatever(shitMyPants, true, false);
+
+			if (isMap.length > 1) {
+				if (isMap[0] == 'customStrums' && PlayState.instance.strumGroupMap.exists(isMap[1])) {
+					realObject = PlayState.instance.strumGroupMap.get(isMap[1]);
+				} else {
+					return;
+				}
+			}
 
 			if(Std.isOfType(realObject, FlxTypedGroup)) {
 				setGroupStuff(realObject.members[index], variable, value);

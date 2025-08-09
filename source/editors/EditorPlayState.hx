@@ -1033,7 +1033,7 @@ class EditorPlayState extends MusicBeatState
 				if (player == 0) {
 					for (i in 0...8)
 					{
-						var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X)-50)-(i*37), strumLine.y, i, player);
+						var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X)-50)-(i*37), strumLine.y, i, player, i>3);
 						babyArrow.camTarget ='';
 						if (ClientPrefs.notesStrum) {
 							babyArrow.animConfirm = "notes";
@@ -1060,7 +1060,7 @@ class EditorPlayState extends MusicBeatState
 				// Loop for playerStrums (only 4 arrows)
 					for (i in 0...(PlayState.SONG.secOpt && gamemode == 'bothside' ? 8 : 4))
 						{
-							var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, strumLine.y, i, player);
+							var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, strumLine.y, i, player, i>3);
 							babyArrow.camTarget ='';
 							if (ClientPrefs.notesStrum) {
 								babyArrow.animConfirm = "notes";
