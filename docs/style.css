@@ -217,6 +217,7 @@ iframe#fnfgame{
 }
 
 div#tv_container {
+    width: 100%;
     position: relative;
     text-align: center;
     overflow: hidden;
