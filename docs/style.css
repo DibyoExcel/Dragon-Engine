@@ -5,7 +5,7 @@
     --font-type: "Mojangles";
 }
 body {
-    background-image: url('background.png');
+    background-image: url('img/background.png');
     background-size: cover;
     background-position: center;
     margin: 0;
@@ -265,10 +265,10 @@ div.container{
 }
 
 div.character_list{
-    border: 2px solid #fff;
+    border: 3px outset #fff;
 }
 div.character_list:hover{
-    border: 2px solid #f0f;
+    border: 3px inset #f0f;
 }
 
 img.character{
@@ -277,5 +277,9 @@ img.character{
 }
 
 div.char_border{
+    border: 2.5px solid #f0f;
+}
+img.note_img{
     border: 2px solid white;
+    width: 100px;
 }
