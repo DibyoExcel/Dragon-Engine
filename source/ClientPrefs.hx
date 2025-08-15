@@ -50,7 +50,6 @@ class ClientPrefs {
 	public static var checkForUpdates:Bool = true;
 	public static var comboStacking = true;
 	public static var noteSplashesOpt:Bool = true;
-	public static var notesStrum:Bool = false;
 	public static var gameplaySettings:Map<String, Dynamic> = [
 		'scrollspeed' => 1.0,
 		'scrolltype' => 'multiplicative', 
@@ -136,7 +135,6 @@ class ClientPrefs {
 	}
 
 	public static function saveSettings() {
-		FlxG.save.data.notesStrum = notesStrum;
 		FlxG.save.data.limitSpawn = limitSpawn;
 		FlxG.save.data.limitSpawnNotes = limitSpawnNotes;
 		FlxG.save.data.startPause = startPause;
@@ -209,9 +207,6 @@ class ClientPrefs {
 		}
 		if(FlxG.save.data.limitSpawnNotes != null) {
 			limitSpawnNotes = FlxG.save.data.limitSpawnNotes;
-		}
-		if(FlxG.save.data.notesStrum != null) {
-			notesStrum = FlxG.save.data.notesStrum;
 		}
 		if(FlxG.save.data.startPause != null) {
 			startPause = FlxG.save.data.startPause;

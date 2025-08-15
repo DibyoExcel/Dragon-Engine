@@ -1767,13 +1767,23 @@ class FunkinLua {
 			}
 		});
 		Lua_helper.add_callback(lua, "createCustomStrum", function(tag:String= '', data:Int = 4, camera:String = 'hud', sfX:Float = 0, sfY:Float = 0, downscroll:Null<Bool> = null) {
-			if (tag != null || tag != '') {
+			if (tag != null && tag != '') {
 				PlayState.instance.createStrum(tag, data, camera, sfX, sfY, downscroll);
 			}
 		});
 		Lua_helper.add_callback(lua, "removeStrum", function(tag:String= '') {
-			if (tag != null || tag != '') {
+			if (tag != null && tag != '') {
 				PlayState.instance.removeStrum(tag);
+			}
+		});
+		Lua_helper.add_callback(lua, "addCamera", function(name:String= '', x:Int, y:Int, width:Int, height:Int, zoom:Float = 1) {
+			if (name != null && name != '') {
+				PlayState.instance.addCamera(name, x, y, width, height, zoom);
+			}
+		});
+		Lua_helper.add_callback(lua, "removeCamera", function(name:String= '') {
+			if (name != null && name != '') {
+				PlayState.instance.remCamera(name);
 			}
 		});
 
@@ -2217,7 +2227,6 @@ class FunkinLua {
 			PlayState.instance.timeBar.createFilledBar(right, left);
 			PlayState.instance.timeBar.updateBar();
 		});
-
 		Lua_helper.add_callback(lua, "setObjectCamera", function(obj:String, camera:String = '') {
 			/*if(PlayState.instance.modchartSprites.exists(obj)) {
 				PlayState.instance.modchartSprites.get(obj).cameras = [cameraFromString(camera)];
@@ -2227,9 +2236,14 @@ class FunkinLua {
 				PlayState.instance.modchartTexts.get(obj).cameras = [cameraFromString(camera)];
 				return true;
 			}*/
+			var camArray:Array<String> = camera.split(',');
+			var realCam:Array<String> = [];
+			for (i in 0...camArray.length) {
+				realCam[i] = camArray[i].trim();
+			}
 			var real = PlayState.instance.getLuaObject(obj);
 			if(real!=null){
-				real.cameras = [cameraFromString(camera)];
+				real.cameras = cameraArrayFromString(realCam);
 				return true;
 			}
 
@@ -2240,7 +2254,7 @@ class FunkinLua {
 			}
 
 			if(object != null) {
-				object.cameras = [cameraFromString(camera)];
+				object.cameras = cameraArrayFromString(realCam);
 				return true;
 			}
 			luaTrace("setObjectCamera: Object " + obj + " doesn't exist!", false, false, FlxColor.RED);
@@ -3316,6 +3330,18 @@ class FunkinLua {
 			case 'subtract': return SUBTRACT;
 		}
 		return NORMAL;
+	}
+
+	public static function cameraArrayFromString(camArray:Array<String>):Array<FlxCamera> {
+		var getCam:Array<FlxCamera> = [];
+		for (i in 0...camArray.length) {
+			if (PlayState.instance.variables.exists('camera:' + camArray[i])) {
+				getCam.push(PlayState.instance.variables.get('camera:' + camArray[i]));
+			} else {
+				getCam.push(cameraFromString(camArray[i]));
+			}
+		}
+		return getCam;
 	}
 
 	public static function cameraFromString(cam:String):FlxCamera {

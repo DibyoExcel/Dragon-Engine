@@ -4,6 +4,7 @@ import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
+using StringTools;
 
 class NoteSplash extends FlxSprite
 {
@@ -42,7 +43,12 @@ class NoteSplash extends FlxSprite
 		}
 		setGraphicSize(Std.int(width*scale), Std.int(height*scale));
 		if (cam != null && cam != '') {
-			cameras = [FunkinLua.cameraFromString(cam)];
+			var camArray:Array<String> = cam.split(',');
+			var realCam:Array<String> = [];
+			for (i in 0...camArray.length) {
+				realCam[i] = camArray[i].trim();
+			}
+			cameras = FunkinLua.cameraArrayFromString(realCam);
 		}
 		scrollFactor.set(sfX, sfY);
 
@@ -69,7 +75,12 @@ class NoteSplash extends FlxSprite
 		}
 		setGraphicSize(Std.int(width*scale), Std.int(height*scale));
 		if (cam != null || cam != '') {
-			cameras = [FunkinLua.cameraFromString(cam)];
+			var camArray:Array<String> = cam.split(',');
+			var realCam:Array<String> = [];
+			for (i in 0...camArray.length) {
+				realCam[i] = camArray[i].trim();
+			}
+			cameras = FunkinLua.cameraArrayFromString(realCam);
 		}
 		scrollFactor.set(sfX, sfY);
 

@@ -75,7 +75,8 @@ class ChartingState extends MusicBeatState
 		'GF Sing Force Opponent',
 		'Auto Press',
 		"GF Sing Auto Press",
-		"Flip Scroll"
+		"Flip Scroll",
+		"Fake No Hit"
 	];
 	private var noteTypeIntMap:Map<Int, String> = new Map<Int, String>();
 	private var noteTypeMap:Map<String, Null<Int>> = new Map<String, Null<Int>>();
@@ -2062,7 +2063,7 @@ class ChartingState extends MusicBeatState
 								}
 							}
 							if(noteDataToCheck > -1 && note.mustPress != _song.notes[curSec-1].mustHitSection) noteDataToCheck += 4;
-							if (note.playStrumAnim) {
+							if (note.playStrumAnim && !note.fakeNoHit) {
 								strumLineNotes.members[noteDataToCheck].playAnim(note.animConfirm.length == 0 ? 'confirm' : note.animConfirm, true);
 								strumLineNotes.members[noteDataToCheck].resetAnim = 0.15;
 							}
@@ -2116,7 +2117,7 @@ class ChartingState extends MusicBeatState
 								}
 							}
 							if(noteDataToCheck > -1 && note.mustPress != _song.notes[curSec-1].mustHitSection) noteDataToCheck += 4;
-							if (note.playStrumAnim) {
+							if (note.playStrumAnim && !note.fakeNoHit) {
 								strumLineNotes.members[noteDataToCheck].playAnim(note.animConfirm.length == 0 ? 'confirm' : note.animConfirm, true);
 								strumLineNotes.members[noteDataToCheck].resetAnim = 0.15;
 							}
@@ -2171,7 +2172,7 @@ class ChartingState extends MusicBeatState
 							}
 						}
 						if(noteDataToCheck > -1 && note.mustPress != _song.notes[curSec].mustHitSection) noteDataToCheck += 4;
-						if (note.playStrumAnim) {
+						if (note.playStrumAnim && !note.fakeNoHit) {
 							strumLineNotes.members[noteDataToCheck].playAnim(note.animConfirm.length == 0 ? 'confirm' : note.animConfirm, true);
 							strumLineNotes.members[noteDataToCheck].resetAnim = 0.15;
 						}
@@ -2225,7 +2226,7 @@ class ChartingState extends MusicBeatState
 							}
 						}
 						if(noteDataToCheck > -1 && note.mustPress != _song.notes[curSec].mustHitSection) noteDataToCheck += 4;
-						if (note.playStrumAnim) {
+						if (note.playStrumAnim && !note.fakeNoHit) {
 							strumLineNotes.members[noteDataToCheck].playAnim(note.animConfirm.length == 0 ? 'confirm' : note.animConfirm, true);
 							strumLineNotes.members[noteDataToCheck].resetAnim = 0.15;
 						}

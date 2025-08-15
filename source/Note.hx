@@ -115,7 +115,8 @@ class Note extends FlxSprite
 	public var noteSplashScrollFactor:Array<Float> = [1, 1];//dont ask why 1 cuz is default of note splash
 	public var offsetStrumTime:Float = 0;
 	public var sustainTail:Bool = false;
-	public var animConfirm:String = '';//static, confirm, notes
+	public var animConfirm(default, set):String = '';//static, confirm, notes, pressed
+	public var fakeNoHit:Bool = false;//DISABLED!
 
 
 
@@ -201,6 +202,8 @@ class Note extends FlxSprite
 					gfNote = true;
 				case 'Flip Scroll':
 					flipScroll = true;
+				case 'Fake No Hit':
+					fakeNoHit = true;
 			}
 			noteType = value;
 		}
@@ -592,7 +595,12 @@ class Note extends FlxSprite
 	private function set_camTarget(value:String):String {
 		if (camTarget != value) {
 			if (value != '') {
-				cameras = [FunkinLua.cameraFromString(value)];
+				var camArray:Array<String> = value.split(',');
+				var realCam:Array<String> = [];
+				for (i in 0...camArray.length) {
+					realCam[i] = camArray[i].trim();
+				}
+				cameras = FunkinLua.cameraArrayFromString(realCam);
 			} else {
 				cameras = null;
 			}
@@ -669,5 +677,21 @@ class Note extends FlxSprite
 		jsonRa = null;
 		haxeRa = null;
 		#end
+	}
+
+	private function set_animConfirm(value:String):String {
+		var shouldUse:Array<String> = [ '', 'static', 'confirm', 'notes', 'pressed' ];//please lower case
+		if (animConfirm != value) {
+			if (value == null) {
+				value = '';
+			}
+			value = value.toLowerCase();
+			if (shouldUse.indexOf(value) == -1) {
+				trace(value + ' is not animation name');
+				value = '';//prevent fallout error
+			}
+			animConfirm = value;
+		}
+		return value;
 	}
 }

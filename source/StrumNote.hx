@@ -14,7 +14,7 @@ class StrumNote extends FlxSprite
 	public var direction:Float = 90;//plan on doing scroll directions soon -bb
 	public var downScroll:Bool = false;//plan on doing scroll directions soon -bb
 	public var sustainReduce:Bool = true;
-	public var animConfirm:String = "confirm";//'confirm', 'static', 'pressed', 'notes'
+	public var animConfirm(default, set):String = 'confirm';//'confirm', 'static', 'pressed', 'notes'
 	public var fieldName:String = '';//only use for remove object and target of 'customStrum'
 	public var memberID:Int =0; //only use target 'customStrum'
 	public var camTarget(default, set):String = 'hud';
@@ -214,10 +214,15 @@ class StrumNote extends FlxSprite
 			}
 		}
 	}
-	function set_camTarget(value:String):String {
+	private function set_camTarget(value:String):String {
 		if (camTarget != value) {
 			if (value != '') {
-				cameras = [FunkinLua.cameraFromString(value)];
+				var camArray:Array<String> = value.split(',');
+				var realCam:Array<String> = [];
+				for (i in 0...camArray.length) {
+					realCam[i] = camArray[i].trim();
+				}
+				cameras = FunkinLua.cameraArrayFromString(realCam);
 			} else {
 				cameras = null;
 			}
@@ -232,6 +237,21 @@ class StrumNote extends FlxSprite
 		}
 		scrollFactorCam[0] = value[0];
 		scrollFactorCam[1] = value[1];
+		return value;
+	}
+	private function set_animConfirm(value:String):String {
+		var shouldUse:Array<String> = [ 'static', 'confirm', 'notes', 'pressed' ];//please lower case
+		if (animConfirm != value) {
+			if (value == null) {
+				value = 'confirm';
+			}
+			value = value.toLowerCase();
+			if (shouldUse.indexOf(value) == -1) {
+				trace(value + ' is not animation name');
+				value = 'confirm';//prevent fallout error
+			}
+			animConfirm = value;
+		}
 		return value;
 	}
 }

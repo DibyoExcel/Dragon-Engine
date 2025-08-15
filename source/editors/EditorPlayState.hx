@@ -1035,9 +1035,6 @@ class EditorPlayState extends MusicBeatState
 					{
 						var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X)-50)-(i*37), strumLine.y, i, player, i>3);
 						babyArrow.camTarget ='';
-						if (ClientPrefs.notesStrum) {
-							babyArrow.animConfirm = "notes";
-						}
 						if (player != 1)
 						{
 							if(ClientPrefs.middleScroll)
@@ -1062,9 +1059,6 @@ class EditorPlayState extends MusicBeatState
 						{
 							var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, strumLine.y, i, player, i>3);
 							babyArrow.camTarget ='';
-							if (ClientPrefs.notesStrum) {
-								babyArrow.animConfirm = "notes";
-							}
 						
 							if (player == 1)
 							{

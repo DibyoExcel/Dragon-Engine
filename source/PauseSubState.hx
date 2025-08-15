@@ -98,7 +98,7 @@ class PauseSubState extends MusicBeatSubstate
 		add(levelDifficulty);
 
 		var blueballedTxt:FlxText = new FlxText(20, 15 + 64, 0, "", 32);
-		blueballedTxt.text = (ClientPrefs.dragonW ? "Been Killed: " : "Blueballed") + PlayState.deathCounter + (ClientPrefs.dragonW ? " Times" : "");
+		blueballedTxt.text = (ClientPrefs.dragonW ? "Been Killed: " : "Blueballed: ") + PlayState.deathCounter + (ClientPrefs.dragonW ? " Times" : "");
 		blueballedTxt.scrollFactor.set();
 		blueballedTxt.setFormat(Paths.font('vcr.ttf'), 32);
 		blueballedTxt.updateHitbox();
