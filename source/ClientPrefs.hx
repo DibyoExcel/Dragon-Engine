@@ -7,9 +7,10 @@ import flixel.graphics.FlxGraphic;
 import Controls;
 
 class ClientPrefs {
-	public static var downScroll:Bool = false;
-	public static var limitSpawn:Bool = false;
-	public static var limitSpawnNotes:Int = 50;//ummmm
+	//dge setting
+	public static var useResultScr:Bool = false;//should use result screen
+	public static var limitSpawn:Bool = false;//should has limit to spawn?(useful for change scroll speed to negative)
+	public static var limitSpawnNotes:Int = 50;//many notes to limit
 	public static var startPause:Bool = false;
 	public static var disableOGCredit:Bool = false;
 	public static var keyStrokeAlpha:Float = 1;
@@ -24,6 +25,9 @@ class ClientPrefs {
 	public static var clsstrum:Bool = false;
 	public static var fpsStrumAnim:Int = 24;
 	public static var noteSplashAlpha:Float = 0.6;
+	public static var noteSplashesOpt:Bool = true;
+	//end
+	public static var downScroll:Bool = false;
 	public static var middleScroll:Bool = false;
 	public static var opponentStrums:Bool = true;
 	public static var showFPS:Bool = true;
@@ -49,7 +53,6 @@ class ClientPrefs {
 	public static var pauseMusic:String = 'Tea Time';
 	public static var checkForUpdates:Bool = true;
 	public static var comboStacking = true;
-	public static var noteSplashesOpt:Bool = true;
 	public static var gameplaySettings:Map<String, Dynamic> = [
 		'scrollspeed' => 1.0,
 		'scrolltype' => 'multiplicative', 
@@ -135,6 +138,7 @@ class ClientPrefs {
 	}
 
 	public static function saveSettings() {
+		FlxG.save.data.useResultScr = useResultScr;
 		FlxG.save.data.limitSpawn = limitSpawn;
 		FlxG.save.data.limitSpawnNotes = limitSpawnNotes;
 		FlxG.save.data.startPause = startPause;
@@ -201,6 +205,9 @@ class ClientPrefs {
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.useResultScr != null) {
+			useResultScr = FlxG.save.data.useResultScr;
 		}
 		if(FlxG.save.data.limitSpawn != null) {
 			limitSpawn = FlxG.save.data.limitSpawn;

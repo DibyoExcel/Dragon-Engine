@@ -190,6 +190,13 @@ class DragonOptionsState extends BaseOptionsMenu
 		option.minValue = 10;
 		option.scrollSpeed = 20;
 		addOption(option);
+
+		var option:Option = new Option('Result Screen',
+			"If Checked The Result screen will show after end song(Free Play).",
+			'useResultScr',
+			'bool',
+			false);
+		addOption(option);
 		super();
 	}
 	override public function close():Void {

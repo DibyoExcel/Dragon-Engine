@@ -1836,18 +1836,18 @@ class FunkinLua {
 			return isDad;
 		});
 		Lua_helper.add_callback(lua, "cameraShake", function(camera:String, intensity:Float, duration:Float) {
-			cameraFromString(camera).shake(intensity, duration);
+			cameraBetterFromString(camera).shake(intensity, duration);
 		});
 
 		Lua_helper.add_callback(lua, "cameraFlash", function(camera:String, color:String, duration:Float,forced:Bool) {
 			var colorNum:Int = Std.parseInt(color);
 			if(!color.startsWith('0x')) colorNum = Std.parseInt('0xff' + color);
-			cameraFromString(camera).flash(colorNum, duration,null,forced);
+			cameraBetterFromString(camera).flash(colorNum, duration,null,forced);
 		});
 		Lua_helper.add_callback(lua, "cameraFade", function(camera:String, color:String, duration:Float,forced:Bool) {
 			var colorNum:Int = Std.parseInt(color);
 			if(!color.startsWith('0x')) colorNum = Std.parseInt('0xff' + color);
-			cameraFromString(camera).fade(colorNum, duration,false,null,forced);
+			cameraBetterFromString(camera).fade(colorNum, duration,false,null,forced);
 		});
 		Lua_helper.add_callback(lua, "setRatingPercent", function(value:Float) {
 			PlayState.instance.ratingPercent = value;
@@ -1859,11 +1859,11 @@ class FunkinLua {
 			PlayState.instance.ratingFC = value;
 		});
 		Lua_helper.add_callback(lua, "getMouseX", function(camera:String) {
-			var cam:FlxCamera = cameraFromString(camera);
+			var cam:FlxCamera = cameraBetterFromString(camera);
 			return FlxG.mouse.getScreenPosition(cam).x;
 		});
 		Lua_helper.add_callback(lua, "getMouseY", function(camera:String) {
-			var cam:FlxCamera = cameraFromString(camera);
+			var cam:FlxCamera = cameraBetterFromString(camera);
 			return FlxG.mouse.getScreenPosition(cam).y;
 		});
 
@@ -3335,13 +3335,16 @@ class FunkinLua {
 	public static function cameraArrayFromString(camArray:Array<String>):Array<FlxCamera> {
 		var getCam:Array<FlxCamera> = [];
 		for (i in 0...camArray.length) {
-			if (PlayState.instance.variables.exists('camera:' + camArray[i])) {
-				getCam.push(PlayState.instance.variables.get('camera:' + camArray[i]));
-			} else {
-				getCam.push(cameraFromString(camArray[i]));
-			}
+			getCam.push(cameraBetterFromString(camArray[i]));
 		}
 		return getCam;
+	}
+
+	public static function cameraBetterFromString(cam:String):FlxCamera {
+		if (PlayState.instance.variables.exists('camera:' + cam)) {
+			return PlayState.instance.variables.get('camera:' + cam);
+		}
+		return cameraFromString(cam);
 	}
 
 	public static function cameraFromString(cam:String):FlxCamera {

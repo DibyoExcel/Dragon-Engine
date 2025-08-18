@@ -153,7 +153,6 @@ class DragonOptionsState extends BaseOptionsMenu
 			'disableOGCredit',
 			'bool',
 			false);
-		option.onChange = changeAutoPause;
 		addOption(option);
 
 		var option:Option = new Option('Default Note Skin',
@@ -165,6 +164,7 @@ class DragonOptionsState extends BaseOptionsMenu
 		option.showNote = true;
 		option.onChange = onChangeNoteSkin;
 		addOption(option);
+
 		#if CHECK_FOR_UPDATES
 		var option:Option = new Option('Check for Updates',
 			'On Release builds, turn this on to check for updates when you start the game.',
@@ -188,6 +188,13 @@ class DragonOptionsState extends BaseOptionsMenu
 			50);
 		option.minValue = 5;
 		option.scrollSpeed = 20;
+		addOption(option);
+
+		var option:Option = new Option('Result Screen',
+			"If Checked The Result screen will show after end song(Free Play).",
+			'useResultScr',
+			'bool',
+			false);
 		addOption(option);
 		super();
 	}

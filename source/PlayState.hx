@@ -4493,7 +4493,7 @@ class PlayState extends MusicBeatState
 				if(FlxTransitionableState.skipNextTransIn) {
 					CustomFadeTransition.nextCamera = null;
 				}
-				if (!cpuControlled) {
+				if (!cpuControlled && ClientPrefs.useResultScr) {
 					MusicBeatState.switchState(new addition.ResultScreen(songScore, songMisses, ratingName, ratingPercent));
 				} else {
 					FlxG.sound.playMusic(Paths.music('freakyMenu'));
@@ -5131,7 +5131,7 @@ class PlayState extends MusicBeatState
 			if(note.isSustainNote && !note.animation.curAnim.name.endsWith('end')) {
 				time += 0.15;
 			}
-			if (note.playStrumAnim && !note.fakeNoHit) {
+			if (note.playStrumAnim && !note.fakeNoHit && !ClientPrefs.clsstrum) {
 				StrumPlayAnim((gamemode == "opponent" || ((gamemode == "bothside v2" || gamemode == "bothside") && note.mustPress) ? false : true), Std.int(Math.abs(note.noteData)), time, note.customField, note.fieldTarget, note);
 			}
 			note.hitByOpponent = true;
@@ -5280,7 +5280,7 @@ class PlayState extends MusicBeatState
 				if(note.isSustainNote && !note.animation.curAnim.name.endsWith('end')) {
 					time += 0.15;
 				}
-				if (note.playStrumAnim && !note.fakeNoHit) {
+				if (note.playStrumAnim && !note.fakeNoHit && !ClientPrefs.clsstrum) {
 					StrumPlayAnim(!note.mustPress ? true : false, Std.int(Math.abs(note.noteData)), time, note.customField, note.fieldTarget, note);
 				}
 			} else {
@@ -5289,7 +5289,7 @@ class PlayState extends MusicBeatState
 					if(note.isSustainNote && !note.animation.curAnim.name.endsWith('end')) {
 						time += 0.15;
 					}
-					if (note.playStrumAnim  && !note.fakeNoHit) {
+					if (note.playStrumAnim  && !note.fakeNoHit && !ClientPrefs.clsstrum) {
 						StrumPlayAnim(!note.mustPress ? true : false, Std.int(Math.abs(note.noteData)), time, note.customField, note.fieldTarget, note);
 					}
 				} else {
@@ -5783,13 +5783,13 @@ class PlayState extends MusicBeatState
 		var spr:StrumNote = null;
 		if(isDad) {
 			spr = (custom ? strumGroupMap.get(ft).members[id] : (note.gfNote && PlayState.SONG.secOpt ? gfStrums.members[id] : opponentStrums.members[id]));
-			if(spr != null && (!ClientPrefs.clsstrum)) {
+			if(spr != null) {
 				spr.playAnim(note.animConfirm.length == 0 ? spr.animConfirm : note.animConfirm, true);
 				spr.resetAnim = time;
 			}
 		} else {
 			spr = (custom ? strumGroupMap.get(ft).members[id] : playerStrums.members[id]);
-			if(spr != null && (!ClientPrefs.clsstrum)) {
+			if(spr != null) {
 				spr.playAnim(note.animConfirm.length == 0 ? spr.animConfirm : note.animConfirm, true);
 				spr.resetAnim = time;
 			}
