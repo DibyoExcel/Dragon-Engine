@@ -158,13 +158,19 @@
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
                                     <h2 class="luaname">addCamera(name:String = '', x:Int, y:Int, width:Int, height:Int, zoom:Float = 1)(1.6.2+)</h2>
-                                <h3 class="luafunction">add custom camera.<br>name: name custom camera('camera:name' if want access to setProperty() or getProperty()).<br>x: camera x position.<br>y: camera y position.<br>width: camera width.<br>height: camera height.<br>zoom: camera zoom.<br>Warning the last cameras always use by pause screen</h3>
+                                <h3 class="luafunction">add custom camera.<br>name: name custom camera('camera:name' if want access to <code>setProperty()</code> or <code>getProperty()</code>).<br>x: camera x position.<br>y: camera y position.<br>width: camera width.<br>height: camera height.<br>zoom: camera zoom.<br>Warning the last cameras always use by pause screen</h3>
                                 </div>
                             </div>
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
                                     <h2 class="luaname">removeCamera(name:String = '')(1.6.2+)</h2>
                                 <h3 class="luafunction">remove custom camera.<br>name: name custom camera.</h3>
+                                </div>
+                            </div>
+                            <div class="luaborder borderpurple">
+                                <div class="marginlua">
+                                    <h2 class="luaname">luaAlert(content:String = 'Hi, I\'m the who make this engine', title:String = 'DubEnderDragon')</h2>
+                                <h3 class="luafunction">make alert box.<br>content: content of alert.<br>title: title of content.</h3>
                                 </div>
                             </div>
                         </div>
@@ -181,13 +187,13 @@
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
                                     <h2 class="luaname">getResolutionWidth()(1.5.8+)</h2>
-                                <h3 class="luafunction">returning monitor width resolution. Shortcut of `getPropertyFromClass('openfl.Lib', 'application.application.window.display.bounds.width')`</h3>
+                                <h3 class="luafunction">returning monitor width resolution. Shortcut of <code>getPropertyFromClass('openfl.Lib', 'application.application.window.display.bounds.width')</code>.</h3>
                                 </div>
                             </div>
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
                                     <h2 class="luaname">getResolutionHeight()(1.5.8+)</h2>
-                                <h3 class="luafunction">returning monitor height resolution. Shortcut of `getPropertyFromClass('openfl.Lib', 'application.application.window.display.bounds.height')`</h3>
+                                <h3 class="luafunction">returning monitor height resolution. Shortcut of <code>getPropertyFromClass('openfl.Lib', 'application.application.window.display.bounds.height')</code>.</h3>
                                 </div>
                             </div>
                         </div>
@@ -204,31 +210,31 @@
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
                                     <h2 class="luaname">opponentNoteMiss(id:Int, noteData:Int, noteType:String, isSustainNote:Bool)(1.5.7+)</h2>
-                                    <h3 class="luafunction">same as noteMiss(id:Int, noteData:Int, noteType:String, isSustainNote:Bool) but for opponent and most use for bothside and opponent gamemode.</h3>
+                                    <h3 class="luafunction">same as <code>noteMiss(id:Int, noteData:Int, noteType:String, isSustainNote:Bool)</code> but for opponent and most use for bothside and opponent gamemode.</h3>
                                 </div>
                             </div>
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
                                     <h2 class="luaname">opponentNoteMissPress(noteData:Int)(1.5.7+)</h2>
-                                    <h3 class="luafunction">same as noteMiss(noteData:Int) but for opponent and most use for opponent gamemode.</h3>
+                                    <h3 class="luafunction">same as <code>noteMiss(noteData:Int)</code> but for opponent and most use for opponent gamemode.</h3>
                                 </div>
                             </div>
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
                                     <h2 class="luaname">opponentNoteMissPress(noteData:Int)(1.5.7+)</h2>
-                                    <h3 class="luafunction">same as noteMiss(noteData:Int) but for opponent and most use for opponent gamemode.</h3>
+                                    <h3 class="luafunction">same as <code>noteMiss(noteData:Int)</code> but for opponent and most use for opponent gamemode.</h3>
                                 </div>
                             </div>
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
                                     <h2 class="luaname">onChangeGamemode(name:String, transition:Bool)(1.6.0.6+)</h2>
-                                    <h3 class="luafunction">function when change gamemode(from changeGamemode())<br>name: returning the gamemode name after change.<br>transition(1.6.1.2+):return bool after change gamemode transition.</h3>
+                                    <h3 class="luafunction">function when change gamemode(from <code>changeGamemode()</code>)<br>name: returning the gamemode name after change.<br>transition(1.6.1.2+):return bool after change gamemode transition.</h3>
                                 </div>
                             </div>
                             <div class="luaborder borderpurple">
                                 <div class="marginlua">
                                     <h2 class="luaname">onChangeOpponent(dualstrum:Bool, transition:Bool, transition2:Bool)(1.6.0.6+)</h2>
-                                    <h3 class="luafunction">function when change 2nd strums(from setSecondOpponent()).<br>dualstrum:returning bool of 2nd strums mode after change.<br>transition(1.6.1.2+): returning bool of transition after change.<br>transition2(1.6.1.2+): returning bool off transition2 after change.</h3>
+                                    <h3 class="luafunction">function when change 2nd strums(from <code>setSecondOpponent()</code>).<br>dualstrum:returning bool of 2nd strums mode after change.<br>transition(1.6.1.2+): returning bool of transition after change.<br>transition2(1.6.1.2+): returning bool off transition2 after change.</h3>
                                 </div>
                             </div>
                         </div>

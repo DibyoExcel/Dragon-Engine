@@ -102,7 +102,8 @@ class ChartingState extends MusicBeatState
 		['Change Scroll Speed', "Value 1: Scroll Speed Multiplier (1 is default)\nValue 2: Time it takes to change fully in seconds."],
 		['Set Property', "Value 1: Variable name\nValue 2: New value"],
 		['Change Gamemode', "Value 1: Name of gamemode to change.\nValue 2: transition(1 = true 0 = false)"],
-		['Change Second Strums', "Value 1: should use 2nd strums mode(1 = true 0 = false).\nValue 2: transition(1 is true 0 is false)\n\nexample: \"1, 0\". the first number(1) is a transition for\nplayer side. The second number(0) is a disable\nopponent strums transition"]
+		['Change Second Strums', "Value 1: should use 2nd strums mode(1 = true 0 = false).\nValue 2: transition(1 is true 0 is false)\n\nexample: \"1, 0\". the first number(1) is a transition for\nplayer side. The second number(0) is a disable\nopponent strums transition"],
+		['Alert', "Value1: content of alert.\nValue2: title of alert."]
 	];
 
 	var _file:FileReference;
@@ -3449,5 +3450,10 @@ class AttachedFlxText extends FlxText
 			angle = sprTracker.angle;
 			alpha = sprTracker.alpha;
 		}
+	}
+	override public function destroy() {
+		NoteTypeManager.jsonParse.clear();
+		NoteTypeManager.jsonRaw.clear();
+		super.destroy();
 	}
 }

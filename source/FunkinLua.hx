@@ -2988,6 +2988,10 @@ class FunkinLua {
 				PlayState.instance.songSpeed = value;
 			}
 		});
+		Lua_helper.add_callback(lua, "luaAlert", function(content:String='Hi, I\'m the who make this engine', title:String = 'DubEnderDragon') {
+			lime.app.Application.current.window.alert(content, title);
+			return title + ': ' + content;
+		});
 
 		call('onCreate', []);
 		#end

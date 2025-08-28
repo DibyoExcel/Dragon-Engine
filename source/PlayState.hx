@@ -3524,7 +3524,7 @@ class PlayState extends MusicBeatState
 			if (unspawnNotes[i] != null)
 			{
 				var time:Float = spawnTime;
-				if (Math.abs(songSpeed) < 1 && songSpeed == 0) time /= Math.abs(songSpeed);
+				if (Math.abs(songSpeed) < 1) time /= Math.max(0.25, Math.abs(songSpeed));
 				if(unspawnNotes[i].multSpeed < 1) time /= unspawnNotes[i].multSpeed;
 	
 				if (unspawnNotes.length > 0 && (unspawnNotes[i].strumTime + unspawnNotes[i].offsetStrumTime) - Conductor.songPosition < time && (ClientPrefs.limitSpawn ? notes.length < ClientPrefs.limitSpawnNotes : true))
@@ -4238,6 +4238,7 @@ class PlayState extends MusicBeatState
 						}
 					});
 				}
+				//DGE Control
 			case 'Change Gamemode':
 				if (value1.length < 1 || value1 == null) value1 = 'none';
 				if (value2.length < 1 || value2 == null) value2 = '1';
@@ -4251,6 +4252,10 @@ class PlayState extends MusicBeatState
 				var dataval2:Array<String> = value2.split(',');
 				changeSecOpt(cool == 1, Std.int(Std.parseFloat(dataval2[0])) == 1, Std.int(Std.parseFloat(dataval2[1])) == 1);
 
+			case 'Alert':
+				if (value1.length < 1 || value1 == null) value1 ='Hi, I\'m the who make this engine';
+				if (value2.length < 1 || value2 == null) value2 ='DubEnderDragon';
+				lime.app.Application.current.window.alert(value1, value2);
 			case 'Set Property':
 				var killMe:Array<String> = value1.split('.');
 				if(killMe.length > 1) {
@@ -5567,6 +5572,8 @@ class PlayState extends MusicBeatState
 
 	override function destroy() {
 		PlayState.SONG.secOpt = tempSecOpt;//rolled back
+		NoteTypeManager.jsonParse.clear();
+		NoteTypeManager.jsonRaw.clear();
 		for (lua in luaArray) {
 			lua.call('onDestroy', []);
 			lua.stop();

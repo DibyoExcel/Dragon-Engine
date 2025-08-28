@@ -19,7 +19,7 @@ function enterFullscreen() {
 
 function play() {
     gameui.src = "fnfhtml5/index.html";
-    gameui.style.backgroundColor = "white";
+    gameui.style.backgroundColor = "grey";
     iframe_btn.style.display = "flex";
     full_btn.style.display = "block";
     play_btn.style.display = "none";

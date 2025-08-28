@@ -126,6 +126,7 @@ a.sidebar_link:hover{
 div.border_content{
     border: 1px solid rgb(0, 255,0);
     padding: 25px;
+    min-width: 75%;
     max-width: 85%;
     box-shadow: 0 10px 10px rgba(0,0, 0, 0.5);
     background-color: rgba(255, 0, 255, 0.1);
@@ -211,10 +212,9 @@ iframe.ratio{
 }
 
 iframe#fnfgame{
-
     border-radius: 10px;
-    border: 5px solid black;
-    border-bottom: 50px solid black;
+    border: 5px solid red;
+    border-bottom: 50px solid red;
 }
 
 div#tv_container {
@@ -222,6 +222,12 @@ div#tv_container {
     position: relative;
     text-align: center;
     overflow: hidden;
+}
+
+code{
+    font-family: "Mojangles";
+    color: #00ff00;
+    text-decoration: underline;
 }
 
 div.brand_name {
@@ -232,7 +238,7 @@ div.brand_name {
     height: 50px;
     line-height: 50px;
     font-size: 17.5px;
-    color: silver;
+    color: white;
     pointer-events: none;
   }
 
@@ -246,6 +252,9 @@ button.restart{
 
 button.fullscreen{
     background-color: green;
+}
+button.move{
+    background-color: gold;
 }
 
 button#playbutton{

@@ -637,13 +637,29 @@ class Note extends FlxSprite
 		//also affected if change note in midgame
 		var jsonRa:String = '';
 		var haxeRa:Dynamic = {};
-		if (FileSystem.exists(Paths.mods('custom_notetypes/all.json'))) {//high priority
-			jsonRa = File.getContent(Paths.mods('custom_notetypes/all.json'));
-			haxeRa = haxe.Json.parse(jsonRa);
-			var jokowi = Reflect.fields(haxeRa);
+		//precache system
+		if (!NoteTypeManager.jsonRaw.exists('all')) {
+			if (FileSystem.exists(Paths.modFolders('custom_notetypes/all.json'))) {
+				NoteTypeManager.jsonRaw.set('all', File.getContent(Paths.modFolders('custom_notetypes/all.json')));
+			} else if (FileSystem.exists(Paths.getPreloadPath('custom_notetypes/all.json'))) {
+				NoteTypeManager.jsonRaw.set('all', File.getContent(Paths.getPreloadPath('custom_notetypes/all.json')));
+			}
+		}
+		if (!NoteTypeManager.jsonRaw.exists(value)) {
+			if (FileSystem.exists(Paths.modFolders('custom_notetypes/' + value + '.json'))) {
+				NoteTypeManager.jsonRaw.set(value, File.getContent(Paths.modFolders('custom_notetypes/' + value + '.json')));
+			} else if (FileSystem.exists(Paths.getPreloadPath('custom_notetypes/' + value + '.json'))) {
+				NoteTypeManager.jsonRaw.set(value, File.getContent(Paths.getPreloadPath('custom_notetypes/' + value + '.json')));
+			}
+		}
+		if (NoteTypeManager.jsonRaw.exists('all')) {
+			if (!NoteTypeManager.jsonParse.exists('all')) {
+				NoteTypeManager.jsonParse.set('all', haxe.Json.parse(NoteTypeManager.jsonRaw.get('all')));
+			}
+			var jokowi = Reflect.fields(NoteTypeManager.jsonParse.get('all'));
 			for (hidup in jokowi) {
 				var SDM = hidup.split('.');
-				var val = Reflect.field(haxeRa, hidup);
+				var val = Reflect.field(NoteTypeManager.jsonParse.get('all'), hidup);
 				if (SDM.length <= 1) {
 					Reflect.setProperty(this, hidup, val);
 				} else {
@@ -655,15 +671,16 @@ class Note extends FlxSprite
 					Reflect.setProperty(target, SDM[SDM.length-1], val);
 				}
 			}
-		} else if (FileSystem.exists(Paths.mods('custom_notetypes/' + value + '.json'))) {
-			jsonRa = File.getContent(Paths.mods('custom_notetypes/' + value + '.json'));
-			haxeRa = haxe.Json.parse(jsonRa);
-			var wati = Reflect.fields(haxeRa);
-			for (mega in wati) {
-				var SDM = mega.split('.');
-				var val = Reflect.field(haxeRa, mega);
+		} else if (NoteTypeManager.jsonRaw.exists(value)) {
+			if (!NoteTypeManager.jsonParse.exists(value)) {
+				NoteTypeManager.jsonParse.set(value, haxe.Json.parse(NoteTypeManager.jsonRaw.get(value)));
+			}
+			var jokowi = Reflect.fields(NoteTypeManager.jsonParse.get(value));
+			for (hidup in jokowi) {
+				var SDM = hidup.split('.');
+				var val = Reflect.field(NoteTypeManager.jsonParse.get(value), hidup);
 				if (SDM.length <= 1) {
-					Reflect.setProperty(this, mega, val);
+					Reflect.setProperty(this, hidup, val);
 				} else {
 					//get this shit from FunkinLua.hx
 					var target = Reflect.getProperty(this, SDM[0]);
@@ -674,8 +691,6 @@ class Note extends FlxSprite
 				}
 			}
 		}
-		jsonRa = null;
-		haxeRa = null;
 		#end
 	}
 
