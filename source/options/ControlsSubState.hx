@@ -132,17 +132,17 @@ class ControlsSubState extends MusicBeatSubstate {
 	var bindingTime:Float = 0;
 	override function update(elapsed:Float) {
 		if(!rebindingKey) {
-			if (controls.UI_UP_P) {
+			if (controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end) {
 				changeSelection(-1);
 			}
-			if (controls.UI_DOWN_P) {
+			if (controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end) {
 				changeSelection(1);
 			}
-			if (controls.UI_LEFT_P || controls.UI_RIGHT_P) {
+			if ((controls.UI_LEFT_P #if mobile || mobile.TouchUtil.swipeLeft() #end) || (controls.UI_RIGHT_P #if mobile || mobile.TouchUtil.swipeRight() #end)) {
 				changeAlt();
 			}
 
-			if (controls.BACK) {
+			if (controls.BACK #if android || FlxG.android.justPressed.BACK #end) {
 				ClientPrefs.reloadControls();
 				close();
 				FlxG.sound.play(Paths.sound('cancelMenu'));

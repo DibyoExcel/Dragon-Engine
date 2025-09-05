@@ -1,5 +1,6 @@
 package pauseSetting;
 
+import mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -45,6 +46,11 @@ class GameplayChangersSubstate extends MusicBeatState
 	private var songType:SwagSong;
 	private var gamemodeMap:Map<String, Int> = [];
 	private var gamemodeArray:Array<String> = [ 'none', 'bothside', 'bothside v2', 'opponent' ];//default
+	//mobile
+	private var leftButton:VirtualButton;
+	private var rightButton:VirtualButton;
+	private var enterButton:VirtualButton;
+	private var resetButton:VirtualButton;
 
 	function getOptions()
 	{
@@ -159,7 +165,7 @@ class GameplayChangersSubstate extends MusicBeatState
 		var gamemodeThingy:Array<String> = [];
 
 		#if MODS_ALLOWED
-		gamemodeThingy.push(Paths.getPreloadPath('gamemode/'));
+		gamemodeThingy.push(StorageManager.getEngineDir() + Paths.getPreloadPath('gamemode/'));
 		gamemodeThingy.push(Paths.mods('gamemode/'));
 		gamemodeThingy.push(Paths.mods(Paths.currentModDirectory + '/gamemode/'));
 		for(mod in Paths.getGlobalMods())
@@ -200,6 +206,17 @@ class GameplayChangersSubstate extends MusicBeatState
 
 		checkboxGroup = new FlxTypedGroup<CheckboxThingie>();
 		add(checkboxGroup);
+
+		#if mobile
+		leftButton = new VirtualButton(0, FlxG.height-125, 'left');
+		add(leftButton);
+		rightButton = new VirtualButton(125, FlxG.height-125, 'right');
+		add(rightButton);
+		resetButton = new VirtualButton(0, FlxG.height-250, 'r');
+		add(resetButton);
+		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
+		add(enterButton);
+		#end
 		
 		getOptions();
 
@@ -243,16 +260,16 @@ class GameplayChangersSubstate extends MusicBeatState
 	var holdValue:Float = 0;
 	override function update(elapsed:Float)
 	{
-		if (controls.UI_UP_P)
+		if (controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end)
 		{
 			changeSelection(-1);
 		}
-		if (controls.UI_DOWN_P)
+		if (controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end)
 		{
 			changeSelection(1);
 		}
 
-		if (controls.BACK) {
+		if (controls.BACK #if android || FlxG.android.justPressed.BACK #end) {
 			ClientPrefs.saveSettings();
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			StageData.loadDirectory(songType);
@@ -269,7 +286,7 @@ class GameplayChangersSubstate extends MusicBeatState
 
 			if(usesCheckbox)
 			{
-				if(controls.ACCEPT)
+				if(controls.ACCEPT #if mobile || enterButton.justPressed #end)
 				{
 					FlxG.sound.play(Paths.sound('scrollMenu'));
 					curOption.setValue((curOption.getValue() == true) ? false : true);
@@ -277,13 +294,13 @@ class GameplayChangersSubstate extends MusicBeatState
 					reloadCheckboxes();
 				}
 			} else {
-				if(controls.UI_LEFT || controls.UI_RIGHT) {
-					var pressed = (controls.UI_LEFT_P || controls.UI_RIGHT_P);
+				if((controls.UI_LEFT #if mobile || leftButton.pressed #end)|| (controls.UI_RIGHT #if mobile || rightButton.pressed #end)) {
+					var pressed = ((controls.UI_LEFT_P #if mobile || leftButton.justPressed #end) || (controls.UI_RIGHT_P #if mobile || rightButton.justPressed #end));
 					if(holdTime > 0.5 || pressed) {
 						if(pressed) {
 							var add:Dynamic = null;
 							if(curOption.type != 'string') {
-								add = controls.UI_LEFT ? -curOption.changeValue : curOption.changeValue;
+								add = (controls.UI_LEFT #if mobile || leftButton.pressed #end) ? -curOption.changeValue : curOption.changeValue;
 							}
 
 							switch(curOption.type)
@@ -306,7 +323,7 @@ class GameplayChangersSubstate extends MusicBeatState
 
 								case 'string':
 									var num:Int = curOption.curOption; //lol
-									if(controls.UI_LEFT_P) --num;
+									if((controls.UI_LEFT_P #if mobile || leftButton.justPressed #end)) --num;
 									else num++;
 
 									if(num < 0) {
@@ -362,12 +379,12 @@ class GameplayChangersSubstate extends MusicBeatState
 					if(curOption.type != 'string') {
 						holdTime += elapsed;
 					}
-				} else if(controls.UI_LEFT_R || controls.UI_RIGHT_R) {
+				} else if((controls.UI_LEFT_R #if mobile || leftButton.justReleased #end) || (controls.UI_RIGHT_R #if mobile || rightButton.justReleased #end)) {
 					clearHold();
 				}
 			}
 
-			if(controls.RESET)
+			if(controls.RESET #if mobile || resetButton.justPressed #end)
 			{
 				for (i in 0...optionsArray.length)
 				{

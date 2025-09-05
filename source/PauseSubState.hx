@@ -1,5 +1,6 @@
 package;
 
+import mobile.VirtualButton;
 import Controls.Control;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -32,6 +33,11 @@ class PauseSubState extends MusicBeatSubstate
 	var skipTimeTracker:Alphabet;
 	var curTime:Float = Math.max(0, Conductor.songPosition);
 	var skinPly:String;
+	//mobile
+	private var leftButton:VirtualButton;
+	private var rightButton:VirtualButton;
+	private var enterButton:VirtualButton;
+	private var pauseOverlay:FlxCamera;
 	//var botplayText:FlxText;
 
 	public static var songName:String = '';
@@ -40,9 +46,9 @@ class PauseSubState extends MusicBeatSubstate
 	{
 		super();
 		if (ClientPrefs.dragonW) {
-			menuItemsOG = ['Dragonflight', 'Reignite Melody', 'Scale Challenge','Option', 'Gameplay Changer', 'Return to Lair'];
+			menuItemsOG = ['Dragonflight', 'Reignite Melody', 'Scale Challenge','Option', 'Gameplay Changer' #if mobile , 'Chart Editor' #end, 'Return to Lair'];
 		} else {
-			menuItemsOG = ['Resume', 'Restart Song', 'Change Difficulty', 'Option', 'Gameplay Changer', 'Exit to menu'];
+			menuItemsOG = ['Resume', 'Restart Song', 'Change Difficulty', 'Option', 'Gameplay Changer' #if mobile , 'Chart Editor' #end, 'Exit to menu'];
 		}
 		if(CoolUtil.difficulties.length < 2) menuItemsOG.remove((ClientPrefs.dragonW ? 'Scale Challenge' : 'Change Difficulty')); //No need to change difficulty if there is only one!
 
@@ -144,9 +150,22 @@ class PauseSubState extends MusicBeatSubstate
 
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		add(grpMenuShit);
-
 		regenMenu();
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+		#if mobile
+		leftButton = new VirtualButton(0, FlxG.height-125, 'left');
+		add(leftButton);
+		rightButton = new VirtualButton(125, FlxG.height-125, 'right');
+		add(rightButton);
+		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
+		add(enterButton);
+		pauseOverlay = new FlxCamera();
+		pauseOverlay.bgColor.alpha = 0;
+		FlxG.cameras.add(pauseOverlay, false);
+		leftButton.cameras = [pauseOverlay];
+		rightButton.cameras = [pauseOverlay];
+		enterButton.cameras = [pauseOverlay];
+		#end
 	}
 
 	var holdTime:Float = 0;
@@ -159,9 +178,9 @@ class PauseSubState extends MusicBeatSubstate
 
 		super.update(elapsed);
 		updateSkipTextStuff();
-		var upP = controls.UI_UP_P;
-		var downP = controls.UI_DOWN_P;
-		var accepted = controls.ACCEPT;
+		var upP = controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end;
+		var downP = controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end;
+		var accepted = controls.ACCEPT #if mobile || enterButton.justPressed #end;
 		if (upP)
 		{
 			changeSelection(-1);
@@ -175,25 +194,25 @@ class PauseSubState extends MusicBeatSubstate
 		switch (daSelected)
 		{
 			case 'Skip Time':
-				if (controls.UI_LEFT_P)
+				if (controls.UI_LEFT_P #if mobile || leftButton.justPressed #end)
 				{
 					FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 					curTime -= 1000;
 					holdTime = 0;
 				}
-				if (controls.UI_RIGHT_P)
+				if (controls.UI_RIGHT_P #if mobile || rightButton.justPressed #end)
 				{
 					FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 					curTime += 1000;
 					holdTime = 0;
 				}
 
-				if(controls.UI_LEFT || controls.UI_RIGHT)
+				if((controls.UI_LEFT #if mobile || leftButton.pressed #end) || (controls.UI_RIGHT #if mobile || rightButton.pressed #end))
 				{
 					holdTime += elapsed;
 					if(holdTime > 0.5)
 					{
-						curTime += 45000 * elapsed * (controls.UI_LEFT ? -1 : 1);
+						curTime += 45000 * elapsed * ((controls.UI_LEFT #if mobile || leftButton.pressed #end) ? -1 : 1);
 					}
 
 					if(curTime >= FlxG.sound.music.length) curTime -= FlxG.sound.music.length;
@@ -201,25 +220,25 @@ class PauseSubState extends MusicBeatSubstate
 					updateSkipTimeText();
 				}
 			case 'Time Control':
-				if (controls.UI_LEFT_P)
+				if (controls.UI_LEFT_P #if mobile || leftButton.justPressed #end)
 				{
 					FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 					curTime -= 1000;
 					holdTime = 0;
 				}
-				if (controls.UI_RIGHT_P)
+				if (controls.UI_RIGHT_P #if mobile || rightButton.justPressed #end)
 				{
 					FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 					curTime += 1000;
 					holdTime = 0;
 				}
 
-				if(controls.UI_LEFT || controls.UI_RIGHT)
+				if((controls.UI_LEFT #if mobile || leftButton.pressed #end) || (controls.UI_RIGHT #if mobile || rightButton.pressed #end))
 				{
 					holdTime += elapsed;
 					if(holdTime > 0.5)
 					{
-						curTime += 45000 * elapsed * (controls.UI_LEFT ? -1 : 1);
+						curTime += 45000 * elapsed * ((controls.UI_LEFT #if mobile || leftButton.pressed #end) ? -1 : 1);
 					}
 
 					if(curTime >= FlxG.sound.music.length) curTime -= FlxG.sound.music.length;
@@ -338,6 +357,8 @@ class PauseSubState extends MusicBeatSubstate
 					PlayState.instance.botplayTxt.visible = PlayState.instance.cpuControlled;
 					PlayState.instance.botplayTxt.alpha = 1;
 					PlayState.instance.botplaySine = 0;
+				case "Chart Editor":
+					PlayState.instance.openChartEditor();
 				case "Exit to menu":
 					PlayState.deathCounter = 0;
 					PlayState.seenCutscene = false;
@@ -405,6 +426,13 @@ class PauseSubState extends MusicBeatSubstate
 
 		super.destroy();
 	}
+
+	#if mobile
+	override public function close() {
+		FlxG.cameras.remove(pauseOverlay, true);
+		super.close();
+	}
+	#end
 
 	function changeSelection(change:Int = 0):Void
 	{

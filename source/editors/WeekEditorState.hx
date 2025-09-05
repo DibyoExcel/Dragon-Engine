@@ -445,7 +445,7 @@ class WeekEditorState extends MusicBeatState
 			FlxG.sound.muteKeys = TitleState.muteKeys;
 			FlxG.sound.volumeDownKeys = TitleState.volumeDownKeys;
 			FlxG.sound.volumeUpKeys = TitleState.volumeUpKeys;
-			if(FlxG.keys.justPressed.ESCAPE) {
+			if(FlxG.keys.justPressed.ESCAPE #if android || FlxG.android.justPressed.BACK #end) {
 				MusicBeatState.switchState(new editors.MasterEditorMenu());
 				FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			}
@@ -537,11 +537,19 @@ class WeekEditorState extends MusicBeatState
 		var data:String = Json.stringify(weekFile, "\t");
 		if (data.length > 0)
 		{
+			#if !android
 			_file = new FileReference();
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 			_file.save(data, weekFileName + ".json");
+			#else
+			if (!FileSystem.exists(StorageManager.getEngineDir() + 'saves/weeks/' )) {
+				FileSystem.createDirectory(StorageManager.getEngineDir() + 'saves/weeks/');
+			}
+			File.saveContent(StorageManager.getEngineDir() + 'saves/weeks/' + weekFileName + ".json", data);
+			lime.app.Application.current.window.alert('Weeks has been save in ' + StorageManager.getEngineDir() + 'saves/weeks/' + weekFileName + ".json", 'Week Editor');
+			#end
 		}
 	}
 	
@@ -808,13 +816,13 @@ class WeekEditorFreeplayState extends MusicBeatState
 			FlxG.sound.muteKeys = TitleState.muteKeys;
 			FlxG.sound.volumeDownKeys = TitleState.volumeDownKeys;
 			FlxG.sound.volumeUpKeys = TitleState.volumeUpKeys;
-			if(FlxG.keys.justPressed.ESCAPE) {
+			if(FlxG.keys.justPressed.ESCAPE #if android || FlxG.android.justPressed.BACK #end) {
 				MusicBeatState.switchState(new editors.MasterEditorMenu());
 				FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			}
 
-			if(controls.UI_UP_P) changeSelection(-1);
-			if(controls.UI_DOWN_P) changeSelection(1);
+			if(controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end) changeSelection(-1);
+			if(controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end) changeSelection(1);
 		}
 		super.update(elapsed);
 	}

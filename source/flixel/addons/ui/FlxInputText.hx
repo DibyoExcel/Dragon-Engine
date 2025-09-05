@@ -315,6 +315,7 @@ class FlxInputText extends FlxText
 			{
 				caretIndex = getCaretIndex();
 				hasFocus = true;
+				FlxG.stage.window.textInputEnabled = true;//lol i get this from nf engine source code
 				if (!hadFocus && focusGained != null)
 					focusGained();
 			}

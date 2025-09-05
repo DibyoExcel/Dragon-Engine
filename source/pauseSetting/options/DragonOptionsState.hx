@@ -197,6 +197,43 @@ class DragonOptionsState extends BaseOptionsMenu
 			'bool',
 			false);
 		addOption(option);
+		
+		#if mobile
+		var option:Option = new Option('Hitbox Transparency',
+			'How much transparent should the Hitbox be.',
+			'hitboxAlpha',
+			'percent',
+			0.0);
+		option.scrollSpeed = 1.6;
+		option.minValue = 0.0;
+		option.maxValue = 0.5;
+		option.changeValue = 0.01;
+		option.decimals = 2;
+		addOption(option);
+		var option:Option = new Option('Hitbox Transparency(Press)',
+			'How much transparent should the Hitbox when press be.',
+			'hitboxPressAlpha',
+			'percent',
+			0.25);
+		option.scrollSpeed = 1.6;
+		option.minValue = 0;
+		option.maxValue = 1;
+		option.changeValue = 0.01;
+		option.decimals = 2;
+		addOption(option);
+		var option:Option = new Option('Virtual Button Transparency',
+			'How much transparent should the Virtul Button be.',
+			'virtualButtonAlpha',
+			'percent',
+			0.25);
+		option.scrollSpeed = 1.6;
+		option.minValue = 0.15;
+		option.maxValue = 1;
+		option.changeValue = 0.01;
+		option.decimals = 2;
+		option.onChange = changeButtonAlpha;
+		addOption(option);
+		#end
 		super();
 	}
 	override public function close():Void {
@@ -205,6 +242,16 @@ class DragonOptionsState extends BaseOptionsMenu
 		FlxG.switchState(new pauseSetting.MainOptionsState());
 		//trace("setting save!");
 	}
+
+	function changeButtonAlpha() {
+		#if mobile
+		leftButton.alpha = ClientPrefs.virtualButtonAlpha;
+		rightButton.alpha = ClientPrefs.virtualButtonAlpha;
+		resetButton.alpha = ClientPrefs.virtualButtonAlpha;
+		enterButton.alpha = ClientPrefs.virtualButtonAlpha;
+		#end
+	}
+	
 	function changeAutoPause() {
 		FlxG.autoPause = ClientPrefs.autopause;
 	}

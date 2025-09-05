@@ -1,5 +1,6 @@
 package editors;
 
+import mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -28,6 +29,7 @@ import flash.net.FileFilter;
 import haxe.Json;
 #if sys
 import sys.io.File;
+import sys.FileSystem;
 #end
 
 using StringTools;
@@ -38,6 +40,8 @@ class MenuCharacterEditorState extends MusicBeatState
 	var characterFile:MenuCharacterFile = null;
 	var txtOffsets:FlxText;
 	var defaultCharacters:Array<String> = ['dad', 'bf', 'gf'];
+	private var shiftButton:VirtualButton;
+	private var spaceButton:VirtualButton;
 
 	override function create() {
 		characterFile = {
@@ -70,9 +74,16 @@ class MenuCharacterEditorState extends MusicBeatState
 		txtOffsets.alpha = 0.7;
 		add(txtOffsets);
 
+		#if !mobile
 		var tipText:FlxText = new FlxText(0, 540, FlxG.width,
 			"Arrow Keys - Change Offset (Hold shift for 10x speed)
 			\nSpace - Play \"Start Press\" animation (Boyfriend Character Type)", 16);
+		#else
+		var tipText:FlxText = new FlxText(0, 540, FlxG.width,
+			"Swipe - Change Offset (Hold shift for 10x speed)
+			\nSpace - Play \"Start Press\" animation (Boyfriend Character Type)", 16);
+			
+		#end
 		tipText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER);
 		tipText.scrollFactor.set();
 		add(tipText);
@@ -81,6 +92,16 @@ class MenuCharacterEditorState extends MusicBeatState
 		FlxG.mouse.visible = true;
 		updateCharTypeBox();
 
+		#if mobile
+		shiftButton = new VirtualButton(0, 0, 'shift');
+		shiftButton.screenCenter();
+		shiftButton.x -= 125/2;
+		shiftButton.y = FlxG.height-125;
+		add(shiftButton);
+		spaceButton = new VirtualButton(shiftButton.x+125, FlxG.height-125, 'space');
+		add(spaceButton);
+		#end
+		
 		super.create();
 	}
 
@@ -285,32 +306,32 @@ class MenuCharacterEditorState extends MusicBeatState
 			FlxG.sound.muteKeys = TitleState.muteKeys;
 			FlxG.sound.volumeDownKeys = TitleState.volumeDownKeys;
 			FlxG.sound.volumeUpKeys = TitleState.volumeUpKeys;
-			if(FlxG.keys.justPressed.ESCAPE) {
+			if(FlxG.keys.justPressed.ESCAPE #if android || FlxG.android.justPressed.BACK #end) {
 				MusicBeatState.switchState(new editors.MasterEditorMenu());
 				FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			}
 
 			var shiftMult:Int = 1;
-			if(FlxG.keys.pressed.SHIFT) shiftMult = 10;
+			if(FlxG.keys.pressed.SHIFT #if mobile || shiftButton.pressed #end) shiftMult = 10;
 
-			if(FlxG.keys.justPressed.LEFT) {
+			if(FlxG.keys.justPressed.LEFT #if mobile || mobile.TouchUtil.swipeLeft() #end) {
 				characterFile.position[0] += shiftMult;
 				updateOffset();
 			}
-			if(FlxG.keys.justPressed.RIGHT) {
+			if(FlxG.keys.justPressed.RIGHT #if mobile || mobile.TouchUtil.swipeRight() #end) {
 				characterFile.position[0] -= shiftMult;
 				updateOffset();
 			}
-			if(FlxG.keys.justPressed.UP) {
+			if(FlxG.keys.justPressed.UP #if mobile || mobile.TouchUtil.swipeUp() #end) {
 				characterFile.position[1] += shiftMult;
 				updateOffset();
 			}
-			if(FlxG.keys.justPressed.DOWN) {
+			if(FlxG.keys.justPressed.DOWN #if mobile || mobile.TouchUtil.swipeDown() #end) {
 				characterFile.position[1] -= shiftMult;
 				updateOffset();
 			}
 
-			if(FlxG.keys.justPressed.SPACE && curTypeSelected == 1) {
+			if(FlxG.keys.justPressed.SPACE #if mobile || spaceButton.justPressed #end && curTypeSelected == 1) {
 				grpWeekCharacters.members[curTypeSelected].animation.play('confirm', true);
 			}
 		}
@@ -406,12 +427,19 @@ class MenuCharacterEditorState extends MusicBeatState
 		{
 			var splittedImage:Array<String> = imageInputText.text.trim().split('_');
 			var characterName:String = splittedImage[splittedImage.length-1].toLowerCase().replace(' ', '');
-
+			#if !android
 			_file = new FileReference();
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 			_file.save(data, characterName + ".json");
+			#else
+			if (!FileSystem.exists(StorageManager.getEngineDir() + 'saves/menucharacter/' )) {
+				FileSystem.createDirectory(StorageManager.getEngineDir() + 'saves/menucharacter/');
+			}
+			File.saveContent(StorageManager.getEngineDir() + 'saves/menucharacter/' + characterName + ".json", data);
+			lime.app.Application.current.window.alert('Menu Character has been save in ' + StorageManager.getEngineDir() + 'saves/menucharacter/' + characterName + ".json", 'Menu Character Editor');
+			#end
 		}
 	}
 

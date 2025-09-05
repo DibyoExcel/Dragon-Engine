@@ -336,15 +336,15 @@ class TitleState extends MusicBeatState
 		logoBl.shader = swagShader.shader;
 
 		titleText = new FlxSprite(titleJSON.startx, titleJSON.starty);
-		#if (desktop && MODS_ALLOWED)
-		var path = "mods/" + Paths.currentModDirectory + "/images/titleEnter.png";
+		#if ((desktop || android) && MODS_ALLOWED)
+		var path = StorageManager.getEngineDir() + "mods/" + Paths.currentModDirectory + "/images/titleEnter.png";
 		//trace(path, FileSystem.exists(path));
 		if (!FileSystem.exists(path)){
-			path = "mods/images/titleEnter.png";
+			path = StorageManager.getEngineDir() + "mods/images/titleEnter.png";
 		}
 		//trace(path, FileSystem.exists(path));
 		if (!FileSystem.exists(path)){
-			path = "assets/images/titleEnter.png";
+			path = StorageManager.getEngineDir() + "assets/images/titleEnter.png";
 		}
 		//trace(path, FileSystem.exists(path));
 		titleText.frames = FlxAtlasFrames.fromSparrow(BitmapData.fromFile(path),File.getContent(StringTools.replace(path,".png",".xml")));
@@ -419,7 +419,18 @@ class TitleState extends MusicBeatState
 
 	function getIntroTextShit():Array<Array<String>>
 	{
-		var fullText:String = Assets.getText(Paths.txt('introText'));
+		var fullText:String = '';
+		#if MODS_ALLOWED
+		if (FileSystem.exists(Paths.modFolders('data/introText.txt'))) {
+			fullText = File.getContent(Paths.modFolders('data/introText.txt'));
+		} else if (FileSystem.exists(StorageManager.getEngineDir() + Paths.getPreloadPath('data/introText.txt'))) {
+			fullText = File.getContent(StorageManager.getEngineDir() + Paths.getPreloadPath('data/introText.txt'));
+		} else {
+			fullText = Assets.getText(Paths.txt('introText'));
+		}
+		#else
+		fullText = Assets.getText(Paths.txt('introText'));
+		#end
 
 		var firstArray:Array<String> = fullText.split('\n');
 		var swagGoodArray:Array<Array<String>> = [];
@@ -440,7 +451,7 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if (FlxG.keys.justPressed.ESCAPE) {
+		if (FlxG.keys.justPressed.ESCAPE #if android || FlxG.android.justPressed.BACK #end) {
 			openfl.system.System.exit(0);
 		}
 		if (FlxG.sound.music != null)

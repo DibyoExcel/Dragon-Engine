@@ -89,7 +89,7 @@ class ModsMenuState extends MusicBeatState
 		noModsTxt.screenCenter();
 		visibleWhenNoMods.push(noModsTxt);
 
-		var path:String = 'modsList.txt';
+		var path:String = StorageManager.getEngineDir() + 'modsList.txt';
 		if(FileSystem.exists(path))
 		{
 			var leMods:Array<String> = CoolUtil.coolTextFile(path);
@@ -108,7 +108,7 @@ class ModsMenuState extends MusicBeatState
 
 		// FIND MOD FOLDERS
 		var boolshit = true;
-		if (FileSystem.exists("modsList.txt")){
+		if (FileSystem.exists(StorageManager.getEngineDir() + "modsList.txt")){
 			for (folder in Paths.getModDirectories())
 			{
 				if(!Paths.ignoreModFolders.contains(folder))
@@ -457,7 +457,7 @@ class ModsMenuState extends MusicBeatState
 			fileStr += values[0] + '|' + (values[1] ? '1' : '0');
 		}
 
-		var path:String = 'modsList.txt';
+		var path:String = StorageManager.getEngineDir() + 'modsList.txt';
 		File.saveContent(path, fileStr);
 		Paths.pushGlobalMods();
 	}
@@ -472,7 +472,7 @@ class ModsMenuState extends MusicBeatState
 			noModsTxt.alpha = 1 - Math.sin((Math.PI * noModsSine) / 180);
 		}
 
-		if(canExit && controls.BACK)
+		if(canExit && controls.BACK #if android || FlxG.android.justPressed.BACK #end)
 		{
 			if(colorTween != null) {
 				colorTween.cancel();
@@ -499,12 +499,12 @@ class ModsMenuState extends MusicBeatState
 			}
 		}
 
-		if(controls.UI_UP_P)
+		if(controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end)
 		{
 			changeSelection(-1);
 			FlxG.sound.play(Paths.sound('scrollMenu'));
 		}
-		if(controls.UI_DOWN_P)
+		if(controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end)
 		{
 			changeSelection(1);
 			FlxG.sound.play(Paths.sound('scrollMenu'));

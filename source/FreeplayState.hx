@@ -1,5 +1,6 @@
 package;
 
+import mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -49,6 +50,13 @@ class FreeplayState extends MusicBeatState
 	var bg:FlxSprite;
 	var intendedColor:Int;
 	var colorTween:FlxTween;
+	//buttton
+	//space, ctrl, shift, reset
+	private var spaceButton:VirtualButton;
+	private var ctrlButton:VirtualButton;
+	private var shiftButton:VirtualButton;
+	private var resetButton:VirtualButton;
+	private var enterButton:VirtualButton;//use this cuz prevent accident press while press another button
 
 	override function create()
 	{
@@ -181,6 +189,18 @@ class FreeplayState extends MusicBeatState
 
 			trace(md);
 		 */
+		#if mobile
+		shiftButton = new VirtualButton(0, (FlxG.height-26)-250, 'shift');
+		add(shiftButton);
+		ctrlButton = new VirtualButton(0, (FlxG.height-26)-125, 'ctrl');
+		add(ctrlButton);
+		spaceButton = new VirtualButton(125, (FlxG.height-26)-125, 'space');
+		add(spaceButton);
+		resetButton = new VirtualButton(125, (FlxG.height-26)-250, 'r');
+		add(resetButton);
+		enterButton = new VirtualButton(FlxG.width-125, (FlxG.height-26)-125, 'enter');
+		add(enterButton);
+		#end
 
 		var textBG:FlxSprite = new FlxSprite(0, FlxG.height - 26).makeGraphic(FlxG.width, 26, 0xFF000000);
 		textBG.alpha = 0.6;
@@ -262,14 +282,14 @@ class FreeplayState extends MusicBeatState
 		scoreText.text = 'PERSONAL BEST: ' + lerpScore + ' (' + ratingSplit.join('.') + '%)';
 		positionHighscore();
 
-		var upP = controls.UI_UP_P;
-		var downP = controls.UI_DOWN_P;
-		var accepted = controls.ACCEPT;
-		var space = FlxG.keys.justPressed.SPACE;
-		var ctrl = FlxG.keys.justPressed.CONTROL;
+		var upP = controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end;
+		var downP = controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end;
+		var accepted = controls.ACCEPT #if mobile || enterButton.justPressed #end;
+		var space = FlxG.keys.justPressed.SPACE #if mobile || spaceButton.justPressed #end;
+		var ctrl = FlxG.keys.justPressed.CONTROL #if mobile || ctrlButton.justPressed #end;
 
 		var shiftMult:Int = 1;
-		if(FlxG.keys.pressed.SHIFT) shiftMult = 3;
+		if(FlxG.keys.pressed.SHIFT #if mobile || shiftButton.pressed #end) shiftMult = 3;
 
 		if(songs.length > 1)
 		{
@@ -284,7 +304,7 @@ class FreeplayState extends MusicBeatState
 				holdTime = 0;
 			}
 
-			if(controls.UI_DOWN || controls.UI_UP)
+			if((controls.UI_DOWN #if mobile || mobile.TouchUtil.swipeDown() #end) || (controls.UI_UP #if mobile || mobile.TouchUtil.swipeUp() #end))
 			{
 				var checkLastHold:Int = Math.floor((holdTime - 0.5) * 10);
 				holdTime += elapsed;
@@ -292,7 +312,7 @@ class FreeplayState extends MusicBeatState
 
 				if(holdTime > 0.5 && checkNewHold - checkLastHold > 0)
 				{
-					changeSelection((checkNewHold - checkLastHold) * (controls.UI_UP ? -shiftMult : shiftMult));
+					changeSelection((checkNewHold - checkLastHold) * ((controls.UI_UP #if mobile || mobile.TouchUtil.swipeUp() #end) ? -shiftMult : shiftMult));
 					changeDiff();
 				}
 			}
@@ -305,13 +325,13 @@ class FreeplayState extends MusicBeatState
 			}
 		}
 
-		if (controls.UI_LEFT_P)
+		if (controls.UI_LEFT_P #if mobile || mobile.TouchUtil.swipeLeft() #end)
 			changeDiff(-1);
-		else if (controls.UI_RIGHT_P)
+		else if (controls.UI_RIGHT_P #if mobile || mobile.TouchUtil.swipeRight() #end)
 			changeDiff(1);
 		else if (upP || downP) changeDiff();
 
-		if (controls.BACK)
+		if (controls.BACK #if android || FlxG.android.justPressed.BACK #end)
 		{
 			persistentUpdate = false;
 			if(colorTween != null) {
@@ -377,7 +397,7 @@ class FreeplayState extends MusicBeatState
 				colorTween.cancel();
 			}
 			
-			if (FlxG.keys.pressed.SHIFT){
+			if (FlxG.keys.pressed.SHIFT #if mobile || shiftButton.pressed #end){
 				LoadingState.loadAndSwitchState(new ChartingState());
 			}else{
 				LoadingState.loadAndSwitchState(new PlayState());
@@ -387,7 +407,7 @@ class FreeplayState extends MusicBeatState
 					
 			destroyFreeplayVocals();
 		}
-		else if(controls.RESET)
+		else if(controls.RESET #if mobile || resetButton.justPressed #end)
 		{
 			persistentUpdate = false;
 			openSubState(new ResetScoreSubState(songs[curSelected].songName, curDifficulty, songs[curSelected].songCharacter));

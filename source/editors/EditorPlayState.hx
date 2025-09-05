@@ -1,5 +1,7 @@
 package editors;
 
+import flixel.FlxCamera;
+import mobile.Hitbox;
 import Section.SwagSection;
 import Song.SwagSong;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -40,12 +42,15 @@ class EditorPlayState extends MusicBeatState
 
 	//gameplay changer shit
 	public var gamemode:String = "none";
+	public var colorOrder:Array<Int> = [ FlxColor.MAGENTA, FlxColor.CYAN, FlxColor.LIME, FlxColor.RED ];
 
 	var generatedMusic:Bool = false;
 	var vocals:FlxSound;
 
 	var startOffset:Float = 0;
 	var startPos:Float = 0;
+	private var hitbox:FlxTypedGroup<Hitbox>;
+	private var hitboxCam:FlxCamera;
 
 	public function new(startPos:Float) {
 		this.startPos = startPos;
@@ -173,6 +178,22 @@ class EditorPlayState extends MusicBeatState
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 		}
+		#if mobile
+		hitboxCam = new FlxCamera();
+		hitboxCam.bgColor.alpha = 0;
+		FlxG.cameras.add(hitboxCam, false);
+		hitbox = new FlxTypedGroup<Hitbox>();
+		//hitbox.cameras = [hitboxCam];
+		for (i in 0...keysArray.length) {
+			var bruh = new Hitbox(i*Std.int(FlxG.width/keysArray.length), 0);
+			bruh.color = colorOrder[i%colorOrder.length];
+			bruh.cameras = [hitboxCam];
+			bruh.setGraphicSize(Std.int(FlxG.width/keysArray.length), FlxG.height);
+			bruh.updateHitbox();
+			hitbox.add(bruh);
+		}
+		add(hitbox);
+		#end
 		super.create();
 	}
 
@@ -349,7 +370,7 @@ class EditorPlayState extends MusicBeatState
 	public var noteKillOffset:Float = 350;
 	public var spawnTime:Float = 2000;
 	override function update(elapsed:Float) {
-		if (FlxG.keys.justPressed.ESCAPE)
+		if (FlxG.keys.justPressed.ESCAPE #if android || FlxG.android.justPressed.BACK #end)
 		{
 			FlxG.sound.music.pause();
 			vocals.pause();
@@ -546,6 +567,16 @@ class EditorPlayState extends MusicBeatState
 		sectionTxt.text = 'Beat: ' + curSection;
 		beatTxt.text = 'Beat: ' + curBeat;
 		stepTxt.text = 'Step: ' + curStep;
+		#if mobile
+		for (i in 0...hitbox.length) {
+			if (hitbox.members[i].justPressed) {
+				customKeyPress(i, true);
+			}
+			if (hitbox.members[i].justReleased) {
+				customKeyRelease(i);
+			}
+		}
+		#end
 		super.update(elapsed);
 	}
 	
@@ -595,9 +626,13 @@ class EditorPlayState extends MusicBeatState
 	{
 		var eventKey:FlxKey = event.keyCode;
 		var key:Int = getKeyFromEvent(eventKey);
+		customKeyPress(key, FlxG.keys.checkStatus(eventKey, JUST_PRESSED));
 		//trace('Pressed: ' + eventKey);
 
-		if (key > -1 && (FlxG.keys.checkStatus(eventKey, JUST_PRESSED) || ClientPrefs.controllerMode))
+	}
+
+	private function customKeyPress(key:Int, checkKey:Bool) {
+		if (key > -1 && checkKey || ClientPrefs.controllerMode)
 		{
 			if(generatedMusic)
 				{
@@ -680,6 +715,11 @@ class EditorPlayState extends MusicBeatState
 	{
 		var eventKey:FlxKey = event.keyCode;
 		var key:Int = getKeyFromEvent(eventKey);
+		customKeyRelease(key);
+		//trace('released: ' + controlArray);
+	}
+
+	private function customKeyRelease(key:Int) {
 		if(key > -1)
 		{
 			var spr:StrumNote = playerStrums.members[key];
@@ -689,7 +729,6 @@ class EditorPlayState extends MusicBeatState
 				spr.resetAnim = 0;
 			}
 		}
-		//trace('released: ' + controlArray);
 	}
 
 	private function getKeyFromEvent(key:FlxKey):Int
@@ -718,6 +757,13 @@ class EditorPlayState extends MusicBeatState
 		var down = controls.NOTE_DOWN;
 		var left = controls.NOTE_LEFT;
 		var controlHoldArray:Array<Bool> = [left, down, up, right];
+		#if mobile
+		for (i in 0...hitbox.length) {
+			if (!controlHoldArray[i]) {
+				controlHoldArray[i] = hitbox.members[i].pressed;
+			}
+		}
+		#end
 		
 		// TO DO: Find a better way to handle controller inputs, this should work for now
 		if(ClientPrefs.controllerMode)

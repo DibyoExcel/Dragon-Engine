@@ -1,5 +1,6 @@
 package editors;
 
+import mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -77,6 +78,19 @@ class CharacterEditorState extends MusicBeatState
 
 	var cameraFollowPointer:FlxSprite;
 	var healthBarBG:FlxSprite;
+	//mobile
+	private var leftButton:VirtualButton;
+	private var downButton:VirtualButton;
+	private var upButton:VirtualButton;
+	private var rightButton:VirtualButton;
+	private var spaceButton:VirtualButton;
+	private var shiftButton:VirtualButton;
+	private var rButton:VirtualButton;
+	private var tButton:VirtualButton;
+	private var qButton:VirtualButton;
+	private var eButton:VirtualButton;
+	private var wButton:VirtualButton;
+	private var sButton:VirtualButton;
 
 	override function create()
 	{
@@ -142,7 +156,7 @@ class CharacterEditorState extends MusicBeatState
 		camFollow = new FlxObject(0, 0, 2, 2);
 		camFollow.screenCenter();
 		add(camFollow);
-
+		#if !mobile
 		var tipTextArray:Array<String> = "E/Q - Camera Zoom In/Out
 		\nR - Reset Camera Zoom
 		\nJKLI - Move Camera
@@ -151,6 +165,16 @@ class CharacterEditorState extends MusicBeatState
 		\nArrow Keys - Move Character Offset
 		\nT - Reset Current Offset
 		\nHold Shift to Move 10x faster\n".split('\n');
+		#else
+		var tipTextArray:Array<String> = "E/Q - Camera Zoom In/Out
+		\nR - Reset Camera Zoom
+		\nSwipe - Move Camera
+		\nW/S - Previous/Next Animation
+		\nSpace - Play Animation
+		\nArrow Keys - Move Character Offset
+		\nT - Reset Current Offset
+		\nHold Shift to Move 10x faster\n".split('\n');
+		#end
 
 		for (i in 0...tipTextArray.length-1)
 		{
@@ -201,7 +225,46 @@ class CharacterEditorState extends MusicBeatState
 
 		FlxG.mouse.visible = true;
 		reloadCharacterOptions();
-
+		//add controls
+		#if mobile
+		leftButton = new VirtualButton(0, FlxG.height-125, 'left');
+		leftButton.cameras = [camHUD];
+		add(leftButton);
+		downButton = new VirtualButton(125, FlxG.height-125, 'down');
+		downButton.cameras = [camHUD];
+		add(downButton);
+		upButton = new VirtualButton(125, FlxG.height-250, 'up');
+		upButton.cameras = [camHUD];
+		add(upButton);
+		rightButton = new VirtualButton(250, FlxG.height-125, 'right');
+		rightButton.cameras = [camHUD];
+		add(rightButton);
+		//right ui
+		spaceButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'space');
+		spaceButton.cameras = [camHUD];
+		add(spaceButton);
+		shiftButton = new VirtualButton(FlxG.width-125, FlxG.height-250, 'shift');
+		shiftButton.cameras = [camHUD];
+		add(shiftButton);
+		rButton = new VirtualButton(FlxG.width-250, FlxG.height-250, 'r');
+		rButton.cameras = [camHUD];
+		add(rButton);
+		tButton = new VirtualButton(FlxG.width-250, FlxG.height-125, 't');
+		tButton.cameras = [camHUD];
+		add(tButton);
+		qButton = new VirtualButton(FlxG.width-375, FlxG.height-250, 'q');
+		qButton.cameras = [camHUD];
+		add(qButton);
+		eButton = new VirtualButton(FlxG.width-375, FlxG.height-125, 'e');
+		eButton.cameras = [camHUD];
+		add(eButton);
+		wButton = new VirtualButton(FlxG.width-500, FlxG.height-250, 'w');
+		wButton.cameras = [camHUD];
+		add(wButton);
+		sButton = new VirtualButton(FlxG.width-500, FlxG.height-125, 's');
+		sButton.cameras = [camHUD];
+		add(sButton);
+		#end
 		super.create();
 	}
 
@@ -1057,7 +1120,7 @@ class CharacterEditorState extends MusicBeatState
 
 		#if MODS_ALLOWED
 		characterList = [];
-		var directories:Array<String> = [Paths.mods('characters/'), Paths.mods(Paths.currentModDirectory + '/characters/'), Paths.getPreloadPath('characters/')];
+		var directories:Array<String> = [Paths.mods('characters/'), Paths.mods(Paths.currentModDirectory + '/characters/'), StorageManager.getEngineDir() + Paths.getPreloadPath('characters/')];
 		for(mod in Paths.getGlobalMods())
 			directories.push(Paths.mods(mod + '/characters/'));
 		for (i in 0...directories.length) {
@@ -1126,7 +1189,7 @@ class CharacterEditorState extends MusicBeatState
 		FlxG.sound.volumeUpKeys = TitleState.volumeUpKeys;
 
 		if(!charDropDown.dropPanel.visible) {
-			if (FlxG.keys.justPressed.ESCAPE) {
+			if (FlxG.keys.justPressed.ESCAPE #if android || FlxG.android.justPressed.BACK #end) {
 				if(goToPlayState) {
 					MusicBeatState.switchState(new PlayState());
 				} else {
@@ -1137,15 +1200,15 @@ class CharacterEditorState extends MusicBeatState
 				return;
 			}
 
-			if (FlxG.keys.justPressed.R) {
+			if (FlxG.keys.justPressed.R #if mobile || rButton.justPressed #end) {
 				FlxG.camera.zoom = 1;
 			}
 
-			if (FlxG.keys.pressed.E && FlxG.camera.zoom < 3) {
+			if ((FlxG.keys.pressed.E #if mobile || eButton.pressed #end) && FlxG.camera.zoom < 3) {
 				FlxG.camera.zoom += elapsed * FlxG.camera.zoom;
 				if(FlxG.camera.zoom > 3) FlxG.camera.zoom = 3;
 			}
-			if (FlxG.keys.pressed.Q && FlxG.camera.zoom > 0.1) {
+			if ((FlxG.keys.pressed.Q #if mobile || qButton.pressed #end) && FlxG.camera.zoom > 0.1) {
 				FlxG.camera.zoom -= elapsed * FlxG.camera.zoom;
 				if(FlxG.camera.zoom < 0.1) FlxG.camera.zoom = 0.1;
 			}
@@ -1166,14 +1229,34 @@ class CharacterEditorState extends MusicBeatState
 				else if (FlxG.keys.pressed.L)
 					camFollow.x += addToCam;
 			}
+			#if mobile
+			if (mobile.TouchUtil.swipeUp() || mobile.TouchUtil.swipeDown() || mobile.TouchUtil.swipeLeft() || mobile.TouchUtil.swipeRight()) {
+				var addToCam:Float = 250;
+				//add shift later
+				if (shiftButton.pressed) {
+					addToCam *= 4;
+				}
+				if (mobile.TouchUtil.swipeUp()) {
+					camFollow.y -= addToCam;
+				} else if (mobile.TouchUtil.swipeDown()) {
+					camFollow.y += addToCam;
+				}
+
+				if (mobile.TouchUtil.swipeLeft()) {
+					camFollow.x -= addToCam;
+				} else if (mobile.TouchUtil.swipeRight()) {
+					camFollow.x += addToCam;
+				}
+			}
+			#end
 
 			if(char.animationsArray.length > 0) {
-				if (FlxG.keys.justPressed.W)
+				if (FlxG.keys.justPressed.W #if mobile || wButton.justPressed #end)
 				{
 					curAnim -= 1;
 				}
 
-				if (FlxG.keys.justPressed.S)
+				if (FlxG.keys.justPressed.S #if mobile || sButton.justPressed #end)
 				{
 					curAnim += 1;
 				}
@@ -1184,12 +1267,12 @@ class CharacterEditorState extends MusicBeatState
 				if (curAnim >= char.animationsArray.length)
 					curAnim = 0;
 
-				if (FlxG.keys.justPressed.S || FlxG.keys.justPressed.W || FlxG.keys.justPressed.SPACE)
+				if (FlxG.keys.justPressed.S || FlxG.keys.justPressed.W || FlxG.keys.justPressed.SPACE #if mobile || spaceButton.justPressed || wButton.justPressed || sButton.justPressed #end)
 				{
 					char.playAnim(char.animationsArray[curAnim].anim, true);
 					genBoyOffsets();
 				}
-				if (FlxG.keys.justPressed.T)
+				if (FlxG.keys.justPressed.T #if mobile || tButton.justPressed #end)
 				{
 					char.animationsArray[curAnim].offsets = [0, 0];
 
@@ -1198,13 +1281,13 @@ class CharacterEditorState extends MusicBeatState
 					genBoyOffsets();
 				}
 
-				var controlArray:Array<Bool> = [FlxG.keys.justPressed.LEFT, FlxG.keys.justPressed.RIGHT, FlxG.keys.justPressed.UP, FlxG.keys.justPressed.DOWN];
+				var controlArray:Array<Bool> = [FlxG.keys.justPressed.LEFT #if mobile || leftButton.justPressed #end, FlxG.keys.justPressed.RIGHT #if mobile || rightButton.justPressed #end, FlxG.keys.justPressed.UP #if mobile || upButton.justPressed #end, FlxG.keys.justPressed.DOWN #if mobile || downButton.justPressed #end];
 
 
 
 				for (i in 0...controlArray.length) {
 					if(controlArray[i]) {
-						var holdShift = FlxG.keys.pressed.SHIFT;
+						var holdShift = FlxG.keys.pressed.SHIFT #if mobile || shiftButton.pressed #end;
 						var multiplier = 1;
 						if (holdShift)
 							multiplier = 10;

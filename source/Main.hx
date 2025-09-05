@@ -1,5 +1,6 @@
 package;
 
+
 import flixel.graphics.FlxGraphic;
 import flixel.FlxG;
 import flixel.FlxGame;
@@ -21,7 +22,12 @@ import lime.app.Application;
 import openfl.events.UncaughtErrorEvent;
 import haxe.CallStack;
 import haxe.io.Path;
+#if desktop
 import Discord.DiscordClient;
+#end
+#end
+
+#if sys
 import sys.FileSystem;
 import sys.io.File;
 import sys.io.Process;
@@ -53,6 +59,13 @@ class Main extends Sprite
 
 	public function new()
 	{
+		#if android
+		if (!FileSystem.exists(StorageManager.getEngineDir())) {
+			FileSystem.createDirectory(StorageManager.getEngineDir());
+			Application.current.window.alert('External(' + StorageManager.getEngineDir() + ')Folder has been created. Extract app assets bundles("assets" and "mods") to' + StorageManager.getEngineDir(), 'Storage Manager');
+			Sys.exit(0);
+		}
+		#end
 		super();
 
 		if (stage != null)
@@ -93,20 +106,23 @@ class Main extends Sprite
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 
 		#if !mobile
-		fpsVar = new FPS(10, 3, 0x00FF00);
-		addChild(fpsVar);
 		Lib.current.stage.align = "tl";
 		Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
+		#end
+		fpsVar = new FPS(10, 3, 0x00FF00);
+		addChild(fpsVar);
 		if(fpsVar != null) {
 			fpsVar.visible = ClientPrefs.showFPS;
 		}
-		#end
-
+		
 		#if html5
 		FlxG.autoPause = false;
 		FlxG.mouse.visible = false;
 		#else
 		FlxG.autoPause = ClientPrefs.autopause;
+		#end
+		#if android
+		FlxG.android.preventDefaultKeys = [BACK];
 		#end
 		
 		#if CRASH_HANDLER
@@ -127,7 +143,7 @@ class Main extends Sprite
 		dateNow = dateNow.replace(" ", "_");
 		dateNow = dateNow.replace(":", "'");
 
-		path = "./crash/" + "DragonEngine_" + dateNow + ".txt";
+		path = StorageManager.getEngineDir() + "crash/DragonEngine_" + dateNow + ".txt";
 
 		for (stackItem in callStack)
 		{
@@ -142,8 +158,8 @@ class Main extends Sprite
 
 		errMsg += "\nUncaught Error: " + e.error + "\nPlease report this error to the GitHub page: https://github.com/DibyoExcel/Dragon-Engine\n\n> Crash Handler written by: sqirra-rng";
 
-		if (!FileSystem.exists("./crash/"))
-			FileSystem.createDirectory("./crash/");
+		if (!FileSystem.exists(StorageManager.getEngineDir() + "crash/"))
+			FileSystem.createDirectory(StorageManager.getEngineDir() + "crash/");
 
 		File.saveContent(path, errMsg + "\n");
 
@@ -151,7 +167,9 @@ class Main extends Sprite
 		Sys.println("Crash dump saved in " + Path.normalize(path));
 
 		Application.current.window.alert(errMsg, "Error!");
+		#if desktop
 		DiscordClient.shutdown();
+		#end
 		Sys.exit(1);
 	}
 	#end

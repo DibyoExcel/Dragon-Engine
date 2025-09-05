@@ -1,5 +1,7 @@
 package;
 
+import flixel.FlxCamera;
+import mobile.VirtualButton;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSubState;
@@ -27,6 +29,9 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	public static var instance:GameOverSubstate;
 
+	private var camC:FlxCamera;
+	private var enterButton:VirtualButton;
+
 	public static function resetVariables() {
 		characterName = 'bf-dead';
 		deathSoundName = 'fnf_loss_sfx';
@@ -41,6 +46,13 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		super.create();
 	}
+
+	#if mobile
+	override function destroy() {
+		FlxG.cameras.remove(camC);
+		super.destroy();
+	}
+	#end
 
 	public function new(x:Float, y:Float, camX:Float, camY:Float)
 	{
@@ -69,6 +81,14 @@ class GameOverSubstate extends MusicBeatSubstate
 		camFollowPos = new FlxObject(0, 0, 1, 1);
 		camFollowPos.setPosition(FlxG.camera.scroll.x + (FlxG.camera.width / 2), FlxG.camera.scroll.y + (FlxG.camera.height / 2));
 		add(camFollowPos);
+		#if mobile
+		camC = new FlxCamera();
+		camC.bgColor.alpha = 0;
+		FlxG.cameras.add(camC, false);
+		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
+		enterButton.cameras = [camC];
+		add(enterButton);
+		#end
 	}
 
 	var isFollowingAlready:Bool = false;
@@ -82,12 +102,12 @@ class GameOverSubstate extends MusicBeatSubstate
 			camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x, camFollow.x, lerpVal), FlxMath.lerp(camFollowPos.y, camFollow.y, lerpVal));
 		}
 
-		if (controls.ACCEPT)
+		if (controls.ACCEPT #if mobile || enterButton.justPressed #end)
 		{
 			endBullshit();
 		}
 
-		if (controls.BACK)
+		if (controls.BACK #if android || FlxG.android.justPressed.BACK #end)
 		{
 			FlxG.sound.music.stop();
 			PlayState.deathCounter = 0;

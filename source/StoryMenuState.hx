@@ -1,5 +1,6 @@
 package;
 
+import mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -48,6 +49,9 @@ class StoryMenuState extends MusicBeatState
 	var rightArrow:FlxSprite;
 
 	var loadedWeeks:Array<WeekData> = [];
+	private var ctrlButton:VirtualButton;
+	private var resetButton:VirtualButton;
+	private var enterButton:VirtualButton;
 
 	override function create()
 	{
@@ -184,6 +188,14 @@ class StoryMenuState extends MusicBeatState
 
 		changeWeek();
 		changeDifficulty();
+		#if mobile
+		ctrlButton = new VirtualButton(0, FlxG.height-125, 'ctrl');
+		add(ctrlButton);
+		resetButton = new VirtualButton(125, FlxG.height-125, 'r');
+		add(resetButton);
+		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
+		add(enterButton);
+		#end
 
 		super.create();
 	}
@@ -206,8 +218,8 @@ class StoryMenuState extends MusicBeatState
 
 		if (!movedBack && !selectedWeek)
 		{
-			var upP = controls.UI_UP_P;
-			var downP = controls.UI_DOWN_P;
+			var upP = controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end;
+			var downP = controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end;
 			if (upP)
 			{
 				changeWeek(-1);
@@ -227,41 +239,41 @@ class StoryMenuState extends MusicBeatState
 				changeDifficulty();
 			}
 
-			if (controls.UI_RIGHT)
+			if (controls.UI_RIGHT #if mobile || mobile.TouchUtil.swipeRight() #end)
 				rightArrow.animation.play('press')
 			else
 				rightArrow.animation.play('idle');
 
-			if (controls.UI_LEFT)
+			if (controls.UI_LEFT #if mobile || mobile.TouchUtil.swipeLeft() #end)
 				leftArrow.animation.play('press');
 			else
 				leftArrow.animation.play('idle');
 
-			if (controls.UI_RIGHT_P)
+			if (controls.UI_RIGHT_P #if mobile || mobile.TouchUtil.swipeRight() #end)
 				changeDifficulty(1);
-			else if (controls.UI_LEFT_P)
+			else if (controls.UI_LEFT_P #if mobile || mobile.TouchUtil.swipeLeft() #end)
 				changeDifficulty(-1);
 			else if (upP || downP)
 				changeDifficulty();
 
-			if(FlxG.keys.justPressed.CONTROL)
+			if(FlxG.keys.justPressed.CONTROL #if mobile || ctrlButton.justPressed #end)
 			{
 				persistentUpdate = false;
 				openSubState(new GameplayChangersSubstate());
 			}
-			else if(controls.RESET)
+			else if(controls.RESET #if mobile || resetButton.justPressed #end)
 			{
 				persistentUpdate = false;
 				openSubState(new ResetScoreSubState('', curDifficulty, '', curWeek));
 				//FlxG.sound.play(Paths.sound('scrollMenu'));
 			}
-			else if (controls.ACCEPT)
+			else if (controls.ACCEPT #if mobile || enterButton.justPressed #end)
 			{
 				selectWeek();
 			}
 		}
 
-		if (controls.BACK && !movedBack && !selectedWeek)
+		if ((controls.BACK #if android || FlxG.android.justPressed.BACK #end) && !movedBack && !selectedWeek)
 		{
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			movedBack = true;

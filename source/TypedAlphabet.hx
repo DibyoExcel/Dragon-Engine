@@ -21,7 +21,7 @@ class TypedAlphabet extends Alphabet
 
 	public function new(x:Float, y:Float, text:String = "", ?delay:Float = 0.05, ?bold:Bool = false)
 	{
-		super(x, y, text, bold);
+		super(x, y, text, bold, false);
 
 		this.delay = delay;
 	}

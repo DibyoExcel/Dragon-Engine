@@ -1,5 +1,6 @@
 package options;
 
+import mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -48,6 +49,12 @@ class BaseOptionsMenu extends MusicBeatSubstate
 	private var arrowDir:Array<String> = [ 'left', 'down', 'up', 'right' ];
 	public var noteColor:Array<String> = [ 'purple', 'blue', 'green', 'red' ];
 	private var isShowNote:Bool = false;
+
+	//mobile
+	private var leftButton:VirtualButton;
+	private var rightButton:VirtualButton;
+	private var enterButton:VirtualButton;
+	private var resetButton:VirtualButton;
 
 	public function new()
 	{
@@ -149,6 +156,16 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			}
 			updateTextFrom(optionsArray[i]);
 		}
+		#if mobile
+		leftButton = new VirtualButton(0, FlxG.height-125, 'left');
+		add(leftButton);
+		rightButton = new VirtualButton(125, FlxG.height-125, 'right');
+		add(rightButton);
+		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
+		add(enterButton);
+		resetButton = new VirtualButton(0, FlxG.height-250, 'r');
+		add(resetButton);
+		#end
 
 		changeSelection();
 		reloadCheckboxes();
@@ -209,16 +226,16 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			spriteNote[3].centerOrigin();
 			spriteNote[3].centerOffsets();
 		}
-		if (controls.UI_UP_P)
+		if (controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end)
 		{
 			changeSelection(-1);
 		}
-		if (controls.UI_DOWN_P)
+		if (controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end)
 		{
 			changeSelection(1);
 		}
 
-		if (controls.BACK) {
+		if (controls.BACK #if android || FlxG.android.justPressed.BACK #end) {
 			close();
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 		}
@@ -233,7 +250,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 
 			if(usesCheckbox)
 			{
-				if(controls.ACCEPT)
+				if(controls.ACCEPT #if mobile || enterButton.justPressed #end)
 				{
 					FlxG.sound.play(Paths.sound('scrollMenu'));
 					curOption.setValue((curOption.getValue() == true) ? false : true);
@@ -241,13 +258,13 @@ class BaseOptionsMenu extends MusicBeatSubstate
 					reloadCheckboxes();
 				}
 			} else {
-				if(controls.UI_LEFT || controls.UI_RIGHT) {
-					var pressed = (controls.UI_LEFT_P || controls.UI_RIGHT_P);
+				if((controls.UI_LEFT #if mobile || leftButton.pressed #end) || (controls.UI_RIGHT #if mobile || rightButton.pressed #end)) {
+					var pressed = ((controls.UI_LEFT_P #if mobile || leftButton.justPressed #end) || (controls.UI_RIGHT_P #if mobile || rightButton.justPressed #end));
 					if(holdTime > 0.5 || pressed) {
 						if(pressed) {
 							var add:Dynamic = null;
 							if(curOption.type != 'string') {
-								add = controls.UI_LEFT ? -curOption.changeValue : curOption.changeValue;
+								add = (controls.UI_LEFT #if mobile || leftButton.pressed #end) ? -curOption.changeValue : curOption.changeValue;
 							}
 
 							switch(curOption.type)
@@ -270,7 +287,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 
 								case 'string':
 									var num:Int = curOption.curOption; //lol
-									if(controls.UI_LEFT_P) --num;
+									if(controls.UI_LEFT_P #if mobile || leftButton.justPressed #end) --num;
 									else num++;
 
 									if(num < 0) {
@@ -287,7 +304,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 							curOption.change();
 							FlxG.sound.play(Paths.sound('scrollMenu'));
 						} else if(curOption.type != 'string') {
-							holdValue += curOption.scrollSpeed * elapsed * (controls.UI_LEFT ? -1 : 1);
+							holdValue += curOption.scrollSpeed * elapsed * ((controls.UI_LEFT #if mobile || leftButton.pressed #end) ? -1 : 1);
 							if(holdValue < curOption.minValue) holdValue = curOption.minValue;
 							else if (holdValue > curOption.maxValue) holdValue = curOption.maxValue;
 
@@ -307,12 +324,12 @@ class BaseOptionsMenu extends MusicBeatSubstate
 					if(curOption.type != 'string') {
 						holdTime += elapsed;
 					}
-				} else if(controls.UI_LEFT_R || controls.UI_RIGHT_R) {
+				} else if((controls.UI_LEFT_R #if mobile || leftButton.justReleased #end) || (controls.UI_RIGHT_R #if mobile || rightButton.justReleased #end)) {
 					clearHold();
 				}
 			}
 
-			if(controls.RESET)
+			if(controls.RESET #if mobile || resetButton.justPressed #end)
 			{
 				for (i in 0...optionsArray.length)
 				{

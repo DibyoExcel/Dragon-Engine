@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin': Dragon Engine" file="Dragon Engine" packageName="com.dubenderdragon.dragon" package="com.dubenderdragon.dragon" main="Main" version="0.2.8" company="DubEnderDragon" />
+	<app title="Friday Night Funkin': Dragon Engine" file="Dragon Engine" packageName="id.dubenderdragon.dge" package="id.dubenderdragon.dge" main="Main" version="1.6.3" company="DubEnderDragon" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="604ad46f-7283-4853-8d1e-c2fc250a4926" />
@@ -22,7 +22,7 @@
 	<!-- ____________________________ Window Settings ___________________________ -->
 
 	<!--These window settings apply to all targets-->
-	<window width="640" height="360" fps="" background="0xff000000" hardware="true" vsync="false" />
+	<window width="640" height="360" fps="60" background="0xff000000" hardware="true" vsync="false" allow-high-dpi="true" />
 
 	<!--HTML5-specific-->
 	<window if="html5" resizable="true" width="1280" height="720" />
@@ -31,7 +31,7 @@
 	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false"/>
 
 	<!--Mobile-specific-->
-	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false"/>
+	<window if="mobile" orientation="landscape" fullscreen="true" resizable="false" allow-shaders="true" require-shaders="true"/>
 
 	<!--Switch-specific-->
 	<window if="switch" orientation="landscape" fullscreen="true" width="0" height="0" resizable="true" />
@@ -47,13 +47,13 @@
 	<!-- PSYCH ENGINE CUSTOMIZATION -->
 	<define name="WINDOW_COLOR" if="windows" />
 	<define name="WINDOW_ABILITY" if="desktop" />
-	<define name="MODS_ALLOWED" if="desktop" />
-	<define name="LUA_ALLOWED" if="desktop" />
+	<define name="MODS_ALLOWED" if="desktop || android" />
+	<define name="LUA_ALLOWED" if="desktop || android" />
 	<define name="ACHIEVEMENTS_ALLOWED" />
-	<define name="VIDEOS_ALLOWED" if="web || windows" unless="32bits"/>
+	<define name="VIDEOS_ALLOWED" if="web || windows || android" unless="32bits"/>
 	<define name="PSYCH_WATERMARKS"/> <!-- DELETE THIS TO REMOVE WATERMARKS/DEV NAMES ON TITLE SCREEN -->
 	<define name="TITLE_SCREEN_EASTER_EGG" if="officialBuild"/> <!-- DELETE THE if="officialBuild" for enabling this on an unofficial build -->
-	<define name="CRASH_HANDLER" if="desktop release" />
+	<define name="CRASH_HANDLER" if="desktop || android release" />
 
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3"  unless="web"/>
@@ -63,7 +63,7 @@
 	</section>
 
 	<!-- DONT ENABLE THIS -->
-	<define name="CHECK_FOR_UPDATES" if="desktop"/>
+	<define name="CHECK_FOR_UPDATES" if="desktop || android"/>
 
 	<!-- <define name="PRELOAD_ALL" /> -->
 	<define name="PRELOAD_ALL" unless="web" />
@@ -197,8 +197,20 @@
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
 	
 	
-	<icon path="draconisteam/icon16.png" size='16'/>
-	<icon path="draconisteam/icon32.png" size='32'/>
-	<icon path="draconisteam/icon64.png" size='64'/>
-	<icon path="draconisteam/iconOG.png" />
+	<icon path="draconisteam/icon16.png" size='16' unless="android"/>
+	<icon path="draconisteam/icon32.png" size='32' unless="android"/>
+	<icon path="draconisteam/icon64.png" size='64' unless="android"/>
+	<icon path="draconisteam/iconOG.png" unless="android"/>
+
+	<!--Android Setup-->
+	<icon path="draconisteam/icon16_android.png" size='16' if="android"/>
+	<icon path="draconisteam/icon32_android.png" size='32' if="android"/>
+	<icon path="draconisteam/icon64_android.png" size='64' if="android"/>
+	<icon path="draconisteam/iconOG_android.png" if="android"/>
+	<android permission="android.permission.READ_EXTERNAL_STORAGE" if="android"/>
+	<android permission="android.permission.WRITE_EXTERNAL_STORAGE" if="android"/>
+	<android permission="android.permission.INTERNET" if="android"/>
+	<android manifestAdditions="
+	<activity android:windowSoftInputMode='adjustResize'
+	" if="android"/>
 </project>

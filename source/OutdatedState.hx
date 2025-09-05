@@ -1,5 +1,6 @@
 package;
 
+import mobile.VirtualButton;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
@@ -16,6 +17,9 @@ class OutdatedState extends MusicBeatState
 	public static var leftState:Bool = false;
 
 	var warnText:FlxText;
+
+	private var backButton:VirtualButton;
+	private var enterButton:VirtualButton;
 	override function create()
 	{
 		super.create();
@@ -37,16 +41,22 @@ class OutdatedState extends MusicBeatState
 		warnText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER);
 		warnText.screenCenter(Y);
 		add(warnText);
+		#if mobile
+		backButton = new VirtualButton(FlxG.width-250, FlxG.height-125, 'back');
+		add(backButton);
+		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
+		add(enterButton);
+		#end
 	}
 
 	override function update(elapsed:Float)
 	{
 		if(!leftState) {
-			if (controls.ACCEPT) {
+			if (controls.ACCEPT #if mobile || enterButton.justPressed #end) {
 				leftState = true;
 				CoolUtil.browserLoad("https://github.com/DibyoExcel/Dragon-Engine");//bruh i forgot change after release 1.5.8 :skull:
 			}
-			else if(controls.BACK) {
+			else if(controls.BACK #if mobile || backButton.justPressed #end) {
 				leftState = true;
 			}
 

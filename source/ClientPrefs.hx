@@ -26,6 +26,10 @@ class ClientPrefs {
 	public static var fpsStrumAnim:Int = 24;
 	public static var noteSplashAlpha:Float = 0.6;
 	public static var noteSplashesOpt:Bool = true;
+	//mobile setting
+	public static var virtualButtonAlpha:Float = 0.75;
+	public static var hitboxAlpha:Float = 0.0;
+	public static var hitboxPressAlpha:Float = 0.25;
 	//end
 	public static var downScroll:Bool = false;
 	public static var middleScroll:Bool = false;
@@ -138,6 +142,9 @@ class ClientPrefs {
 	}
 
 	public static function saveSettings() {
+		FlxG.save.data.virtualButtonAlpha = virtualButtonAlpha;
+		FlxG.save.data.hitboxPressAlpha = hitboxPressAlpha;
+		FlxG.save.data.hitboxAlpha = hitboxAlpha;
 		FlxG.save.data.useResultScr = useResultScr;
 		FlxG.save.data.limitSpawn = limitSpawn;
 		FlxG.save.data.limitSpawnNotes = limitSpawnNotes;
@@ -208,6 +215,15 @@ class ClientPrefs {
 		}
 		if(FlxG.save.data.useResultScr != null) {
 			useResultScr = FlxG.save.data.useResultScr;
+		}
+		if(FlxG.save.data.virtualButtonAlpha != null) {
+			virtualButtonAlpha = FlxG.save.data.virtualButtonAlpha;
+		}
+		if(FlxG.save.data.hitboxAlpha != null) {
+			hitboxAlpha = FlxG.save.data.hitboxAlpha;
+		}
+		if(FlxG.save.data.hitboxPressAlpha != null) {
+			hitboxPressAlpha = FlxG.save.data.hitboxPressAlpha;
 		}
 		if(FlxG.save.data.limitSpawn != null) {
 			limitSpawn = FlxG.save.data.limitSpawn;

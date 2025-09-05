@@ -1,5 +1,6 @@
 package;
 
+import mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -37,6 +38,11 @@ class CreditsState extends MusicBeatState
 
 	var offsetThing:Float = -75;
 
+	private var upButton:VirtualButton;
+	private var downButton:VirtualButton;
+	private var enterButton:VirtualButton;
+	private var shiftButton:VirtualButton;
+
 	override function create()
 	{
 		#if desktop
@@ -53,7 +59,7 @@ class CreditsState extends MusicBeatState
 		add(grpOptions);
 
 		#if MODS_ALLOWED
-		var path:String = 'modsList.txt';
+		var path:String = StorageManager.getEngineDir() + 'modsList.txt';
 		if(FileSystem.exists(path))
 		{
 			var leMods:Array<String> = CoolUtil.coolTextFile(path);
@@ -167,6 +173,16 @@ class CreditsState extends MusicBeatState
 		bg.color = getCurrentBGColor();
 		intendedColor = bg.color;
 		changeSelection();
+		#if mobile
+		upButton = new VirtualButton(0, FlxG.height-250, 'up');
+		add(upButton);
+		downButton = new VirtualButton(0, FlxG.height-125, 'down');
+		add(downButton);
+		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
+		add(enterButton);
+		shiftButton = new VirtualButton(FlxG.width-250, FlxG.height-125, 'shift');
+		add(shiftButton);
+		#end
 		super.create();
 	}
 
@@ -184,10 +200,10 @@ class CreditsState extends MusicBeatState
 			if(creditsStuff.length > 1)
 			{
 				var shiftMult:Int = 1;
-				if(FlxG.keys.pressed.SHIFT) shiftMult = 3;
+				if(FlxG.keys.pressed.SHIFT #if mobile || shiftButton.pressed #end) shiftMult = 3;
 
-				var upP = controls.UI_UP_P;
-				var downP = controls.UI_DOWN_P;
+				var upP = controls.UI_UP_P #if mobile || upButton.justPressed #end;
+				var downP = controls.UI_DOWN_P #if mobile || downButton.justPressed #end;
 
 				if (upP)
 				{
@@ -200,7 +216,7 @@ class CreditsState extends MusicBeatState
 					holdTime = 0;
 				}
 
-				if(controls.UI_DOWN || controls.UI_UP)
+				if(controls.UI_DOWN || controls.UI_UP #if mobile || downButton.pressed || upButton.pressed #end)
 				{
 					var checkLastHold:Int = Math.floor((holdTime - 0.5) * 10);
 					holdTime += elapsed;
@@ -208,15 +224,15 @@ class CreditsState extends MusicBeatState
 
 					if(holdTime > 0.5 && checkNewHold - checkLastHold > 0)
 					{
-						changeSelection((checkNewHold - checkLastHold) * (controls.UI_UP ? -shiftMult : shiftMult));
+						changeSelection((checkNewHold - checkLastHold) * ((controls.UI_UP #if mobile || upButton.pressed #end) ? -shiftMult : shiftMult));
 					}
 				}
 			}
 
-			if(controls.ACCEPT && (creditsStuff[curSelected][3] == null || creditsStuff[curSelected][3].length > 4)) {
+			if((controls.ACCEPT #if mobile || enterButton.justPressed #end) && (creditsStuff[curSelected][3] == null || creditsStuff[curSelected][3].length > 4)) {
 				CoolUtil.browserLoad(creditsStuff[curSelected][3]);
 			}
-			if (controls.BACK)
+			if (controls.BACK #if android || FlxG.android.justPressed.BACK #end)
 			{
 				if(colorTween != null) {
 					colorTween.cancel();

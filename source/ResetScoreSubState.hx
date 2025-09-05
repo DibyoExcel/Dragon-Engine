@@ -1,3 +1,4 @@
+import mobile.VirtualButton;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
@@ -17,6 +18,7 @@ class ResetScoreSubState extends MusicBeatSubstate
 	var song:String;
 	var difficulty:Int;
 	var week:Int;
+	private var enterButton:VirtualButton;
 
 	// Week -1 = Freeplay
 	public function new(song:String, difficulty:Int, character:String, week:Int = -1)
@@ -68,6 +70,10 @@ class ResetScoreSubState extends MusicBeatSubstate
 		noText.screenCenter(X);
 		noText.x += 200;
 		add(noText);
+		#if mobile
+		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
+		add(enterButton);
+		#end
 		updateOptions();
 	}
 
@@ -82,15 +88,15 @@ class ResetScoreSubState extends MusicBeatSubstate
 		}
 		if(week == -1) icon.alpha += elapsed * 2.5;
 
-		if(controls.UI_LEFT_P || controls.UI_RIGHT_P) {
+		if((controls.UI_LEFT_P #if mobile || mobile.TouchUtil.swipeLeft() #end) || (controls.UI_RIGHT_P #if mobile || mobile.TouchUtil.swipeRight() #end)) {
 			FlxG.sound.play(Paths.sound('scrollMenu'), 1);
 			onYes = !onYes;
 			updateOptions();
 		}
-		if(controls.BACK) {
+		if(controls.BACK #if android || FlxG.android.justPressed.BACK #end) {
 			FlxG.sound.play(Paths.sound('cancelMenu'), 1);
 			close();
-		} else if(controls.ACCEPT) {
+		} else if(controls.ACCEPT #if mobile || enterButton.justPressed #end) {
 			if(onYes) {
 				if(week == -1) {
 					Highscore.resetSong(song, difficulty);

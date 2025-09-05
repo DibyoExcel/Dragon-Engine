@@ -1,5 +1,6 @@
 package;
 
+import mobile.VirtualButton;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
@@ -14,6 +15,8 @@ import flixel.util.FlxTimer;
 class FlashingState extends MusicBeatState
 {
 	public static var leftState:Bool = false;
+	private var backButton:VirtualButton;
+	private var enterButton:VirtualButton;
 
 	var warnText:FlxText;
 	override function create()
@@ -33,13 +36,19 @@ class FlashingState extends MusicBeatState
 		warnText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER);
 		warnText.screenCenter(Y);
 		add(warnText);
+		#if mobile
+		backButton = new VirtualButton(FlxG.width-250, FlxG.height-125, 'back');
+		add(backButton);
+		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
+		add(enterButton);
+		#end
 	}
 
 	override function update(elapsed:Float)
 	{
 		if(!leftState) {
-			var back:Bool = controls.BACK;
-			if (controls.ACCEPT || back) {
+			var back:Bool = controls.BACK #if mobile || backButton.justPressed #end;
+			if ((controls.ACCEPT #if mobile || enterButton.justPressed #end) || back) {
 				leftState = true;
 				FlxTransitionableState.skipNextTransIn = true;
 				FlxTransitionableState.skipNextTransOut = true;
@@ -53,6 +62,8 @@ class FlashingState extends MusicBeatState
 						});
 					});
 				} else {
+					ClientPrefs.flashing = true;
+					ClientPrefs.saveSettings();
 					FlxG.sound.play(Paths.sound('cancelMenu'));
 					FlxTween.tween(warnText, {alpha: 0}, 1, {
 						onComplete: function (twn:FlxTween) {

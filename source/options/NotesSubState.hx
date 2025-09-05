@@ -1,5 +1,6 @@
 package options;
 
+import mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -42,6 +43,10 @@ class NotesSubState extends MusicBeatSubstate
 	var hsbText:Alphabet;
 
 	var posX = 230;
+	private var leftButton:VirtualButton;
+	private var rightButton:VirtualButton;
+	private var enterButton:VirtualButton;
+	private var resetButton:VirtualButton;
 	public function new() {
 		super();
 		
@@ -88,6 +93,19 @@ class NotesSubState extends MusicBeatSubstate
 		hsbText.scaleY = 0.6;
 		add(hsbText);
 
+		#if mobile
+		leftButton = new VirtualButton(0, FlxG.height-125, 'left');
+		leftButton.visible = false;
+		add(leftButton);
+		rightButton = new VirtualButton(125, FlxG.height-125, 'right');
+		rightButton.visible = false;
+		add(rightButton);
+		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
+		add(enterButton);
+		resetButton = new VirtualButton(0, FlxG.height-250, 'r');
+		add(resetButton);
+		#end
+
 		changeSelection();
 	}
 
@@ -95,19 +113,19 @@ class NotesSubState extends MusicBeatSubstate
 	override function update(elapsed:Float) {
 		if(changingNote) {
 			if(holdTime < 0.5) {
-				if(controls.UI_LEFT_P) {
+				if(controls.UI_LEFT_P #if mobile || leftButton.justPressed #end) {
 					updateValue(-1);
 					FlxG.sound.play(Paths.sound('scrollMenu'));
-				} else if(controls.UI_RIGHT_P) {
+				} else if(controls.UI_RIGHT_P #if mobile || rightButton.justPressed #end) {
 					updateValue(1);
 					FlxG.sound.play(Paths.sound('scrollMenu'));
-				} else if(controls.RESET) {
+				} else if(controls.RESET #if mobile || resetButton.justPressed #end) {
 					resetValue(curSelected, typeSelected);
 					FlxG.sound.play(Paths.sound('scrollMenu'));
 				}
-				if(controls.UI_LEFT_R || controls.UI_RIGHT_R) {
+				if(controls.UI_LEFT_R || controls.UI_RIGHT_R #if mobile || leftButton.justReleased || rightButton.justReleased #end) {
 					holdTime = 0;
-				} else if(controls.UI_LEFT || controls.UI_RIGHT) {
+				} else if(controls.UI_LEFT || controls.UI_RIGHT #if mobile || leftButton.pressed || rightButton.pressed #end) {
 					holdTime += elapsed;
 				}
 			} else {
@@ -115,42 +133,46 @@ class NotesSubState extends MusicBeatSubstate
 				switch(typeSelected) {
 					case 1 | 2: add = 50;
 				}
-				if(controls.UI_LEFT) {
+				if(controls.UI_LEFT #if mobile || leftButton.pressed #end) {
 					updateValue(elapsed * -add);
-				} else if(controls.UI_RIGHT) {
+				} else if(controls.UI_RIGHT #if mobile ||  rightButton.pressed #end) {
 					updateValue(elapsed * add);
 				}
-				if(controls.UI_LEFT_R || controls.UI_RIGHT_R) {
+				if(controls.UI_LEFT_R || controls.UI_RIGHT_R #if mobile || leftButton.justReleased || rightButton.justReleased #end) {
 					FlxG.sound.play(Paths.sound('scrollMenu'));
 					holdTime = 0;
 				}
 			}
 		} else {
-			if (controls.UI_UP_P) {
+			if (controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end) {
 				changeSelection(-1);
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 			}
-			if (controls.UI_DOWN_P) {
+			if (controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end) {
 				changeSelection(1);
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 			}
-			if (controls.UI_LEFT_P) {
+			if (controls.UI_LEFT_P #if mobile || mobile.TouchUtil.swipeLeft() #end) {
 				changeType(-1);
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 			}
-			if (controls.UI_RIGHT_P) {
+			if (controls.UI_RIGHT_P #if mobile || mobile.TouchUtil.swipeRight() #end) {
 				changeType(1);
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 			}
-			if(controls.RESET) {
+			if(controls.RESET #if mobile || resetButton.justPressed #end) {
 				for (i in 0...3) {
 					resetValue(curSelected, i);
 				}
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 			}
-			if (controls.ACCEPT && nextAccept <= 0) {
+			if ((controls.ACCEPT #if mobile || enterButton.justPressed  #end) && nextAccept <= 0) {
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 				changingNote = true;
+				#if mobile
+				leftButton.visible = true;
+				rightButton.visible = true;
+				#end
 				holdTime = 0;
 				for (i in 0...grpNumbers.length) {
 					var item = grpNumbers.members[i];
@@ -171,13 +193,17 @@ class NotesSubState extends MusicBeatSubstate
 			}
 		}
 
-		if (controls.BACK || (changingNote && controls.ACCEPT)) {
+		if ((controls.BACK #if android || FlxG.android.justPressed.BACK #end) || (changingNote && (controls.ACCEPT #if mobile || enterButton.justPressed #end))) {
 			if(!changingNote) {
 				close();
 			} else {
 				changeSelection();
 			}
 			changingNote = false;
+			#if mobile
+				leftButton.visible = false;
+				rightButton.visible = false;
+			#end
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 		}
 

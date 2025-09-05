@@ -32,6 +32,7 @@ import lime.system.Clipboard;
 import Alphabet;
 #if sys
 import sys.io.File;
+import sys.FileSystem;
 #end
 
 using StringTools;
@@ -454,7 +455,7 @@ class DialogueCharacterEditorState extends MusicBeatState
 		}
 
 		curAnim = 0;
-		animText.text = 'Animation: ' + character.jsonFile.animations[curAnim].anim + ' (' + (curAnim + 1) +' / ' + character.jsonFile.animations.length + ') - Press W or S to scroll';
+		animText.text = 'Animation: ' + character.jsonFile.animations[curAnim].anim + ' (' + (curAnim + 1) +' / ' + character.jsonFile.animations.length + ') - ' + #if mobile 'Swipe Up or Down to scroll' #else 'Press W or S to scroll' #end;
 
 		#if desktop
 		// Updating Discord Rich Presence
@@ -643,7 +644,7 @@ class DialogueCharacterEditorState extends MusicBeatState
 					else if(curAnim >= character.jsonFile.animations.length) curAnim = 0;
 					
 					character.playAnim(character.jsonFile.animations[curAnim].anim);
-					animText.text = 'Animation: ' + character.jsonFile.animations[curAnim].anim + ' (' + (curAnim + 1) +' / ' + character.jsonFile.animations.length + ') - Press W or S to scroll';
+					animText.text = 'Animation: ' + character.jsonFile.animations[curAnim].anim + ' (' + (curAnim + 1) +' / ' + character.jsonFile.animations.length + ') - ' + #if mobile 'Swipe Up or Down to scroll' #else 'Press W or S to scroll' #end;
 				}
 				lastTab = UI_mainbox.selected_tab_id;
 				currentGhosts = 0;
@@ -668,11 +669,11 @@ class DialogueCharacterEditorState extends MusicBeatState
 							}
 						}
 					}
-					animText.text = 'Animation: ' + character.jsonFile.animations[curAnim].anim + ' (' + (curAnim + 1) +' / ' + character.jsonFile.animations.length + ') - Press W or S to scroll';
+					animText.text = 'Animation: ' + character.jsonFile.animations[curAnim].anim + ' (' + (curAnim + 1) +' / ' + character.jsonFile.animations.length + ') - ' + #if mobile 'Swipe Up or Down to scroll' #else 'Press W or S to scroll' #end;
 				}
 			}
 
-			if(FlxG.keys.justPressed.ESCAPE) {
+			if(FlxG.keys.justPressed.ESCAPE #if android || FlxG.android.justPressed.BACK #end) {
 				MusicBeatState.switchState(new editors.MasterEditorMenu());
 				FlxG.sound.playMusic(Paths.music('freakyMenu'), 1);
 				transitioning = true;
@@ -763,15 +764,23 @@ class DialogueCharacterEditorState extends MusicBeatState
 	function saveCharacter() {
 		var data:String = Json.stringify(character.jsonFile, "\t");
 		if (data.length > 0)
-		{
+			{
 			var splittedImage:Array<String> = imageInputText.text.trim().split('_');
 			var characterName:String = splittedImage[0].toLowerCase().replace(' ', '');
+			#if android
+			if (!FileSystem.exists(StorageManager.getEngineDir() + 'saves/dialoguecharacter/' )) {
+				FileSystem.createDirectory(StorageManager.getEngineDir() + 'saves/dialoguecharacter/');
+			}
+			File.saveContent(StorageManager.getEngineDir() + 'saves/dialoguecharacter/' + characterName + ".json", data);
+			lime.app.Application.current.window.alert('Diaoogue Character has been save in ' + StorageManager.getEngineDir() + 'saves/dialoguecharacter/' + characterName + ".json", 'Dialogue Character Editor');
+			#else
 
 			_file = new FileReference();
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 			_file.save(data, characterName + ".json");
+			#end
 		}
 	}
 

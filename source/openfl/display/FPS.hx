@@ -90,9 +90,13 @@ class FPS extends TextField
 			memoryMegas = Math.abs(FlxMath.roundDecimal(System.totalMemory / 1000000, 1));
 			text += " | Memory: " + memoryMegas + " MB";
 			#end
+			#if android
+			text += "\nDragon Engine(Android)";
+			#else
 			if ((Lib.application.window.width >= Lib.application.window.display.bounds.width && Lib.application.window.height >= Lib.application.window.display.bounds.height && Lib.application.window.x == 0 && Lib.application.window.y == 0) || FlxG.fullscreen) {
 				text += "\nDragon Engine";
 			}
+			#end
 			textColor = 0xFF00FF00;
 			if (memoryMegas > 3000 || currentFPS <= ClientPrefs.framerate / 2)
 			{

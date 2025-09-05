@@ -637,22 +637,26 @@ class Note extends FlxSprite
 		//also affected if change note in midgame
 		var jsonRa:String = '';
 		var haxeRa:Dynamic = {};
-		//precache system
+		//precache system(1 time precache each states reference the note.hx)
 		if (!NoteTypeManager.jsonRaw.exists('all')) {
 			if (FileSystem.exists(Paths.modFolders('custom_notetypes/all.json'))) {
 				NoteTypeManager.jsonRaw.set('all', File.getContent(Paths.modFolders('custom_notetypes/all.json')));
-			} else if (FileSystem.exists(Paths.getPreloadPath('custom_notetypes/all.json'))) {
+			} else if (FileSystem.exists(StorageManager.getEngineDir() + Paths.getPreloadPath('custom_notetypes/all.json'))) {
 				NoteTypeManager.jsonRaw.set('all', File.getContent(Paths.getPreloadPath('custom_notetypes/all.json')));
+			} else {
+				NoteTypeManager.jsonRaw.set('all', "");//if not exist turn empty json
 			}
 		}
 		if (!NoteTypeManager.jsonRaw.exists(value)) {
 			if (FileSystem.exists(Paths.modFolders('custom_notetypes/' + value + '.json'))) {
 				NoteTypeManager.jsonRaw.set(value, File.getContent(Paths.modFolders('custom_notetypes/' + value + '.json')));
-			} else if (FileSystem.exists(Paths.getPreloadPath('custom_notetypes/' + value + '.json'))) {
-				NoteTypeManager.jsonRaw.set(value, File.getContent(Paths.getPreloadPath('custom_notetypes/' + value + '.json')));
+			} else if (FileSystem.exists(StorageManager.getEngineDir() + Paths.getPreloadPath('custom_notetypes/' + value + '.json'))) {
+				NoteTypeManager.jsonRaw.set(value, File.getContent(StorageManager.getEngineDir() + Paths.getPreloadPath('custom_notetypes/' + value + '.json')));
+			} else {
+				NoteTypeManager.jsonRaw.set(value, "");//if not exist turn empty json
 			}
 		}
-		if (NoteTypeManager.jsonRaw.exists('all')) {
+		if (NoteTypeManager.jsonRaw.exists('all') && NoteTypeManager.jsonRaw.get('all').length > 0) {
 			if (!NoteTypeManager.jsonParse.exists('all')) {
 				NoteTypeManager.jsonParse.set('all', haxe.Json.parse(NoteTypeManager.jsonRaw.get('all')));
 			}
@@ -671,7 +675,7 @@ class Note extends FlxSprite
 					Reflect.setProperty(target, SDM[SDM.length-1], val);
 				}
 			}
-		} else if (NoteTypeManager.jsonRaw.exists(value)) {
+		} else if (NoteTypeManager.jsonRaw.exists(value) && NoteTypeManager.jsonRaw.get(value).length > 0) {
 			if (!NoteTypeManager.jsonParse.exists(value)) {
 				NoteTypeManager.jsonParse.set(value, haxe.Json.parse(NoteTypeManager.jsonRaw.get(value)));
 			}

@@ -247,8 +247,8 @@ class Paths
 			return File.getContent(modFolders(key));
 		#end
 
-		if (FileSystem.exists(getPreloadPath(key)))
-			return File.getContent(getPreloadPath(key));
+		if (FileSystem.exists(StorageManager.getEngineDir() + getPreloadPath(key)))
+			return File.getContent(StorageManager.getEngineDir() + getPreloadPath(key));
 
 		if (currentLevel != null)
 		{
@@ -381,7 +381,7 @@ class Paths
 		// trace(gottenPath);
 		if(!currentTrackedSounds.exists(gottenPath))
 		#if MODS_ALLOWED
-			currentTrackedSounds.set(gottenPath, Sound.fromFile('./' + gottenPath));
+			currentTrackedSounds.set(gottenPath, Sound.fromFile(StorageManager.getEngineDir() + gottenPath));
 		#else
 		{
 			var folder:String = '';
@@ -396,7 +396,7 @@ class Paths
 
 	#if MODS_ALLOWED
 	inline static public function mods(key:String = '') {
-		return 'mods/' + key;
+		return StorageManager.getEngineDir() + 'mods/' + key;
 	}
 
 	inline static public function modsFont(key:String) {
@@ -455,7 +455,7 @@ class Paths
 				return fileToCheck;
 
 		}
-		return 'mods/' + key;
+		return StorageManager.getEngineDir() + 'mods/' + key;
 	}
 
 	public static var globalMods:Array<String> = [];
@@ -466,7 +466,7 @@ class Paths
 	static public function pushGlobalMods() // prob a better way to do this but idc
 	{
 		globalMods = [];
-		var path:String = 'modsList.txt';
+		var path:String = StorageManager.getEngineDir() + 'modsList.txt';
 		if(FileSystem.exists(path))
 		{
 			var list:Array<String> = CoolUtil.coolTextFile(path);

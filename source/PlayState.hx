@@ -1,5 +1,6 @@
 package;
 
+import mobile.Hitbox;
 import flixel.graphics.FlxGraphic;
 #if desktop
 import Discord.DiscordClient;
@@ -324,6 +325,9 @@ class PlayState extends MusicBeatState
 	public var oldTransitionNotes:Bool = false;
 	public var fieldNameAsPlayer:String = '';//empty as default
 	public var keyCount:Int = 4;
+	//hitbox
+	private var hitboxCam:FlxCamera;
+	private var hitbox:FlxTypedGroup<Hitbox>;
 
 	#if desktop
 	// Discord RPC variables
@@ -906,7 +910,7 @@ class PlayState extends MusicBeatState
 		if (!disableLuaScript) {
 			#if LUA_ALLOWED
 			var filesPushed:Array<String> = [];
-			var foldersToCheck:Array<String> = [Paths.getPreloadPath('scripts/')];
+			var foldersToCheck:Array<String> = [StorageManager.getEngineDir() + Paths.getPreloadPath('scripts/')];
 
 			#if MODS_ALLOWED
 			foldersToCheck.insert(0, Paths.mods('scripts/'));
@@ -944,7 +948,7 @@ class PlayState extends MusicBeatState
 				luaFile = Paths.modFolders(luaFile);
 				doPush = true;
 			} else {
-				luaFile = Paths.getPreloadPath(luaFile);
+				luaFile = StorageManager.getEngineDir() + Paths.getPreloadPath(luaFile);
 				if(FileSystem.exists(luaFile)) {
 					doPush = true;
 				}
@@ -1262,7 +1266,7 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				luaToLoad = Paths.getPreloadPath('custom_notetypes/' + notetype + '.lua');
+				luaToLoad = StorageManager.getEngineDir() + Paths.getPreloadPath('custom_notetypes/' + notetype + '.lua');
 				if(FileSystem.exists(luaToLoad))
 				{
 					luaArray.push(new FunkinLua(luaToLoad));
@@ -1287,7 +1291,7 @@ class PlayState extends MusicBeatState
 				}
 				else
 				{
-					luaToLoad = Paths.getPreloadPath('custom_events/' + event + '.lua');
+					luaToLoad = StorageManager.getEngineDir() + Paths.getPreloadPath('custom_events/' + event + '.lua');
 					if(FileSystem.exists(luaToLoad))
 					{
 						luaArray.push(new FunkinLua(luaToLoad));
@@ -1314,7 +1318,7 @@ class PlayState extends MusicBeatState
 		if (FileSystem.exists(luaGamemode)) {
 			luaArray.push(new FunkinLua(luaGamemode));
 		} else {
-			luaGamemode = Paths.getPreloadPath("gamemode/" + gamemode + ".lua");
+			luaGamemode = StorageManager.getEngineDir() + Paths.getPreloadPath("gamemode/" + gamemode + ".lua");
 			if (FileSystem.exists(luaGamemode)) {
 				luaArray.push(new FunkinLua(luaGamemode));
 			}
@@ -1326,7 +1330,7 @@ class PlayState extends MusicBeatState
 		if (!disableLuaSong) {
 			#if LUA_ALLOWED
 			var filesPushed:Array<String> = [];
-			var foldersToCheck:Array<String> = [Paths.getPreloadPath('data/' + Paths.formatToSongPath(SONG.song) + '/')];
+			var foldersToCheck:Array<String> = [StorageManager.getEngineDir() + Paths.getPreloadPath('data/' + Paths.formatToSongPath(SONG.song) + '/')];
 
 			#if MODS_ALLOWED
 			foldersToCheck.insert(0, Paths.mods('data/' + Paths.formatToSongPath(SONG.song) + '/'));
@@ -1454,7 +1458,42 @@ class PlayState extends MusicBeatState
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 		}
+		if (ClientPrefs.extUI) {
+			keyPressUI = new FlxTypedGroup<FlxSprite>();
+			keyPressUIF = new FlxTypedGroup<FlxSprite>();
+			for (i in 0...keysArray.length) {
+				var notePressUISpr = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
+				notePressUISpr.cameras = [ camHUD ];
+				notePressUISpr.color = colorOrder[i%colorOrder.length];
+				notePressUISpr.alpha = ClientPrefs.keyStrokeAlpha;
+				keyPressUI.add(notePressUISpr);
+				var notePressUISprF = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
+				//notePressUISprF.color = colorOrder[i];
+				notePressUISprF.cameras = [ camHUD ];
+				notePressUISprF.alpha = 0;
+				keyPressUIF.add(notePressUISprF);
+			}
+			add(keyPressUI);
+			add(keyPressUIF);
+		}
+		#if mobile
+		hitboxCam = new FlxCamera();
+		hitboxCam.bgColor.alpha = 0;
+		FlxG.cameras.add(hitboxCam, false);
+		hitbox = new FlxTypedGroup<Hitbox>();
+		//hitbox.cameras = [hitboxCam];
+		for (i in 0...keysArray.length) {
+			var bruh = new Hitbox(i*Std.int(FlxG.width/keysArray.length), 0);
+			bruh.color = colorOrder[i%colorOrder.length];
+			bruh.cameras = [hitboxCam];
+			bruh.setGraphicSize(Std.int(FlxG.width/keysArray.length), FlxG.height);
+			bruh.updateHitbox();
+			hitbox.add(bruh);
+		}
+		add(hitbox);
+		#end
 		callOnLuas('onCreatePost', []);
+		
 
 		super.create();
 		if (ClientPrefs.startPause) {
@@ -1479,24 +1518,6 @@ class PlayState extends MusicBeatState
 		
 		CustomFadeTransition.nextCamera = camOther;
 		//var notePressUISpr:FlxSprite;
-		if (ClientPrefs.extUI) {
-			keyPressUI = new FlxTypedGroup<FlxSprite>();
-			keyPressUIF = new FlxTypedGroup<FlxSprite>();
-			for (i in 0...keysArray.length) {
-				var notePressUISpr = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
-				notePressUISpr.cameras = [ camHUD ];
-				notePressUISpr.color = colorOrder[i%colorOrder.length];
-				notePressUISpr.alpha = ClientPrefs.keyStrokeAlpha;
-				keyPressUI.add(notePressUISpr);
-				var notePressUISprF = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
-				//notePressUISprF.color = colorOrder[i];
-				notePressUISprF.cameras = [ camHUD ];
-				notePressUISprF.alpha = 0;
-				keyPressUIF.add(notePressUISprF);
-			}
-			add(keyPressUI);
-			add(keyPressUIF);
-		}
 	}
 
 	#if (!flash && sys)
@@ -1667,7 +1688,7 @@ class PlayState extends MusicBeatState
 			luaFile = Paths.modFolders(luaFile);
 			doPush = true;
 		} else {
-			luaFile = Paths.getPreloadPath(luaFile);
+			luaFile = StorageManager.getEngineDir() + Paths.getPreloadPath(luaFile);
 			if(FileSystem.exists(luaFile)) {
 				doPush = true;
 			}
@@ -2565,7 +2586,7 @@ class PlayState extends MusicBeatState
 		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
 
 		var songName:String = Paths.formatToSongPath(SONG.song);
-		var file:String = Paths.json(songName + '/events');
+		var file:String = StorageManager.getEngineDir() + Paths.json(songName + '/events');
 		#if MODS_ALLOWED
 		if (FileSystem.exists(Paths.modsJson(songName + '/events')) || FileSystem.exists(file)) {
 		#else
@@ -3350,7 +3371,7 @@ class PlayState extends MusicBeatState
 			botplayTxt.alpha = 1 - Math.sin((Math.PI * botplaySine) / 180);
 		}
 
-		if (controls.PAUSE && startedCountdown && canPause)
+		if ((controls.PAUSE #if android || FlxG.android.justPressed.BACK #end) && startedCountdown && canPause)
 		{
 			var ret:Dynamic = callOnLuas('onPause', [], false);
 			if(ret != FunkinLua.Function_Stop) {
@@ -3756,6 +3777,16 @@ class PlayState extends MusicBeatState
 			}
 		}
 		#end
+		#if mobile
+		for (i in 0...hitbox.length) {
+			if (hitbox.members[i].justPressed) {
+				customKeyPress(i, true);
+			}
+			if (hitbox.members[i].justReleased) {
+				customKeyRelease(i);
+			}
+		}
+		#end
 
 		setOnLuas('cameraX', camFollowPos.x);
 		setOnLuas('cameraY', camFollowPos.y);
@@ -3789,7 +3820,7 @@ class PlayState extends MusicBeatState
 		#end
 	}
 
-	function openChartEditor()
+	public function openChartEditor()
 	{
 		persistentUpdate = false;
 		paused = true;
@@ -3958,6 +3989,14 @@ class PlayState extends MusicBeatState
 						if(phillyGlowGradient.visible)
 						{
 							doFlash();
+							for (i in 0...keyPressUI.length) {
+								keyPressUI.members[i].color = colorOrder[i%colorOrder.length];
+							}
+							#if mobile
+							for (i in 0...hitbox.length) {
+								hitbox.members[i].color = colorOrder[i%colorOrder.length];
+							}
+							#end
 							if(ClientPrefs.camZooms)
 							{
 								FlxG.camera.zoom += 0.5;
@@ -3980,6 +4019,14 @@ class PlayState extends MusicBeatState
 					case 1: //turn on
 						curLightEvent = FlxG.random.int(0, phillyLightsColors.length-1, [curLightEvent]);
 						var color:FlxColor = phillyLightsColors[curLightEvent];
+						for (i in 0...keyPressUI.length) {
+							keyPressUI.members[i].color = color;
+						}
+						#if mobile
+						for (i in 0...hitbox.length) {
+							hitbox.members[i].color = color;
+						}
+						#end
 
 						if(!phillyGlowGradient.visible)
 						{
@@ -4773,9 +4820,16 @@ class PlayState extends MusicBeatState
 	{
 		var eventKey:FlxKey = event.keyCode;
 		var key:Int = getKeyFromEvent(eventKey);
+		var keyCheck:Bool = FlxG.keys.checkStatus(eventKey, JUST_PRESSED);
+		customKeyPress(key, keyCheck);
+		
 		//trace('Pressed: ' + eventKey);
 
-		if (!cpuControlled && startedCountdown && !paused && key > -1 && (FlxG.keys.checkStatus(eventKey, JUST_PRESSED) || ClientPrefs.controllerMode))
+		//trace('pressed: ' + controlArray);
+	}
+
+	private function customKeyPress(key:Int, keyCheck:Bool) {
+		if (!cpuControlled && startedCountdown && !paused && key > -1 && (keyCheck || ClientPrefs.controllerMode))
 		{
 			if(!boyfriend.stunned && generatedMusic && !endingSong)
 			{
@@ -4857,7 +4911,6 @@ class PlayState extends MusicBeatState
 				}	
 			}
 		}
-		//trace('pressed: ' + controlArray);
 	}
 
 	function sortHitNotes(a:Note, b:Note):Int
@@ -4874,22 +4927,27 @@ class PlayState extends MusicBeatState
 	{
 		var eventKey:FlxKey = event.keyCode;
 		var key:Int = getKeyFromEvent(eventKey);
+		customKeyRelease(key);
+		
+		//trace('released: ' + controlArray);
+	}
+
+	private function customKeyRelease(key:Int) {
 		if(!cpuControlled && startedCountdown && !paused && key > -1)
-		{
-			var spr:StrumNote = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key-playerStrums.length] : (fieldNameAsPlayer == '' ? playerStrums.members[key] : strumGroupMap.get(fieldNameAsPlayer).members[key])) : (fieldNameAsPlayer == '' ? opponentStrums.members[key] : strumGroupMap.get(fieldNameAsPlayer).members[key]));
-			if(spr != null)
 			{
-				spr.playAnim('static');
-				spr.resetAnim = 0;
-			}
-			callOnLuas('onKeyRelease', [key]);
-			if (ClientPrefs.extUI) {
-				if (keyPressUIF.members[key] != null && keyPressUI.members[key] != null) {
-					keyPressUIF.members[key].alpha = 0;
+				var spr:StrumNote = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key-playerStrums.length] : (fieldNameAsPlayer == '' ? playerStrums.members[key] : strumGroupMap.get(fieldNameAsPlayer).members[key])) : (fieldNameAsPlayer == '' ? opponentStrums.members[key] : strumGroupMap.get(fieldNameAsPlayer).members[key]));
+				if(spr != null)
+				{
+					spr.playAnim('static');
+					spr.resetAnim = 0;
+				}
+				callOnLuas('onKeyRelease', [key]);
+				if (ClientPrefs.extUI) {
+					if (keyPressUIF.members[key] != null && keyPressUI.members[key] != null) {
+						keyPressUIF.members[key].alpha = 0;
+					}
 				}
 			}
-		}
-		//trace('released: ' + controlArray);
 	}
 
 	private function getKeyFromEvent(key:FlxKey):Int
@@ -4986,6 +5044,11 @@ class PlayState extends MusicBeatState
 		for (i in 0...controlArray.length)
 		{
 			ret[i] = Reflect.getProperty(controls, controlArray[i] + suffix);
+			#if mobile
+			if (!ret[i]) {
+				ret[i] = hitbox.members[i].pressed;
+			}
+			#end
 		}
 		return ret;
 	}
@@ -6017,6 +6080,16 @@ class PlayState extends MusicBeatState
 				if (ClientPrefs.extUI) {
 					var lastCount = keyPressUI.length;
 					if (lastCount != keysArray.length) {
+						#if mobile
+							while (hitbox.length > 0) {
+								var obj = hitbox.members[0];
+								obj.kill();
+								hitbox.remove(obj, true);
+								obj.destroy();
+							}
+						#end
+					}
+					if (lastCount != keysArray.length) {
 						while (keyPressUI.length > 0) {
 							var obj = keyPressUI.members[0];
 							obj.kill();
@@ -6047,6 +6120,16 @@ class PlayState extends MusicBeatState
 							notePressUISprF.alpha = 0;
 							keyPressUIF.add(notePressUISprF);
 						}
+						#if mobile
+						for (i in 0...keysArray.length) {
+							var bruh = new Hitbox(i*Std.int(FlxG.width/keysArray.length), 0);
+							bruh.setGraphicSize(i*Std.int(FlxG.width/keysArray.length), FlxG.height);
+							bruh.color = colorOrder[i%colorOrder.length];
+							bruh.cameras = [hitboxCam];
+							bruh.updateHitbox();
+							hitbox.add(bruh);
+						}
+						#end
 					}
 				}
 				callOnLuas('onChangeOpponent', [value, t, t2]);
@@ -6131,6 +6214,14 @@ class PlayState extends MusicBeatState
 					obj.destroy();
 					obj = null;
 				}
+				#if mobile
+					while (hitbox.length > 0) {
+						var obj = hitbox.members[0];
+						obj.kill();
+						hitbox.remove(obj, true);
+						obj.destroy();
+					}
+				#end
 				for (i in 0...keysArray.length) {
 					var notePressUISpr = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
 					notePressUISpr.cameras = [ camHUD ];
@@ -6143,6 +6234,16 @@ class PlayState extends MusicBeatState
 					notePressUISprF.alpha = 0;
 					keyPressUIF.add(notePressUISprF);
 				}
+				#if mobile
+				for (i in 0...keysArray.length) {
+					var bruh = new Hitbox(i*Std.int(FlxG.width/keysArray.length), 0);
+					bruh.color = colorOrder[i%colorOrder.length];
+					bruh.setGraphicSize(Std.int(FlxG.width/keysArray.length), FlxG.height);
+					bruh.cameras = [hitboxCam];
+					bruh.updateHitbox();
+					hitbox.add(bruh);
+				}
+				#end
 			}
 		}
 		callOnLuas('onChangeGamemode', [gamemode, t]);

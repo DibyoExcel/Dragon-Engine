@@ -1,5 +1,6 @@
 package pauseSetting;
 
+import mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -35,6 +36,7 @@ class MainOptionsState extends MusicBeatState
 	private static var curSelected:Int = 0;
 	public static var menuBG:FlxSprite;
 	private var songType:SwagSong;
+	private var enterButton:VirtualButton;
 
 	function openSelectedSubstate(label:String) {
 		switch(label) {
@@ -80,6 +82,10 @@ class MainOptionsState extends MusicBeatState
 		add(selectorLeft);
 		selectorRight = new Alphabet(0, 0, '<', true);
 		add(selectorRight);
+		#if mobile
+		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
+		add(enterButton);
+		#end
 
 		changeSelection();
 		super.create();
@@ -88,20 +94,20 @@ class MainOptionsState extends MusicBeatState
 	override function update(elapsed:Float) {
 		super.update(elapsed);
 
-		if (controls.UI_UP_P) {
+		if (controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end) {
 			changeSelection(-1);
 		}
-		if (controls.UI_DOWN_P) {
+		if (controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end) {
 			changeSelection(1);
 		}
 
-		if (controls.BACK) {
+		if (controls.BACK #if android || FlxG.android.justPressed.BACK #end) {
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			StageData.loadDirectory(songType);
 			LoadingState.loadAndSwitchState(new PlayState());
 		}
 
-		if (controls.ACCEPT) {
+		if (controls.ACCEPT #if mobile ||  enterButton.justPressed #end) {
 			openSelectedSubstate(options[curSelected]);
 		}
 	}

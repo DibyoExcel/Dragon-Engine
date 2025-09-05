@@ -1,5 +1,6 @@
 package editors;
 
+import mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -34,6 +35,7 @@ class MasterEditorMenu extends MusicBeatState
 	private var curSelected = 0;
 	private var curDirectory = 0;
 	private var directoryTxt:FlxText;
+	private var enterButton:VirtualButton;
 
 	override function create()
 	{
@@ -80,6 +82,10 @@ class MasterEditorMenu extends MusicBeatState
 		changeDirectory();
 		#end
 		changeSelection();
+		#if mobile
+		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
+		add(enterButton);
+		#end
 
 		FlxG.mouse.visible = false;
 		super.create();
@@ -87,31 +93,31 @@ class MasterEditorMenu extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if (controls.UI_UP_P)
+		if (controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end)
 		{
 			changeSelection(-1);
 		}
-		if (controls.UI_DOWN_P)
+		if (controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end)
 		{
 			changeSelection(1);
 		}
 		#if MODS_ALLOWED
-		if(controls.UI_LEFT_P)
+		if(controls.UI_LEFT_P #if mobile || mobile.TouchUtil.swipeLeft() #end)
 		{
 			changeDirectory(-1);
 		}
-		if(controls.UI_RIGHT_P)
+		if(controls.UI_RIGHT_P #if mobile || mobile.TouchUtil.swipeRight() #end)
 		{
 			changeDirectory(1);
 		}
 		#end
 
-		if (controls.BACK)
+		if (controls.BACK #if android || FlxG.android.justPressed.BACK #end)
 		{
 			MusicBeatState.switchState(new MainMenuState());
 		}
 
-		if (controls.ACCEPT)
+		if (controls.ACCEPT #if mobile || enterButton.justPressed #end)
 		{
 			switch(options[curSelected]) {
 				case 'Character Editor':

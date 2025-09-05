@@ -1,5 +1,6 @@
 package editors;
 
+import mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -30,6 +31,7 @@ import lime.system.Clipboard;
 import Alphabet;
 #if sys
 import sys.io.File;
+import sys.FileSystem;
 #end
 
 using StringTools;
@@ -45,6 +47,9 @@ class DialogueEditorState extends MusicBeatState
 
 	var defaultLine:DialogueLine;
 	var dialogueFile:DialogueFile = null;
+
+	private var oButton:VirtualButton;
+	private var pButton:VirtualButton;
 
 	override function create() {
 		persistentUpdate = persistentDraw = true;
@@ -105,6 +110,13 @@ class DialogueEditorState extends MusicBeatState
 		daText.scaleY = 0.7;
 		add(daText);
 		changeText();
+
+		#if mobile
+		oButton = new VirtualButton(0, FlxG.height-125, 'o');
+		add(oButton);
+		pButton = new VirtualButton(125, FlxG.height-125, 'p');
+		add(pButton);
+		#end
 		super.create();
 	}
 
@@ -225,7 +237,7 @@ class DialogueEditorState extends MusicBeatState
 		characterAnimSpeed();
 
 		if(character.animation.curAnim != null && character.jsonFile.animations != null) {
-			animText.text = 'Animation: ' + character.jsonFile.animations[curAnim].anim + ' (' + (curAnim + 1) +' / ' + character.jsonFile.animations.length + ') - Press W or S to scroll';
+			animText.text = 'Animation: ' + character.jsonFile.animations[curAnim].anim + ' (' + (curAnim + 1) +' / ' + character.jsonFile.animations.length + ') - ' + #if mobile 'Swipe Up or Down to scroll' #else 'Press W or S to scroll' #end;
 		} else {
 			animText.text = 'ERROR! NO ANIMATIONS FOUND';
 		}
@@ -273,7 +285,7 @@ class DialogueEditorState extends MusicBeatState
 					curAnim = 0;
 					if(character.jsonFile.animations.length > curAnim && character.jsonFile.animations[curAnim] != null) {
 						character.playAnim(character.jsonFile.animations[curAnim].anim, daText.finishedText);
-						animText.text = 'Animation: ' + character.jsonFile.animations[curAnim].anim + ' (' + (curAnim + 1) +' / ' + character.jsonFile.animations.length + ') - Press W or S to scroll';
+						animText.text = 'Animation: ' + character.jsonFile.animations[curAnim].anim + ' (' + (curAnim + 1) +' / ' + character.jsonFile.animations.length + ') - ' + #if mobile 'Swipe Up or Down to scroll' #else 'Press W or S to scroll' #end;
 					} else {
 						animText.text = 'ERROR! NO ANIMATIONS FOUND';
 					}
@@ -355,14 +367,14 @@ class DialogueEditorState extends MusicBeatState
 			if(FlxG.keys.justPressed.SPACE) {
 				reloadText(false);
 			}
-			if(FlxG.keys.justPressed.ESCAPE) {
+			if(FlxG.keys.justPressed.ESCAPE #if android || FlxG.android.justPressed.BACK #end) {
 				MusicBeatState.switchState(new editors.MasterEditorMenu());
 				FlxG.sound.playMusic(Paths.music('freakyMenu'), 1);
 				transitioning = true;
 			}
 			var negaMult:Array<Int> = [1, -1];
-			var controlAnim:Array<Bool> = [FlxG.keys.justPressed.W, FlxG.keys.justPressed.S];
-			var controlText:Array<Bool> = [FlxG.keys.justPressed.D, FlxG.keys.justPressed.A];
+			var controlAnim:Array<Bool> = [FlxG.keys.justPressed.W #if mobile || mobile.TouchUtil.swipeUp() #end, FlxG.keys.justPressed.S #if mobile || mobile.TouchUtil.swipeDown() #end];
+			var controlText:Array<Bool> = [FlxG.keys.justPressed.D #if mobile || mobile.TouchUtil.swipeLeft() #end, FlxG.keys.justPressed.A #if mobile || mobile.TouchUtil.swipeRight() #end];
 			for (i in 0...controlAnim.length) {
 				if(controlAnim[i] && character.jsonFile.animations.length > 0) {
 					curAnim -= negaMult[i];
@@ -374,14 +386,14 @@ class DialogueEditorState extends MusicBeatState
 						character.playAnim(animToPlay, daText.finishedText);
 						dialogueFile.dialogue[curSelected].expression = animToPlay;
 					}
-					animText.text = 'Animation: ' + animToPlay + ' (' + (curAnim + 1) +' / ' + character.jsonFile.animations.length + ') - Press W or S to scroll';
+					animText.text = 'Animation: ' + animToPlay + ' (' + (curAnim + 1) +' / ' + character.jsonFile.animations.length + ') - ' + #if mobile 'Swipe Up or Down to scroll' #else 'Press W or S to scroll' #end;
 				}
 				if(controlText[i]) {
 					changeText(negaMult[i]);
 				}
 			}
 
-			if(FlxG.keys.justPressed.O) {
+			if(FlxG.keys.justPressed.O #if mobile || oButton.justPressed #end) {
 				dialogueFile.dialogue.remove(dialogueFile.dialogue[curSelected]);
 				if(dialogueFile.dialogue.length < 1) //You deleted everything, dumbo!
 				{
@@ -390,7 +402,7 @@ class DialogueEditorState extends MusicBeatState
 					];
 				}
 				changeText();
-			} else if(FlxG.keys.justPressed.P) {
+			} else if(FlxG.keys.justPressed.P #if mobile || pButton.justPressed #end) {
 				dialogueFile.dialogue.insert(curSelected + 1, copyDefaultLine());
 				changeText(1);
 			}
@@ -432,13 +444,13 @@ class DialogueEditorState extends MusicBeatState
 				}
 			}
 			character.playAnim(character.jsonFile.animations[curAnim].anim, daText.finishedText);
-			animText.text = 'Animation: ' + character.jsonFile.animations[curAnim].anim + ' (' + (curAnim + 1) +' / ' + leLength + ') - Press W or S to scroll';
+			animText.text = 'Animation: ' + character.jsonFile.animations[curAnim].anim + ' (' + (curAnim + 1) +' / ' + leLength + ') - ' + #if mobile 'Swipe Up or Down to scroll' #else 'Press W or S to scroll' #end;
 		} else {
 			animText.text = 'ERROR! NO ANIMATIONS FOUND';
 		}
 		characterAnimSpeed();
 
-		selectedText.text = 'Line: (' + (curSelected + 1) + ' / ' + dialogueFile.dialogue.length + ') - Press A or D to scroll';
+		selectedText.text = 'Line: (' + (curSelected + 1) + ' / ' + dialogueFile.dialogue.length + ') - ' + #if mobile 'Swipe Left or Right to scroll' #else 'Press A or D to scroll' #end;
 	}
 
 	function characterAnimSpeed() {
@@ -521,11 +533,19 @@ class DialogueEditorState extends MusicBeatState
 		var data:String = Json.stringify(dialogueFile, "\t");
 		if (data.length > 0)
 		{
-			_file = new FileReference();
+			#if android
+			if (!FileSystem.exists(StorageManager.getEngineDir() + 'saves/dialogue/' )) {
+				FileSystem.createDirectory(StorageManager.getEngineDir() + 'saves/dialogue/');
+			}
+			File.saveContent(StorageManager.getEngineDir() + 'saves/dialogue/dialogue.json', data);
+			lime.app.Application.current.window.alert('Dialogue has been save in ' + StorageManager.getEngineDir() + 'saves/dialogue/dialogue.json', 'Dialogue Editor');
+			#else
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 			_file.save(data, "dialogue.json");
+			#end
+			_file = new FileReference();
 		}
 	}
 

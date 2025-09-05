@@ -1,5 +1,6 @@
 package pauseSetting.options;
 
+import mobile.VirtualButton;
 import flixel.util.FlxStringUtil;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -40,6 +41,10 @@ class NoteOffsetState extends MusicBeatState
 	var beatTween:FlxTween;
 
 	var changeModeText:FlxText;
+	private var enterButton:VirtualButton;
+	private var resetButton:VirtualButton;
+	private var leftButton:VirtualButton;
+	private var rightButton:VirtualButton;
 
 	override public function create()
 	{
@@ -198,6 +203,22 @@ class NoteOffsetState extends MusicBeatState
 		Conductor.changeBPM(128.0);
 		FlxG.sound.playMusic(Paths.music('offsetSong'), 1, true);
 
+		#if mobile
+		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
+		enterButton.cameras = [camOther];
+		add(enterButton);
+		resetButton = new VirtualButton(0, FlxG.height-250, 'r');
+		resetButton.cameras = [camOther];
+		add(resetButton);
+		leftButton = new VirtualButton(0, FlxG.height-125, 'left');
+		leftButton.cameras = [camOther];
+		leftButton.visible = !onComboMenu;
+		add(leftButton);
+		rightButton = new VirtualButton(125, FlxG.height-125, 'right');
+		rightButton.cameras = [camOther];
+		rightButton.visible = !onComboMenu;
+		add(rightButton);
+		#end
 		super.create();
 	}
 
@@ -296,7 +317,7 @@ class NoteOffsetState extends MusicBeatState
 				}
 			}
 
-			if(controls.RESET)
+			if(controls.RESET #if mobile || resetButton.justPressed #end)
 			{
 				for (i in 0...ClientPrefs.comboOffset.length)
 				{
@@ -319,13 +340,13 @@ class NoteOffsetState extends MusicBeatState
 			}
 
 			var mult:Int = 1;
-			if(controls.UI_LEFT || controls.UI_RIGHT)
+			if((controls.UI_LEFT #if mobile || leftButton.pressed #end) || (controls.UI_RIGHT #if mobile || rightButton.pressed #end))
 			{
 				holdTime += elapsed;
-				if(controls.UI_LEFT) mult = -1;
+				if((controls.UI_LEFT #if mobile || leftButton.pressed #end)) mult = -1;
 			}
 
-			if(controls.UI_LEFT_R || controls.UI_RIGHT_R) holdTime = 0;
+			if(controls.UI_LEFT_R || controls.UI_RIGHT_R  #if mobile || leftButton.justReleased || rightButton.justReleased #end) holdTime = 0;
 
 			if(holdTime > 0.5)
 			{
@@ -334,7 +355,7 @@ class NoteOffsetState extends MusicBeatState
 				updateNoteDelay();
 			}
 
-			if(controls.RESET)
+			if(controls.RESET #if mobile || resetButton.justPressed#end)
 			{
 				holdTime = 0;
 				barPercent = 0;
@@ -342,13 +363,17 @@ class NoteOffsetState extends MusicBeatState
 			}
 		}
 
-		if(controls.ACCEPT)
+		if(controls.ACCEPT #if mobile || enterButton.justPressed#end)
 		{
 			onComboMenu = !onComboMenu;
+			#if mobile
+			leftButton.visible = !onComboMenu;
+			rightButton.visible = !onComboMenu;
+			#end
 			updateMode();
 		}
 
-		if(controls.BACK)
+		if(controls.BACK #if android || FlxG.android.justPressed.BACK #end)
 		{
 			if(zoomTween != null) zoomTween.cancel();
 			if(beatTween != null) beatTween.cancel();
