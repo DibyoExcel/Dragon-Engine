@@ -51,6 +51,8 @@ class DialogueEditorState extends MusicBeatState
 	private var oButton:VirtualButton;
 	private var pButton:VirtualButton;
 
+	private static var loadFileName:FlxUIInputText;
+
 	override function create() {
 		persistentUpdate = persistentDraw = true;
 		FlxG.camera.bgColor = FlxColor.fromHSL(0, 0, 0.5);
@@ -126,11 +128,11 @@ class DialogueEditorState extends MusicBeatState
 			{name: 'Dialogue Line', label: 'Dialogue Line'},
 		];
 		UI_box = new FlxUITabMenu(null, tabs, true);
-		UI_box.resize(250, 210);
+		UI_box.resize(250, 210 #if android + 25 #end);
 		UI_box.x = FlxG.width - UI_box.width - 10;
 		UI_box.y = 10;
 		UI_box.scrollFactor.set();
-		UI_box.alpha = 0.8;
+		//UI_box.alpha = 0.8; //SUS
 		addDialogueLineUI();
 		add(UI_box);
 	}
@@ -162,12 +164,15 @@ class DialogueEditorState extends MusicBeatState
 		lineInputText = new FlxUIInputText(10, soundInputText.y + 35, 200, DEFAULT_TEXT, 8);
 		blockPressWhileTypingOn.push(lineInputText);
 
-		var loadButton:FlxButton = new FlxButton(20, lineInputText.y + 25, "Load Dialogue", function() {
+		var loadButton:FlxButton = new FlxButton(20, lineInputText.y + 20, "Load Dialogue", function() {
 			loadDialogue();
 		});
 		var saveButton:FlxButton = new FlxButton(loadButton.x + 120, loadButton.y, "Save Dialogue", function() {
 			saveDialogue();
 		});
+		#if android
+		loadFileName = new FlxUIInputText(loadButton.x, loadButton.y + 25, Std.int(loadButton.width), 'load.json');
+		#end
 
 		tab_group.add(new FlxText(10, speedStepper.y - 18, 0, 'Interval/Speed (ms):'));
 		tab_group.add(new FlxText(10, characterInputText.y - 18, 0, 'Character:'));
@@ -180,6 +185,9 @@ class DialogueEditorState extends MusicBeatState
 		tab_group.add(lineInputText);
 		tab_group.add(loadButton);
 		tab_group.add(saveButton);
+		#if android
+		tab_group.add(loadFileName);
+		#end
 		UI_box.addGroup(tab_group);
 	}
 
@@ -465,12 +473,21 @@ class DialogueEditorState extends MusicBeatState
 
 	var _file:FileReference = null;
 	function loadDialogue() {
+		#if !android
 		var jsonFilter:FileFilter = new FileFilter('JSON', 'json');
 		_file = new FileReference();
 		_file.addEventListener(Event.SELECT, onLoadComplete);
 		_file.addEventListener(Event.CANCEL, onLoadCancel);
 		_file.addEventListener(IOErrorEvent.IO_ERROR, onLoadError);
 		_file.browse([jsonFilter]);
+		#else
+		if (FileSystem.exists(StorageManager.getEngineDir() + 'load/dialogue/' + loadFileName.text)) {
+			var jsonCode:String = File.getContent(StorageManager.getEngineDir() + 'load/dialogue/' + loadFileName.text);
+			dialogueCode(loadFileName.text, jsonCode);
+		} else {
+			lime.app.Application.current.window.alert('Unable to load. ' + StorageManager.getEngineDir() + 'load/dialogue/' + loadFileName.text + ' not found', 'Dialogue Editor');
+		}
+		#end
 	}
 
 	function onLoadComplete(_):Void
@@ -487,22 +504,25 @@ class DialogueEditorState extends MusicBeatState
 		if(fullPath != null) {
 			var rawJson:String = File.getContent(fullPath);
 			if(rawJson != null) {
-				var loadedDialog:DialogueFile = cast Json.parse(rawJson);
-				if(loadedDialog.dialogue != null && loadedDialog.dialogue.length > 0) //Make sure it's really a dialogue file
-				{
-					var cutName:String = _file.name.substr(0, _file.name.length - 5);
-					trace("Successfully loaded file: " + cutName);
-					dialogueFile = loadedDialog;
-					changeText();
-					_file = null;
-					return;
-				}
+				dialogueCode(_file.name, rawJson);
 			}
 		}
 		_file = null;
 		#else
 		trace("File couldn't be loaded! You aren't on Desktop, are you?");
 		#end
+	}
+	function dialogueCode(name:String, rawJson:String) {
+		var loadedDialog:DialogueFile = cast Json.parse(rawJson);
+		if (loadedDialog.dialogue != null && loadedDialog.dialogue.length > 0) // Make sure it's really a dialogue file
+		{
+			var cutName:String = name.substr(0, name.length - 5);
+			trace("Successfully loaded file: " + cutName);
+			dialogueFile = loadedDialog;
+			changeText();
+			name = null;
+			return;
+		}
 	}
 
 	/**

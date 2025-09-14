@@ -4455,7 +4455,7 @@ class PlayState extends MusicBeatState
 				#if !switch
 				var percent:Float = ratingPercent;
 				if(Math.isNaN(percent)) percent = 0;
-				Highscore.saveScore(SONG.song, songScore, storyDifficulty, percent);
+				Highscore.saveScore(SONG.song + (ClientPrefs.gameplaySettings.get('gamemode') == 'none' ? '' : ClientPrefs.gameplaySettings.get('gamemode')), songScore, storyDifficulty, percent);
 				#end
 			}
 			playbackRate = 1;
@@ -4490,7 +4490,7 @@ class PlayState extends MusicBeatState
 
 						if (SONG.validScore)
 						{
-							Highscore.saveWeekScore(WeekData.getWeekFileName(), campaignScore, storyDifficulty);
+							Highscore.saveWeekScore(WeekData.getWeekFileName() + (ClientPrefs.gameplaySettings.get('gamemode') == 'none' ? '' : ClientPrefs.gameplaySettings.get('gamemode')), campaignScore, storyDifficulty);
 						}
 
 						FlxG.save.data.weekCompleted = StoryMenuState.weekCompleted;

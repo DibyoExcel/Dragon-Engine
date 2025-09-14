@@ -42,6 +42,7 @@ class MenuCharacterEditorState extends MusicBeatState
 	var defaultCharacters:Array<String> = ['dad', 'bf', 'gf'];
 	private var shiftButton:VirtualButton;
 	private var spaceButton:VirtualButton;
+	private static var loadFileName:FlxUIInputText;
 
 	override function create() {
 		characterFile = {
@@ -144,6 +145,12 @@ class MenuCharacterEditorState extends MusicBeatState
 		saveButton.screenCenter(X);
 		saveButton.x += 60;
 		add(saveButton);
+
+		#if android
+		loadFileName = new FlxUIInputText(loadButton.x, loadButton.y-25, Std.int(loadButton.width), 'load.json');
+		blockPressWhileTypingOn.push(loadFileName);
+		add(loadFileName);
+		#end
 	}
 
 	var opponentCheckbox:FlxUICheckBox;
@@ -352,12 +359,21 @@ class MenuCharacterEditorState extends MusicBeatState
 
 	var _file:FileReference = null;
 	function loadCharacter() {
+		#if android
+		if (FileSystem.exists(StorageManager.getEngineDir() + 'load/menucharacter/' + loadFileName.text)) {
+			var jsonCode:String = File.getContent(StorageManager.getEngineDir() + 'load/menucharacter/' + loadFileName.text);
+			menuCharCode(loadFileName.text, jsonCode);
+		} else {
+			lime.app.Application.current.window.alert('Unable to load. ' + StorageManager.getEngineDir() + 'load/menucharacter/' + loadFileName.text + ' not found', 'Menu Character Editor');
+		}
+		#else
 		var jsonFilter:FileFilter = new FileFilter('JSON', 'json');
 		_file = new FileReference();
 		_file.addEventListener(Event.SELECT, onLoadComplete);
 		_file.addEventListener(Event.CANCEL, onLoadCancel);
 		_file.addEventListener(IOErrorEvent.IO_ERROR, onLoadError);
 		_file.browse([jsonFilter]);
+		#end
 	}
 
 	function onLoadComplete(_):Void
@@ -374,27 +390,31 @@ class MenuCharacterEditorState extends MusicBeatState
 		if(fullPath != null) {
 			var rawJson:String = File.getContent(fullPath);
 			if(rawJson != null) {
-				var loadedChar:MenuCharacterFile = cast Json.parse(rawJson);
-				if(loadedChar.idle_anim != null && loadedChar.confirm_anim != null) //Make sure it's really a character
-				{
-					var cutName:String = _file.name.substr(0, _file.name.length - 5);
-					trace("Successfully loaded file: " + cutName);
-					characterFile = loadedChar;
-					reloadSelectedCharacter();
-					imageInputText.text = characterFile.image;
-					idleInputText.text = characterFile.image;
-					confirmInputText.text = characterFile.image;
-					scaleStepper.value = characterFile.scale;
-					updateOffset();
-					_file = null;
-					return;
-				}
+				menuCharCode(_file.name, rawJson);
 			}
 		}
 		_file = null;
 		#else
 		trace("File couldn't be loaded! You aren't on Desktop, are you?");
 		#end
+	}
+
+	function menuCharCode(name:String, rawJson:String) {
+		var loadedChar:MenuCharacterFile = cast Json.parse(rawJson);
+		if (loadedChar.idle_anim != null && loadedChar.confirm_anim != null) // Make sure it's really a character
+		{
+			var cutName:String = name.substr(0, name.length - 5);
+			trace("Successfully loaded file: " + cutName);
+			characterFile = loadedChar;
+			reloadSelectedCharacter();
+			imageInputText.text = characterFile.image;
+			idleInputText.text = characterFile.image;
+			confirmInputText.text = characterFile.image;
+			scaleStepper.value = characterFile.scale;
+			updateOffset();
+			name = null;
+			return;
+		}
 	}
 
 	/**

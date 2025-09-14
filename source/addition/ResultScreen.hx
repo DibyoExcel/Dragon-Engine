@@ -1,4 +1,5 @@
 package addition;
+import mobile.VirtualButton;
 import flixel.FlxG;
 import flixel.FlxSubState;
 import flixel.FlxSprite;
@@ -9,6 +10,7 @@ import haxe.Timer;
 class ResultScreen extends MusicBeatState
 {
     private var ForceFreePlay:Timer;
+    private var enterButton:VirtualButton;
     public function new(score:Int, miss:Int, rating:String, percent:Float) {
         super();
         var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image((ClientPrefs.darkmode ? 'menuDesatDark' : 'menuDesat')));
@@ -23,6 +25,10 @@ class ResultScreen extends MusicBeatState
         add(aaaa);
         var tips:Alphabet = new Alphabet(0, FlxG.height-75, "Press Enter To FreePlay");
         add(tips);
+        #if mobile
+        enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
+        add(enterButton);
+        #end
         ForceFreePlay = new Timer(60000);//60 Second In This Substate Will Force To Free Play
         ForceFreePlay.run = function() {
             MusicBeatState.switchState(new FreeplayState());
@@ -33,7 +39,7 @@ class ResultScreen extends MusicBeatState
         }
     }
     override public function update(elapsed:Float) {
-        if (controls.ACCEPT) {
+        if (controls.ACCEPT #if mobile || enterButton.justPressed #end) {
             MusicBeatState.switchState(new FreeplayState());
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
             if (ForceFreePlay != null) {

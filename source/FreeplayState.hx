@@ -436,8 +436,8 @@ class FreeplayState extends MusicBeatState
 		lastDifficultyName = CoolUtil.difficulties[curDifficulty];
 
 		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
-		intendedRating = Highscore.getRating(songs[curSelected].songName, curDifficulty);
+		intendedScore = Highscore.getScore(songs[curSelected].songName + (ClientPrefs.gameplaySettings.get('gamemode') == 'none' ? '' : ClientPrefs.gameplaySettings.get('gamemode')), curDifficulty);
+		intendedRating = Highscore.getRating(songs[curSelected].songName + (ClientPrefs.gameplaySettings.get('gamemode') == 'none' ? '' : ClientPrefs.gameplaySettings.get('gamemode')), curDifficulty);
 		#end
 
 		PlayState.storyDifficulty = curDifficulty;
@@ -472,8 +472,8 @@ class FreeplayState extends MusicBeatState
 		// selector.y = (70 * curSelected) + 30;
 
 		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
-		intendedRating = Highscore.getRating(songs[curSelected].songName, curDifficulty);
+		intendedScore = Highscore.getScore(songs[curSelected].songName + (ClientPrefs.gameplaySettings.get('gamemode') == 'none' ? '' : ClientPrefs.gameplaySettings.get('gamemode')), curDifficulty);
+		intendedRating = Highscore.getRating(songs[curSelected].songName + (ClientPrefs.gameplaySettings.get('gamemode') == 'none' ? '' : ClientPrefs.gameplaySettings.get('gamemode')), curDifficulty);
 		#end
 
 		var bullShit:Int = 0;

@@ -1,5 +1,6 @@
 package;
 
+import lime.app.Application;
 import openfl.display.BitmapData;
 #if LUA_ALLOWED
 import llua.Lua;
@@ -173,6 +174,7 @@ class FunkinLua {
 		set('ratingName', '');
 		set('ratingFC', '');
 		set('version', MainMenuState.psychEngineVersion.trim());
+		set('engineversion', Application.current.meta.get('version').trim());
 
 		set('inGameOver', false);
 		set('mustHitSection', false);
@@ -1095,7 +1097,7 @@ class FunkinLua {
 					WindowColorMode.setWindowBorderColor([r, g, b], setHeader, setBorder);
 					WindowColorMode.redrawWindowHeader();
 				});
-				Lua_helper.add_callback(lua, "setWindowTitleColor", function(r:Int = 255, g:Int = 0, b:Int = 0) {
+				Lua_helper.add_callback(lua, "setWindowTitleColor", function(r:Int = 255, g:Int = 255, b:Int = 255) {
 					WindowColorMode.setWindowTitleColor([r, g, b]);
 					WindowColorMode.redrawWindowHeader();
 				});
@@ -2991,6 +2993,13 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "luaAlert", function(content:String='Hi, I\'m the who make this engine', title:String = 'DubEnderDragon') {
 			lime.app.Application.current.window.alert(content, title);
 			return title + ': ' + content;
+		});
+		//background color
+		Lua_helper.add_callback(lua, "backgroundColor", function(R:Int = 0, G:Int = 0, B:Int = 0, A:Int = 255) {
+			var colorInt = FlxColor.fromRGB(R, G, B, A);
+			Lib.current.stage.color = colorInt;
+			FlxG.stage.color = colorInt;
+			return 'setColorTo: ' + colorInt;
 		});
 
 		call('onCreate', []);

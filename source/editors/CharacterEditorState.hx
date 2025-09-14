@@ -37,6 +37,7 @@ import flixel.animation.FlxAnimation;
 
 #if MODS_ALLOWED
 import sys.FileSystem;
+import sys.io.File;
 #end
 
 using StringTools;
@@ -1386,11 +1387,19 @@ class CharacterEditorState extends MusicBeatState
 
 		if (data.length > 0)
 		{
+			#if !android
 			_file = new FileReference();
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 			_file.save(data, daAnim + ".json");
+			#else
+			if (!FileSystem.exists(StorageManager.getEngineDir() + 'saves/characters/' )) {
+				FileSystem.createDirectory(StorageManager.getEngineDir() + 'saves/characters/');
+			}
+			File.saveContent(StorageManager.getEngineDir() + 'saves/characters/' + daAnim + ".json", data);
+			lime.app.Application.current.window.alert('Character has been save in ' + StorageManager.getEngineDir() + 'saves/characters/' + daAnim + ".json", 'Character Editor');
+			#end
 		}
 	}
 

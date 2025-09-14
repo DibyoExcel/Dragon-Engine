@@ -3,6 +3,8 @@ package;
 #if desktop
 import Sys.sleep;
 import discord_rpc.DiscordRpc;
+import lime.app.Application;
+#end
 
 #if LUA_ALLOWED
 import llua.Lua;
@@ -13,6 +15,7 @@ using StringTools;
 
 class DiscordClient
 {
+	#if desktop
 	public static var isInitialized:Bool = false;
 	public function new()
 	{
@@ -83,7 +86,7 @@ class DiscordClient
 			details: details,
 			state: state,
 			largeImageKey: 'icon',
-			largeImageText: "Mods Version: 2.0, Engine Version:" + MainMenuState.psychEngineVersion,
+			largeImageText: "Mods Version: 2.0, Engine Version:" + Application.current.meta.get('version'),
 			smallImageKey : smallImageKey,
 			// Obtained times are in milliseconds so they are divided so Discord can use it
 			startTimestamp : Std.int(startTimestamp / 1000),
@@ -92,13 +95,12 @@ class DiscordClient
 
 		//trace('Discord RPC Updated. Arguments: $details, $state, $smallImageKey, $hasStartTimestamp, $endTimestamp');
 	}
-
-	#if LUA_ALLOWED
+	#end
 	public static function addLuaCallbacks(lua:State) {
 		Lua_helper.add_callback(lua, "changePresence", function(details:String, state:Null<String>, ?smallImageKey:String, ?hasStartTimestamp:Bool, ?endTimestamp:Float) {
+			#if desktop
 			changePresence(details, state, smallImageKey, hasStartTimestamp, endTimestamp);
+			#end
 		});
 	}
-	#end
 }
-#end

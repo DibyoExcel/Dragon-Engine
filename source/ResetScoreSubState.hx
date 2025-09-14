@@ -99,9 +99,9 @@ class ResetScoreSubState extends MusicBeatSubstate
 		} else if(controls.ACCEPT #if mobile || enterButton.justPressed #end) {
 			if(onYes) {
 				if(week == -1) {
-					Highscore.resetSong(song, difficulty);
+					Highscore.resetSong(song + (ClientPrefs.gameplaySettings.get('gamemode') == 'none' ? '' : ClientPrefs.gameplaySettings.get('gamemode')), difficulty);
 				} else {
-					Highscore.resetWeek(WeekData.weeksList[week], difficulty);
+					Highscore.resetWeek(WeekData.weeksList[week] + (ClientPrefs.gameplaySettings.get('gamemode') == 'none' ? '' : ClientPrefs.gameplaySettings.get('gamemode')), difficulty);
 				}
 			}
 			FlxG.sound.play(Paths.sound('cancelMenu'), 1);

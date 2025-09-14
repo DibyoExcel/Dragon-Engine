@@ -50,10 +50,6 @@ class Main extends Sprite
 
 	public static function main():Void
 	{
-		#if WINDOW_COLOR
-			WindowColorMode.setWindowBorderColor([255, 0, 0]);
-			WindowColorMode.redrawWindowHeader();
-		#end
 		Lib.current.addChild(new Main());
 	}
 
@@ -65,6 +61,25 @@ class Main extends Sprite
 			Application.current.window.alert('External(' + StorageManager.getEngineDir() + ')Folder has been created. Extract app assets bundles("assets" and "mods") to' + StorageManager.getEngineDir(), 'Storage Manager');
 			Sys.exit(0);
 		}
+		var loadData:Array<String> = ['dialogue', 'dialoguecharacter', 'menucharacter', 'weeks'];
+		for (i in 0...loadData.length) {
+			if (!FileSystem.exists(StorageManager.getEngineDir() + 'load/')) {
+				FileSystem.createDirectory(StorageManager.getEngineDir() + 'load/');
+			}
+			if (!FileSystem.exists(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/')) {
+				FileSystem.createDirectory(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/');
+			}
+			if (!FileSystem.exists(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/')) {
+				FileSystem.createDirectory(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/');
+			}
+			if (!FileSystem.exists(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/put json file here.txt')) {
+				File.saveContent(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/put json file here.txt', '');
+			}
+		}
+		#end
+		#if WINDOW_COLOR
+		WindowColorMode.setWindowBorderColor([255, 0, 0]);
+		WindowColorMode.redrawWindowHeader();
 		#end
 		super();
 
@@ -105,15 +120,13 @@ class Main extends Sprite
 		ClientPrefs.loadDefaultKeys();
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 
-		#if !mobile
-		Lib.current.stage.align = "tl";
-		Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
-		#end
 		fpsVar = new FPS(10, 3, 0x00FF00);
 		addChild(fpsVar);
 		if(fpsVar != null) {
 			fpsVar.visible = ClientPrefs.showFPS;
 		}
+		Lib.current.stage.align = "tl";
+		Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
 		
 		#if html5
 		FlxG.autoPause = false;
@@ -147,7 +160,7 @@ class Main extends Sprite
 
 		for (stackItem in callStack)
 		{
-			switch (stackItem)
+			 switch(stackItem)
 			{
 				case FilePos(s, file, line, column):
 					errMsg += file + " (line " + line + ")\n";

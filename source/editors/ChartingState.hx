@@ -2447,11 +2447,9 @@ class ChartingState extends MusicBeatState
 		prevGridBG.y = -prevGridBG.height;
 		prevGridBG.alpha = 0.4;
 
-		#if desktop
 		if(FlxG.save.data.chart_waveformInst || FlxG.save.data.chart_waveformVoices) {
 			updateWaveform();
 		}
-		#end
 
 		var leHeight:Int = Std.int(gridBG.height);
 		var foundNextSec:Bool = false;

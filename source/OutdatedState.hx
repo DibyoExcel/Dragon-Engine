@@ -30,9 +30,9 @@ class OutdatedState extends MusicBeatState
 
 		warnText = new FlxText(0, 0, FlxG.width,
 			(ClientPrefs.dragonW ? "Greetings, noble warrior! it appears that you are currently utilizing an\n
-			outdated version of Dragon Engine (" + MainMenuState.engineVersion + ").\n
+			outdated version of Dragon Engine (" + Application.current.meta.get('version') + ").\n
 			For a more powerful and enhanced experience, please update to " + TitleState.updateVersion + "!"  : "Sup bro, i think you currently running a\n
-			outdated version of Dragon Engine (" + MainMenuState.engineVersion + "),\n
+			outdated version of Dragon Engine (" + Application.current.meta.get('version') + "),\n
 			please update to " + TitleState.updateVersion + "!") + "\n
 			Press ESCAPE to proceed anyway.\n
 			\n

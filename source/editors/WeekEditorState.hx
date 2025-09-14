@@ -46,6 +46,8 @@ class WeekEditorState extends MusicBeatState
 	var missingFileText:FlxText;
 
 	var weekFile:WeekFile = null;
+
+	private static var loadFileName:FlxUIInputText;
 	public function new(weekFile:WeekFile = null)
 	{
 		super();
@@ -156,6 +158,11 @@ class WeekEditorState extends MusicBeatState
 		saveWeekButton.screenCenter(X);
 		saveWeekButton.x += 120;
 		add(saveWeekButton);
+		#if android
+		loadFileName = new FlxUIInputText(loadWeekButton.x, loadWeekButton.y-25, Std.int(loadWeekButton.width), 'load.json');
+		blockPressWhileTypingOn.push(loadFileName);
+		add(loadFileName);
+		#end
 	}
 
 	var songsInputText:FlxUIInputText;
@@ -464,12 +471,35 @@ class WeekEditorState extends MusicBeatState
 
 	private static var _file:FileReference;
 	public static function loadWeek() {
+		#if !android
 		var jsonFilter:FileFilter = new FileFilter('JSON', 'json');
 		_file = new FileReference();
 		_file.addEventListener(Event.SELECT, onLoadComplete);
 		_file.addEventListener(Event.CANCEL, onLoadCancel);
 		_file.addEventListener(IOErrorEvent.IO_ERROR, onLoadError);
 		_file.browse([jsonFilter]);
+		#else
+		var fileName:String = loadFileName.text;
+		if (FileSystem.exists(StorageManager.getEngineDir() + 'load/weeks/' + fileName)) {
+			var rawJson:String = File.getContent(StorageManager.getEngineDir() + 'load/weeks/' + fileName);
+			if (rawJson != null)
+			{
+				loadedWeek = cast Json.parse(rawJson);
+				if (loadedWeek.weekCharacters != null && loadedWeek.weekName != null) // Make sure it's really a week
+				{
+					var cutName:String = fileName.substr(0, fileName.length - 5);
+					trace("Successfully loaded file: " + cutName);
+					loadError = false;
+	
+					weekFileName = cutName;
+					_file = null;
+					return;
+				}
+			}
+		} else {
+			lime.app.Application.current.window.alert('Unable to load. ' + StorageManager.getEngineDir() + 'load/weeks/' + loadFileName.text + ' not found', 'Week Editor');
+		}
+		#end
 	}
 	
 	public static var loadedWeek:WeekFile = null;
@@ -599,6 +629,7 @@ class WeekEditorFreeplayState extends MusicBeatState
 	var bg:FlxSprite;
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var iconArray:Array<HealthIcon> = [];
+	private static var loadFileName:FlxUIInputText;
 
 	var curSelected = 0;
 
@@ -677,6 +708,12 @@ class WeekEditorFreeplayState extends MusicBeatState
 		saveWeekButton.screenCenter(X);
 		saveWeekButton.x += 120;
 		add(saveWeekButton);
+
+		#if android
+		loadFileName = new FlxUIInputText(loadWeekButton.x, loadWeekButton.y-25, Std.int(loadWeekButton.width), 'load.json');
+		blockPressWhileTypingOn.push(loadFileName);
+		add(loadFileName);
+		#end
 	}
 	
 	override function getEvent(id:String, sender:Dynamic, data:Dynamic, ?params:Array<Dynamic>) {

@@ -376,7 +376,7 @@ class StoryMenuState extends MusicBeatState
 		lastDifficultyName = diff;
 
 		#if !switch
-		intendedScore = Highscore.getWeekScore(loadedWeeks[curWeek].fileName, curDifficulty);
+		intendedScore = Highscore.getWeekScore(loadedWeeks[curWeek].fileName + (ClientPrefs.gameplaySettings.get('gamemode') == 'none' ? '' : ClientPrefs.gameplaySettings.get('gamemode')), curDifficulty);
 		#end
 	}
 
@@ -494,7 +494,7 @@ class StoryMenuState extends MusicBeatState
 		txtTracklist.x -= FlxG.width * 0.35;
 
 		#if !switch
-		intendedScore = Highscore.getWeekScore(loadedWeeks[curWeek].fileName, curDifficulty);
+		intendedScore = Highscore.getWeekScore(loadedWeeks[curWeek].fileName + (ClientPrefs.gameplaySettings.get('gamemode') == 'none' ? '' : ClientPrefs.gameplaySettings.get('gamemode')), curDifficulty);
 		#end
 	}
 }
