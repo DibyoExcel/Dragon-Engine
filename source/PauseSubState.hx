@@ -46,9 +46,9 @@ class PauseSubState extends MusicBeatSubstate
 	{
 		super();
 		if (ClientPrefs.dragonW) {
-			menuItemsOG = ['Dragonflight', 'Reignite Melody', 'Scale Challenge','Option', 'Gameplay Changer' #if mobile , 'Chart Editor' #end, 'Return to Lair'];
+			menuItemsOG = ['Dragonflight', 'Reignite Melody', 'Scale Challenge' #if mobile , 'Chart Editor' #end, 'Return to Lair'];
 		} else {
-			menuItemsOG = ['Resume', 'Restart Song', 'Change Difficulty', 'Option', 'Gameplay Changer' #if mobile , 'Chart Editor' #end, 'Exit to menu'];
+			menuItemsOG = ['Resume', 'Restart Song', 'Change Difficulty'  #if mobile , 'Chart Editor' #end, 'Exit to menu'];
 		}
 		if(CoolUtil.difficulties.length < 2) menuItemsOG.remove((ClientPrefs.dragonW ? 'Scale Challenge' : 'Change Difficulty')); //No need to change difficulty if there is only one!
 
@@ -317,16 +317,6 @@ class PauseSubState extends MusicBeatSubstate
 				case "End Song":
 					close();
 					PlayState.instance.finishSong(true);
-				case "Option":
-					close();
-					PlayState.instance.paused = true;
-					PlayState.cancelMusicFadeTween();
-					MusicBeatState.switchState(new pauseSetting.MainOptionsState());
-				case "Gameplay Changer":
-					close();
-					PlayState.instance.paused = true;
-					PlayState.cancelMusicFadeTween();
-					MusicBeatState.switchState(new pauseSetting.GameplayChangersSubstate());
 				case 'Time Control':
 					if(curTime < Conductor.songPosition)
 					{

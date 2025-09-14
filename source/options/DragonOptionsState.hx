@@ -1,5 +1,6 @@
 package options;
 
+import mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -27,249 +28,107 @@ import Controls;
 
 using StringTools;
 
-class DragonOptionsState extends BaseOptionsMenu
+class DragonOptionsState extends MusicBeatState
 {
-	public function new()
-	{
+	var options:Array<String> = ['Miscellaneous', 'Visuals & UI'#if mobile , 'Mobile Setting'#end];
+	private var grpOptions:FlxTypedGroup<Alphabet>;
+	private static var curSelected:Int = 0;
+	public static var menuBG:FlxSprite;
+	private var enterButton:VirtualButton;
 
-		title = 'Dragon Settings';
-		rpcTitle = 'Dragon Settings Menu'; //for Discord Rich Presence
+	function openSelectedSubstate(label:String) {
+		switch(label) {
+			case 'Miscellaneous':
+				openSubState(new options.dge.MiscSubState());
+			case 'Visuals & UI':
+				openSubState(new options.dge.VisualUISubState());
+			case 'Mobile Setting':
+				openSubState(new options.dge.MobileSubState());
+		}
+	}
 
-		var option:Option = new Option('Long Note Transparency',
-			'How much transparent should the Long Notes be.',
-			'longNoteAlpha',
-			'percent',
-			0.6);
-		option.scrollSpeed = 1.6;
-		option.minValue = 0.25;
-		option.maxValue = 1;
-		option.changeValue = 0.01;
-		option.decimals = 2;
-		addOption(option);
+	var selectorLeft:Alphabet;
+	var selectorRight:Alphabet;
 
-		var option:Option = new Option('Note Splash Transparency',
-			'How much transparent should the Note Splash be.',
-			'noteSplashAlpha',
-			'percent',
-			0.6);
-		option.scrollSpeed = 1.6;
-		option.minValue = 0.25;
-		option.maxValue = 1;
-		option.changeValue = 0.01;
-		option.decimals = 2;
-		addOption(option);
+	override function create() {
+		#if desktop
+		DiscordClient.changePresence("Dragon Options Menu", null);
+		#end
 
-		var option:Option = new Option('Strum FPS',
-			"How Much FPS To Strum Animation(Affected Notesplash Too).",
-			'fpsStrumAnim',
-			'int',
-			24);
-		option.minValue = 5;
-		option.scrollSpeed = 10;
-		addOption(option);
+		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image((ClientPrefs.darkmode ? 'menuDesatDark' : 'menuDesat')));
+		bg.color = 0xffff0000;
+		bg.updateHitbox();
 
-		var option:Option = new Option('Note Size',
-			"How Much Note Size Be(No Pixel Note).",
-			'strumsize',
-			'float',
-			0.7);
-		option.minValue = 0.25;
-		option.maxValue = 5;//How The Hell How Much Play Note Size As 5?
-		option.scrollSpeed = 1.6;
-		option.changeValue = 0.1;
-		addOption(option);
+		bg.screenCenter();
+		bg.antialiasing = ClientPrefs.globalAntialiasing;
+		add(bg);
 
-		var option:Option = new Option('Dark Mode',
-			"Dark Mode.",
-			'darkmode',
-			'bool',
-			false);
-		option.onChange = reloadSubstate;
-		addOption(option);
-		var option:Option = new Option('Start Pause',
-			"Start Pause After Load Song.",
-			'startPause',
-			'bool',
-			false);
-		addOption(option);
+		grpOptions = new FlxTypedGroup<Alphabet>();
+		add(grpOptions);
 
-		var option:Option = new Option('Opponent Note Splashes',
-			"Show Opponent Note Splash",
-			'noteSplashesOpt',
-			'bool',
-			true);
-		addOption(option);
-
-		var option:Option = new Option('Classic Strums',
-			"The FNF Classic Strum(Note Splash Will Disable).",
-			'clsstrum',
-			'bool',
-			false);
-		addOption(option);
-
-		var option:Option = new Option('Overfill Health Bar',
-			"Messed Up Health Bar With Spammy.",
-			'ofhb',
-			'bool',
-			true);
-		addOption(option);
-		var option:Option = new Option('Dragon Word',
-			"Dragon's Word.",
-			'dragonW',
-			'bool',
-			false);
-		addOption(option);
-		var EUoption:Option = new Option('Extra UI',
-			"Extra UI By DubEnderDragon.",
-			'extUI',
-			'bool',
-			false);
-		EUoption.onChange = reloadSubstate;
-		addOption(EUoption);
-		if (EUoption.getValue() == true) {
-			var option:Option = new Option('Key Stroke Transparency',
-			'How much transparent should the Key Stroke be.',
-			'keyStrokeAlpha',
-			'percent',
-			1);
-			option.scrollSpeed = 1.6;
-			option.minValue = 0.1;
-			option.maxValue = 1;
-			option.changeValue = 0.01;
-			option.decimals = 2;
-			addOption(option);
+		for (i in 0...options.length)
+		{
+			var optionText:Alphabet = new Alphabet(0, 0, options[i], true);
+			optionText.screenCenter();
+			optionText.y += (100 * (i - (options.length / 2))) + 50;
+			grpOptions.add(optionText);
 		}
 
-		var option:Option = new Option('Auto Pause',
-			"If UnChecked The Game Keep Run Even Not Focus.",
-			'autopause',
-			'bool',
-			true);
-		option.onChange = changeAutoPause;
-		addOption(option);
+		selectorLeft = new Alphabet(0, 0, '>', true);
+		add(selectorLeft);
+		selectorRight = new Alphabet(0, 0, '<', true);
+		add(selectorRight);
 
-		var option:Option = new Option('Hide Original Credits',
-			"If Checked The Original Credits Will Hide.",
-			'disableOGCredit',
-			'bool',
-			false);
-		addOption(option);
-
-		var option:Option = new Option('Default Note Skin',
-			"Change Default Noteskin.",
-			'dflnoteskin',
-			'string',
-			'NOTE_assets',
-			['NOTE_assets', 'NOTE_minecraft_assets']);
-		option.showNote = true;
-		option.onChange = onChangeNoteSkin;
-		addOption(option);
-
-		#if CHECK_FOR_UPDATES
-		var option:Option = new Option('Check for Updates',
-			'On Release builds, turn this on to check for updates when you start the game.',
-			'checkForUpdates',
-			'bool',
-			true);
-		addOption(option);
-		#end
-		var option:Option = new Option('Limit Notes Spawn',
-			"Should Note has limit to spawn?",
-			'limitSpawn',
-			'bool',
-			false);
-
-		addOption(option);
-		
-		var option:Option = new Option('Limit Notes Spawn Number',
-			"How Much Limit notes to spawn.",
-			'limitSpawnNotes',
-			'int',
-			50);
-		option.minValue = 5;
-		option.scrollSpeed = 20;
-		addOption(option);
-
-		var option:Option = new Option('Result Screen',
-			"If Checked The Result screen will show after end song(Free Play).",
-			'useResultScr',
-			'bool',
-			false);
-		addOption(option);
+		changeSelection();
 		#if mobile
-		var option:Option = new Option('Hitbox Transparency',
-			'How much transparent should the Hitbox be.',
-			'hitboxAlpha',
-			'percent',
-			0.0);
-		option.scrollSpeed = 1.6;
-		option.minValue = 0.0;
-		option.maxValue = 0.5;
-		option.changeValue = 0.01;
-		option.decimals = 2;
-		addOption(option);
-		var option:Option = new Option('Hitbox Transparency(Press)',
-			'How much transparent should the Hitbox when press be.',
-			'hitboxPressAlpha',
-			'percent',
-			0.25);
-		option.scrollSpeed = 1.6;
-		option.minValue = 0;
-		option.maxValue = 1;
-		option.changeValue = 0.01;
-		option.decimals = 2;
-		addOption(option);
-		var option:Option = new Option('Virtual Button Transparency',
-			'How much transparent should the Virtul Button be.',
-			'virtualButtonAlpha',
-			'percent',
-			0.25);
-		option.scrollSpeed = 1.6;
-		option.minValue = 0.15;
-		option.maxValue = 1;
-		option.changeValue = 0.01;
-		option.decimals = 2;
-		option.onChange = changeButtonAlpha;
-		addOption(option);
+		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
+		add(enterButton);
 		#end
-		super();
+		super.create();
 	}
-	override public function close():Void {
-		super.close();
-		ClientPrefs.saveSettings();
-		FlxG.switchState(new options.MainOptionsState());
-		//trace("setting save!");
-	}
-	function changeAutoPause() {
-		FlxG.autoPause = ClientPrefs.autopause;
-	}
-	function reloadSubstate() {
-		FlxG.state.closeSubState();
-		FlxG.state.openSubState(new DragonOptionsState());
-	}
-	function changeButtonAlpha() {
-		#if mobile
-		leftButton.alpha = ClientPrefs.virtualButtonAlpha;
-		rightButton.alpha = ClientPrefs.virtualButtonAlpha;
-		resetButton.alpha = ClientPrefs.virtualButtonAlpha;
-		enterButton.alpha = ClientPrefs.virtualButtonAlpha;
-		#end
-	}
-	function onChangeNoteSkin() {
-		trace("'" + ClientPrefs.dflnoteskin + "'");
-		for (i in 0...spriteNote.length) {
-			spriteNote[i].frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
-			spriteNote[i].animation.addByPrefix('idle', 'arrow' + arrowDir[i].toUpperCase(), ClientPrefs.fpsStrumAnim, true);
-			spriteNote[i].animation.addByPrefix('confirm', arrowDir[i].toLowerCase() + ' confirm', ClientPrefs.fpsStrumAnim, true);
-			spriteNote[i].animation.play('idle');
-			spriteNote[i].centerOrigin();
-			spriteNote[i].centerOffsets();
+
+	override function update(elapsed:Float) {
+		super.update(elapsed);
+
+		if (controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end) {
+			changeSelection(-1);
 		}
-		for (i in 0...spriteNote_c.length) {
-			spriteNote_c[i].frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
-			spriteNote_c[i].animation.addByPrefix('idle', noteColor[i].toLowerCase() + "0", ClientPrefs.fpsStrumAnim, true);
-			//spriteNote_c[i].animation.addByPrefix('confirm', arrowDir[i].toLowerCase() + ' confirm', ClientPrefs.fpsStrumAnim, false);
-			spriteNote_c[i].animation.play('idle');
+		if (controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end) {
+			changeSelection(1);
 		}
+
+		if (controls.BACK #if android || FlxG.android.justPressed.BACK #end) {
+			FlxG.sound.play(Paths.sound('cancelMenu'));
+			MusicBeatState.switchState(new options.MainOptionsState());
+		}
+
+		if (controls.ACCEPT #if mobile || enterButton.justPressed #end) {
+			openSelectedSubstate(options[curSelected]);
+		}
+	}
+	
+	function changeSelection(change:Int = 0) {
+		curSelected += change;
+		if (curSelected < 0)
+			curSelected = options.length - 1;
+		if (curSelected >= options.length)
+			curSelected = 0;
+
+		var bullShit:Int = 0;
+
+		for (item in grpOptions.members) {
+			item.targetY = bullShit - curSelected;
+			bullShit++;
+
+			item.alpha = 0.6;
+			if (item.targetY == 0) {
+				item.alpha = 1;
+				selectorLeft.x = item.x - 63;
+				selectorLeft.y = item.y;
+				selectorRight.x = item.x + item.width + 15;
+				selectorRight.y = item.y;
+			}
+		}
+		FlxG.sound.play(Paths.sound('scrollMenu'));
 	}
 }

@@ -49,6 +49,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 	private var arrowDir:Array<String> = [ 'left', 'down', 'up', 'right' ];
 	public var noteColor:Array<String> = [ 'purple', 'blue', 'green', 'red' ];
 	private var isShowNote:Bool = false;
+	private var bgPublic:FlxSprite;
 
 	//mobile
 	private var leftButton:VirtualButton;
@@ -72,6 +73,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		bg.screenCenter();
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		add(bg);
+		bgPublic = bg;
 
 		// avoids lagspikes while scrolling through menus!
 		grpOptions = new FlxTypedGroup<Alphabet>();
@@ -461,5 +463,8 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		for (checkbox in checkboxGroup) {
 			checkbox.daValue = (optionsArray[checkbox.ID].getValue() == true);
 		}
+	}
+	function changeBGColor(color:Int) {
+		bgPublic.color = color;
 	}
 }
