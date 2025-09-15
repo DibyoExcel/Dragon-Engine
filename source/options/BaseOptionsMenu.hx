@@ -50,6 +50,8 @@ class BaseOptionsMenu extends MusicBeatSubstate
 	public var noteColor:Array<String> = [ 'purple', 'blue', 'green', 'red' ];
 	private var isShowNote:Bool = false;
 	private var bgPublic:FlxSprite;
+	private var arrayTE:Array<FlxTween> = [];
+	private var arrayTE_c:Array<FlxTween> = [];
 
 	//mobile
 	private var leftButton:VirtualButton;
@@ -418,23 +420,35 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		}
 		if (isShowNote == false && optionsArray[curSelected].showNote) {
 			isShowNote = true;
-			for (i in spriteNote) {
-				i.visible = true;
-				i.y = -205;
-				FlxTween.tween(i, {y : 0}, 1, { ease: FlxEase.quadOut });
+			for (i in 0... spriteNote.length) {
+				if (arrayTE[i] != null) {
+					arrayTE[i].cancel();
+				}
+				spriteNote[i].visible = true;
+				spriteNote[i].y = -205;
+				arrayTE[i] = FlxTween.tween(spriteNote[i], {y : 0}, 1, { ease: FlxEase.quadOut });
 			}
-			for (i in spriteNote_c) {
-				i.y = -205;
-				FlxTween.tween(i, {y : 112}, 1, { ease: FlxEase.quadOut });
-				i.visible = true;
+			for (i in 0...spriteNote_c.length) {
+				if (arrayTE_c[i] != null) {
+					arrayTE_c[i].cancel();
+				}
+				spriteNote_c[i].y = -205;
+				arrayTE_c[i] = FlxTween.tween(spriteNote_c[i], {y : 112}, 1, { ease: FlxEase.quadOut });
+				spriteNote_c[i].visible = true;
 			}
 		} else {
 			isShowNote = false;
-			for (i in spriteNote) {
-				i.visible = false;
+			for (i in 0...spriteNote.length) {
+				if (arrayTE[i] != null) {
+					arrayTE[i].cancel();
+				}
+				spriteNote[i].visible = false;
 			}
-			for (i in spriteNote_c) {
-				i.visible = false;
+			for (i in 0...spriteNote_c.length) {
+				if (arrayTE_c[i] != null) {
+					arrayTE_c[i].cancel();
+				}
+				spriteNote_c[i].visible = false;
 			}
 		}
 		curOption = optionsArray[curSelected]; //shorter lol

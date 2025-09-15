@@ -174,7 +174,7 @@ class FunkinLua {
 		set('ratingName', '');
 		set('ratingFC', '');
 		set('version', MainMenuState.psychEngineVersion.trim());
-		set('engineversion', Application.current.meta.get('version').trim());
+		set('engineversion', Application.current.meta.get('version').trim() + MainMenuState.versionSuffix);
 
 		set('inGameOver', false);
 		set('mustHitSection', false);
@@ -1079,142 +1079,160 @@ class FunkinLua {
 				setGroupStuff(leArray, variable, value);
 			}
 		});
-		#if WINDOW_ABILITY
-			#if WINDOW_COLOR
-				Lua_helper.add_callback(lua, "setWindowDarkMode", function() {
-					WindowColorMode.setDarkMode();
-					WindowColorMode.redrawWindowHeader();
-				});
-				Lua_helper.add_callback(lua, "setWindowLightMode", function() {
-					WindowColorMode.setLightMode();
-					WindowColorMode.redrawWindowHeader();
-				});
-				Lua_helper.add_callback(lua, "setWindowColorMode", function(dark:Bool = true) {
-					WindowColorMode.setWindowColorMode(dark);
-					WindowColorMode.redrawWindowHeader();
-				});
-				Lua_helper.add_callback(lua, "setWindowBorderColor", function(r:Int = 255, g:Int = 0, b:Int = 0, setHeader:Bool = true, setBorder:Bool = true) {
-					WindowColorMode.setWindowBorderColor([r, g, b], setHeader, setBorder);
-					WindowColorMode.redrawWindowHeader();
-				});
-				Lua_helper.add_callback(lua, "setWindowTitleColor", function(r:Int = 255, g:Int = 255, b:Int = 255) {
-					WindowColorMode.setWindowTitleColor([r, g, b]);
-					WindowColorMode.redrawWindowHeader();
-				});
+		Lua_helper.add_callback(lua, "setWindowDarkMode", function() {
+			#if (WINDOW_ABILITY && WINDOW_COLOR)
+			WindowColorMode.setDarkMode();
+			WindowColorMode.redrawWindowHeader();
 			#end
-			//Little deprecated but i never remove
-			Lua_helper.add_callback(lua, "setWindowX", function(value:Int, duration:Float = 0, ease:String) {
-				if (indoTween[0] != null) {
-					indoTween[0].cancel();
+		});
+		Lua_helper.add_callback(lua, "setWindowLightMode", function() {
+			#if (WINDOW_ABILITY && WINDOW_COLOR)
+			WindowColorMode.setLightMode();
+			WindowColorMode.redrawWindowHeader();
+			#end
+		});
+		Lua_helper.add_callback(lua, "setWindowColorMode", function(dark:Bool = true) {
+			#if (WINDOW_ABILITY && WINDOW_COLOR)
+			WindowColorMode.setWindowColorMode(dark);
+			WindowColorMode.redrawWindowHeader();
+			#end
+		});
+		Lua_helper.add_callback(lua, "setWindowBorderColor", function(r:Int = 255, g:Int = 0, b:Int = 0, setHeader:Bool = true, setBorder:Bool = true) {
+			#if (WINDOW_ABILITY && WINDOW_COLOR)
+			WindowColorMode.setWindowBorderColor([r, g, b], setHeader, setBorder);
+			WindowColorMode.redrawWindowHeader();
+			#end
+		});
+		Lua_helper.add_callback(lua, "setWindowTitleColor", function(r:Int = 255, g:Int = 255, b:Int = 255) {
+			#if (WINDOW_ABILITY && WINDOW_COLOR)
+			WindowColorMode.setWindowTitleColor([r, g, b]);
+			WindowColorMode.redrawWindowHeader();
+			#end
+		});
+		//Little deprecated but i never remove(for backward compability)
+		Lua_helper.add_callback(lua, "setWindowX", function(value:Int, duration:Float = 0, ease:String) {
+			#if WINDOW_ABILITY
+			if (indoTween[0] != null) {
+				indoTween[0].cancel();
+			}
+			if (duration != 0) {
+				indoTween[0] = FlxTween.tween(Lib.application.window, {x: value}, duration, {ease: getFlxEaseByString(ease)});
+			} else {
+				Lib.application.window.x = value;
+			}
+			#end
+		});
+		Lua_helper.add_callback(lua, "setWindowY", function(value:Int, duration:Float = 0, ease:String) {
+			#if WINDOW_ABILITY
+			if (indoTween[1] != null) {
+				indoTween[1].cancel();
+			}
+			if (duration != 0) {
+				indoTween[1] = FlxTween.tween(Lib.application.window, {y: value}, duration, {ease: getFlxEaseByString(ease)});
+			} else {
+				Lib.application.window.y = value;
+			}
+			#end
+		});
+		Lua_helper.add_callback(lua, "setWindowWidth", function(value:Int, duration:Float = 0, ease:String) {
+			#if WINDOW_ABILITY
+			if (indoTween[2] != null) {
+				indoTween[2].cancel();
+			}
+			if (duration != 0) {
+				indoTween[2] = FlxTween.tween(Lib.application.window, {width: value}, duration, {ease: getFlxEaseByString(ease)});
+			} else {
+				Lib.application.window.width = value;
+			}
+			#end
+		});
+		Lua_helper.add_callback(lua, "setWindowHeight", function(value:Int, duration:Float = 0, ease:String) {
+			#if WINDOW_ABILITY
+			if (indoTween[3] != null) {
+				indoTween[3].cancel();
+			}
+			if (duration != 0) {
+				indoTween[3] = FlxTween.tween(Lib.application.window, {height: value}, duration, {ease: getFlxEaseByString(ease)});
+			} else {
+				Lib.application.window.height = value;
+			}
+			#end
+		});
+		//new window function
+		Lua_helper.add_callback(lua, "setWindowProperty", function(x:Null<Int> = null, y:Null<Int> = null, width:Null<Float> = null, height:Null<Float> = null, duration:Float = 0, ease:String, scale:Bool = false) {
+			#if WINDOW_ABILITY
+			for (i in indoTween) {
+				if (i != null) {
+					i.cancel();
 				}
-				if (duration != 0) {
-					indoTween[0] = FlxTween.tween(Lib.application.window, {x: value}, duration, {ease: getFlxEaseByString(ease)});
-				} else {
-					Lib.application.window.x = value;
+			}
+			if (duration != 0) {
+				if (x != null) {
+					indoTween[0] = FlxTween.tween(Lib.application.window, {x: x}, duration, {ease: getFlxEaseByString(ease)});
 				}
-			});
-			Lua_helper.add_callback(lua, "setWindowY", function(value:Int, duration:Float = 0, ease:String) {
-				if (indoTween[1] != null) {
-					indoTween[1].cancel();
+				if (y != null) {
+					indoTween[1] = FlxTween.tween(Lib.application.window, {y: y}, duration, {ease: getFlxEaseByString(ease)});
 				}
-				if (duration != 0) {
-					indoTween[1] = FlxTween.tween(Lib.application.window, {y: value}, duration, {ease: getFlxEaseByString(ease)});
-				} else {
-					Lib.application.window.y = value;
-				}
-			});
-			Lua_helper.add_callback(lua, "setWindowWidth", function(value:Int, duration:Float = 0, ease:String) {
-				if (indoTween[2] != null) {
-					indoTween[2].cancel();
-				}
-				if (duration != 0) {
-					indoTween[2] = FlxTween.tween(Lib.application.window, {width: value}, duration, {ease: getFlxEaseByString(ease)});
-				} else {
-					Lib.application.window.width = value;
-				}
-			});
-			Lua_helper.add_callback(lua, "setWindowHeight", function(value:Int, duration:Float = 0, ease:String) {
-				if (indoTween[3] != null) {
-					indoTween[3].cancel();
-				}
-				if (duration != 0) {
-					indoTween[3] = FlxTween.tween(Lib.application.window, {height: value}, duration, {ease: getFlxEaseByString(ease)});
-				} else {
-					Lib.application.window.height = value;
-				}
-			});
-			//new window function
-			Lua_helper.add_callback(lua, "setWindowProperty", function(x:Null<Int> = null, y:Null<Int> = null, width:Null<Float> = null, height:Null<Float> = null, duration:Float = 0, ease:String, scale:Bool = false) {
-				for (i in indoTween) {
-					if (i != null) {
-						i.cancel();
+				if (width != null) {
+					if (scale) {
+						indoTween[2] = FlxTween.tween(Lib.application.window, {width: Math.round(width*Lib.application.window.display.bounds.width)}, duration, {ease: getFlxEaseByString(ease)});
+					} else {
+						indoTween[2] = FlxTween.tween(Lib.application.window, {width: Math.round(width)}, duration, {ease: getFlxEaseByString(ease)});
 					}
 				}
-				if (duration != 0) {
-					if (x != null) {
-						indoTween[0] = FlxTween.tween(Lib.application.window, {x: x}, duration, {ease: getFlxEaseByString(ease)});
-					}
-					if (y != null) {
-						indoTween[1] = FlxTween.tween(Lib.application.window, {y: y}, duration, {ease: getFlxEaseByString(ease)});
-					}
-					if (width != null) {
-						if (scale) {
-							indoTween[2] = FlxTween.tween(Lib.application.window, {width: Math.round(width*Lib.application.window.display.bounds.width)}, duration, {ease: getFlxEaseByString(ease)});
-						} else {
-							indoTween[2] = FlxTween.tween(Lib.application.window, {width: Math.round(width)}, duration, {ease: getFlxEaseByString(ease)});
-						}
-					}
-					if (height != null) {
-						if (scale) {
-							indoTween[3] = FlxTween.tween(Lib.application.window, {height: Math.round(height*Lib.application.window.display.bounds.height)}, duration, {ease: getFlxEaseByString(ease)});
-						} else {
-							indoTween[3] = FlxTween.tween(Lib.application.window, {height: Math.round(height)}, duration, {ease: getFlxEaseByString(ease)});
-						}
-					}
-				} else {
-					if (x != null) {
-						Lib.application.window.x = x;
-					}
-					if (y != null) {
-						Lib.application.window.y = y;
-					}
-					if (width != null) {
-						if (scale) {
-							Lib.application.window.width = Math.round(width*Lib.application.window.display.bounds.width);
-						} else {
-							Lib.application.window.width = Math.round(width);
-						}
-					}
-					if (height != null) {
-						if (scale) {
-							Lib.application.window.height = Math.round(height*Lib.application.window.display.bounds.height);
-						} else {
-							Lib.application.window.height = Math.round(height);
-						}
+				if (height != null) {
+					if (scale) {
+						indoTween[3] = FlxTween.tween(Lib.application.window, {height: Math.round(height*Lib.application.window.display.bounds.height)}, duration, {ease: getFlxEaseByString(ease)});
+					} else {
+						indoTween[3] = FlxTween.tween(Lib.application.window, {height: Math.round(height)}, duration, {ease: getFlxEaseByString(ease)});
 					}
 				}
-			});
-			//reset 
-			Lua_helper.add_callback(lua, "resetWindow", function() {
-				for (i in indoTween) {
-					if (i != null) {
-						i.cancel();
+			} else {
+				if (x != null) {
+					Lib.application.window.x = x;
+				}
+				if (y != null) {
+					Lib.application.window.y = y;
+				}
+				if (width != null) {
+					if (scale) {
+						Lib.application.window.width = Math.round(width*Lib.application.window.display.bounds.width);
+					} else {
+						Lib.application.window.width = Math.round(width);
 					}
 				}
-				Lib.application.window.x = Std.int(windowArray[0]);
-				Lib.application.window.y = Std.int(windowArray[1]);
-				Lib.application.window.width = Std.int(windowArray[2]);
-				Lib.application.window.height = Std.int(windowArray[3]);
-				FlxG.fullscreen = windowArray[4];
-				Lib.application.window.maximized = windowArray[5];
-			});
-			Lua_helper.add_callback(lua, "getResolutionWidth", function() {
-				return Lib.application.window.display.bounds.width;
-			});
-			Lua_helper.add_callback(lua, "getResolutionHeight", function() {
-				return Lib.application.window.display.bounds.height;
-			});
-		#end
+				if (height != null) {
+					if (scale) {
+						Lib.application.window.height = Math.round(height*Lib.application.window.display.bounds.height);
+					} else {
+						Lib.application.window.height = Math.round(height);
+					}
+				}
+			}
+			#end
+		});
+		//reset 
+		Lua_helper.add_callback(lua, "resetWindow", function() {
+			#if WINDOW_ABILITY
+			for (i in indoTween) {
+				if (i != null) {
+					i.cancel();
+				}
+			}
+			Lib.application.window.x = Std.int(windowArray[0]);
+			Lib.application.window.y = Std.int(windowArray[1]);
+			Lib.application.window.width = Std.int(windowArray[2]);
+			Lib.application.window.height = Std.int(windowArray[3]);
+			FlxG.fullscreen = windowArray[4];
+			Lib.application.window.maximized = windowArray[5];
+			#end
+		});
+		Lua_helper.add_callback(lua, "getResolutionWidth", function() {
+			return Lib.application.window.display.bounds.width;
+		});
+		Lua_helper.add_callback(lua, "getResolutionHeight", function() {
+			return Lib.application.window.display.bounds.height;
+		});
 		Lua_helper.add_callback(lua, "removeFromGroup", function(obj:String, index:Int, dontDestroy:Bool = false) {
 			if(Std.isOfType(Reflect.getProperty(getInstance(), obj), FlxTypedGroup)) {
 				var sex = Reflect.getProperty(getInstance(), obj).members[index];

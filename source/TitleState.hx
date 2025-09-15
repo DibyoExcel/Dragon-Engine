@@ -143,7 +143,7 @@ class TitleState extends MusicBeatState
 			{
 				updateVersion = data.split('\n')[0].trim();
 				var curVersion:String = Application.current.meta.get('version').trim();
-				trace('version online: ' + updateVersion + ', your version: ' + curVersion);
+				trace('version online: ' + updateVersion + ', your version: ' + curVersion + MainMenuState.versionSuffix);
 				if(updateVersion != curVersion) {
 					trace('versions arent matching!');
 					mustUpdate = true;

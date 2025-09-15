@@ -83,10 +83,6 @@ class MobileSubState extends BaseOptionsMenu
 		ClientPrefs.saveSettings();
 		//trace("setting save!");
 	}
-	function reloadSubstate() {
-		FlxG.state.closeSubState();
-		FlxG.state.openSubState(new VisualUISubState());
-	}
 	function changeButtonAlpha() {
 		#if mobile
 		leftButton.alpha = ClientPrefs.virtualButtonAlpha;
