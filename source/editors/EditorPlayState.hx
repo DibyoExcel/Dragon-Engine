@@ -254,7 +254,7 @@ class EditorPlayState extends MusicBeatState
 
 						var gottaHitNote:Bool = section.mustHitSection;
 
-						if (songNotes[1] > 3)
+						if (songNotes[1] > 3 && songNotes[1] < 8)
 						{
 							gottaHitNote = !section.mustHitSection;
 						}
@@ -282,7 +282,7 @@ class EditorPlayState extends MusicBeatState
 						if (check_gf != null) {
 							should_gf = noteType.indexOf("-gf");
 						}
-						var gfSec = (section.gfSection && (songNotes[1]<4) || should_gf != -1);
+						var gfSec = (section.gfSection && (songNotes[1]<4) || should_gf != -1 || (!section.gfSection ? songNotes[1]>7 : false));
 						var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, null, null, (songNotes[3] == "GF Sing Force Opponent"/**compatibility backward**/ || should_opt != -1 ? false : (should_ply != -1 ? true : gottaHitNote)), gfSec, noteType);
 						swagNote.sustainLength = songNotes[2];
 						swagNote.camTarget = '';//set to active cam;

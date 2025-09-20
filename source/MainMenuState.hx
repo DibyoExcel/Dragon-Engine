@@ -28,7 +28,6 @@ using StringTools;
 class MainMenuState extends MusicBeatState
 {
 	public static var psychEngineVersion:String = '0.6.3';
-	public static var versionSuffix:String = 'h1';
 	public static var curSelected:Int = 0;
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
@@ -142,7 +141,7 @@ class MainMenuState extends MusicBeatState
 		add(debugButton);
 		#end
 		FlxG.camera.follow(camFollowPos, null, 1);
-		var versionShit:FlxText = new FlxText(12, FlxG.height - 56, 0, "Psych Engine v" + psychEngineVersion + "\nDragon Engine v" + Application.current.meta.get('version') + versionSuffix, 12);
+		var versionShit:FlxText = new FlxText(12, FlxG.height - 56, 0, "Psych Engine v" + psychEngineVersion + "\nDragon Engine v" + Application.current.meta.get('version').split('-')[0] + (Application.current.meta.get('version').split('-')[1] != 'release' ? Application.current.meta.get('version').split('-')[1] : ''), 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);

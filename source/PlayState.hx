@@ -2620,7 +2620,7 @@ class PlayState extends MusicBeatState
 
 				var gottaHitNote:Bool = section.mustHitSection;
 
-				if (songNotes[1] > 3)
+				if (songNotes[1] > 3 && songNotes[1] < 8)
 				{
 					gottaHitNote = !section.mustHitSection;
 				}
@@ -2664,7 +2664,7 @@ class PlayState extends MusicBeatState
 						should_gf = noteTypeData.indexOf("-gf");
 					}
 					//info you can do notename-gf-opponent(gf in opponent side(also work with 2nd strums)) or notename-gf-player(gf in player side)
-					var gfSec = (section.gfSection && (songNotes[1]<4) || should_gf != -1);
+					var gfSec = (section.gfSection && (songNotes[1]<4) || should_gf != -1 || (!section.gfSection ? songNotes[1]>7 : false));
 					var swagNote:Note = new Note(daStrumTime+(i*(100/(multNote))), noteDataSet, oldNote, null, null, (songNotes[3] == "GF Sing Force Opponent"/**compatibility backward**/ || should_opt != -1 ? false : (should_ply != -1 ? true : gottaHitNote)), gfSec, noteTypeData);
 					swagNote.sustainLength = songNotes[2];
 					if (modcharttype == 'random flip scroll') {
