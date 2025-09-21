@@ -3089,61 +3089,36 @@ class ChartingState extends MusicBeatState
 		note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 		note.updateHitbox();
 		note.x = (Math.floor(daNoteInfo * GRID_SIZE) + GRID_SIZE);
-		if(isPrevSection) {
-			if (_song.notes[curSec].mustHitSection != _song.notes[curSec-1].mustHitSection) {
-				if (_song.notes[curSec].gfSection != _song.notes[curSec-1].gfSection) {
-					//both diffrene musHHitPress and gfSec
-					if (daNoteInfo > 7) {
-						note.x -= GRID_SIZE * 8;
-					} else if(daNoteInfo > -1) {
-						note.x += GRID_SIZE * 4;
-					}
+		if (_song.notes[curSec].gfSection) {
+			if (note.gfNote) {
+				note.x = GRID_SIZE * (note.noteData+1);
+			} else if (_song.notes[curSec].mustHitSection) {
+				if (!note.mustPress) {
+					note.x = ((GRID_SIZE * (note.noteData+1))+(GRID_SIZE*4));
 				} else {
-					if(daNoteInfo > 3 && daNoteInfo < 8) {
-						note.x -= GRID_SIZE * 4;
-					} else {
-						if (daNoteInfo > -1 && daNoteInfo < 4) {
-							note.x += GRID_SIZE * 4;
-						}
-					}
-					//only mustHitPress
+					note.x = (GRID_SIZE * (note.noteData+1))+(GRID_SIZE*8);
 				}
 			} else {
-				if (_song.notes[curSec].gfSection != _song.notes[curSec-1].gfSection) {
-					if (daNoteInfo > 7) {
-						note.x -= GRID_SIZE * 8;
-					} else if(daNoteInfo > -1 && daNoteInfo < 4) {
-						note.x += GRID_SIZE * 8;
-					}
+				if (note.mustPress) {
+					note.x = ((GRID_SIZE * (note.noteData+1))+(GRID_SIZE*4));
+				} else {
+					note.x = (GRID_SIZE * (note.noteData+1))+(GRID_SIZE*8);
 				}
 			}
-		}
-		if(isNextSection) {
-			if (_song.notes[curSec].mustHitSection != _song.notes[curSec+1].mustHitSection) {
-				if (_song.notes[curSec].gfSection != _song.notes[curSec+1].gfSection) {
-					//both diffrene musHHitPress and gfSec
-					if (daNoteInfo > 7) {
-						note.x -= GRID_SIZE * 4;
-					} else if(daNoteInfo > -1) {
-						note.x += GRID_SIZE * 4;
-					}
+		} else {
+			if (note.gfNote) {
+				note.x = (GRID_SIZE * (note.noteData+1))+(GRID_SIZE*8);
+			} else if (_song.notes[curSec].mustHitSection) [
+				if (note.mustPress) {
+					note.x = (GRID_SIZE * (note.noteData+1));
 				} else {
-					if(daNoteInfo > 3 && daNoteInfo < 8) {
-						note.x -= GRID_SIZE * 4;
-					} else {
-						if (daNoteInfo > -1 && daNoteInfo < 4) {
-							note.x += GRID_SIZE * 4;
-						}
-					}
-					//only mustHitPress
+					note.x = ((GRID_SIZE * (note.noteData+1))+(GRID_SIZE*4));
 				}
-			} else {
-				if (_song.notes[curSec].gfSection != _song.notes[curSec+1].gfSection) {
-					if (daNoteInfo > 7) {
-						note.x -= GRID_SIZE * 8;
-					} else if(daNoteInfo > -1 && daNoteInfo < 4) {
-						note.x += GRID_SIZE * 8;
-					}
+			] else {
+				if (!note.mustPress) {
+					note.x = ((GRID_SIZE * (note.noteData+1)));
+				} else {
+					note.x = (GRID_SIZE * (note.noteData+1)+(GRID_SIZE*4));
 				}
 			}
 		}
