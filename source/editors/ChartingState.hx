@@ -2163,14 +2163,8 @@ class ChartingState extends MusicBeatState
 			prevRenderedNotes.forEachAlive(function(note:Note) {
 				note.alpha = 1;
 				if(curSelectedNote != null) {
-					var noteDataToCheck:Int = note.noteData;
-					if(noteDataToCheck > -1) {
-						if (note.mustPress != _song.notes[curSec-1].mustHitSection) {
-							noteDataToCheck += 4;
-						} else if ((!_song.notes[curSec-1].gfSection && note.gfNote) || _song.notes[curSec-1].gfSection && !note.gfNote) {
-							noteDataToCheck += 8;
-						}
-					}
+					var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
+					var noteDataToCheck:Int = actualNoteData;
 	
 					if (curSelectedNote[0] == note.strumTime && ((curSelectedNote[2] == null && noteDataToCheck < 0) || (curSelectedNote[2] != null && curSelectedNote[1] == noteDataToCheck)))
 					{
@@ -2184,20 +2178,14 @@ class ChartingState extends MusicBeatState
 					note.alpha = 0.4;
 					if(note.strumTime > lastConductorPos && FlxG.sound.music.playing && note.noteData > -1) {
 						var data:Int = note.noteData % 4;
-						var noteDataToCheck:Int = note.noteData;
+						var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
+						var noteDataToCheck:Int = actualNoteData;
 						if (!note.ignoreNote) {
 							if (!note.noAnimation) {
 								if (!note.mustPress) {
 									optChar.animation.play("sing"+animAssets[note.noteData].toUpperCase(), true);
 								} else {
 									plyChar.animation.play("sing"+animAssets[note.noteData].toUpperCase(), true);
-								}
-							}
-							if(noteDataToCheck > -1) {
-								if (note.mustPress != _song.notes[curSec-1].mustHitSection) {
-									noteDataToCheck += 4;
-								} else if ((!_song.notes[curSec-1].gfSection && note.gfNote) || _song.notes[curSec-1].gfSection && !note.gfNote) {
-									noteDataToCheck += 8;
 								}
 							}
 							if (note.playStrumAnim && !note.fakeNoHit) {
@@ -2228,14 +2216,8 @@ class ChartingState extends MusicBeatState
 			prevRenderedSustains.forEachAlive(function(note:Note) {
 				note.alpha = 1;
 				if(curSelectedNote != null) {
-					var noteDataToCheck:Int = note.noteData;
-					if(noteDataToCheck > -1) {
-						if (note.mustPress != _song.notes[curSec-1].mustHitSection) {
-							noteDataToCheck += 4;
-						} else if ((!_song.notes[curSec-1].gfSection && note.gfNote) || _song.notes[curSec-1].gfSection && !note.gfNote) {
-							noteDataToCheck += 8;
-						}
-					}
+					var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
+					var noteDataToCheck:Int = actualNoteData;
 	
 					if (curSelectedNote[0] == note.strumTime && ((curSelectedNote[2] == null && noteDataToCheck < 0) || (curSelectedNote[2] != null && curSelectedNote[1] == noteDataToCheck)))
 					{
@@ -2249,7 +2231,8 @@ class ChartingState extends MusicBeatState
 					note.alpha = 0.4;
 					if(note.strumTime > lastConductorPos && FlxG.sound.music.playing && note.noteData > -1) {
 						var data:Int = note.noteData % 4;
-						var noteDataToCheck:Int = note.noteData;
+						var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
+						var noteDataToCheck:Int = actualNoteData;
 						if (!note.ignoreNote) {
 
 							if (!note.noAnimation) {
@@ -2257,13 +2240,6 @@ class ChartingState extends MusicBeatState
 									optChar.animation.play("sing"+animAssets[note.noteData].toUpperCase(), true);
 								} else {
 									plyChar.animation.play("sing"+animAssets[note.noteData].toUpperCase(), true);
-								}
-							}
-							if(noteDataToCheck > -1) {
-								if (note.mustPress != _song.notes[curSec-1].mustHitSection) {
-									noteDataToCheck += 4;
-								} else if ((!_song.notes[curSec-1].gfSection && note.gfNote) || _song.notes[curSec-1].gfSection && !note.gfNote) {
-									noteDataToCheck += 8;
 								}
 							}
 							if (note.playStrumAnim && !note.fakeNoHit) {
@@ -2295,14 +2271,8 @@ class ChartingState extends MusicBeatState
 		curRenderedNotes.forEachAlive(function(note:Note) {
 			note.alpha = 1;
 			if(curSelectedNote != null) {
-				var noteDataToCheck:Int = note.noteData;
-				if(noteDataToCheck > -1) {
-					if (note.mustPress != _song.notes[curSec].mustHitSection) {
-						noteDataToCheck += 4;
-					} else if ((!_song.notes[curSec].gfSection && note.gfNote) || _song.notes[curSec].gfSection && !note.gfNote) {
-						noteDataToCheck += 8;
-					}
-				}
+				var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
+				var noteDataToCheck:Int = actualNoteData;
 
 				if (curSelectedNote[0] == note.strumTime && ((curSelectedNote[2] == null && noteDataToCheck < 0) || (curSelectedNote[2] != null && curSelectedNote[1] == noteDataToCheck)))
 				{
@@ -2316,7 +2286,8 @@ class ChartingState extends MusicBeatState
 				note.alpha = 0.4;
 				if(note.strumTime > lastConductorPos && FlxG.sound.music.playing && note.noteData > -1) {
 					var data:Int = note.noteData % 4;
-					var noteDataToCheck:Int = note.noteData;
+					var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
+					var noteDataToCheck:Int = actualNoteData;
 					if (!note.ignoreNote) {
 
 						if (!note.noAnimation) {
@@ -2324,13 +2295,6 @@ class ChartingState extends MusicBeatState
 								optChar.animation.play("sing"+animAssets[note.noteData].toUpperCase(), true);
 							} else {
 								plyChar.animation.play("sing"+animAssets[note.noteData].toUpperCase(), true);
-							}
-						}
-						if(noteDataToCheck > -1) {
-							if (note.mustPress != _song.notes[curSec].mustHitSection) {
-								noteDataToCheck += 4;
-							} else if ((!_song.notes[curSec].gfSection && note.gfNote) || _song.notes[curSec].gfSection && !note.gfNote) {
-								noteDataToCheck += 8;
 							}
 						}
 						if (note.playStrumAnim && !note.fakeNoHit) {
@@ -2361,14 +2325,8 @@ class ChartingState extends MusicBeatState
 		curRenderedSustains.forEachAlive(function(note:Note) {
 			note.alpha = 1;
 			if(curSelectedNote != null) {
-				var noteDataToCheck:Int = note.noteData;
-				if(noteDataToCheck > -1) {
-					if (note.mustPress != _song.notes[curSec].mustHitSection) {
-						noteDataToCheck += 4;
-					} else if ((!_song.notes[curSec].gfSection && note.gfNote) || _song.notes[curSec].gfSection && !note.gfNote) {
-						noteDataToCheck += 8;
-					}
-				}
+				var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
+				var noteDataToCheck:Int = actualNoteData;
 
 				if (curSelectedNote[0] == note.strumTime && ((curSelectedNote[2] == null && noteDataToCheck < 0) || (curSelectedNote[2] != null && curSelectedNote[1] == noteDataToCheck)))
 				{
@@ -2382,7 +2340,8 @@ class ChartingState extends MusicBeatState
 				note.alpha = 0.4;
 				if(note.strumTime > lastConductorPos && FlxG.sound.music.playing && note.noteData > -1) {
 					var data:Int = note.noteData % 4;
-					var noteDataToCheck:Int = note.noteData;
+					var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
+					var noteDataToCheck:Int = actualNoteData;
 					if (!note.ignoreNote) {
 
 						if (!note.noAnimation) {
@@ -2390,13 +2349,6 @@ class ChartingState extends MusicBeatState
 								optChar.animation.play("sing"+animAssets[note.noteData].toUpperCase(), true);
 							} else {
 								plyChar.animation.play("sing"+animAssets[note.noteData].toUpperCase(), true);
-							}
-						}
-						if(noteDataToCheck > -1) {
-							if (note.mustPress != _song.notes[curSec].mustHitSection) {
-								noteDataToCheck += 4;
-							} else if ((!_song.notes[curSec].gfSection && note.gfNote) || _song.notes[curSec].gfSection && !note.gfNote) {
-								noteDataToCheck += 8;
 							}
 						}
 						if (note.playStrumAnim && !note.fakeNoHit) {
@@ -3107,19 +3059,19 @@ class ChartingState extends MusicBeatState
 		var daStrumTime = i[0];
 		var daSus:Dynamic = i[2];
 
-		var gfType = _song.notes[curSec+(isNextSection ? 1 : isPrevSection ? -1 : 0)].gfSection ? (daNoteInfo > -1 && daNoteInfo < 4) : (daNoteInfo > 7 && daNoteInfo < 12);
-		var playerType = _song.notes[curSec+(isNextSection ? 1 : isPrevSection ? -1 : 0)].mustHitSection ? ((daNoteInfo >-1 && daNoteInfo <4) || (daNoteInfo > 7 && daNoteInfo < 12)) : ((daNoteInfo >3 && daNoteInfo <7));
-
-		var note:Note = new Note(daStrumTime, daNoteInfo % 4, null, null, true, playerType, gfType);
-		if(daSus != null) { //Common note
-			if(!Std.isOfType(i[3], String)) //Convert old note type to new note type format
+		if(!Std.isOfType(i[3], String)) //Convert old note type to new note type format
 			{
 				i[3] = noteTypeIntMap.get(i[3]);
 			}
 			if(i.length > 3 && (i[3] == null || i[3].length < 1))
-			{
-				i.remove(i[3]);
-			}
+				{
+					i.remove(i[3]);
+				}
+		var gfType = (i[3] != null && (i[3].indexOf('-gf') != -1) ? true : (_song.notes[curSec+(isNextSection ? 1 : isPrevSection ? -1 : 0)].gfSection ? (daNoteInfo > -1 && daNoteInfo < 4) : (daNoteInfo > 7 && daNoteInfo < 12)));
+		var playerType = ((i[3] != null && i[3] == 'GF Sing Force Opponent') || (i[3] != null && i[3].indexOf('-opponent') != -1) ? false : ((i[3] != null && i[3].indexOf('-player') != -1) ? true : _song.notes[curSec+(isNextSection ? 1 : isPrevSection ? -1 : 0)].mustHitSection ? ((daNoteInfo >-1 && daNoteInfo <4) || (daNoteInfo > 7 && daNoteInfo < 12)) : ((daNoteInfo >3 && daNoteInfo <8))));
+
+		var note:Note = new Note(daStrumTime, daNoteInfo % 4, null, null, true, playerType, gfType);
+		if(daSus != null) { //Common note
 			note.sustainLength = daSus;
 			note.noteType = i[3];
 		} else { //Event note
@@ -3249,15 +3201,11 @@ class ChartingState extends MusicBeatState
 
 	function selectNote(note:Note):Void
 	{
-		var noteDataToCheck:Int = note.noteData;
+		var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
+		var noteDataToCheck:Int = actualNoteData;
 
 		if(noteDataToCheck > -1)
 		{
-			if (note.mustPress != _song.notes[curSec].mustHitSection) {
-				noteDataToCheck += 4;
-			} else if ((!_song.notes[curSec].gfSection && note.gfNote) || _song.notes[curSec].gfSection && !note.gfNote) {
-				noteDataToCheck += 8;
-			}
 			for (i in _song.notes[curSec].sectionNotes)
 			{
 				if (i != curSelectedNote && i.length > 2 && i[0] == note.strumTime && i[1] == noteDataToCheck)
@@ -3287,14 +3235,8 @@ class ChartingState extends MusicBeatState
 
 	function deleteNote(note:Note):Void
 	{
-		var noteDataToCheck:Int = note.noteData;
-		if(noteDataToCheck > -1) {
-			if (note.mustPress != _song.notes[curSec].mustHitSection) {
-				noteDataToCheck += 4;
-			} else if ((!_song.notes[curSec].gfSection && note.gfNote) || _song.notes[curSec].gfSection && !note.gfNote) {
-				noteDataToCheck += 8;
-			}
-		}
+		var actualNoteData:Int = (Math.floor(note.x/GRID_SIZE))-1;
+		var noteDataToCheck:Int = actualNoteData;
 		trace(noteDataToCheck);
 
 		if(note.noteData > -1) //Normal Notes
