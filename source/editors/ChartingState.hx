@@ -3089,36 +3089,88 @@ class ChartingState extends MusicBeatState
 		note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 		note.updateHitbox();
 		note.x = (Math.floor(daNoteInfo * GRID_SIZE) + GRID_SIZE);
-		if (_song.notes[curSec].gfSection) {
-			if (note.gfNote) {
-				note.x = GRID_SIZE * (note.noteData+1);
-			} else if (_song.notes[curSec].mustHitSection) {
-				if (!note.mustPress) {
-					note.x = ((GRID_SIZE * (note.noteData+1))+(GRID_SIZE*4));
+		//freaking confused to do
+		if (isPrevSection) {
+			//so many logic bruhh
+			if (_song.notes[curSec-1].mustHitSection != _song.notes[curSec].mustHitSection) {
+				if (_song.notes[curSec-1].gfSection == _song.notes[curSec].gfSection) {
+					if (_song.notes[curSec].gfSection) {
+						if (daNoteInfo >3 && daNoteInfo < 8) {
+							note.x += GRID_SIZE * 4;
+						} else if (daNoteInfo >7 && daNoteInfo < 12) {
+							note.x -= GRID_SIZE * 4;
+						}
+					} else {
+						if (daNoteInfo >3 && daNoteInfo < 8) {
+							note.x -= GRID_SIZE * 4;
+						} else if (daNoteInfo >-1 && daNoteInfo < 4) {
+							note.x += GRID_SIZE * 4;
+						}
+					}
 				} else {
-					note.x = (GRID_SIZE * (note.noteData+1))+(GRID_SIZE*8);
+					if (_song.notes[curSec].gfSection) {
+						if (daNoteInfo >-1 && daNoteInfo < 8) {
+							note.x += GRID_SIZE*4;
+						} else {
+							note.x -= GRID_SIZE*8;
+						}
+					} else {
+						if (daNoteInfo >3 && daNoteInfo < 12) {
+							note.x -= GRID_SIZE*4;
+						} else {
+							note.x += GRID_SIZE*8;
+						}
+					}
 				}
 			} else {
-				if (note.mustPress) {
-					note.x = ((GRID_SIZE * (note.noteData+1))+(GRID_SIZE*4));
-				} else {
-					note.x = (GRID_SIZE * (note.noteData+1))+(GRID_SIZE*8);
+				if (_song.notes[curSec-1].gfSection != _song.notes[curSec].gfSection) {
+					if (daNoteInfo >-1 && daNoteInfo < 4) {
+						note.x += GRID_SIZE * 8;
+					} else if (daNoteInfo > 7 && daNoteInfo < 12) {
+						note.x -= GRID_SIZE * 8;
+					}
 				}
 			}
-		} else {
-			if (note.gfNote) {
-				note.x = (GRID_SIZE * (note.noteData+1))+(GRID_SIZE*8);
-			} else if (_song.notes[curSec].mustHitSection) [
-				if (note.mustPress) {
-					note.x = (GRID_SIZE * (note.noteData+1));
+		}
+		if (isNextSection) {
+			//so many logic bruhh
+			if (_song.notes[curSec+1].mustHitSection != _song.notes[curSec].mustHitSection) {
+				if (_song.notes[curSec+1].gfSection == _song.notes[curSec].gfSection) {
+					if (_song.notes[curSec].gfSection) {
+						if (daNoteInfo >3 && daNoteInfo < 8) {
+							note.x += GRID_SIZE * 4;
+						} else if (daNoteInfo >7 && daNoteInfo < 12) {
+							note.x -= GRID_SIZE * 4;
+						}
+					} else {
+						if (daNoteInfo >3 && daNoteInfo < 8) {
+							note.x -= GRID_SIZE * 4;
+						} else if (daNoteInfo >-1 && daNoteInfo < 4) {
+							note.x += GRID_SIZE * 4;
+						}
+					}
 				} else {
-					note.x = ((GRID_SIZE * (note.noteData+1))+(GRID_SIZE*4));
+					if (_song.notes[curSec].gfSection) {
+						if (daNoteInfo >-1 && daNoteInfo < 8) {
+							note.x += GRID_SIZE*4;
+						} else {
+							note.x -= GRID_SIZE*8;
+						}
+					} else {
+						if (daNoteInfo >3 && daNoteInfo < 12) {
+							note.x -= GRID_SIZE*4;
+						} else {
+							note.x += GRID_SIZE*8;
+						}
+					}
 				}
-			] else {
-				if (!note.mustPress) {
-					note.x = ((GRID_SIZE * (note.noteData+1)));
-				} else {
-					note.x = (GRID_SIZE * (note.noteData+1)+(GRID_SIZE*4));
+			} else {
+				if (_song.notes[curSec+1].gfSection != _song.notes[curSec].gfSection) {
+					if (daNoteInfo >-1 && daNoteInfo < 4) {
+						note.x += GRID_SIZE * 8;
+					} else if (daNoteInfo > 7 && daNoteInfo < 12) {
+						note.x -= GRID_SIZE * 8;
+					}
 				}
 			}
 		}
