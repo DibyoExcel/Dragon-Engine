@@ -77,7 +77,10 @@ class ChartingState extends MusicBeatState
 		'Auto Press',
 		"GF Sing Auto Press",
 		"Flip Scroll",
-		"Fake No Hit"
+		"Fake No Hit",
+		"Snap Note",
+		"Snap Note X",
+		"Snap Note Y"
 	];
 	private var noteTypeIntMap:Map<Int, String> = new Map<Int, String>();
 	private var noteTypeMap:Map<String, Null<Int>> = new Map<String, Null<Int>>();

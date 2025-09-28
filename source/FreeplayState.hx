@@ -282,8 +282,8 @@ class FreeplayState extends MusicBeatState
 		scoreText.text = 'PERSONAL BEST: ' + lerpScore + ' (' + ratingSplit.join('.') + '%)';
 		positionHighscore();
 
-		var upP = controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end;
-		var downP = controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end;
+		var upP = controls.UI_UP_P ;
+		var downP = controls.UI_DOWN_P;
 		var accepted = controls.ACCEPT #if mobile || enterButton.justPressed #end;
 		var space = FlxG.keys.justPressed.SPACE #if mobile || spaceButton.justPressed #end;
 		var ctrl = FlxG.keys.justPressed.CONTROL #if mobile || ctrlButton.justPressed #end;
@@ -304,7 +304,7 @@ class FreeplayState extends MusicBeatState
 				holdTime = 0;
 			}
 
-			if((controls.UI_DOWN #if mobile || mobile.TouchUtil.swipeDown() #end) || (controls.UI_UP #if mobile || mobile.TouchUtil.swipeUp() #end))
+			if((controls.UI_DOWN) || (controls.UI_UP))
 			{
 				var checkLastHold:Int = Math.floor((holdTime - 0.5) * 10);
 				holdTime += elapsed;
@@ -312,17 +312,25 @@ class FreeplayState extends MusicBeatState
 
 				if(holdTime > 0.5 && checkNewHold - checkLastHold > 0)
 				{
-					changeSelection((checkNewHold - checkLastHold) * ((controls.UI_UP #if mobile || mobile.TouchUtil.swipeUp() #end) ? -shiftMult : shiftMult));
+					changeSelection((checkNewHold - checkLastHold) * ((controls.UI_UP) ? -shiftMult : shiftMult));
 					changeDiff();
 				}
 			}
-
 			if(FlxG.mouse.wheel != 0)
-			{
+				{
 				FlxG.sound.play(Paths.sound('scrollMenu'), 0.2);
 				changeSelection(-shiftMult * FlxG.mouse.wheel, false);
 				changeDiff();
 			}
+			#if mobile
+			var swipeWheel = mobile.TouchUtil.scrollSwipe();
+			if(swipeWheel != 0)
+			{
+				FlxG.sound.play(Paths.sound('scrollMenu'), 0.2);
+				changeSelection(swipeWheel * -shiftMult, false);
+				changeDiff();
+			}
+			#end
 		}
 
 		if (controls.UI_LEFT_P #if mobile || mobile.TouchUtil.swipeLeft() #end)

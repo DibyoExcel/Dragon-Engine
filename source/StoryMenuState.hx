@@ -218,8 +218,8 @@ class StoryMenuState extends MusicBeatState
 
 		if (!movedBack && !selectedWeek)
 		{
-			var upP = controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end;
-			var downP = controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end;
+			var upP = controls.UI_UP_P;
+			var downP = controls.UI_DOWN_P;
 			if (upP)
 			{
 				changeWeek(-1);
@@ -238,6 +238,15 @@ class StoryMenuState extends MusicBeatState
 				changeWeek(-FlxG.mouse.wheel);
 				changeDifficulty();
 			}
+			#if mobile
+			var swipeWheel = mobile.TouchUtil.scrollSwipe();
+			if(swipeWheel != 0)
+			{
+				FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+				changeWeek(-swipeWheel);
+				changeDifficulty();
+			}
+			#end
 
 			if (controls.UI_RIGHT #if mobile || mobile.TouchUtil.swipeRight() #end)
 				rightArrow.animation.play('press')

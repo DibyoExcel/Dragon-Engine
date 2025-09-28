@@ -3618,6 +3618,9 @@ class PlayState extends MusicBeatState
 						if (songSpeed < 0) {
 							strumScroll = !strumScroll;
 						}
+						if (daNote.multSpeed < 0) {
+							strumScroll = !strumScroll;
+						}
 						//flip against flipScroll
 						if (daNote.flipScroll) {//idk this effience code?
 							strumScroll = !strumScroll;//just flip the scroll when detect 'flipScroll'
@@ -3628,9 +3631,14 @@ class PlayState extends MusicBeatState
 						strumAngle += daNote.offsetAngle;
 						strumAlpha *= daNote.multAlpha;
 						strumDirection += daNote.direction;
-						daNote.camTarget = strumCam;
-						daNote.noteSplashCam = strumCam;
-						daNote.scrollFactorCam = strumSC;
+						if (daNote.copyScrollFactor) {
+							daNote.scrollFactorCam = strumSC;
+							daNote.noteSplashScrollFactor = strumSC;
+						}
+						if (daNote.copyCam) {
+							daNote.camTarget = strumCam;
+							daNote.noteSplashCam = strumCam;
+						}
 						if (strumScroll) //Downscroll
 						{
 							//daNote.y = (strumY + 0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed);
@@ -3641,7 +3649,7 @@ class PlayState extends MusicBeatState
 							//daNote.y = (strumY - 0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed);
 							daNote.distance = (-0.45 * (Conductor.songPosition - daNote.strumTime + daNote.offsetStrumTime) * Math.abs(songSpeed) * daNote.multSpeed);
 						}
-						if (daNote.isSustainNote) {
+						if (daNote.isSustainNote && daNote.copyFlipY) {
 							daNote.flipY = strumScroll;
 						}
 
@@ -3659,7 +3667,6 @@ class PlayState extends MusicBeatState
 						{
 							daNote.y = strumY + Math.sin(angleDir) * daNote.distance;
 
-							//Jesus fuck this took me so much mother fucking time AAAAAAAAAA
 							if(strumScroll && daNote.isSustainNote)
 							{
 								if (daNote.animation.curAnim.name.endsWith('end')) {

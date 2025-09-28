@@ -117,8 +117,28 @@ class Note extends FlxSprite
 	public var sustainTail:Bool = false;
 	public var animConfirm(default, set):String = '';//static, confirm, notes, pressed
 	public var fakeNoHit:Bool = false;//DISABLED!
+	public var copyCam:Bool = true;//attach cam from strums
+	public var copyScrollFactor:Bool = true;//attach scroll factor from strums
+	public var copyFlipY:Bool = true;//for auto flip when use between downscroll and upscroll
+	public var snapX:Float = 1;
+	public var snapY:Float = 1;
 
 
+	override private function set_y(value:Float):Float {
+		if (!inEditor && snapY > 1) {
+			var snapped = Math.round(value / snapY) * snapY;
+			return y = snapped;
+		}
+		return y = value;
+	}
+
+	override private function set_x(value:Float):Float {
+		if (!inEditor && snapX > 1) {
+			var snapped = Math.round(value / snapX) * snapX;
+			return x = snapped;
+		}
+		return x = value;
+	}
 
 	private function set_multSpeed(value:Float):Float
 	{
@@ -204,6 +224,13 @@ class Note extends FlxSprite
 					flipScroll = true;
 				case 'Fake No Hit':
 					fakeNoHit = true;
+				case 'Snap Note':
+					snapX = 25;
+					snapY = 25;
+				case 'Snap Note X':
+					snapX = 25;
+				case 'Snap Note Y':
+					snapY = 25;
 			}
 			noteType = value;
 		}

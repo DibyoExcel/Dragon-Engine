@@ -30,6 +30,7 @@ class ClientPrefs {
 	public static var virtualButtonAlpha:Float = 0.75;
 	public static var hitboxAlpha:Float = 0.0;
 	public static var hitboxPressAlpha:Float = 0.25;
+	public static var swipeRange:Float = 100;
 	//end
 	public static var downScroll:Bool = false;
 	public static var middleScroll:Bool = false;
@@ -142,6 +143,7 @@ class ClientPrefs {
 	}
 
 	public static function saveSettings() {
+		FlxG.save.data.swipeRange = swipeRange;
 		FlxG.save.data.virtualButtonAlpha = virtualButtonAlpha;
 		FlxG.save.data.hitboxPressAlpha = hitboxPressAlpha;
 		FlxG.save.data.hitboxAlpha = hitboxAlpha;
@@ -212,6 +214,9 @@ class ClientPrefs {
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.swipeRange != null) {
+			swipeRange = FlxG.save.data.swipeRange;
 		}
 		if(FlxG.save.data.useResultScr != null) {
 			useResultScr = FlxG.save.data.useResultScr;

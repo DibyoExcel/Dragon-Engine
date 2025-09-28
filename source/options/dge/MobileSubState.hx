@@ -63,7 +63,7 @@ class MobileSubState extends BaseOptionsMenu
 			'How much transparent should the Virtul Button be.',
 			'virtualButtonAlpha',
 			'percent',
-			0.25);
+			0.5);
 		option.scrollSpeed = 1.6;
 		option.minValue = 0.15;
 		option.maxValue = 1;
@@ -71,8 +71,19 @@ class MobileSubState extends BaseOptionsMenu
 		option.decimals = 2;
 		option.onChange = changeButtonAlpha;
 		addOption(option);
+
+		var option:Option = new Option('Swipe Distance',
+			"How Much swipe range to swipe.",
+			'swipeRange',
+			'float',
+			100);
+		option.minValue = 5;
+		option.scrollSpeed = 25;
+		option.decimals = 1;
+		option.changeValue = 0.1;
+		addOption(option);
 		#else
-		lime.app.Application.current.window.alert('what ur doing here? lol');
+		lime.app.Application.current.window.alert('what ur doing here lol? you\'re even not in mobile.');
 		close();
 		#end
 		super();

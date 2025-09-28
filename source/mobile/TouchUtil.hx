@@ -3,9 +3,10 @@ package mobile;
 import flixel.FlxG;
 
 class TouchUtil {
+    static var lastTouchY:Null<Float> = null;
     public static function swipeLeft():Bool {
         for (i in FlxG.swipes) {
-            if (i.angle > -135 && i.angle < -45 && i.distance > 15) {
+            if (i.angle > -135 && i.angle < -45 && i.distance > ClientPrefs.swipeRange) {
                 return true;
             }
         }
@@ -13,7 +14,7 @@ class TouchUtil {
     }
     public static function swipeRight():Bool {
         for (i in FlxG.swipes) {
-            if (i.angle > 45 && i.angle < 135 && i.distance > 15) {
+            if (i.angle > 45 && i.angle < 135 && i.distance > ClientPrefs.swipeRange) {
                 return true;
             }
         }
@@ -21,7 +22,7 @@ class TouchUtil {
     }
     public static function swipeUp():Bool {
         for (i in FlxG.swipes) {
-            if (i.angle > -45 && i.angle < 45 && i.distance > 15) {
+            if (i.angle > -45 && i.angle < 45 && i.distance > ClientPrefs.swipeRange) {
                 return true;
             }
         }
@@ -29,7 +30,7 @@ class TouchUtil {
     }
     public static function swipeDown():Bool {
         for (i in FlxG.swipes) {
-            if (((i.angle > 135 && i.angle < 180) || (i.angle > -180 && i.angle < -135)) && i.distance > 15) {
+            if (((i.angle > 135 && i.angle < 180) || (i.angle > -180 && i.angle < -135)) && i.distance > ClientPrefs.swipeRange) {
                 return true;
             }
         }
@@ -42,5 +43,22 @@ class TouchUtil {
             }
         }
         return false;
+    }
+    public static function scrollSwipe():Int {
+        var touch = FlxG.touches.getFirst();
+        if (touch != null && touch.pressed) {
+            if (lastTouchY != null) {
+                var delta = touch.screenY - lastTouchY;
+                if (delta != 0 && Math.abs(delta) > ClientPrefs.swipeRange) {
+                    lastTouchY = touch.screenY;
+                    return delta > 0 ? 1 : -1;
+                }
+            } else {
+                lastTouchY = touch.screenY;
+            }
+        } else {
+            lastTouchY = null;
+        }
+        return 0;
     }
 }
