@@ -18,6 +18,7 @@ import openfl.Lib;
 import openfl.system.System;
 #end
 
+
 /**
 	The FPS class provides an easy-to-use monitor to display
 	the current frame rate of an OpenFL project
@@ -85,13 +86,16 @@ class FPS extends TextField
 		{
 			text = "FPS: " + currentFPS + " | SPF: " + Math.floor((1/currentFPS)*10000)/10000;
 			var memoryMegas:Float = 0;
-			
+			var formatMegas:String = '';
 			#if openfl
-			memoryMegas = Math.abs(FlxMath.roundDecimal(System.totalMemory / 1000000, 1));
-			text += " | Memory: " + memoryMegas + " MB";
+			memoryMegas = Math.abs(System.totalMemory / 1000000);
+			formatMegas = (memoryMegas > 1000 ? FlxMath.roundDecimal(memoryMegas / 1000, 1) + ' GB' : FlxMath.roundDecimal(memoryMegas, 1) + ' MB');
+			text += " | Memory: " + formatMegas;
 			#end
 			#if android
 			text += "\nDragon Engine(Android)";
+			#elseif html5
+			text += "\nDragon Engine(HTML5)";
 			#else
 			if ((Lib.application.window.width >= Lib.application.window.display.bounds.width && Lib.application.window.height >= Lib.application.window.display.bounds.height && Lib.application.window.x == 0 && Lib.application.window.y == 0) || FlxG.fullscreen) {
 				text += "\nDragon Engine";

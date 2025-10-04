@@ -1,6 +1,7 @@
 package editors;
 
 import mobile.VirtualButton;
+import mobile.ToggleButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -234,11 +235,8 @@ class ChartingState extends MusicBeatState
 	public static var vortex:Bool = false;
 	public var mouseQuant:Bool = false;
 
-	//mobile 
-	private var aButton:VirtualButton;
-	private var sButton:VirtualButton;
-	private var wButton:VirtualButton;
-	private var dButton:VirtualButton;
+	//mobile
+	private var handButton:ToggleButton;
 	private var enterButton:VirtualButton;
 	private var backButton:VirtualButton;
 	private var shiftButton:VirtualButton;
@@ -484,14 +482,8 @@ class ChartingState extends MusicBeatState
 		add(plyChar);
 		#if mobile
 		//left ui
-		aButton = new VirtualButton(0, FlxG.height-500, 'a');
-		add(aButton);
-		sButton = new VirtualButton(0, FlxG.height-125, 's');
-		add(sButton);
-		wButton = new VirtualButton(0, FlxG.height-250, 'w');
-		add(wButton);
-		dButton = new VirtualButton(0, FlxG.height-375, 'd');
-		add(dButton);
+		handButton = new ToggleButton(0, FlxG.height-125, 'hand');
+		add(handButton);
 		//right ui
 		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
 		add(enterButton);
@@ -1723,60 +1715,61 @@ class ChartingState extends MusicBeatState
 			}
 		}
 		#else
-		for (i in FlxG.touches.list) {
-
-			if (i.x > gridBG.x
-				&& i.x < gridBG.x + gridBG.width
-				&& i.y > gridBG.y
-				&& i.y < gridBG.y + (GRID_SIZE * getSectionBeats() * 4) * zoomList[curZoom])
-			{
-				dummyArrow.visible = true;
-				dummyArrow.x = Math.floor(i.x / GRID_SIZE) * GRID_SIZE;
-				if ((FlxG.keys.pressed.SHIFT #if mobile || shiftButton.pressed #end))
-					dummyArrow.y = i.y;
-				else
+		if (!handButton.enable) {//not accident press
+			for (i in FlxG.touches.list) {
+				if (i.x > gridBG.x
+					&& i.x < gridBG.x + gridBG.width
+					&& i.y > gridBG.y
+					&& i.y < gridBG.y + (GRID_SIZE * getSectionBeats() * 4) * zoomList[curZoom])
 				{
-					var gridmult = GRID_SIZE / (quantization / 16);
-					dummyArrow.y = Math.floor(i.y / gridmult) * gridmult;
-				}
-			} else {
-				dummyArrow.visible = false;
-			}
-			if (i.justReleased)
-			{
-				if (i.overlaps(curRenderedNotes) && !((FlxG.keys.pressed.ALT #if mobile || altButton.pressed #end) && (FlxG.keys.pressed.CONTROL #if mobile || ctrlButton.pressed #end)))//alt + ctrl for multiplace notes
-				{
-					curRenderedNotes.forEachAlive(function(note:Note)
+					dummyArrow.visible = true;
+					dummyArrow.x = Math.floor(i.x / GRID_SIZE) * GRID_SIZE;
+					if ((FlxG.keys.pressed.SHIFT #if mobile || shiftButton.pressed #end))
+						dummyArrow.y = i.y;
+					else
 					{
-						if (i.overlaps(note))
+						var gridmult = GRID_SIZE / (quantization / 16);
+						dummyArrow.y = Math.floor(i.y / gridmult) * gridmult;
+					}
+				} else {
+					dummyArrow.visible = false;
+				}
+				if (i.justReleased)
+				{
+					if (i.overlaps(curRenderedNotes) && !((FlxG.keys.pressed.ALT #if mobile || altButton.pressed #end) && (FlxG.keys.pressed.CONTROL #if mobile || ctrlButton.pressed #end)))//alt + ctrl for multiplace notes
+					{
+						curRenderedNotes.forEachAlive(function(note:Note)
 						{
-							if ((FlxG.keys.pressed.CONTROL #if mobile || ctrlButton.pressed #end))
-								{
-									selectNote(note);
-								}
-								else if ((FlxG.keys.pressed.ALT #if mobile || altButton.pressed #end))
-								{
-									selectNote(note);
-									curSelectedNote[3] = noteTypeIntMap.get(currentType);
-									updateGrid();
-								}
-								else
-								{
-									//trace('tryin to delete note...');
-									deleteNote(note);
-								}
-						}
-					});
-				}
-				else
-				{
-					if (i.x > gridBG.x
-						&& i.x < gridBG.x + gridBG.width
-						&& i.y > gridBG.y
-						&& i.y < gridBG.y + (GRID_SIZE * getSectionBeats() * 4) * zoomList[curZoom])
+							if (i.overlaps(note))
+							{
+								if ((FlxG.keys.pressed.CONTROL #if mobile || ctrlButton.pressed #end))
+									{
+										selectNote(note);
+									}
+									else if ((FlxG.keys.pressed.ALT #if mobile || altButton.pressed #end))
+									{
+										selectNote(note);
+										curSelectedNote[3] = noteTypeIntMap.get(currentType);
+										updateGrid();
+									}
+									else
+									{
+										//trace('tryin to delete note...');
+										deleteNote(note);
+									}
+							}
+						});
+					}
+					else
 					{
-						FlxG.log.add('added note');
-						addNote(null, null, null, i.x);
+						if (i.x > gridBG.x
+							&& i.x < gridBG.x + gridBG.width
+							&& i.y > gridBG.y
+							&& i.y < gridBG.y + (GRID_SIZE * getSectionBeats() * 4) * zoomList[curZoom])
+						{
+							FlxG.log.add('added note');
+							addNote(null, null, null, i.x);
+						}
 					}
 				}
 			}
@@ -1944,12 +1937,42 @@ class ChartingState extends MusicBeatState
 					vocals.time = FlxG.sound.music.time;
 				}
 			}
+			#if mobile
+			if (handButton.enable) {
+				var wheelRange = mobile.TouchUtil.scrollSwipe(0.5);
+				if (wheelRange != 0)
+				{
+					FlxG.sound.music.pause();
+					if (!mouseQuant)
+						FlxG.sound.music.time -= (wheelRange * Conductor.stepCrochet*0.8);
+					else
+						{
+							var time:Float = FlxG.sound.music.time;
+							var beat:Float = curDecBeat;
+							var snap:Float = quantization / 4;
+							var increase:Float = 1 / snap;
+							if (wheelRange > 0)
+							{
+								var fuck:Float = CoolUtil.quantize(beat, snap) - increase;
+								FlxG.sound.music.time = Conductor.beatToSeconds(fuck);
+							}else{
+								var fuck:Float = CoolUtil.quantize(beat, snap) + increase;
+								FlxG.sound.music.time = Conductor.beatToSeconds(fuck);
+							}
+						}
+					if(vocals != null) {
+						vocals.pause();
+						vocals.time = FlxG.sound.music.time;
+					}
+				}
+			}
+			#end
 
 			//ARROW VORTEX SHIT NO DEADASS
 
 
 
-			if (FlxG.keys.pressed.W || FlxG.keys.pressed.S #if mobile || wButton.pressed || sButton.pressed #end)
+			if (FlxG.keys.pressed.W || FlxG.keys.pressed.S)
 			{
 				FlxG.sound.music.pause();
 
@@ -1959,7 +1982,7 @@ class ChartingState extends MusicBeatState
 
 				var daTime:Float = 700 * FlxG.elapsed * holdingShift;
 
-				if (FlxG.keys.pressed.W #if mobile || wButton.pressed #end)
+				if (FlxG.keys.pressed.W)
 				{
 					FlxG.sound.music.time -= daTime;
 				}
@@ -2092,9 +2115,9 @@ class ChartingState extends MusicBeatState
 			if ((FlxG.keys.pressed.SHIFT #if mobile || shiftButton.pressed #end))
 				shiftThing = 4;
 
-			if (FlxG.keys.justPressed.D #if mobile || dButton.justPressed #end)
+			if (FlxG.keys.justPressed.D)
 				changeSection(curSec + shiftThing);
-			if (FlxG.keys.justPressed.A #if mobile ||  aButton.justPressed #end) {
+			if (FlxG.keys.justPressed.A) {
 				if(curSec <= 0) {
 					changeSection(_song.notes.length-1);
 				} else {

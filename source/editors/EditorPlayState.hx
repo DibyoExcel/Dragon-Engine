@@ -1145,7 +1145,7 @@ class EditorPlayState extends MusicBeatState
 
 	// Note splash shit, duh
 	function spawnNoteSplashOnNote(note:Note, player:Bool = true) {
-		if(ClientPrefs.noteSplashes && note != null) {
+		if(ClientPrefs.noteSplashes && note != null && !ClientPrefs.clsstrum) {
 			var strum:StrumNote = (player ? playerStrums.members[note.noteData] : (note.gfNote && PlayState.SONG.secOpt ? gfStrums.members[note.noteData] : opponentStrums.members[note.noteData]));
 			if(strum != null) {
 				spawnNoteSplash(strum.x, strum.y, note.noteData, note);

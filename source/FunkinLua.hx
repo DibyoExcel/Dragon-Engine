@@ -3019,6 +3019,11 @@ class FunkinLua {
 			FlxG.stage.color = colorInt;
 			return 'setColorTo: ' + colorInt;
 		});
+		
+		Lua_helper.add_callback(lua, "openURL", function(web:String = 'https://github.com/DibyoExcel/Dragon-Engine') {
+			FlxG.openURL(web);
+			return 'Open Website: ' + web;
+		});
 
 		call('onCreate', []);
 		#end

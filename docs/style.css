@@ -17,17 +17,20 @@ body {
 img.header_logo{
     width: var(--header-logo-size);
     height: var(--header-logo-size);
+    filter: drop-shadow(0 0 5px white);
 }
 
 
 a{
     color: rgb(255, 0, 0);
     text-decoration: none;
+    filter: drop-shadow(0 0 5px red);
 }
 
 a:hover{
     color: rgb(0, 255, 0);
     text-shadow: 0 0 10px #00ff00;
+    filter: drop-shadow(0 0 5px #00ff00);
 }
 
 button.hidden{
@@ -36,9 +39,12 @@ button.hidden{
 
 h3 {
     color: white;
+    filter: drop-shadow(0 0 5px white);
+    
 }
 h2 {
     color: white;
+    filter: drop-shadow(0 0 5px white);
 }
 
 h3.luafunction{
@@ -47,11 +53,13 @@ h3.luafunction{
 
 h1 {
     color: white;
+    filter: drop-shadow(0 0 5px white);
 }
 
 p {
     color: white;
     font-size: large;
+    filter: drop-shadow(0 0 5px white);
 }
 
 h3.title{
@@ -65,7 +73,7 @@ h3.title{
 
 
 header.title{
-    background-color: rgba(255, 0, 255, 0.1);
+    background-color: rgba(255, 0, 0, 0.1);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid white;
     display: flex;
@@ -91,7 +99,7 @@ div.content{
 }
 
 div.hamburger{
-    background-color: rgba(255, 0, 255, 0.1);
+    background-color: rgba(255, 0, 0, 0.1);
     backdrop-filter: blur(10px);
     border-top: 1px solid white;
     border-right: 1px solid white;
@@ -99,12 +107,12 @@ div.hamburger{
     top: var(--header-height);
     height: calc(100vh - var(--header-height));
     left:  calc( (-1 * var(--sidebar-size)) + -1px);
-    transition: left 0.5s ease-in-out;
+    transition: left 0.25s ease-in-out;
 }
 
 div.hamburger.open{
     left: 0;
-    transition: left 0.5s ease-in-out;
+    transition: left 0.25s ease-in-out;
     user-select: none;
 }
 
@@ -113,23 +121,25 @@ a.sidebar_link{
     border: 1px solid white;
     margin: 5px;
     color: white;
+    filter: drop-shadow(0 0 5px white);
 }
 
 a.sidebar_link:hover{
     text-shadow: none;
     border: 1px solid #f0f;
     color: #f0f;
+    filter: drop-shadow(0 0 5px #f0f);
 }
 
 
 
 div.border_content{
-    border: 1px solid rgb(0, 255,0);
+    border: 1px solid white;
     padding: 25px;
     min-width: 75%;
     max-width: 85%;
     box-shadow: 0 10px 10px rgba(0,0, 0, 0.5);
-    background-color: rgba(255, 0, 255, 0.1);
+    background-color: rgba(255, 0, 0, 0.1);
     backdrop-filter: blur(10px);
     overflow: hidden;
     border-radius: 10px;

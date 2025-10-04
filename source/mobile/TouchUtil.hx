@@ -44,12 +44,12 @@ class TouchUtil {
         }
         return false;
     }
-    public static function scrollSwipe():Int {
+    public static function scrollSwipe(swipeMult:Float = 1):Int {
         var touch = FlxG.touches.getFirst();
         if (touch != null && touch.pressed) {
             if (lastTouchY != null) {
                 var delta = touch.screenY - lastTouchY;
-                if (delta != 0 && Math.abs(delta) > ClientPrefs.swipeRange) {
+                if (delta != 0 && Math.abs(delta) > (ClientPrefs.swipeRange * swipeMult)) {
                     lastTouchY = touch.screenY;
                     return delta > 0 ? 1 : -1;
                 }

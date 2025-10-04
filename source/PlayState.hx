@@ -3572,7 +3572,7 @@ class PlayState extends MusicBeatState
 				if(gamemode == 'opponent' && boyfriend != null && boyfriend.animation.curAnim != null && boyfriend.holdTimer > Conductor.stepCrochet * (0.0011 / FlxG.sound.music.pitch) * boyfriend.singDuration && boyfriend.animation.curAnim.name.startsWith('sing')) {
 					boyfriend.dance();
 				}
-				if(gamemode == 'none' && dad != null && dad.animation.curAnim != null && dad.holdTimer > Conductor.stepCrochet * (0.0011 / FlxG.sound.music.pitch) * dad.singDuration && dad.animation.curAnim.name.startsWith('sing')) {
+				if((gamemode != 'opponent' && gamemode != 'bothside' && gamemode != 'bothside v2') && dad != null && dad.animation.curAnim != null && dad.holdTimer > Conductor.stepCrochet * (0.0011 / FlxG.sound.music.pitch) * dad.singDuration && dad.animation.curAnim.name.startsWith('sing')) {
 					dad.dance();
 				}
 			} else {
