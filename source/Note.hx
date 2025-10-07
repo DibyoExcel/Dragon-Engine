@@ -120,24 +120,46 @@ class Note extends FlxSprite
 	public var copyCam:Bool = true;//attach cam from strums
 	public var copyScrollFactor:Bool = true;//attach scroll factor from strums
 	public var copyFlipY:Bool = true;//for auto flip when use between downscroll and upscroll
-	public var snapX:Float = 1;
-	public var snapY:Float = 1;
+	public var snapX:Float = 0;
+	public var snapY:Float = 0;
+	public var snapAngle:Float = 0;
+	public var snapAlpha:Float = 0;
 
 
-	override private function set_y(value:Float):Float {
-		if (!inEditor && snapY > 1) {
-			var snapped = Math.round(value / snapY) * snapY;
-			return y = snapped;
+	override public function set_y(value:Float):Float {
+		if (!inEditor && snapY > 0) {
+			var dist = value - y;
+			var snapped = Math.round(dist / snapY) * snapY;
+			return super.set_y(y+snapped);
 		}
-		return y = value;
+		return super.set_y(value);
 	}
 
-	override private function set_x(value:Float):Float {
-		if (!inEditor && snapX > 1) {
-			var snapped = Math.round(value / snapX) * snapX;
-			return x = snapped;
+	override public function set_x(value:Float):Float {
+		if (!inEditor && snapX > 0) {
+			var dist = value - x;
+			var snapped = Math.round(dist / snapX) * snapX;
+			return super.set_x(x+snapped);
 		}
-		return x = value;
+		return super.set_x(value);
+	}
+
+	override public function set_angle(value:Float):Float {
+		if (!inEditor && snapAngle > 0) {
+			var dist = value - angle;
+			var snapped = Math.round(dist / snapAngle) * snapAngle;
+			return super.set_angle(angle+snapped);
+		}
+		return super.set_angle(value);
+	}
+
+	override public function set_alpha(value:Float):Float {
+		if (!inEditor && snapAlpha > 0) {
+			var dist = value - alpha;
+			var snapped = Math.round(dist / snapAlpha) * snapAlpha;
+			return super.set_alpha(alpha+snapped);
+		}
+		return super.set_alpha(value);
 	}
 
 	private function set_multSpeed(value:Float):Float
@@ -225,12 +247,15 @@ class Note extends FlxSprite
 				case 'Fake No Hit':
 					fakeNoHit = true;
 				case 'Snap Note':
-					snapX = 25;
-					snapY = 25;
+					snapX = 50;
+					snapY = 50;
+					snapAngle = 20;
 				case 'Snap Note X':
-					snapX = 25;
+					snapX = 50;
+					snapAngle = 20;
 				case 'Snap Note Y':
-					snapY = 25;
+					snapY = 50;
+					snapAngle = 20;
 			}
 			noteType = value;
 		}

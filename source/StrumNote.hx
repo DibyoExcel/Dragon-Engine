@@ -16,10 +16,14 @@ class StrumNote extends FlxSprite
 	public var sustainReduce:Bool = true;
 	public var animConfirm(default, set):String = 'confirm';//'confirm', 'static', 'pressed', 'notes'
 	public var fieldName:String = '';//only use for remove object and target of 'customStrum'
-	public var memberID:Int =0; //only use target 'customStrum'
+	public var memberID:Int =0; //only use target 'customStrum'(deprecated)
 	public var camTarget(default, set):String = 'hud';
 	public var scrollFactorCam(default,set):Array<Float> = [0.0, 0.0];//only can see in camGame
 	private var gfType:Bool = false;
+	public var snapX:Float = 0;
+	public var snapY:Float = 0;
+	public var snapAngle:Float = 0;
+	public var snapAlpha:Float = 0;
 	
 	private var player:Int;
 	
@@ -253,5 +257,41 @@ class StrumNote extends FlxSprite
 			animConfirm = value;
 		}
 		return value;
+	}
+
+	override public function set_y(value:Float):Float {
+		if (snapY > 0) {
+			var dist = value - y;
+			var snapped = Math.round(dist / snapY) * snapY;
+			return super.set_y(y+snapped);
+		}
+		return super.set_y(value);
+	}
+
+	override public function set_x(value:Float):Float {
+		if (snapX > 0) {
+			var dist = value - x;
+			var snapped = Math.round(dist / snapX) * snapX;
+			return super.set_x(x+snapped);
+		}
+		return super.set_x(value);
+	}
+
+	override public function set_angle(value:Float):Float {
+		if (snapAngle > 0) {
+			var dist = value - angle;
+			var snapped = Math.round(dist / snapAngle) * snapAngle;
+			return super.set_angle(angle+snapped);
+		}
+		return super.set_angle(value);
+	}
+
+	override public function set_alpha(value:Float):Float {
+		if (snapAlpha > 0) {
+			var dist = value - alpha;
+			var snapped = Math.round(dist / snapAlpha) * snapAlpha;
+			return super.set_alpha(alpha+snapped);
+		}
+		return super.set_alpha(value);
 	}
 }
