@@ -451,9 +451,12 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		#if sys
 		if (FlxG.keys.justPressed.ESCAPE #if android || FlxG.android.justPressed.BACK #end) {
-			openfl.system.System.exit(0);
+			lime.app.Application.current.window.alert('Bye!, see you next time.', 'Dragon Engine');
+			Sys.exit(0);
 		}
+		#end
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
 		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);

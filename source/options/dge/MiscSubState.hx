@@ -48,7 +48,7 @@ class MiscSubState extends BaseOptionsMenu
 			'bool',
 			false);
 		addOption(option);
-
+		#if !html5
 		var option:Option = new Option('Auto Pause',
 			"If UnChecked The Game Keep Run Even Not Focus.",
 			'autopause',
@@ -56,6 +56,7 @@ class MiscSubState extends BaseOptionsMenu
 			true);
 		option.onChange = changeAutoPause;
 		addOption(option);
+		#end
 
 		var option:Option = new Option('Hide Original Credits',
 			"If Checked The Original Credits Will Hide.",

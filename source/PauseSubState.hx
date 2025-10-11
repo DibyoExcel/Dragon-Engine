@@ -151,6 +151,10 @@ class PauseSubState extends MusicBeatSubstate
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		add(grpMenuShit);
 		regenMenu();
+		pauseOverlay = new FlxCamera();
+		pauseOverlay.bgColor.alpha = 0;
+		FlxG.cameras.add(pauseOverlay, false);
+		cameras = [pauseOverlay];
 		#if mobile
 		leftButton = new VirtualButton(0, FlxG.height-125, 'left');
 		add(leftButton);
@@ -158,11 +162,10 @@ class PauseSubState extends MusicBeatSubstate
 		add(rightButton);
 		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
 		add(enterButton);
+		leftButton.cameras = [pauseOverlay];
+		rightButton.cameras = [pauseOverlay];
+		enterButton.cameras = [pauseOverlay];
 		#end
-		pauseOverlay = new FlxCamera();
-		pauseOverlay.bgColor.alpha = 0;
-		FlxG.cameras.add(pauseOverlay, false);
-		cameras = [pauseOverlay];
 	}
 
 	var holdTime:Float = 0;

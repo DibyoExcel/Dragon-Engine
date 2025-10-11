@@ -266,11 +266,12 @@ class Note extends FlxSprite
 		return value;
 	}
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inEditor:Bool = false, mustPress:Bool = false, gfSec:Bool = false, noteType:String = '', tail:Bool = false)
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inEditor:Bool = false, mustPress:Bool = false, gfSec:Bool = false, noteType:String = '', tail:Bool = false, parent:Note = null)
 	{
 		super();
-		
-
+		if (parent != null) {
+			this.parent = parent;
+		}
 		this.mustPress = mustPress;
 		var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
 		var skin:String = PlayState.SONG.splashSkin;
@@ -317,17 +318,13 @@ class Note extends FlxSprite
 			alpha = ClientPrefs.longNoteAlpha;
 			hitsoundDisabled = true;
 
-			offsetX += (width / 2);
 			copyAngle = false;
 
 			animation.play(colArray[noteData % 4] + (tail ? 'holdend': 'hold'));
 
 			updateHitbox();
 
-			offsetX -= (width / 2);
 
-			if (PlayState.isPixelStage)
-				offsetX += 30;
 			if (!tail) {
 				scale.y *= (Conductor.stepCrochet / 100 * 1.05);
 				if (PlayState.instance != null)
@@ -352,7 +349,6 @@ class Note extends FlxSprite
 		{
 			earlyHitMult = 1;
 		}
-		x += offsetX;
 		if (!inEditor) {
 			var opponentGamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
 			if (opponentGamemode == "opponent" && mustPress)
@@ -392,6 +388,7 @@ class Note extends FlxSprite
 			noteScale = 0.75;
 			noteSplashScale = 0.75;
 		}
+		updateSusNoteoffset();
 		//sorry
 		//runConfig(noteType);
 	}
@@ -513,6 +510,7 @@ class Note extends FlxSprite
 			setGraphicSize(ChartingState.GRID_SIZE, ChartingState.GRID_SIZE);
 			updateHitbox();
 		}
+		updateSusNoteoffset();
 	}
 
 	function loadNoteAnims()
@@ -764,5 +762,10 @@ class Note extends FlxSprite
 			animConfirm = value;
 		}
 		return value;
+	}
+	function updateSusNoteoffset() {
+		if (isSustainNote && parent != null) {
+			offsetX = (parent.width/2)-(width/2);//center the long notes from parent
+		}
 	}
 }
