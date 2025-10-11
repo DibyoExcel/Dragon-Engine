@@ -3624,7 +3624,9 @@ class PlayState extends MusicBeatState
 						if (daNote.flipScroll) {//idk this effience code?
 							strumScroll = !strumScroll;//just flip the scroll when detect 'flipScroll'
 						}
-
+						if (daNote.isSustainNote && daNote.parent != null) {
+							strumX += (daNote.parent.width/2)-(daNote.width/2);//center the long notes from parent
+						}
 						strumX += daNote.offsetX;
 						strumY += daNote.offsetY;
 						strumAngle += daNote.offsetAngle;

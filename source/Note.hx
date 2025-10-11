@@ -388,12 +388,10 @@ class Note extends FlxSprite
 			noteScale = 0.75;
 			noteSplashScale = 0.75;
 		}
-		updateSusNoteoffset();
 		//sorry
 		//runConfig(noteType);
 	}
 	
-	var lastNoteOffsetXForPixelAutoAdjusting:Float = 0;
 	var lastNoteScaleToo:Float = 1;
 
 	public var originalHeightForCalcs:Float = 6;
@@ -474,19 +472,6 @@ class Note extends FlxSprite
 			loadPixelNoteAnims();
 			antialiasing = false;
 
-			if (isSustainNote)
-			{
-				offsetX += lastNoteOffsetXForPixelAutoAdjusting;
-				lastNoteOffsetXForPixelAutoAdjusting = (width - 7) * (PlayState.daPixelZoom / 2);
-				offsetX -= lastNoteOffsetXForPixelAutoAdjusting;
-
-				/*if(animName != null && !animName.endsWith('end'))
-					{
-						lastScaleY /= lastNoteScaleToo;
-						lastNoteScaleToo = (6 / height);
-						lastScaleY *= lastNoteScaleToo;
-				}*/
-			}
 		}
 		else
 		{
@@ -510,7 +495,6 @@ class Note extends FlxSprite
 			setGraphicSize(ChartingState.GRID_SIZE, ChartingState.GRID_SIZE);
 			updateHitbox();
 		}
-		updateSusNoteoffset();
 	}
 
 	function loadNoteAnims()
