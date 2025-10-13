@@ -124,6 +124,7 @@ class Note extends FlxSprite
 	public var snapY:Float = 0;
 	public var snapAngle:Float = 0;
 	public var snapAlpha:Float = 0;
+	public var alignSustainNote(default, set):String = 'center';//'center', 'left', 'right'. only for main notes. not effect for long/sustain notes.
 
 
 	override public function set_y(value:Float):Float {
@@ -740,7 +741,6 @@ class Note extends FlxSprite
 			}
 			value = value.toLowerCase();
 			if (shouldUse.indexOf(value) == -1) {
-				trace(value + ' is not animation name');
 				value = '';//prevent fallout error
 			}
 			animConfirm = value;
@@ -751,5 +751,20 @@ class Note extends FlxSprite
 		if (isSustainNote && parent != null) {
 			offsetX = (parent.width/2)-(width/2);//center the long notes from parent
 		}
+	}
+
+	private function set_alignSustainNote(value:String):String {
+		var shouldUse:Array<String> = [ 'center', 'left', 'right' ];//please lower case
+		if (alignSustainNote != value) {
+			if (value == null) {
+				value = 'center';
+			}
+			value = value.toLowerCase();
+			if (shouldUse.indexOf(value) == -1) {
+				value = 'center';//prevent fallout error
+			}
+			alignSustainNote = value;
+		}
+		return value;
 	}
 }

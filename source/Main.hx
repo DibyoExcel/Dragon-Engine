@@ -33,6 +33,10 @@ import sys.io.File;
 import sys.io.Process;
 #end
 
+#if android
+import com.player03.android6.Permissions;
+#end
+
 
 using StringTools;
 
@@ -41,7 +45,7 @@ class Main extends Sprite
 	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
 	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
 	var initialState:Class<FlxState> = TitleState; // The FlxState the game starts with.
-	var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
+	var zoom:Float = 1; // If -1, zoom is automatically calculated to fit the window dimensions.
 	var framerate:Int = 60; // How many frames per second the game should run at.
 	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
@@ -57,24 +61,32 @@ class Main extends Sprite
 	public function new()
 	{
 		#if android
-		if (!FileSystem.exists(StorageManager.getEngineDir())) {
-			FileSystem.createDirectory(StorageManager.getEngineDir());
-			Application.current.window.alert('External(' + StorageManager.getEngineDir() + ')Folder has been created. Extract app assets bundles("assets" and "mods") to' + StorageManager.getEngineDir(), 'Storage Manager');
+		if (!Permissions.hasPermission(Permissions.WRITE_EXTERNAL_STORAGE))
+		{
+			lime.app.Application.current.window.alert('This app required external storage permission.', 'Storage Manager');
+			Permissions.requestPermission(Permissions.WRITE_EXTERNAL_STORAGE);
+			lime.app.Application.current.window.alert('This required restart.', 'Storage Manager');
 			Sys.exit(0);
-		}
-		var loadData:Array<String> = ['dialogue', 'dialoguecharacter', 'menucharacter', 'weeks'];
-		for (i in 0...loadData.length) {
-			if (!FileSystem.exists(StorageManager.getEngineDir() + 'load/')) {
-				FileSystem.createDirectory(StorageManager.getEngineDir() + 'load/');
+		} else {
+			if (!FileSystem.exists(StorageManager.getEngineDir())) {
+				FileSystem.createDirectory(StorageManager.getEngineDir());
+				Application.current.window.alert('External(' + StorageManager.getEngineDir() + ')Folder has been created. Extract app assets bundles("assets" and "mods") to' + StorageManager.getEngineDir() + '. This required restart.', 'Storage Manager');
+				Sys.exit(0);
 			}
-			if (!FileSystem.exists(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/')) {
-				FileSystem.createDirectory(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/');
-			}
-			if (!FileSystem.exists(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/')) {
-				FileSystem.createDirectory(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/');
-			}
-			if (!FileSystem.exists(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/put json file here.txt')) {
-				File.saveContent(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/put json file here.txt', '');
+			var loadData:Array<String> = ['dialogue', 'dialoguecharacter', 'menucharacter', 'weeks'];
+			for (i in 0...loadData.length) {
+				if (!FileSystem.exists(StorageManager.getEngineDir() + 'load/')) {
+					FileSystem.createDirectory(StorageManager.getEngineDir() + 'load/');
+				}
+				if (!FileSystem.exists(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/')) {
+					FileSystem.createDirectory(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/');
+				}
+				if (!FileSystem.exists(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/')) {
+					FileSystem.createDirectory(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/');
+				}
+				if (!FileSystem.exists(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/put json file here.txt')) {
+					File.saveContent(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/put json file here.txt', '');
+				}
 			}
 		}
 		#end
@@ -179,8 +191,23 @@ class Main extends Sprite
 
 		Sys.println(errMsg);
 		Sys.println("Crash dump saved in " + Path.normalize(path));
-
+		#if android
+		var chunk:Array<String> = errMsg.split('\n');
+		var chunkSize:Int = 5;
+		var arrayChunk:Array<String> = [];
+		var msg:String = '';
+		for (i in 0...chunk.length) {
+			if (i % chunkSize == 0) {
+				arrayChunk.push('');
+			}
+			arrayChunk[Std.int(i/chunkSize)] += chunk[i] + '\n';
+		}
+		for (i in 0...arrayChunk.length) {
+			Application.current.window.alert(arrayChunk[i], "Error! #" + (i+1));
+		}
+		#else
 		Application.current.window.alert(errMsg, "Error!");
+		#end
 		#if desktop
 		DiscordClient.shutdown();
 		#end
