@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin': Dragon Engine" file="Dragon Engine" packageName="id.dubenderdragon.dge" package="id.dubenderdragon.dge" main="Main" version="1.6.3.5-minor.4" company="DubEnderDragon" />
+	<app title="Friday Night Funkin': Dragon Engine" file="Dragon Engine" packageName="id.dubenderdragon.dge" package="id.dubenderdragon.dge" main="Main" version="1.6.3.6-release" company="DubEnderDragon" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="604ad46f-7283-4853-8d1e-c2fc250a4926" />
@@ -196,23 +196,31 @@
 	<!-- _________________________________ Custom _______________________________ -->
 
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
-	
-	
-	<section unless="android">
-		<icon path="draconisteam/icon16.png" size="16"/>
-		<icon path="draconisteam/icon32.png" size="32"/>
-		<icon path="draconisteam/icon64.png" size="64"/>
-		<icon path="draconisteam/iconOG.png"/>
-	</section>
 
 	<!--Android Setup-->
 	<section if="android">
-		<icon path="draconisteam/icon16_android.png" size="16"/>
-		<icon path="draconisteam/icon32_android.png" size="32"/>
-		<icon path="draconisteam/icon64_android.png" size="64"/>
-		<icon path="draconisteam/iconOG_android.png"/>
 		<android permission="android.permission.READ_EXTERNAL_STORAGE"/>
 		<android permission="android.permission.WRITE_EXTERNAL_STORAGE"/>
 		<android permission="android.permission.INTERNET"/>
+		<template path="tamplates/"/>
+	</section>
+
+	<!--Mobile Setup-->
+	<section if="mobile">
+		<icon path="draconisteam/icon16_android.png" size="16"/>
+		<icon path="draconisteam/icon32_android.png" size="32"/>
+		<icon path="draconisteam/icon64_android.png" size="64"/>
+		<icon path="draconisteam/icon128_android.png" size="128"/>
+		<icon path="draconisteam/icon256_android.png" size="256"/>
+		<icon path="draconisteam/iconOG_android.png"/>
+	</section>
+
+	<section unless="mobile">
+		<icon path="draconisteam/icon16.png" size="16"/>
+		<icon path="draconisteam/icon32.png" size="32"/>
+		<icon path="draconisteam/icon64.png" size="64"/>
+		<icon path="draconisteam/icon128.png" size="128"/>
+		<icon path="draconisteam/icon256.png" size="256"/>
+		<icon path="draconisteam/iconOG.png"/>
 	</section>
 </project>

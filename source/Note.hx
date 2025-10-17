@@ -627,6 +627,7 @@ class Note extends FlxSprite
 		}
 	}
 
+
 	private function set_camTarget(value:String):String {
 		if (camTarget != value) {
 			if (value != '') {

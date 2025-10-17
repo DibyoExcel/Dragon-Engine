@@ -1,5 +1,6 @@
 package;
 
+import addition.Keypress;
 import mobile.Hitbox;
 import flixel.graphics.FlxGraphic;
 #if desktop
@@ -318,8 +319,8 @@ class PlayState extends MusicBeatState
 	public var opponentCameraOffset:Array<Float> = null;
 	public var girlfriendCameraOffset:Array<Float> = null;
 	//DGE stuff
-	public var keyPressUI:FlxTypedGroup<FlxSprite>;
-	public var keyPressUIF:FlxTypedGroup<FlxSprite>;
+	public var keyPressUI:FlxTypedGroup<Keypress>;
+	//public var keyPressUIF:FlxTypedGroup<FlxSprite>;
 	public var colorOrder:Array<Int> = [ FlxColor.MAGENTA, FlxColor.CYAN, FlxColor.LIME, FlxColor.RED ];
 	public var mergeHealthColor(default, set):Bool = false;
 	public var oldTransitionNotes:Bool = false;
@@ -1459,22 +1460,13 @@ class PlayState extends MusicBeatState
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 		}
 		if (ClientPrefs.extUI) {
-			keyPressUI = new FlxTypedGroup<FlxSprite>();
-			keyPressUIF = new FlxTypedGroup<FlxSprite>();
+			keyPressUI = new FlxTypedGroup<Keypress>();
 			for (i in 0...keysArray.length) {
-				var notePressUISpr = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
+				var notePressUISpr = new Keypress(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4))), colorOrder[i%colorOrder.length]);
 				notePressUISpr.cameras = [ camHUD ];
-				notePressUISpr.color = colorOrder[i%colorOrder.length];
-				notePressUISpr.alpha = ClientPrefs.keyStrokeAlpha;
 				keyPressUI.add(notePressUISpr);
-				var notePressUISprF = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
-				//notePressUISprF.color = colorOrder[i];
-				notePressUISprF.cameras = [ camHUD ];
-				notePressUISprF.alpha = 0;
-				keyPressUIF.add(notePressUISprF);
 			}
 			add(keyPressUI);
-			add(keyPressUIF);
 		}
 		#if mobile
 		hitboxCam = new FlxCamera();
@@ -3207,16 +3199,6 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
-		if (ClientPrefs.extUI) {
-			for (i in 0...keyPressUIF.length) {
-				if (keyPressUIF.members[i] != null && keyPressUI.members[i] != null) {
-					keyPressUIF.members[i].x = keyPressUI.members[i].x;
-					keyPressUIF.members[i].y = keyPressUI.members[i].y;
-					keyPressUIF.members[i].angle = keyPressUI.members[i].angle;
-					keyPressUIF.members[i].visible = keyPressUI.members[i].visible;
-				}
-			}
-		}
 		switch (curStage)
 		{
 			case 'tank':
@@ -4007,7 +3989,7 @@ class PlayState extends MusicBeatState
 						{
 							doFlash();
 							for (i in 0...keyPressUI.length) {
-								keyPressUI.members[i].color = colorOrder[i%colorOrder.length];
+								keyPressUI.members[i].colorKey = colorOrder[i%colorOrder.length];
 							}
 							#if mobile
 							for (i in 0...hitbox.length) {
@@ -4037,7 +4019,7 @@ class PlayState extends MusicBeatState
 						curLightEvent = FlxG.random.int(0, phillyLightsColors.length-1, [curLightEvent]);
 						var color:FlxColor = phillyLightsColors[curLightEvent];
 						for (i in 0...keyPressUI.length) {
-							keyPressUI.members[i].color = color;
+							keyPressUI.members[i].colorKey = color;
 						}
 						#if mobile
 						for (i in 0...hitbox.length) {
@@ -4923,8 +4905,8 @@ class PlayState extends MusicBeatState
 			
 			callOnLuas('onKeyPress', [key]);
 			if (ClientPrefs.extUI) {
-				if (keyPressUIF.members[key] != null && keyPressUI.members[key] != null) {
-					keyPressUIF.members[key].alpha = ClientPrefs.keyStrokeAlpha * keyPressUI.members[key].alpha;
+				if (keyPressUI.members[key] != null) {
+					keyPressUI.members[key].onKey(true);
 				}	
 			}
 		}
@@ -4960,8 +4942,8 @@ class PlayState extends MusicBeatState
 				}
 				callOnLuas('onKeyRelease', [key]);
 				if (ClientPrefs.extUI) {
-					if (keyPressUIF.members[key] != null && keyPressUI.members[key] != null) {
-						keyPressUIF.members[key].alpha = 0;
+					if (keyPressUI.members[key] != null) {
+						keyPressUI.members[key].onKey(false);
 					}
 				}
 			}
@@ -6116,26 +6098,10 @@ class PlayState extends MusicBeatState
 						}
 					}
 					if (lastCount != keysArray.length) {
-						while (keyPressUIF.length > 0) {
-							var obj = keyPressUIF.members[0];
-							obj.kill();
-							keyPressUIF.remove(obj, true);
-							obj.destroy();
-							obj = null;
-						}
-					}
-					if (lastCount != keysArray.length) {
 						for (i in 0...keysArray.length) {
-							var notePressUISpr = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
+							var notePressUISpr = new Keypress(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4))), colorOrder[i%colorOrder.length]);
 							notePressUISpr.cameras = [ camHUD ];
-							notePressUISpr.color = colorOrder[i%colorOrder.length];
-							notePressUISpr.alpha = ClientPrefs.keyStrokeAlpha;
 							keyPressUI.add(notePressUISpr);
-							var notePressUISprF = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
-							//notePressUISprF.color = colorOrder[i];
-							notePressUISprF.cameras = [ camHUD ];
-							notePressUISprF.alpha = 0;
-							keyPressUIF.add(notePressUISprF);
 						}
 						#if mobile
 						for (i in 0...keysArray.length) {
@@ -6224,13 +6190,6 @@ class PlayState extends MusicBeatState
 					obj.destroy();
 					obj = null;
 				}
-				while (keyPressUIF.length > 0) {
-					var obj = keyPressUIF.members[0];
-					obj.kill();
-					keyPressUIF.remove(obj, true);
-					obj.destroy();
-					obj = null;
-				}
 				#if mobile
 					while (hitbox.length > 0) {
 						var obj = hitbox.members[0];
@@ -6240,16 +6199,9 @@ class PlayState extends MusicBeatState
 					}
 				#end
 				for (i in 0...keysArray.length) {
-					var notePressUISpr = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
+					var notePressUISpr = new Keypress(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4))), colorOrder[i%colorOrder.length]);
 					notePressUISpr.cameras = [ camHUD ];
-					notePressUISpr.color = colorOrder[i%colorOrder.length];
-					notePressUISpr.alpha = ClientPrefs.keyStrokeAlpha;
 					keyPressUI.add(notePressUISpr);
-					var notePressUISprF = new FlxSprite(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4)))).makeGraphic(50, 50);
-					//notePressUISprF.color = colorOrder[i];
-					notePressUISprF.cameras = [ camHUD ];
-					notePressUISprF.alpha = 0;
-					keyPressUIF.add(notePressUISprF);
 				}
 				#if mobile
 				for (i in 0...keysArray.length) {
