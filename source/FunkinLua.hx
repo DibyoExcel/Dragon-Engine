@@ -79,6 +79,7 @@ class FunkinLua {
 	var windowArray:Array<Dynamic> =[ 0, 0, 1280, 720, false, false ];//x, y, width, height, maximized, fullscreen
 	public static var indoTween:Array<FlxTween> = [];//it should not break if use setWindow too much
 	public static var tSongSpeed:FlxTween;
+	public static var tStrumY:Array<FlxTween> = [];
 
 	#if hscript
 	public static var hscript:HScript = null;
@@ -1608,15 +1609,33 @@ class FunkinLua {
 
 		Lua_helper.add_callback(lua, "keyboardJustPressed", function(name:String)
 		{
-			return Reflect.getProperty(FlxG.keys.justPressed, name);
+			var key = Reflect.getProperty(FlxG.keys.justPressed, name);
+			#if mobile
+			if (!key && PlayState.instance.hitboxSpace != null && name.toLowerCase() == 'space') {
+				key = PlayState.instance.hitboxSpace.justPressed;
+			}
+			#end
+			return key;
 		});
 		Lua_helper.add_callback(lua, "keyboardPressed", function(name:String)
 		{
-			return Reflect.getProperty(FlxG.keys.pressed, name);
+			var key = Reflect.getProperty(FlxG.keys.pressed, name);
+			#if mobile
+			if (!key && PlayState.instance.hitboxSpace != null && name.toLowerCase() == 'space') {
+				key = PlayState.instance.hitboxSpace.pressed;
+			}
+			#end
+			return key;
 		});
 		Lua_helper.add_callback(lua, "keyboardReleased", function(name:String)
 		{
-			return Reflect.getProperty(FlxG.keys.justReleased, name);
+			var key = Reflect.getProperty(FlxG.keys.justReleased, name);
+			#if mobile
+			if (!key && PlayState.instance.hitboxSpace != null && name.toLowerCase() == 'space') {
+				key = PlayState.instance.hitboxSpace.justReleased;
+			}
+			#end
+			return key;
 		});
 
 		Lua_helper.add_callback(lua, "anyGamepadJustPressed", function(name:String)
@@ -1689,7 +1708,13 @@ class FunkinLua {
 				case 'back': key = PlayState.instance.getControl('BACK');
 				case 'pause': key = PlayState.instance.getControl('PAUSE');
 				case 'reset': key = PlayState.instance.getControl('RESET');
-				case 'space': key = FlxG.keys.justPressed.SPACE;//an extra key for convinience
+				case 'space': 
+					key = FlxG.keys.justPressed.SPACE;//an extra key for convinience
+					#if mobile
+					if (!key && PlayState.instance.hitboxSpace != null) {
+						key = PlayState.instance.hitboxSpace.justPressed;
+					}
+					#end
 			}
 			return key;
 		});
@@ -1700,7 +1725,13 @@ class FunkinLua {
 				case 'down': key = PlayState.instance.getControl('NOTE_DOWN');
 				case 'up': key = PlayState.instance.getControl('NOTE_UP');
 				case 'right': key = PlayState.instance.getControl('NOTE_RIGHT');
-				case 'space': key = FlxG.keys.pressed.SPACE;//an extra key for convinience
+				case 'space': 
+					key = FlxG.keys.pressed.SPACE;//an extra key for convinience
+					#if mobile
+					if (!key && PlayState.instance.hitboxSpace != null) {
+						key = PlayState.instance.hitboxSpace.pressed;
+					}
+					#end
 			}
 			return key;
 		});
@@ -1711,7 +1742,13 @@ class FunkinLua {
 				case 'down': key = PlayState.instance.getControl('NOTE_DOWN_R');
 				case 'up': key = PlayState.instance.getControl('NOTE_UP_R');
 				case 'right': key = PlayState.instance.getControl('NOTE_RIGHT_R');
-				case 'space': key = FlxG.keys.justReleased.SPACE;//an extra key for convinience
+				case 'space': 
+					key = FlxG.keys.justReleased.SPACE;//an extra key for convinience
+					#if mobile
+					if (!key && PlayState.instance.hitboxSpace != null) {
+						key = PlayState.instance.hitboxSpace.justReleased;
+					}
+					#end
 			}
 			return key;
 		});
@@ -2998,7 +3035,7 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "changeGamemode", function(name:String = "none", transition:Bool = true) {
 			PlayState.instance.gamemodeChanger(name, transition);
 		});
-		Lua_helper.add_callback(lua, "changeSongSpeed", function(value:Float, dur, ease:String) {
+		Lua_helper.add_callback(lua, "changeSongSpeed", function(value:Float, dur:Float = 0, ease:String) {
 			if (tSongSpeed != null) {
 				tSongSpeed.cancel();
 			}
@@ -3023,6 +3060,32 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "openURL", function(web:String = 'https://github.com/DibyoExcel/Dragon-Engine') {
 			FlxG.openURL(web);
 			return 'Open Website: ' + web;
+		});
+
+		Lua_helper.add_callback(lua, "mirrorSongSpeed", function(dur:Float = 0.25, ease:String) {//Geometry Dash Reference
+			if (tSongSpeed != null) {
+				tSongSpeed.cancel();
+			}
+			for (i in tStrumY) {
+				if (i != null) {
+					i.cancel();
+				}
+			}
+			if (dur > 0) {
+				tSongSpeed = FlxTween.tween(PlayState.instance, {songSpeed: -PlayState.instance.songSpeed}, dur, {ease: getFlxEaseByString(ease)});
+				var getStrum = PlayState.instance.strumLineNotes;
+				for (i in 0...getStrum.length) {
+					var strum = getStrum.members[i];
+					tStrumY[i] = FlxTween.tween(strum, {y: FlxG.height - (strum.y + strum.height)}, dur, {ease: getFlxEaseByString(ease)});
+				}
+			} else {
+				PlayState.instance.songSpeed = -PlayState.instance.songSpeed;
+				var getStrum = PlayState.instance.strumLineNotes;
+				for (i in 0...getStrum.length) {
+					var strum = getStrum.members[i];
+					strum.y = FlxG.height - (strum.y + strum.height);
+				}
+			}
 		});
 
 		call('onCreate', []);

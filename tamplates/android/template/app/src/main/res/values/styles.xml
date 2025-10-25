@@ -1,0 +1,9 @@
+<resources>
+    <style name="DGEHoloTheme" parent="@android:style/Theme.Holo">
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_primary</item>
+        <item name="android:textColorHint">@color/hint</item>
+    </style>
+</resources>

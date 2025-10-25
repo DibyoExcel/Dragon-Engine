@@ -8,6 +8,8 @@ import Controls;
 
 class ClientPrefs {
 	//dge setting
+	public static var spaceKeyPosition:String = 'bottom';//space key position. 'bottom', 'top'
+	public static var spaceKey:Bool = false;//space key for mobile
 	public static var useResultScr:Bool = false;//should use result screen
 	public static var limitSpawn:Bool = false;//should has limit to spawn?(useful for change scroll speed to negative)
 	public static var limitSpawnNotes:Int = 50;//many notes to limit
@@ -85,7 +87,8 @@ class ClientPrefs {
 	 	'disableLuaScript' => false,//Scripts folder
 	 	'disableLuaStage' => false,//Stage lua
 		'disableLuaEvent' => false,
-		'opponent' => false
+		'opponent' => false,
+		'randomNote' => false
 	];
 
 	public static var comboOffset:Array<Int> = [0, 0, 0, 0];
@@ -143,6 +146,8 @@ class ClientPrefs {
 	}
 
 	public static function saveSettings() {
+		FlxG.save.data.spaceKeyPosition = spaceKeyPosition;
+		FlxG.save.data.spaceKey = spaceKey;
 		FlxG.save.data.swipeRange = swipeRange;
 		FlxG.save.data.virtualButtonAlpha = virtualButtonAlpha;
 		FlxG.save.data.hitboxPressAlpha = hitboxPressAlpha;
@@ -214,6 +219,12 @@ class ClientPrefs {
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.spaceKeyPosition != null) {
+			spaceKeyPosition = FlxG.save.data.spaceKeyPosition;
+		}
+		if(FlxG.save.data.spaceKey != null) {
+			spaceKey = FlxG.save.data.spaceKey;
 		}
 		if(FlxG.save.data.swipeRange != null) {
 			swipeRange = FlxG.save.data.swipeRange;

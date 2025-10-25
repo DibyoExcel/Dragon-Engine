@@ -5,18 +5,22 @@ import flixel.FlxSprite;
 class Keypress extends FlxSprite
 {
     private var isPress:Bool = false;
-    public var colorKey(default,set):Int = 0xff000000;
+    public var colorKey(default,set):Int = 0xffff0000;
     public var colorKeyPress(default, set):Int = 0xffffffff;
     public var snapX:Float = 0;
 	public var snapY:Float = 0;
 	public var snapAngle:Float = 0;
 	public var snapAlpha:Float = 0;
+    public var colorSwap:ColorSwap;
+
     public function new(x:Float, y:Float, color:Int) {
         super(x, y);
         makeGraphic(50, 50);
         this.colorKey = color;
         this.color = color;
         alpha = ClientPrefs.keyStrokeAlpha;
+        colorSwap = new ColorSwap();
+        shader = colorSwap.shader;
     }
     
     public function onKey(press:Bool = false) {

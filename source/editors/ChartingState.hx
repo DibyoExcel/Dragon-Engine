@@ -332,7 +332,7 @@ class ChartingState extends MusicBeatState
 		Conductor.changeBPM(_song.bpm);
 		Conductor.mapBPMChanges(_song);
 
-		bpmTxt = new FlxText(10, 50, 0, "", 16);
+		bpmTxt = new FlxText(10, 100, 0, "", 16);
 		bpmTxt.scrollFactor.set();
 		add(bpmTxt);
 
@@ -2178,7 +2178,7 @@ class ChartingState extends MusicBeatState
 
 		bpmTxt.text =
 		Std.string(Math.floor((Conductor.songPosition/1000)/60)) + ":" + Std.string(FlxMath.roundDecimal((Math.floor((Conductor.songPosition/1000) * 100) / 100) % 60, 2)) + " / " + Std.string(Math.floor((FlxG.sound.music.length/1000)/60)) + ":" + Std.string(FlxMath.roundDecimal((Math.floor((FlxG.sound.music.length/1000) * 100) / 100) % 60, 2)) +
-		"\nSection: " + curSec +
+		"\n\nSection: " + curSec +
 		"\n\nBeat: " + Std.string(curDecBeat).substring(0,4) +
 		"\n\nStep: " + curStep +
 		"\n\nBeat Snap: " + quantization + "th";
@@ -2942,12 +2942,33 @@ class ChartingState extends MusicBeatState
 
 	function updateGrid():Void
 	{
+		for (member in prevRenderedNotes.members) {
+			if (member != null) member.destroy();
+		}	  
 		prevRenderedNotes.clear();
+		for (member in prevRenderedSustains.members) {
+			if (member != null) member.destroy();
+		}
 		prevRenderedSustains.clear();
+		for (member in curRenderedNotes.members) {
+			if (member != null) member.destroy();
+		}
 		curRenderedNotes.clear();
+		for (member in curRenderedSustains.members) {
+			if (member != null) member.destroy();
+		}
 		curRenderedSustains.clear();
+		for (member in curRenderedNoteType.members) {
+			if (member != null) member.destroy();
+		}
 		curRenderedNoteType.clear();
+		for (member in nextRenderedNotes.members) {
+			if (member != null) member.destroy();
+		}
 		nextRenderedNotes.clear();
+		for (member in nextRenderedSustains.members) {
+			if (member != null) member.destroy();
+		}
 		nextRenderedSustains.clear();
 
 		if (_song.notes[curSec].changeBPM && _song.notes[curSec].bpm > 0)

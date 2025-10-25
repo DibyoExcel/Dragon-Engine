@@ -835,7 +835,7 @@ class CharacterEditorState extends MusicBeatState
 	override function getEvent(id:String, sender:Dynamic, data:Dynamic, ?params:Array<Dynamic>) {
 		if(id == FlxUIInputText.CHANGE_EVENT && (sender is FlxUIInputText)) {
 			if(sender == healthIconInputText) {
-				leHealthIcon.changeIcon(healthIconInputText.text);
+				leHealthIcon.changeIcon(healthIconInputText.text, true);
 				char.healthIcon = healthIconInputText.text;
 				updatePresence();
 			}

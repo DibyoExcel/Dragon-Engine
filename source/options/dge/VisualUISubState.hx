@@ -138,6 +138,7 @@ class VisualUISubState extends BaseOptionsMenu
 		//trace("setting save!");
 	}
 	function reloadSubstate() {
+		ClientPrefs.saveSettings();
 		FlxG.resetState();
 	}
 }

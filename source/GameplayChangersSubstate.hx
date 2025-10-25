@@ -109,6 +109,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 		var option:GameplayOption = new GameplayOption('Botplay', 'botplay', 'bool', false);
 		optionsArray.push(option);
 		
+		
 		var option:GameplayOption = new GameplayOption('Note Key', //Name
 			'notekey', //Save data variable name
 			'int', //Variable type
@@ -141,6 +142,9 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 		var option:GameplayOption = new GameplayOption('Disable Lua Stage', 'disableLuaStage', 'bool', false);//Dis lua Stage
 		optionsArray.push(option);
 		var option:GameplayOption = new GameplayOption('Disable Lua Event', 'disableLuaEvent', 'bool', false);//Dis lua Event
+		optionsArray.push(option);
+		
+		var option:GameplayOption = new GameplayOption('Randomized Note Placement', 'randomNote', 'bool', false);
 		optionsArray.push(option);
 	}
 

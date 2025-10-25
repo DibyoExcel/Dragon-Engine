@@ -1,0 +1,5 @@
+<resources>
+    <color name="background">#000000</color>
+    <color name="text_primary">#FF0000</color>
+    <color name="hint">#800000</color>
+</resources>

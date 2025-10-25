@@ -82,6 +82,22 @@ class MobileSubState extends BaseOptionsMenu
 		option.decimals = 1;
 		option.changeValue = 0.1;
 		addOption(option);
+		var EUoption:Option = new Option('Space Keys',
+			"Space Key for Mobile.",
+			'spaceKey',
+			'bool',
+			false);
+		EUoption.onChange = reloadSubstate;
+		addOption(EUoption);
+		if (EUoption.getValue() == true) {
+			var option:Option = new Option('Space Key Position',
+			"Position of Space Key.",
+			'spaceKeyPosition',
+			'string',
+			'bottom',
+			['bottom', 'top']);
+			addOption(option);
+		}
 		#else
 		lime.app.Application.current.window.alert('what ur doing here lol? you\'re even not in mobile.');
 		close();
@@ -101,5 +117,9 @@ class MobileSubState extends BaseOptionsMenu
 		resetButton.alpha = ClientPrefs.virtualButtonAlpha;
 		enterButton.alpha = ClientPrefs.virtualButtonAlpha;
 		#end
+	}
+	function reloadSubstate() {
+		ClientPrefs.saveSettings();
+		FlxG.resetState();
 	}
 }

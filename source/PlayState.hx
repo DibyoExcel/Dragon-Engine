@@ -229,6 +229,7 @@ class PlayState extends MusicBeatState
 	public var gamemode:String = "none";
 	public var modcharttype:String = "none";
 	public var noteKey:Int = 4;
+	public var randomKey:Bool = false;
 	public var multNote:Int = 1;
 	public var practiceMode:Bool = false;
 	public var disableLuaSong:Bool = false;
@@ -327,8 +328,9 @@ class PlayState extends MusicBeatState
 	public var fieldNameAsPlayer:String = '';//empty as default
 	public var keyCount:Int = 4;
 	//hitbox
-	private var hitboxCam:FlxCamera;
-	private var hitbox:FlxTypedGroup<Hitbox>;
+	public var hitboxCam:FlxCamera;
+	public var hitbox:FlxTypedGroup<Hitbox>;
+	public var hitboxSpace:Hitbox;
 
 	#if desktop
 	// Discord RPC variables
@@ -393,6 +395,7 @@ class PlayState extends MusicBeatState
 		gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
 		modcharttype = ClientPrefs.getGameplaySetting('modcharttype', "none");
 		noteKey = ClientPrefs.getGameplaySetting('notekey', 4);
+		randomKey = ClientPrefs.getGameplaySetting('randomNote', false);
 		multNote = ClientPrefs.getGameplaySetting('multNote', 1);
 		disableLuaSong = ClientPrefs.getGameplaySetting('disableLuaSong', false);
 		disableLuaScript = ClientPrefs.getGameplaySetting('disableLuaScript', false);
@@ -1473,16 +1476,26 @@ class PlayState extends MusicBeatState
 		hitboxCam.bgColor.alpha = 0;
 		FlxG.cameras.add(hitboxCam, false);
 		hitbox = new FlxTypedGroup<Hitbox>();
+		
 		//hitbox.cameras = [hitboxCam];
 		for (i in 0...keysArray.length) {
-			var bruh = new Hitbox(i*Std.int(FlxG.width/keysArray.length), 0);
+			var bruh = new Hitbox(i*Std.int(FlxG.width/keysArray.length), (ClientPrefs.spaceKeyPosition == 'top' ? 150 : 0));
 			bruh.color = colorOrder[i%colorOrder.length];
 			bruh.cameras = [hitboxCam];
-			bruh.setGraphicSize(Std.int(FlxG.width/keysArray.length), FlxG.height);
+			bruh.sizeWidth = Std.int(FlxG.width/keysArray.length);
+			bruh.sizeHeight = FlxG.height - (ClientPrefs.spaceKey ? 150 : 0);
 			bruh.updateHitbox();
 			hitbox.add(bruh);
 		}
 		add(hitbox);
+		if (ClientPrefs.spaceKey) {
+			hitboxSpace = new Hitbox(0, (ClientPrefs.spaceKeyPosition == 'top' ? 0 : FlxG.height-150));
+			hitboxSpace.cameras = [hitboxCam];
+			hitboxSpace.sizeWidth = FlxG.width;
+			hitboxSpace.sizeHeight = 150;
+			hitboxSpace.color = 0xffff8000;
+			add(hitboxSpace);
+		}
 		#end
 		callOnLuas('onCreatePost', []);
 		
@@ -2605,10 +2618,17 @@ class PlayState extends MusicBeatState
 
 		for (section in noteData)
 		{
+			var randomInt:Int = 0;
+			if (randomKey) {
+				randomInt = FlxG.random.int(1, 4);
+			}
 			for (songNotes in section.sectionNotes)
 			{
 				var daStrumTime:Float = songNotes[0];
-				var daNoteData:Int = Std.int(songNotes[1] % 4);
+				var daNoteData:Int = (Std.int((songNotes[1] + (randomKey ? randomInt : 0)) % 4));
+				if (randomKey && FlxG.random.bool()) {
+					daNoteData = 3-daNoteData;
+				}
 
 				var gottaHitNote:Bool = section.mustHitSection;
 
@@ -2679,19 +2699,7 @@ class PlayState extends MusicBeatState
 							oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 							var sustainData:Int;
 							var sustainNote:Null<Note> = null;
-							if (noteKey == 1) {
-								sustainData = 2;
-							} else if (noteKey == 2) {
-								sustainData = 1+Math.round((daNoteData+1)/2)-1;
-							} else if (noteKey == 3) {
-								if (daNoteData > 2) {
-									sustainData = 2;
-								} else {
-									sustainData = daNoteData;
-								}
-							} else {
-								sustainData = daNoteData;
-							}
+							sustainData = daNoteData;
 							sustainNote = new Note((daStrumTime + (Conductor.stepCrochet * susNote)+(i*(100/(multNote)))) + (Conductor.stepCrochet / FlxMath.roundDecimal(Math.abs(songSpeed), 2)), sustainData, oldNote, true, null, (swagNote.noteType == "GF Sing Force Opponent" ? false : gottaHitNote), gfSec, swagNote.noteType, susNote == (floorSus), swagNote);
 								sustainNote.noteType = swagNote.noteType;
 								if (modcharttype == 'random flip scroll') {
@@ -3044,6 +3052,11 @@ class PlayState extends MusicBeatState
 					i.active = false;
 				}
 			}
+			for (i in FunkinLua.tStrumY) {
+				if (i != null) {
+					i.active = false;
+				}
+			}
 			if (FunkinLua.tSongSpeed != null) {
 				FunkinLua.tSongSpeed.active = false;
 			}
@@ -3085,6 +3098,11 @@ class PlayState extends MusicBeatState
 			}
 			var tweenStuff = FunkinLua.indoTween;
 			for (i in tweenStuff) {
+				if (i != null) {
+					i.active = true;
+				}
+			}
+			for (i in FunkinLua.tStrumY) {
 				if (i != null) {
 					i.active = true;
 				}
@@ -6105,12 +6123,16 @@ class PlayState extends MusicBeatState
 						}
 						#if mobile
 						for (i in 0...keysArray.length) {
-							var bruh = new Hitbox(i*Std.int(FlxG.width/keysArray.length), 0);
-							bruh.setGraphicSize(i*Std.int(FlxG.width/keysArray.length), FlxG.height);
+							var bruh = new Hitbox(i*Std.int(FlxG.width/keysArray.length), (ClientPrefs.spaceKeyPosition == 'top' ? 150 : 0));
 							bruh.color = colorOrder[i%colorOrder.length];
 							bruh.cameras = [hitboxCam];
+							bruh.sizeWidth = Std.int(FlxG.width/keysArray.length);
+							bruh.sizeHeight = FlxG.height - (ClientPrefs.spaceKey ? 150 : 0);
 							bruh.updateHitbox();
 							hitbox.add(bruh);
+						}
+						if (hitboxSpace != null) {
+							hitboxSpace.y = (ClientPrefs.spaceKeyPosition == 'top' ? 0 : FlxG.height-150);
 						}
 						#end
 					}
@@ -6205,12 +6227,16 @@ class PlayState extends MusicBeatState
 				}
 				#if mobile
 				for (i in 0...keysArray.length) {
-					var bruh = new Hitbox(i*Std.int(FlxG.width/keysArray.length), 0);
+					var bruh = new Hitbox(i*Std.int(FlxG.width/keysArray.length), (ClientPrefs.spaceKeyPosition == 'top' ? 150 : 0));
 					bruh.color = colorOrder[i%colorOrder.length];
-					bruh.setGraphicSize(Std.int(FlxG.width/keysArray.length), FlxG.height);
 					bruh.cameras = [hitboxCam];
+					bruh.sizeWidth = Std.int(FlxG.width/keysArray.length);
+					bruh.sizeHeight = FlxG.height - (ClientPrefs.spaceKey ? 150 : 0);
 					bruh.updateHitbox();
 					hitbox.add(bruh);
+				}
+				if (hitboxSpace != null) {
+					hitboxSpace.y = (ClientPrefs.spaceKeyPosition == 'top' ? 0 : FlxG.height-150);
 				}
 				#end
 			}
