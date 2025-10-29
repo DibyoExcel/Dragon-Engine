@@ -4,7 +4,6 @@ import mobile.FlxButton;
 
 //abused FlxButton lol
 class Hitbox extends FlxButton {
-    public var colorSwap:ColorSwap;
     public var texture(default, set):String = null;
     public var snapX:Float = 0;
 	public var snapY:Float = 0;
@@ -17,8 +16,8 @@ class Hitbox extends FlxButton {
         super(x, y);
         texture = '';
         alpha = ClientPrefs.hitboxAlpha;
-        colorSwap = new ColorSwap();
-        shader = colorSwap.shader;
+        shaderType = 'swap';
+        blend = FunkinLua.blendModeFromString(ClientPrefs.hitboxBlend);
     }
 
     override public function update(elapsed:Float){

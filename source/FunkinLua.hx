@@ -3088,6 +3088,10 @@ class FunkinLua {
 			}
 		});
 
+		Lua_helper.add_callback(lua, "getBlendFromString", function(blend:String) {
+			return blendModeFromString(blend);
+		});
+
 		call('onCreate', []);
 		#end
 	}
@@ -3411,7 +3415,7 @@ class FunkinLua {
 		return FlxEase.linear;
 	}
 
-	function blendModeFromString(blend:String):BlendMode {
+	public static function blendModeFromString(blend:String):BlendMode {
 		switch(blend.toLowerCase().trim()) {
 			case 'add': return ADD;
 			case 'alpha': return ALPHA;

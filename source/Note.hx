@@ -54,7 +54,6 @@ class Note extends FlxSprite
 	public var eventVal1:String = '';
 	public var eventVal2:String = '';
 
-	public var colorSwap:ColorSwap;
 	public var inEditor:Bool = false;
 
 	public var animSuffix:String = '';
@@ -297,8 +296,7 @@ class Note extends FlxSprite
 		this.noteData = noteData;
 
 		texture = '';
-		colorSwap = new ColorSwap();
-		shader = colorSwap.shader;
+		shaderType = 'swap';
 		
 		x += swagWidth * (noteData);
 		if (!isSustainNote && noteData > -1 && noteData < 8)

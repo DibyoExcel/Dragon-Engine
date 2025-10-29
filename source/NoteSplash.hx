@@ -8,7 +8,6 @@ using StringTools;
 
 class NoteSplash extends FlxSprite
 {
-	public var colorSwap:ColorSwap = null;
 	private var idleAnim:String;
 	private var textureLoaded:String = null;
 
@@ -25,9 +24,7 @@ class NoteSplash extends FlxSprite
 		}
 
 		loadAnims(skin);
-		
-		colorSwap = new ColorSwap();
-		shader = colorSwap.shader;
+		shaderType = 'swap';
 
 		setupNoteSplash(x, y, note);
 		antialiasing = ClientPrefs.globalAntialiasing;

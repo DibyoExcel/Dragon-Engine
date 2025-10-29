@@ -98,6 +98,14 @@ class MobileSubState extends BaseOptionsMenu
 			['bottom', 'top']);
 			addOption(option);
 		}
+
+		var option:Option = new Option('Hitbox Blend Mode',
+		"What Hitbox blend should use?.",
+		'hitboxBlend',
+		'string',
+		'normal',
+		['normal', 'add', 'alpha', 'darken', 'difference', 'erase', 'hardlight', 'invert', 'layer', 'lighten', 'multiply', 'overlay', 'screen', 'shader', 'subtract']);
+		addOption(option);
 		#else
 		lime.app.Application.current.window.alert('what ur doing here lol? you\'re even not in mobile.');
 		close();

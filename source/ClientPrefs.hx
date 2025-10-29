@@ -8,8 +8,6 @@ import Controls;
 
 class ClientPrefs {
 	//dge setting
-	public static var spaceKeyPosition:String = 'bottom';//space key position. 'bottom', 'top'
-	public static var spaceKey:Bool = false;//space key for mobile
 	public static var useResultScr:Bool = false;//should use result screen
 	public static var limitSpawn:Bool = false;//should has limit to spawn?(useful for change scroll speed to negative)
 	public static var limitSpawnNotes:Int = 50;//many notes to limit
@@ -33,6 +31,9 @@ class ClientPrefs {
 	public static var hitboxAlpha:Float = 0.0;
 	public static var hitboxPressAlpha:Float = 0.25;
 	public static var swipeRange:Float = 100;
+	public static var spaceKeyPosition:String = 'bottom';//space key position. 'bottom', 'top'
+	public static var spaceKey:Bool = false;//space key for mobile
+	public static var hitboxBlend:String = 'normal';
 	//end
 	public static var downScroll:Bool = false;
 	public static var middleScroll:Bool = false;
@@ -146,6 +147,7 @@ class ClientPrefs {
 	}
 
 	public static function saveSettings() {
+		FlxG.save.data.hitboxBlend = hitboxBlend;
 		FlxG.save.data.spaceKeyPosition = spaceKeyPosition;
 		FlxG.save.data.spaceKey = spaceKey;
 		FlxG.save.data.swipeRange = swipeRange;
@@ -219,6 +221,9 @@ class ClientPrefs {
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.hitboxBlend != null) {
+			hitboxBlend = FlxG.save.data.hitboxBlend;
 		}
 		if(FlxG.save.data.spaceKeyPosition != null) {
 			spaceKeyPosition = FlxG.save.data.spaceKeyPosition;

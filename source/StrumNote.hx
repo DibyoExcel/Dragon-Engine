@@ -8,7 +8,6 @@ using StringTools;
 
 class StrumNote extends FlxSprite
 {
-	public var colorSwap:ColorSwap;
 	public var resetAnim:Float = 0;
 	private var noteData:Int = 0;
 	public var direction:Float = 90;//plan on doing scroll directions soon -bb
@@ -40,14 +39,13 @@ class StrumNote extends FlxSprite
 	}
 
 	public function new(x:Float, y:Float, leData:Int, player:Int, gf:Bool = false) {
-		colorSwap = new ColorSwap();
-		shader = colorSwap.shader;
 		noteData = leData;
 		this.player = player;
 		this.noteData = leData;
 		super(x, y);
 		gfType = gf;
 		texture = '';
+		shaderType = 'swap';
 
 		scrollFactor.set(scrollFactorCam[0], scrollFactorCam[1]);
 	}

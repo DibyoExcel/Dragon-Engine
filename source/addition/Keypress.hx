@@ -11,16 +11,14 @@ class Keypress extends FlxSprite
 	public var snapY:Float = 0;
 	public var snapAngle:Float = 0;
 	public var snapAlpha:Float = 0;
-    public var colorSwap:ColorSwap;
 
     public function new(x:Float, y:Float, color:Int) {
         super(x, y);
         makeGraphic(50, 50);
         this.colorKey = color;
         this.color = color;
+        shaderType = 'swap';
         alpha = ClientPrefs.keyStrokeAlpha;
-        colorSwap = new ColorSwap();
-        shader = colorSwap.shader;
     }
     
     public function onKey(press:Bool = false) {
