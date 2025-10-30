@@ -70,9 +70,23 @@ class Note extends FlxSprite
 	// Lua shit
 	public var noteSplashDisabled:Bool = false;
 	public var noteSplashTexture:String = null;
+	public var noteSplashShaderType:String = 'swap';
+	//swap
 	public var noteSplashHue:Float = 0;
 	public var noteSplashSat:Float = 0;
 	public var noteSplashBrt:Float = 0;
+	//single
+	public var noteSplashSingleR:Float = 1;
+	public var noteSplashSingleG:Float = 1;
+	public var noteSplashSingleB:Float = 1;
+	//invert
+	public var noteSplashInvertR:Bool = true;
+	public var noteSplashInvertG:Bool = true;
+	public var noteSplashInvertB:Bool = true;
+	//colorRGBSwap
+	public var noteSplashRGBSwapR:Int = 0;
+	public var noteSplashRGBSwapG:Int = 1;
+	public var noteSplashRGBSwapB:Int = 2;
 
 	public var offsetX:Float = 0;
 	public var offsetY:Float = 0;

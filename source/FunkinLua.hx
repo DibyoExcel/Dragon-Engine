@@ -175,7 +175,7 @@ class FunkinLua {
 		set('ratingName', '');
 		set('ratingFC', '');
 		set('version', MainMenuState.psychEngineVersion.trim());
-		set('engineversion', Application.current.meta.get('version').split('-')[0].trim());
+		set('engineversion', Application.current.meta.get('version').split('-')[0] + (Application.current.meta.get('version').split('-')[1] != null && Application.current.meta.get('version').split('-')[1] != 'release' ? ('(' +Application.current.meta.get('version').split('-')[1].replace('.', ' ') + ')') : ''));
 
 		set('inGameOver', false);
 		set('mustHitSection', false);

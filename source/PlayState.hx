@@ -5445,7 +5445,7 @@ class PlayState extends MusicBeatState
 		}
 
 		var splash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
-		splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.noteSplashCam, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1]);
+		splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.noteSplashCam, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1], note);
 		grpNoteSplashes.add(splash);
 	}
 
@@ -5470,7 +5470,7 @@ class PlayState extends MusicBeatState
 		}
 
 		var splashOpt:NoteSplash = grpNoteSplashesOpt.recycle(NoteSplash);
-		splashOpt.setupNoteSplashOpt(x, y, data, skin, hue, sat, brt, note.noteSplashCam, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1]);
+		splashOpt.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.noteSplashCam, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1], note);
 		grpNoteSplashesOpt.add(splashOpt);
 	}
 

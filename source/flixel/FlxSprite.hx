@@ -26,6 +26,7 @@ import flixel.util.FlxDirectionFlags;
 import ColorSwap;
 import ColorInvert;
 import ColorSingle;
+import ColorRGBSwap;
 
 using flixel.util.FlxColorTransformUtil;
 using StringTools;
@@ -264,11 +265,12 @@ class FlxSprite extends FlxObject
     public var colorSwap:ColorSwap = new ColorSwap();
     public var colorInvert:ColorInvert = new ColorInvert();
     public var colorSingle:ColorSingle = new ColorSingle();
+	public var colorRGBSwap:ColorRGBSwap = new ColorRGBSwap();
     public var shaderType(default, set):String = null;
 
     private function set_shaderType(value:String):String {
         if (shaderType != value) {
-            var shouldUse:Array<String> = [ 'none', 'swap', 'invert', 'single' ];
+            var shouldUse:Array<String> = [ 'none', 'swap', 'invert', 'single', 'rgbswap' ];
             if (value == null || value.length < 1) {
                 value = shouldUse[0];
             }
@@ -286,6 +288,8 @@ class FlxSprite extends FlxObject
                     shader = colorInvert.shader;
                 case 'single':
                     shader = colorSingle.shader;
+				case 'rgbswap':
+					shader = colorRGBSwap.shader;
                 default: 
                     shader = null;
             }
