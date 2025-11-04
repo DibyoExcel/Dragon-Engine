@@ -294,6 +294,11 @@ a.button:hover{
     --font-use: 'Mojangles', 'Arial';
 }
 
+:root{
+    scrollbar-color: var(--accent-color) var(--background-color);
+    scroll-behavior: smooth;
+}
+
 @font-face {
     font-family: 'Mojangles';
     src: url(asset/Mojangles.ttf);
