@@ -61,6 +61,10 @@ import hscript.Expr;
 import Discord;
 #end
 
+#if windows
+import wallpaper.Wallpaper;
+#end
+
 using StringTools;
 
 class FunkinLua {
@@ -3090,6 +3094,19 @@ class FunkinLua {
 
 		Lua_helper.add_callback(lua, "getBlendFromString", function(blend:String) {
 			return blendModeFromString(blend);
+		});
+
+		Lua_helper.add_callback(lua, 'changeWallpaper', function(path:String) {
+			//https://github.com/notmagniill/WallpaperAPI
+			#if windows
+			if (FileSystem.exists(path)) {//always with safety
+				return Wallpaper.changeWallpaper(path);
+			} else {
+				return false;
+			}
+			#else
+			return false;
+			#end
 		});
 
 		call('onCreate', []);

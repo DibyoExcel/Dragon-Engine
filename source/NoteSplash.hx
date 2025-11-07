@@ -31,28 +31,28 @@ class NoteSplash extends FlxSprite
 	}
 
 	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0, cam:String = '', scale:Float = 1, sfX:Float = 1.0, sfY:Float = 1.0, ?oriNote:Note) {
+		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
+		alpha = ClientPrefs.noteSplashAlpha;
+
+		if(texture == null) {
+			texture = 'noteSplashes';
+			if(PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0) texture = PlayState.SONG.splashSkin;
+		}
+		setGraphicSize(Std.int(width*scale), Std.int(height*scale));
+		if (cam != null && cam != '') {
+			var camArray:Array<String> = cam.split(',');
+			var realCam:Array<String> = [];
+			for (i in 0...camArray.length) {
+				realCam[i] = camArray[i].trim();
+			}
+			cameras = FunkinLua.cameraArrayFromString(realCam);
+		}
+		scrollFactor.set(sfX, sfY);
+
+		if(textureLoaded != texture) {
+			loadAnims(texture);
+		}
 		if (oriNote != null) {
-			setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
-			alpha = ClientPrefs.noteSplashAlpha;
-	
-			if(texture == null) {
-				texture = 'noteSplashes';
-				if(PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0) texture = PlayState.SONG.splashSkin;
-			}
-			setGraphicSize(Std.int(width*scale), Std.int(height*scale));
-			if (cam != null && cam != '') {
-				var camArray:Array<String> = cam.split(',');
-				var realCam:Array<String> = [];
-				for (i in 0...camArray.length) {
-					realCam[i] = camArray[i].trim();
-				}
-				cameras = FunkinLua.cameraArrayFromString(realCam);
-			}
-			scrollFactor.set(sfX, sfY);
-	
-			if(textureLoaded != texture) {
-				loadAnims(texture);
-			}
 			shaderType = oriNote.noteSplashShaderType;
 			//swap
 			colorSwap.hue = hueColor;
@@ -70,12 +70,12 @@ class NoteSplash extends FlxSprite
 			colorRGBSwap.swapR = oriNote.noteSplashRGBSwapR;
 			colorRGBSwap.swapG = oriNote.noteSplashRGBSwapG;
 			colorRGBSwap.swapB = oriNote.noteSplashRGBSwapB;
-			offset.set(10, 10);
-	
-			var animNum:Int = FlxG.random.int(1, 2);
-			animation.play('note' + (note % 4) + '-' + animNum, true);
-			if(animation.curAnim != null)animation.curAnim.frameRate = ClientPrefs.fpsStrumAnim + FlxG.random.int(-2, 2);
 		}
+		offset.set(10, 10);
+
+		var animNum:Int = FlxG.random.int(1, 2);
+		animation.play('note' + (note % 4) + '-' + animNum, true);
+		if(animation.curAnim != null)animation.curAnim.frameRate = ClientPrefs.fpsStrumAnim + FlxG.random.int(-2, 2);
 	}
 
 	function loadAnims(skin:String) {

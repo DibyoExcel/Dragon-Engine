@@ -89,7 +89,7 @@ class FPS extends TextField
 			var formatMegas:String = '';
 			#if openfl
 			memoryMegas = Math.abs(System.totalMemory / 1000000);
-			formatMegas = (memoryMegas > 1000 ? FlxMath.roundDecimal(memoryMegas / 1000, 1) + ' GB' : FlxMath.roundDecimal(memoryMegas, 1) + ' MB');
+			formatMegas = (memoryMegas > 1000 ? Math.floor(memoryMegas / 10) / 100 + ' GB(' + Math.floor(memoryMegas*100)/100 + ' MB)' : Math.floor(memoryMegas*100)/100 + ' MB');
 			text += " | Memory: " + formatMegas;
 			#end
 			#if android

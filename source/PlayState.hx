@@ -1471,11 +1471,12 @@ class PlayState extends MusicBeatState
 			}
 			add(keyPressUI);
 		}
+		hitbox = new FlxTypedGroup<Hitbox>();
+		add(hitbox);
 		#if mobile
 		hitboxCam = new FlxCamera();
 		hitboxCam.bgColor.alpha = 0;
 		FlxG.cameras.add(hitboxCam, false);
-		hitbox = new FlxTypedGroup<Hitbox>();
 		
 		//hitbox.cameras = [hitboxCam];
 		for (i in 0...keysArray.length) {
@@ -1487,7 +1488,6 @@ class PlayState extends MusicBeatState
 			bruh.updateHitbox();
 			hitbox.add(bruh);
 		}
-		add(hitbox);
 		if (ClientPrefs.spaceKey) {
 			hitboxSpace = new Hitbox(0, (ClientPrefs.spaceKeyPosition == 'top' ? 0 : FlxG.height-150));
 			hitboxSpace.cameras = [hitboxCam];
@@ -5451,7 +5451,7 @@ class PlayState extends MusicBeatState
 
 	public function spawnNoteSplashOpt(x:Float, y:Float, data:Int, ?note:Note = null) {
 		var skin:String = 'noteSplashes';
-		if(PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0) skin = PlayState.SONG.splashSkin;
+		if(PlayState.SONG.splashSkinOpt != null && PlayState.SONG.splashSkinOpt.length > 0) skin = PlayState.SONG.splashSkinOpt;
 
 		var hue:Float = 0;
 		var sat:Float = 0;
