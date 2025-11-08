@@ -46,6 +46,16 @@
         <a class="dialogue_link" href="/Dragon-Engine/draconis/">Draconic Mods</a>
     </div>
     <div class="content">
+        <div class="dialogue">
+            <div class="dialogue_title">
+                <h3>
+                    Extension Download
+                </h3>
+            </div>
+            <div class="dialogue_content">
+                <h3>Now has extension. Now you not need reopen page everytime to use lua function. <a href="https://github.com/DibyoExcel/Funkin-DGE-Script-AutoComplete">Funkin DGE Script AutoComplete</a></h3>
+            </div>
+        </div>
         <div class="dialogue" id="setfunc">
             <div class="dialogue_title">
                 <h3>
@@ -55,11 +65,11 @@
             <div class="dialogue_content">
                 <div class="dialogue_group">
                     <h3>setWindowBorderColor(R:Int = 255, G:Int = 0, B:Int = 0)(1.5.7+)</h3>
-                    <h4>set window border color.<br>R:color of Red Channel(0-255).<br>G:color of G Channel(0-255).<br>B:color of Blue Channel(0-255).</h4>
+                    <h4>set window border color.<br>R: color of Red Channel(0-255).<br>G: color of G Channel(0-255).<br>B: color of Blue Channel(0-255).</h4>
                 </div>
                 <div class="dialogue_group">
                     <h3>setWindowtitleColor(R:Int = 255, G:Int = 0, B:Int = 0)(1.5.7-1.6.3)(Old)</h3>
-                    <h4>set window border color.<br>R:color of Red Channel(0-255).<br>G:color of G Channel(0-255).<br>B:color of Blue Channel(0-255).</h4>
+                    <h4>set window border color.<br>R: color of Red Channel(0-255).<br>G: color of G Channel(0-255).<br>B: color of Blue Channel(0-255).</h4>
                 </div>
                 <div class="dialogue_group">
                     <h3>setWindowColorMode(dark:Bool = true)(1.5.7+)</h3>
@@ -99,11 +109,11 @@
                 </div>
                 <div class="dialogue_group">
                     <h3>setSecondOpponent(value:Bool, trasition:Bool, trasition2:Bool)(1.6.0+)</h3>
-                    <h4>set between 2nd strums or not.<br>value:toggle of wnd strums or normal<br>trasition: should add strums transition for player.<br>trasition2: should add strums transition for opponent.</h4>
+                    <h4>set between 2nd strums or not.<br>value:toggle of 2nd strums or normal<br>trasition: should add strums transition for player.<br>trasition2: should add strums transition for opponent.</h4>
                 </div>
                 <div class="dialogue_group">
                     <h3>changeGamemode(name:String = 'none', transition:Bool = true)(1.5.9.2+)</h3>
-                    <h4>set gamemode.<br>name: name of gamemode.<br>transition: Transition notes.</h4>
+                    <h4>set gamemode.<br>name: name of gamemode.<br>transition: set transition or not.</h4>
                 </div>
                 <div class="dialogue_group">
                     <h3>changeSongSpeed(value:Float, duration:Float = 0, ease:String)(1.6.1.8+)</h3>
@@ -111,15 +121,15 @@
                 </div>
                 <div class="dialogue_group">
                     <h3>backgroundColor(R:Int = 0, G:Int = 0, B:Int = 0, A:255)(1.6.3.1+)</h3>
-                    <h4>set app background color.<br>R:color of Red Channel(0-255).<br>G:color of Green Channel(0-255).<br>B:color of Blue Channel(0-255)<br>A: alpha Channel(not all platform work)(0-255).</h4>
+                    <h4>set app background color.<br>R: color of Red Channel(0-255).<br>G: color of Green Channel(0-255).<br>B: color of Blue Channel(0-255)<br>A: Alpha Channel(not all platform work)(0-255).</h4>
                 </div>
                 <div class="dialogue_group">
                     <h3>mirrosSongSpeed(duration:Float = 0.25, ease:String)(1.6.3.7+)</h3>
-                    <h4>mirror song scroll speed and strums y.<br>duration: duration of transition mirros scroll speed.<br>ease: The tweening method used, example: 'linear', 'circInOut'. <a href="https://api.haxeflixel.com/flixel/tweens/FlxEase.html">All Tween Method</a>.</h4>
+                    <h4>mirror song scroll speed and strums y.<br>duration: duration of transition mirror scroll speed.<br>ease: The tweening method used, example: 'linear', 'circInOut'. <a href="https://api.haxeflixel.com/flixel/tweens/FlxEase.html">All Tween Method</a>.</h4>
                 </div>
                 <div class="dialogue_group">
-                    <h3>changeWallpaper(path:String absolute:Bool = false)(1.6.3.8 minor 2+)(Windows Only)</h3>
-                    <h4>Change os wallpaper<br>path: the path of images file(must be absolute. example: the <code>example.png</code> in <code>mods/modname/images/</code> you had write <code>path</code> as <code>mods/modname/images/example.png</code>).<br>absolute(1.6.3.9+): if true it will use system path(example: <code>C:\Windows\Web\Wallpaper\Windows\img0.jpg</code>. the <code>path</code> must write like <code>zC:\\Windows\\Web\\Wallpaper\\Windows\\img0.jpg</code>).</h4>
+                    <h3>changeWallpaper(path:String, absolute:Bool = false)(1.6.3.8 minor 2+)(Windows Only)</h3>
+                    <h4>Change os wallpaper.<br>path: the path of images file(must be absolute. example: the <code>example.png</code> in <code>mods/modname/images/</code> you had write <code>path</code> as <code>mods/modname/images/example.png</code>).<br>absolute(1.6.3.9+): if true it will use system path(example: <code>C:\Windows\Web\Wallpaper\Windows\img0.jpg</code>. the <code>path</code> must write like <code>C:\\Windows\\Web\\Wallpaper\\Windows\\img0.jpg</code>).</h4>
                 </div>
             </div>
         </div>
@@ -132,7 +142,7 @@
             <div class="dialogue_content">
                 <div class="dialogue_group">
                     <h3>createCustomStrum(tag:String, data:Int = 4, camera:String = 'hud', scroilX:Float = 0, scrollY:Float = 0, downscroll:Null&lt;Bool&gt;)(1.6.0+)</h3>
-                    <h4>create custom field.<br>tag: tag name for custom field.<br>data: how much strum to spawn.<br>camera: camera target to custom field(selection: 'game', 'hud', 'other').<br>scrollX : scroll speed of x.<br>scrollY : scroll speed of y.<br>downscroll: should up scroll?(if not set it will use current setting).</h4>
+                    <h4>create custom field.<br>tag: tag name for custom field.<br>data: how much strum to spawn.<br>camera: camera target to custom field(selection: 'game', 'hud', 'other').<br>scrollX : scroll speed of x.<br>scrollY : scroll speed of y.<br>downscroll: should down scroll?(if not set it will use current setting).</h4>
                 </div>
                 <div class="dialogue_group">
                     <h3>removeStrum(tag:String)(1.6.0+)</h3>
@@ -173,7 +183,7 @@
                 </div>
                 <div class="dialogue_group">
                     <h3>onChangeGamemode(name:String, transition:Bool)(1.6.0.6+)</h3>
-                    <h4>function when change gamemode(from <code>changeGamemode()</code>)<br>name: returning the gamemode name after change.<br>transition(1.6.1.2+):return bool after change gamemode transition.</h4>
+                    <h4>function when change gamemode(from <code>changeGamemode()</code>)<br>name: returning the gamemode name after change.<br>transition(1.6.1.2+): return bool after change gamemode transition.</h4>
                 </div>
                 <div class="dialogue_group">
                     <h3>onChangeOpponent(dualstrum:Bool, transition:Bool, transition2:Bool)(1.6.0.6+)</h3>
