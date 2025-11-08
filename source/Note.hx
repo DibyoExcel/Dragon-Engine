@@ -87,6 +87,8 @@ class Note extends FlxSprite
 	public var noteSplashRGBSwapR:Int = 0;
 	public var noteSplashRGBSwapG:Int = 1;
 	public var noteSplashRGBSwapB:Int = 2;
+	//pixel
+	public var noteSplashPixelSize:Float = 0;
 
 	public var offsetX:Float = 0;
 	public var offsetY:Float = 0;

@@ -3096,13 +3096,22 @@ class FunkinLua {
 			return blendModeFromString(blend);
 		});
 
-		Lua_helper.add_callback(lua, 'changeWallpaper', function(path:String) {
+		Lua_helper.add_callback(lua, 'changeWallpaper', function(path:String, absolute:Bool = false) {
 			//https://github.com/notmagniill/WallpaperAPI
 			#if windows
-			if (FileSystem.exists(path)) {//always with safety
-				return Wallpaper.changeWallpaper(path);
+			if (absolute) {
+				var fullPath:String = path.replace('/', '\\');
+				if (FileSystem.exists(fullPath)) {
+					return Wallpaper.changeWallpaper(fullPath, true);
+				} else {
+					return false;
+				}
 			} else {
-				return false;
+				if (FileSystem.exists(path)) {//always with safety
+					return Wallpaper.changeWallpaper(path, false);
+				} else {
+					return false;
+				}
 			}
 			#else
 			return false;

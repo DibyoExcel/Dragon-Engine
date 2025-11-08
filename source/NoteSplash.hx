@@ -70,6 +70,8 @@ class NoteSplash extends FlxSprite
 			colorRGBSwap.swapR = oriNote.noteSplashRGBSwapR;
 			colorRGBSwap.swapG = oriNote.noteSplashRGBSwapG;
 			colorRGBSwap.swapB = oriNote.noteSplashRGBSwapB;
+			//pixel
+			pixelSprite.pixelSize = oriNote.noteSplashPixelSize;
 		}
 		offset.set(10, 10);
 
