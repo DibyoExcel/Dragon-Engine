@@ -564,7 +564,7 @@ class WeekEditorState extends MusicBeatState
 	}
 
 	public static function saveWeek(weekFile:WeekFile) {
-		var data:String = Json.stringify(weekFile, "\t");
+		var data:String = Json.stringify(weekFile, (ClientPrefs.minEditorJson ? null : "\t"));
 		if (data.length > 0)
 		{
 			#if !android

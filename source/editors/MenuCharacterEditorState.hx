@@ -442,7 +442,7 @@ class MenuCharacterEditorState extends MusicBeatState
 	}
 
 	function saveCharacter() {
-		var data:String = Json.stringify(characterFile, "\t");
+		var data:String = Json.stringify(characterFile, (ClientPrefs.minEditorJson ? null : "\t"));
 		if (data.length > 0)
 		{
 			var splittedImage:Array<String> = imageInputText.text.trim().split('_');

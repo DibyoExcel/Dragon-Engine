@@ -282,6 +282,20 @@ class ChartingState extends MusicBeatState
 			addSection();
 			PlayState.SONG = _song;
 		}
+		//convert old to new format(affected when save)
+		for (i in _song.notes) {
+			for (j in i.sectionNotes) {
+				while (j.length > 4) {//remove extra data(cuz without it might crash)(cuz i found in Dracobot Chart, bruh)
+					j.remove(j[4]);
+				}
+				if (!Std.isOfType(j[3], String)) {
+					j[3] = noteTypeList[j[3] ? 1 : 0];
+					if (j.length > 3 && (j[3] == null || j[3].length < 1)) {
+						j.remove(j[3]);
+					}
+				}
+			}
+		}
 
 		// Paths.clearMemory();
 
@@ -3106,14 +3120,6 @@ class ChartingState extends MusicBeatState
 		var daStrumTime = i[0];
 		var daSus:Dynamic = i[2];
 
-		if(!Std.isOfType(i[3], String)) //Convert old note type to new note type format
-			{
-				i[3] = noteTypeIntMap.get(i[3]);
-			}
-			if(i.length > 3 && (i[3] == null || i[3].length < 1))
-				{
-					i.remove(i[3]);
-				}
 		var gfType = (i[3] != null && (i[3].indexOf('-gf') != -1) ? true : (_song.notes[curSec+(isNextSection ? 1 : isPrevSection ? -1 : 0)].gfSection ? (daNoteInfo > -1 && daNoteInfo < 4) : (daNoteInfo > 7 && daNoteInfo < 12)));
 		var playerType = ((i[3] != null && i[3] == 'GF Sing Force Opponent') || (i[3] != null && i[3].indexOf('-opponent') != -1) ? false : ((i[3] != null && i[3].indexOf('-player') != -1) ? true : _song.notes[curSec+(isNextSection ? 1 : isPrevSection ? -1 : 0)].mustHitSection ? ((daNoteInfo >-1 && daNoteInfo <4) || (daNoteInfo > 7 && daNoteInfo < 12)) : ((daNoteInfo >3 && daNoteInfo <8))));
 
@@ -3503,7 +3509,7 @@ class ChartingState extends MusicBeatState
 			"song": _song
 		};
 
-		var data:String = Json.stringify(json, "\t");
+		var data:String = Json.stringify(json, (ClientPrefs.minEditorJson ? null : "\t"));
 
 		if ((data != null) && (data.length > 0))
 		{
@@ -3538,7 +3544,7 @@ class ChartingState extends MusicBeatState
 			"song": eventsSong
 		}
 
-		var data:String = Json.stringify(json, "\t");
+		var data:String = Json.stringify(json, (ClientPrefs.minEditorJson ? null : "\t"));
 
 		if ((data != null) && (data.length > 0))
 		{

@@ -30,7 +30,7 @@ using StringTools;
 
 class DragonOptionsState extends MusicBeatState
 {
-	var options:Array<String> = ['Miscellaneous', 'Visuals & UI'#if mobile , 'Mobile Setting'#end];
+	var options:Array<String> = ['Miscellaneous', 'Visuals & UI'#if mobile , 'Mobile Setting'#end, 'Editor Setting'];
 	private var grpOptions:FlxTypedGroup<Alphabet>;
 	private static var curSelected:Int = 0;
 	public static var menuBG:FlxSprite;
@@ -44,6 +44,8 @@ class DragonOptionsState extends MusicBeatState
 				openSubState(new options.dge.VisualUISubState());
 			case 'Mobile Setting':
 				openSubState(new options.dge.MobileSubState());
+			case 'Editor Setting':
+				openSubState(new options.dge.EditorSubState());
 		}
 	}
 

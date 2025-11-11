@@ -550,7 +550,7 @@ class DialogueEditorState extends MusicBeatState
 	}
 
 	function saveDialogue() {
-		var data:String = Json.stringify(dialogueFile, "\t");
+		var data:String = Json.stringify(dialogueFile, (ClientPrefs.minEditorJson ? null : "\t"));
 		if (data.length > 0)
 		{
 			#if android

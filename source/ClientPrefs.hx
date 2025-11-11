@@ -8,6 +8,7 @@ import Controls;
 
 class ClientPrefs {
 	//dge setting
+	public static var minEditorJson:Bool = false;//Minified json when save chart json
 	public static var useResultScr:Bool = false;//should use result screen
 	public static var limitSpawn:Bool = false;//should has limit to spawn?(useful for change scroll speed to negative)
 	public static var limitSpawnNotes:Int = 50;//many notes to limit
@@ -147,6 +148,7 @@ class ClientPrefs {
 	}
 
 	public static function saveSettings() {
+		FlxG.save.data.minEditorJson = minEditorJson;
 		FlxG.save.data.hitboxBlend = hitboxBlend;
 		FlxG.save.data.spaceKeyPosition = spaceKeyPosition;
 		FlxG.save.data.spaceKey = spaceKey;
@@ -221,6 +223,9 @@ class ClientPrefs {
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.minEditorJson != null) {
+			minEditorJson = FlxG.save.data.minEditorJson;
 		}
 		if(FlxG.save.data.hitboxBlend != null) {
 			hitboxBlend = FlxG.save.data.hitboxBlend;

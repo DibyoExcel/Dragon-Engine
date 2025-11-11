@@ -1383,7 +1383,7 @@ class CharacterEditorState extends MusicBeatState
 			"healthbar_colors": char.healthColorArray
 		};
 
-		var data:String = Json.stringify(json, "\t");
+		var data:String = Json.stringify(json, (ClientPrefs.minEditorJson ? null : "\t"));
 
 		if (data.length > 0)
 		{

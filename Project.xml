@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin': Dragon Engine" file="Dragon Engine" packageName="id.dubenderdragon.dge" package="id.dubenderdragon.dge" main="Main" version="1.6.3.9" company="DubEnderDragon" />
+	<app title="Friday Night Funkin': Dragon Engine" file="Dragon Engine" packageName="id.dubenderdragon.dge" package="id.dubenderdragon.dge" main="Main" version="1.6.3.9-minor.1" company="DubEnderDragon" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="604ad46f-7283-4853-8d1e-c2fc250a4926" />
@@ -132,7 +132,6 @@
 	<!--In case you want to use the addons package-->
 	<haxelib name="flixel-addons" />
 	<haxelib name="hscript" />
-	<haxelib name="hxWindowColorMode" if="windows"/>
 	<define name="hscriptPos" />
 
 	<!--In case you want to use the ui package-->
@@ -142,7 +141,9 @@
 	<haxelib name="faxe" if='switch'/>
 	<!--<haxelib name="polymod"/> -->
 	<haxelib name="discord_rpc" if="desktop"/>
+	<!--Custom haxelib required-->
 	<haxelib name="android6permissions" if="android" />
+	<haxelib name="hxWindowColorMode" if="windows"/>
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 
 	<!-- <haxelib name="markdown" /> -->
