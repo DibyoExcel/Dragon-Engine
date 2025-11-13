@@ -255,6 +255,7 @@ div.sidebar.open{
 
 iframe.fnfhtml{
     aspect-ratio: 16/9;
+    background-color: black;
 }
 
 .border_accent{
@@ -285,7 +286,7 @@ a.button:hover{
     --secondary-accent-color: #0ff;
     --third-accent-color: #0f0;
     --header-height: 50px;
-    --background-color: #111;
+    --background-color: #000;
     --button-color: #222;
     --button-color-hover: #333;
     --font-use: 'Mojangles', 'Arial';
