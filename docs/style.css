@@ -1,7 +1,7 @@
 body{
     margin: 0;
     margin-bottom: 10px;
-    background-image: url('asset/background.png');
+    background-image: url('/Dragon-Engine/asset/background.png');
     background-position: center;
     background-size: cover;
     background-attachment: fixed;
@@ -129,11 +129,6 @@ div.sidebar a.dialogue_link:hover, div.dialogue a.dialogue_link:hover{
     border: 1px solid var(--secondary-accent-color);
 }
 
-div.sidebar a.dialogue_link{
-    margin-left: 10px;
-    margin-right: 10px;
-}
-
 div.dialogue a.button{
     padding: 10px;
     background-color: var(--button-color);
@@ -247,6 +242,8 @@ div.sidebar{
     color: var(--accent-color);
     gap: 10px;
     overflow-wrap: break-word;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 div.sidebar.open{
@@ -301,5 +298,5 @@ a.button:hover{
 
 @font-face {
     font-family: 'Mojangles';
-    src: url(asset/Mojangles.ttf);
+    src: url(/asset/Mojangles.ttf);
 }
