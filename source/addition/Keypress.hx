@@ -11,6 +11,8 @@ class Keypress extends FlxSprite
 	public var snapY:Float = 0;
 	public var snapAngle:Float = 0;
 	public var snapAlpha:Float = 0;
+    public var alphaKey(default, set):Float = ClientPrefs.keyStrokeAlpha;
+    public var alphaKeyPress(default, set):Float = ClientPrefs.keyStrokeAlpha;
 
     public function new(x:Float, y:Float, color:Int) {
         super(x, y);
@@ -18,19 +20,22 @@ class Keypress extends FlxSprite
         this.colorKey = color;
         this.color = color;
         shaderType = 'swap';
-        alpha = ClientPrefs.keyStrokeAlpha;
+        alpha = alphaKey;
     }
     
     public function onKey(press:Bool = false) {
+        isPress = press;
         if (press) {
             color = colorKeyPress;
+            alpha = alphaKeyPress;
         } else {
             color = colorKey;
+            alpha = alphaKey;
         }
-        isPress = press;
+
     }
 
-    function set_colorKeyPress(value:Int):Int {
+    private function set_colorKeyPress(value:Int):Int {
         if (color != value) {
             colorKeyPress = value;
             if (isPress) {
@@ -40,7 +45,7 @@ class Keypress extends FlxSprite
         return value;
     }
 
-    function set_colorKey(value:Int):Int {
+    private function set_colorKey(value:Int):Int {
         if (color != value) {
             colorKey = value;
             if (!isPress) {
@@ -85,4 +90,24 @@ class Keypress extends FlxSprite
 		}
 		return super.set_alpha(value);
 	}
+
+    private function set_alphaKey(value:Float):Float {
+        if (alphaKey != value) {
+            alphaKey = value;
+            if (!isPress) {
+                alpha = alphaKey;
+            }
+        }
+        return value;
+    }
+
+    private function set_alphaKeyPress(value:Float):Float {
+        if (alphaKeyPress != value) {
+            alphaKeyPress = value;
+            if (isPress) {
+                alpha = alphaKeyPress;
+            }
+        }
+        return value;
+    }
 }

@@ -178,11 +178,12 @@ class EditorPlayState extends MusicBeatState
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 		}
-		#if mobile
+		hitbox = new FlxTypedGroup<Hitbox>();
+		add(hitbox);
 		hitboxCam = new FlxCamera();
 		hitboxCam.bgColor.alpha = 0;
 		FlxG.cameras.add(hitboxCam, false);
-		hitbox = new FlxTypedGroup<Hitbox>();
+		#if mobile
 		//hitbox.cameras = [hitboxCam];
 		for (i in 0...keysArray.length) {
 			var bruh = new Hitbox(i*Std.int(FlxG.width/keysArray.length), 0);
@@ -193,7 +194,6 @@ class EditorPlayState extends MusicBeatState
 			bruh.updateHitbox();
 			hitbox.add(bruh);
 		}
-		add(hitbox);
 		#end
 		super.create();
 	}
@@ -1094,7 +1094,7 @@ class EditorPlayState extends MusicBeatState
 								}
 							}
 							if (i > 3) {
-								gfStrums.add(babyArrow);
+							gfStrums.add(babyArrow);
 							}
 							opponentStrums.add(babyArrow);
 						}

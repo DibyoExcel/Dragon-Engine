@@ -1473,11 +1473,10 @@ class PlayState extends MusicBeatState
 		}
 		hitbox = new FlxTypedGroup<Hitbox>();
 		add(hitbox);
-		#if mobile
 		hitboxCam = new FlxCamera();
 		hitboxCam.bgColor.alpha = 0;
 		FlxG.cameras.add(hitboxCam, false);
-		
+		#if mobile
 		//hitbox.cameras = [hitboxCam];
 		for (i in 0...keysArray.length) {
 			var bruh = new Hitbox(i*Std.int(FlxG.width/keysArray.length), (ClientPrefs.spaceKeyPosition == 'top' ? 150 : 0));
@@ -2907,13 +2906,13 @@ class PlayState extends MusicBeatState
 					babyArrow.downScroll = ClientPrefs.downScroll;
 					if (!isStoryMode && !skipArrowStartTween && t)
 					{
+						babyArrow.alpha = 0;
 						if (oldTransitionNotes) {
 							babyArrow.y += 20;
 							FlxTween.tween(babyArrow, {y: babyArrow.y - 20, alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
 						} else {
 							FlxTween.tween(babyArrow, {alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
 						}
-						babyArrow.alpha = 0;
 					}
 					else
 					{
@@ -2956,7 +2955,12 @@ class PlayState extends MusicBeatState
 					if (!isStoryMode && !skipArrowStartTween && t)
 					{
 						babyArrow.alpha = 0;
-						FlxTween.tween(babyArrow, {/*y: babyArrow.y + 10,*/ alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * (i/2))});
+						if (oldTransitionNotes) {
+							babyArrow.y += 20;
+							FlxTween.tween(babyArrow, {y: babyArrow.y - 20, alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * (i/2))});
+						} else {
+							FlxTween.tween(babyArrow, {alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * (i/2))});
+						}
 					}
 					else
 					{
@@ -2988,7 +2992,12 @@ class PlayState extends MusicBeatState
 						if (!isStoryMode && !skipArrowStartTween && t)
 						{
 							babyArrow.alpha = 0;
-							FlxTween.tween(babyArrow, {/*y: babyArrow.y + 10,*/ alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+							if (oldTransitionNotes) {
+								babyArrow.y += 20;
+								FlxTween.tween(babyArrow, {y: babyArrow.y - 20, alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * (i/(PlayState.SONG.secOpt && gamemode == 'bothside' ? 2 : 1)))});
+							} else {
+								FlxTween.tween(babyArrow, {alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * (i/(PlayState.SONG.secOpt && gamemode == 'bothside' ? 2 : 1)))});
+							}
 						}
 						else
 						{

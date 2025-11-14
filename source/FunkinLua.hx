@@ -3118,6 +3118,32 @@ class FunkinLua {
 			#end
 		});
 
+		Lua_helper.add_callback(lua, "changeNotesTexture", function(player:Bool = false, gf:Bool = false, texture:String = '') {
+			for (i in PlayState.instance.notes) {
+				if (!i.ignoreTextureChange && i.mustPress == player && i.gfNote == gf) {
+					i.texture = texture;
+				}
+			}
+			for (i in PlayState.instance.unspawnNotes) {
+				if (!i.ignoreTextureChange && i.mustPress == player && i.gfNote == gf) {
+					i.texture = texture;
+				}
+			}
+			if (player) {
+				for (i in PlayState.instance.playerStrums) {
+					if (!i.ignoreTextureChange && i.gfType == gf) {
+						i.texture = texture;
+					}
+				}
+			} else {
+				for (i in PlayState.instance.opponentStrums) {
+					if (!i.ignoreTextureChange && i.gfType == gf) {
+						i.texture = texture;
+					}
+				}
+			}
+		});
+
 		call('onCreate', []);
 		#end
 	}

@@ -32,7 +32,7 @@ class NoteSplash extends FlxSprite
 
 	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0, cam:String = '', scale:Float = 1, sfX:Float = 1.0, sfY:Float = 1.0, ?oriNote:Note) {
 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
-		alpha = ClientPrefs.noteSplashAlpha;
+		alpha = ClientPrefs.noteSplashAlpha;//for case
 
 		if(texture == null) {
 			texture = 'noteSplashes';
@@ -72,6 +72,10 @@ class NoteSplash extends FlxSprite
 			colorRGBSwap.swapB = oriNote.noteSplashRGBSwapB;
 			//pixel
 			pixelSprite.pixelSize = oriNote.noteSplashPixelSize;
+			//angle
+			angle = oriNote.noteSplashAngle;
+			//alpha
+			alpha = oriNote.noteSplashAlpha;
 		}
 		offset.set(10, 10);
 

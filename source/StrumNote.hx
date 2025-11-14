@@ -18,11 +18,12 @@ class StrumNote extends FlxSprite
 	public var memberID:Int =0; //only use target 'customStrum'(deprecated)
 	public var camTarget(default, set):String = 'hud';
 	public var scrollFactorCam(default,set):Array<Float> = [0.0, 0.0];//only can see in camGame
-	private var gfType:Bool = false;
+	public var gfType:Bool = false;
 	public var snapX:Float = 0;
 	public var snapY:Float = 0;
 	public var snapAngle:Float = 0;
 	public var snapAlpha:Float = 0;
+	public var ignoreTextureChange:Bool = false;
 	
 	private var player:Int;
 	

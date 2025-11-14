@@ -71,6 +71,8 @@ class Note extends FlxSprite
 	public var noteSplashDisabled:Bool = false;
 	public var noteSplashTexture:String = null;
 	public var noteSplashShaderType:String = 'swap';
+	public var noteSplashAngle:Float = 0;
+	public var noteSplashAlpha:Float = ClientPrefs.noteSplashAlpha;
 	//swap
 	public var noteSplashHue:Float = 0;
 	public var noteSplashSat:Float = 0;
@@ -134,12 +136,13 @@ class Note extends FlxSprite
 	public var fakeNoHit:Bool = false;//DISABLED!
 	public var copyCam:Bool = true;//attach cam from strums
 	public var copyScrollFactor:Bool = true;//attach scroll factor from strums
-	public var copyFlipY:Bool = true;//for auto flip when use between downscroll and upscroll
+	public var copyFlipY:Bool = true;//for auto flip when use between downscroll and upscroll(for sustain note)
 	public var snapX:Float = 0;
 	public var snapY:Float = 0;
 	public var snapAngle:Float = 0;
 	public var snapAlpha:Float = 0;
 	public var alignSustainNote(default, set):String = 'center';//'center', 'left', 'right'. only for main notes. not effect for long/sustain notes.
+	public var ignoreTextureChange:Bool = false;//for prevent change when use changeNotesTexture() lua
 
 
 	override public function set_y(value:Float):Float {
@@ -243,6 +246,7 @@ class Note extends FlxSprite
 						missHealth = 0.3;
 					}
 					hitCausesMiss = true;
+					ignoreTextureChange = true;
 				case 'Alt Animation':
 					animSuffix = '-alt';
 				// note tamplate
