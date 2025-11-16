@@ -227,12 +227,12 @@ div.dialogue_button_group{
 /*== sidebar ==*/
 div.sidebar{
     z-index: 9998;
-    top: calc(var(--header-height) + 2px);
+    top: calc(var(--header-height));
     position: fixed;
     width: 250px;
     max-width: 75%;
     left: -252px;
-    height: calc(100vh - calc(var(--header-height) + 2px));
+    height: calc(100vh - calc(var(--header-height)));
     background-color: var(--background-color);
     border-right: 2px solid var(--accent-color);
     transition: left 0.25s ease-out;
