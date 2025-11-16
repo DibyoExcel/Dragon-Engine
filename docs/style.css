@@ -296,6 +296,12 @@ a.button:hover{
     scroll-behavior: smooth;
 }
 
+@media (max-width: 360px) {
+    div.dialogue{
+        width: 95%;
+    }
+}
+
 @media (max-width: 300px) {
     header.header h3{
         display: none;
