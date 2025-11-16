@@ -24,6 +24,7 @@ header.header{
     color: var(--accent-color);
     font-family: var(--font-use);
     word-break: break-word;
+    box-sizing: border-box;
 }
 
 .ratio{
@@ -295,6 +296,26 @@ a.button:hover{
 :root{
     scrollbar-color: var(--accent-color) var(--background-color);
     scroll-behavior: smooth;
+}
+
+@media (max-width: 275px) {
+    header.header h3{
+        display: none;
+    }
+    header.header{
+        justify-content: center;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    :root{
+        --background-color: #fff;
+        --accent-color: #800;
+        --secondary-accent-color: #088;
+        --third-accent-color: #080;
+        --button-color: #999;
+        --button-color-hover: #888;
+    }
 }
 
 @font-face {
