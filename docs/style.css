@@ -24,7 +24,6 @@ header.header{
     color: var(--accent-color);
     font-family: var(--font-use);
     word-break: break-word;
-    box-sizing: border-box;
 }
 
 .ratio{
@@ -61,7 +60,7 @@ div.dialogue{
 
 div.dialogue div.dialogue_title{
     height: auto;
-    min-height: 40px;
+    min-height: 65px;
     margin: 0;
     color: var(--accent-color);
     border-bottom: 2px solid var(--accent-color);
@@ -244,7 +243,6 @@ div.sidebar{
     gap: 10px;
     overflow-wrap: break-word;
     padding: 10px;
-    box-sizing: border-box;
 }
 
 div.sidebar.open{
@@ -321,4 +319,8 @@ a.button:hover{
 @font-face {
     font-family: 'Mojangles';
     src: url(/asset/Mojangles.ttf);
+}
+
+* {
+    box-sizing: border-box;
 }
