@@ -296,7 +296,7 @@ a.button:hover{
     scroll-behavior: smooth;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 767px) {
     div.dialogue{
         width: 95%;
     }
