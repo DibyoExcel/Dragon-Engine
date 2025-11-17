@@ -1,7 +1,7 @@
 body{
     margin: 0;
     margin-bottom: 10px;
-    background-image: url('/Dragon-Engine/asset/background.png');
+    background-image: linear-gradient(45deg, var(--accent-color), var(--background-color));
     background-position: center;
     background-size: cover;
     background-attachment: fixed;
@@ -329,10 +329,16 @@ a.button:hover{
     :root{
         --background-color: #fff;
         --accent-color: #800;
-        --secondary-accent-color: #088;
+        --secondary-accent-color: #08f;
         --third-accent-color: #080;
         --button-color: #999;
         --button-color-hover: #888;
+    }
+}
+
+@media(prefers-color-scheme: dark) {
+    header.header img{
+        filter: drop-shadow(0 0 2.5px var(--accent-color));
     }
 }
 
