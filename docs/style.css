@@ -341,6 +341,6 @@ a.button:hover{
     src: url(/asset/Mojangles.ttf);
 }
 
-* {
+*, *::before, *::after {
     box-sizing: border-box;
 }
