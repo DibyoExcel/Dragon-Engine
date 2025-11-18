@@ -296,7 +296,7 @@ a.button:hover{
     scroll-behavior: smooth;
 }
 
-@media (max-width: 639px) {
+@media (max-width: 639px) and (orientation: portrait) {
     div.dialogue{
         width: 95%;
     }
