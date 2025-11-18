@@ -297,6 +297,9 @@ a.button:hover{
 }
 
 @media screen and (max-width: 639px) and (orientation: portrait) {
+    :root{
+        --header-height: 75px;
+    }
     div.dialogue{
         width: 95%;
     }
