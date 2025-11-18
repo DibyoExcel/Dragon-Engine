@@ -308,9 +308,9 @@ a.button:hover{
     }
     div.sidebar{
         left: 0;
-        top: -250px;
-        height: 250px;
-        max-height: calc(50% - var(--header-height));
+        top: -300px;
+        height: 300px;
+        max-height: calc(65% - var(--header-height));
         width: 100%;
         max-width: 100%;
         border-bottom-right-radius: 15px;
