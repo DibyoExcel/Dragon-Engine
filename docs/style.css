@@ -323,6 +323,9 @@ a.button:hover{
         top: var(--header-height);
         transition: top 0.25s ease-out;
     }
+    div.dialogue_group{
+        max-width: 95%;
+    }
 }
 
 @media (prefers-color-scheme: light) {
