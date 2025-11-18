@@ -234,7 +234,7 @@ div.sidebar{
     height: calc(100vh - var(--header-height));
     background-color: var(--background-color);
     border-right: 2px solid var(--accent-color);
-    transition: left 0.25s ease-out;
+    transition: left 0.25s ease-in;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -247,7 +247,7 @@ div.sidebar{
 
 div.sidebar.open{
     left: 0;
-    transition: left 0.25s ease-in;
+    transition: left 0.25s ease-out;
 }
 
 /*== other ==*/
@@ -315,13 +315,13 @@ a.button:hover{
         max-width: 100%;
         border-bottom-right-radius: 15px;
         border-bottom-left-radius: 15px;
-        transition: top 0.25s ease-out;
+        transition: top 0.25s ease-in;
         border-right: none;
         border-bottom: 2px solid var(--accent-color);
     }
     div.sidebar.open{
         top: var(--header-height);
-        transition: top 0.25s ease-in;
+        transition: top 0.25s ease-out;
     }
 }
 
