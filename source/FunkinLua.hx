@@ -85,7 +85,6 @@ class FunkinLua {
 	public static var indoTween:Array<FlxTween> = [];//it should not break if use setWindow too much
 	public static var tSongSpeed:FlxTween;
 	public static var tStrumY:Array<FlxTween> = [];
-	@:noPrivateAccess private var _curWallpaper:String = null;
 
 	#if hscript
 	public static var hscript:HScript = null;
@@ -122,24 +121,6 @@ class FunkinLua {
 		initHaxeModule();
 
 		trace('lua file loaded succesfully:' + script);
-		#if windows
-		var path = '';
-		var process = new Process('reg', [
-			"query", 
-			"HKCU\\Control Panel\\Desktop",
-			"/v",
-			"wallpaper"
-		]);
-		var output = process.stdout.readAll().toString();
-		process.close();
-		var parts = output.split("REG_SZ");
-		if (parts.length > 1) {
-			path = parts[1].trim();
-		}
-		if (path != null) {
-			_curWallpaper = path;
-		}
-		#end
 		windowArray[0] = Lib.application.window.x;
 		windowArray[1] = Lib.application.window.y;
 		windowArray[2] = Lib.application.window.width;
@@ -3131,18 +3112,6 @@ class FunkinLua {
 				} else {
 					return false;
 				}
-			}
-			#else
-			return false;
-			#end
-		});
-		Lua_helper.add_callback(lua, 'revertWallpaper', function() {
-			//https://github.com/notmagniill/WallpaperAPI
-			#if windows
-			if (FileSystem.exists(_curWallpaper)) {
-				return Wallpaper.changeWallpaper(_curWallpaper, true);
-			} else {
-				return false;
 			}
 			#else
 			return false;
