@@ -7,8 +7,9 @@ body{
     background-attachment: fixed;
 }
 
-* {
+*{
     font-family: var(--font-use);
+    cursor: url(/asset/cursor.png), auto;
 }
 
 /*== Header ==*/
