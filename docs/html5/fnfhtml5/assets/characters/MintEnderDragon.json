@@ -1,0 +1,78 @@
+{
+	"animations": [
+		{
+			"loop": false,
+			"offsets": [
+				0,
+				0
+			],
+			"anim": "idle",
+			"fps": 30,
+			"name": "MintEnderDragon Idle",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				0,
+				20
+			],
+			"anim": "singLEFT",
+			"fps": 30,
+			"name": "MintEnderDragon Left",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				0,
+				10
+			],
+			"anim": "singDOWN",
+			"fps": 30,
+			"name": "MintEnderDragon Down",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				0,
+				60
+			],
+			"anim": "singUP",
+			"fps": 30,
+			"name": "MintEnderDragon Up",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				0,
+				0
+			],
+			"anim": "singRIGHT",
+			"fps": 30,
+			"name": "MintEnderDragon Right",
+			"indices": []
+		}
+	],
+	"no_antialiasing": false,
+	"image": "characters/MintEnderDragon",
+	"position": [
+		-420,
+		50
+	],
+	"healthicon": "mintenderdragon",
+	"flip_x": false,
+	"healthbar_colors": [
+		0,
+		255,
+		0
+	],
+	"camera_position": [
+		110,
+		-150
+	],
+	"sing_duration": 6.1,
+	"scale": 1
+}

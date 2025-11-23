@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" href="https://raw.githubusercontent.com/DibyoExcel/Dragon-Engine/refs/heads/main/draconisteam/iconOG.png" type="image/png">
+    <link rel="stylesheet" href="/Dragon-Engine/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- HTML Meta Tags -->
+    <title>Lua Function</title>
+    <meta name="description" content="Dragon Engine Feature">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:url" content="https://dibyoexcel.github.io/dragon-engine/luafunction/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Lua Function">
+    <meta property="og:description" content="Dragon Engine Feature">
+    <meta property="og:image" content="https://raw.githubusercontent.com/DibyoExcel/Dragon-Engine/refs/heads/main/draconisteam/iconOG.png">
+    <meta property="og:image:width" content="1024">
+    <meta property="og:image:height" content="1024">
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="twitter:domain" content="dibyoexcel.github.io">
+    <meta property="twitter:url" content="https://dibyoexcel.github.io/dragon-engine/luafunction/">
+    <meta name="twitter:title" content="Lua Function">
+    <meta name="twitter:description" content="Dragon Engine Feature">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/DibyoExcel/Dragon-Engine/refs/heads/main/draconisteam/iconOG.png">
+
+    <!-- Meta Tags Generated via https://opengraph.dev -->
+</head>
+<body>
+    <header class="header">
+        <img onclick="document.getElementById('sidebar').classList.toggle('open');" src="https://raw.githubusercontent.com/DibyoExcel/Dragon-Engine/refs/heads/main/draconisteam/iconOG.png" alt="DGElogo">
+        <h3>Dragon Engine</h3>
+    </header>
+    <div class="sidebar" id="sidebar">
+        Introduction
+        <a class="dialogue_link" href="/Dragon-Engine/">Introduction</a>
+        Features
+        <a class="dialogue_link" href="/Dragon-Engine/secoptstrums/">2nd Oppponent Strums</a>
+        <a class="dialogue_link" href="/Dragon-Engine/customfield/">Custom Field</a>
+        <a class="dialogue_link" href="/Dragon-Engine/luafunction/">Lua Function</a>
+        <a class="dialogue_link" href="/Dragon-Engine/noteprefix/">Notetype Prefix</a>
+        <a class="dialogue_link" href="/Dragon-Engine/html5/">HTML5 Version</a>
+        Extras
+        <a class="dialogue_link" href="/Dragon-Engine/draconis/">Draconic Mods</a>
+    </div>
+    <div class="content">
+        <div class="dialogue">
+            <div class="dialogue_title">
+                <h3>
+                    Extension Download
+                </h3>
+            </div>
+            <div class="dialogue_content">
+                <h3>Now has extension. Now you not need reopen page everytime to use lua function. <a href="https://github.com/DibyoExcel/Funkin-DGE-Script-AutoComplete">Funkin DGE Script AutoComplete</a></h3>
+            </div>
+        </div>
+        <div class="dialogue" id="setfunc">
+            <div class="dialogue_title">
+                <h3>
+                    LUA Set Function
+                </h3>
+            </div>
+            <div class="dialogue_content">
+                <div class="dialogue_group">
+                    <h3>setWindowBorderColor(R:Int = 255, G:Int = 0, B:Int = 0)(1.5.7+)</h3>
+                    <h4>set window border color.<br>R: color of Red Channel(0-255).<br>G: color of G Channel(0-255).<br>B: color of Blue Channel(0-255).</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>setWindowtitleColor(R:Int = 255, G:Int = 0, B:Int = 0)(1.5.7-1.6.3)(Old)</h3>
+                    <h4>set window border color.<br>R: color of Red Channel(0-255).<br>G: color of G Channel(0-255).<br>B: color of Blue Channel(0-255).</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>setWindowColorMode(dark:Bool = true)(1.5.7+)</h3>
+                    <h4>decided window border to darkmode.<br>dark: set to dark mode.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>setWindowDarkMode()(1.5.7+)</h3>
+                    <h4>set window border to darkmode.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>setWindowLightMode()(1.5.7+)</h3>
+                    <h4>set window border to lightmode.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>setWindowX(value:Int, duration:Float = 0.0, ease:String)(1.5.8+)(Deprecated)</h3>
+                    <h4>set window X property.<br>value: any int number for x window position.<br>duration: duration for transition.<br>ease: The tweening method used, example: 'linear', 'circInOut'. <a href="https://api.haxeflixel.com/flixel/tweens/FlxEase.html">All Tween Method</a>.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>setWindowY(value:Int, duration:Float = 0.0, ease:String)(1.5.8+)(Deprecated)</h3>
+                    <h4>set window Y property.<br>value: any int number for y window position.<br>duration: duration for transition.<br>ease: The tweening method used, example: 'linear', 'circInOut'. <a href="https://api.haxeflixel.com/flixel/tweens/FlxEase.html">All Tween Method</a>.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>setWindowWidth(value:Int, duration:Float = 0.0, ease:String)(1.5.8+)(Deprecated)</h3>
+                    <h4>set window Width property.<br>value: any int number for width window.<br>duration: duration for transition.<br>ease: The tweening method used, example: 'linear', 'circInOut'. <a href="https://api.haxeflixel.com/flixel/tweens/FlxEase.html">All Tween Method</a>.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>setWindowHeight(value:Int, duration:Float = 0.0, ease:String)(1.5.8+)(Deprecated)</h3>
+                    <h4>set window Height property.<br>value: any int number for height window.<br>duration: duration for transition.<br>ease: The tweening method used, example: 'linear', 'circInOut'. <a href="https://api.haxeflixel.com/flixel/tweens/FlxEase.html">All Tween Method</a>.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>setWindowProperty(x:Null&lt;Int&gt;, y:Null&lt;Int&gt;, width:Null&lt;Float&gt;, height:Null&lt;Float&gt;, duration:Float = 0, ease:String, scale:Bool = false)(1.5.9.5+)</h3>
+                    <h4>set window property.<br>x: window x position(leave empty to ignore).<br>y: window y position(leave empty to ignore).<br>width: window width(leave empty to ignore).<br>height: window height(leave empty to ignore).<br>duration: duration for transition.<br>ease: The tweening method used, example: 'linear', 'circInOut'. <a href="https://api.haxeflixel.com/flixel/tweens/FlxEase.html">All Tween Method</a>.<br>scale: if checked it will use mutliple screen resolution(0(min) to 1(max)).</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>resetWindow()(1.5.9.5+)</h3>
+                    <h4>reset window to last window property before load song.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>setSecondOpponent(value:Bool, trasition:Bool, trasition2:Bool)(1.6.0+)</h3>
+                    <h4>set between 2nd strums or not.<br>value:toggle of 2nd strums or normal<br>trasition: should add strums transition for player.<br>trasition2: should add strums transition for opponent.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>changeGamemode(name:String = 'none', transition:Bool = true)(1.5.9.2+)</h3>
+                    <h4>set gamemode.<br>name: name of gamemode.<br>transition: set transition or not.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>changeSongSpeed(value:Float, duration:Float = 0, ease:String)(1.6.1.8+)</h3>
+                    <h4>set song scroll speed.<br>value: number the scroll speed.<br>duration: duration of transition change scroll speed.<br>ease: The tweening method used, example: 'linear', 'circInOut'. <a href="https://api.haxeflixel.com/flixel/tweens/FlxEase.html">All Tween Method</a>.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>backgroundColor(R:Int = 0, G:Int = 0, B:Int = 0, A:255)(1.6.3.1+)</h3>
+                    <h4>set app background color.<br>R: color of Red Channel(0-255).<br>G: color of Green Channel(0-255).<br>B: color of Blue Channel(0-255)<br>A: Alpha Channel(not all platform work)(0-255).</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>mirrosSongSpeed(duration:Float = 0.25, ease:String)(1.6.3.7+)</h3>
+                    <h4>mirror song scroll speed and strums y.<br>duration: duration of transition mirror scroll speed.<br>ease: The tweening method used, example: 'linear', 'circInOut'. <a href="https://api.haxeflixel.com/flixel/tweens/FlxEase.html">All Tween Method</a>.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>changeWallpaper(path:String, absolute:Bool = false)(1.6.3.8 minor 2+)(Windows Only)</h3>
+                    <h4>Change os wallpaper.<br>path: the path of images file(must be absolute. example: the <code>example.png</code> in <code>mods/modname/images/</code> you had write <code>path</code> as <code>mods/modname/images/example.png</code>).<br>absolute(1.6.3.9+): if true it will use system path(example: <code>C:\Windows\Web\Wallpaper\Windows\img0.jpg</code>. the <code>path</code> must write like <code>C:\\Windows\\Web\\Wallpaper\\Windows\\img0.jpg</code>).</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>changeNotesTexture(player:Bool = false, gf:Bool = false, texture:String = '')(1.6.3.9 minor 2+)</h3>
+                    <h4>Change the notes texture.<br>player: Player or Opponent notes.<br>gf: Gf notes or normal notes.<br>texture: What texture should use?.<br>Info: for ignore change texture, set notes or strums 'ignoreTextureChange' to true.</h4>
+                </div>
+            </div>
+        </div>
+        <div class="dialogue" id="getfunc">
+            <div class="dialogue_title">
+                <h3>
+                    LUA Get Function
+                </h3>
+            </div>
+            <div class="dialogue_content">
+                <div class="dialogue_group">
+                    <h3>getResolutionWidth()(1.5.8+)</h3>
+                    <h4>return <code>Int</code> of monitor width resolution. Shortcut of <code>getPropertyFromClass('openfl.Lib', 'application.application.window.display.bounds.width')</code>.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>getResolutionHeight()(1.5.8+)</h3>
+                    <h4>return <code>Int</code> of monitor height resolution. Shortcut of <code>getPropertyFromClass('openfl.Lib', 'application.application.window.display.bounds.height')</code>.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>getBlendFromString(blend:String)(1.6.3.8+)</h3>
+                    <h4>return <code>FlxBlend</code> from <code>String</code>.</h4>
+                </div>
+            </div>
+        </div>
+        <div class="dialogue" id="objfunc">
+            <div class="dialogue_title">
+                <h3>
+                    LUA Obj Function
+                </h3>
+            </div>
+            <div class="dialogue_content">
+                <div class="dialogue_group">
+                    <h3>createCustomStrum(tag:String, data:Int = 4, camera:String = 'hud', scroilX:Float = 0, scrollY:Float = 0, downscroll:Null&lt;Bool&gt;)(1.6.0+)</h3>
+                    <h4>create custom field.<br>tag: tag name for custom field.<br>data: how much strum to spawn.<br>camera: camera target to custom field(selection: 'game', 'hud', 'other').<br>scrollX : scroll speed of x.<br>scrollY : scroll speed of y.<br>downscroll: should down scroll?(if not set it will use current setting).</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>removeStrum(tag:String)(1.6.0+)</h3>
+                    <h4>remove custom field.<br>tag: tag name custom field.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>addCamera(name:String = '', x:Int, y:Int, width:Int, height:Int, zoom:Float = 1)(1.6.2+)</h3>
+                    <h4>add custom camera.<br>name: name custom camera(use 'camera:yourcameraname' if want access to <code>setProperty()</code> or <code>getProperty()</code>).<br>x: camera x position.<br>y: camera y position.<br>width: camera width.<br>height: camera height.<br>zoom: camera zoom.<br>Warning: the last cameras always use by pause screen(not related after 1.6.3+).</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>removeCamera(name:String = '')(1.6.2+)</h3>
+                    <h4>remove custom camera.<br>name: name custom camera.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>luaAlert(content:String = 'Hi, I\'m the who make this engine', title:String = 'DubEnderDragon')(1.6.2.2+)</h3>
+                    <h4>make alert box.<br>content: content of alert.<br>title: title of content.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>openURL(web:String = 'https://github.com/DibyoExcel/Dragon-Engine')(1.6.3.5+)</h3>
+                    <h4>open the webpage.<br>web: the link to open pages.</h4>
+                </div>
+            </div>
+        </div>
+        <div class="dialogue" id="callfunc">
+            <div class="dialogue_title">
+                <h3>
+                    LUA Callback Function
+                </h3>
+            </div>
+            <div class="dialogue_content">
+                <div class="dialogue_group">
+                    <h3>opponentNoteMiss(id:Int, noteData:Int, noteType:String, isSustainNote:Bool)(1.5.7+)</h3>
+                    <h4>same as <code>noteMiss(id:Int, noteData:Int, noteType:String, isSustainNote:Bool)</code> but for opponent and most use for bothside and opponent gamemode.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>opponentNoteMissPress(noteData:Int)(1.5.7+)</h3>
+                    <h4>same as <code>noteMiss(noteData:Int)</code> but for opponent and most use for opponent gamemode.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>onChangeGamemode(name:String, transition:Bool)(1.6.0.6+)</h3>
+                    <h4>function when change gamemode(from <code>changeGamemode()</code>)<br>name: returning the gamemode name after change.<br>transition(1.6.1.2+): return bool after change gamemode transition.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>onChangeOpponent(dualstrum:Bool, transition:Bool, transition2:Bool)(1.6.0.6+)</h3>
+                    <h4>function when change 2nd strums(from <code>setSecondOpponent()</code>).<br>dualstrum:returning bool of 2nd strums mode after change.<br>transition(1.6.1.2+): returning bool of transition after change.<br>transition2(1.6.1.2+): returning bool of transition2 after change.</h4>
+                </div>
+            </div>
+        </div>
+        <div class="dialogue" id="varfunc">
+            <div class="dialogue_title">
+                <h3>
+                    LUA Variable Function
+                </h3>
+            </div>
+            <div class="dialogue_content">
+                <div class="dialogue_group">
+                    <h3>gamemode(1.5.9+)</h3>
+                    <h4>return <code>String</code> of current gamemode.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>extraui(1.6.0.7+)</h3>
+                    <h4>return <code>Bool</code> of "Extra UI" Setting.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>darkmode(1.6.1.10+)</h3>
+                    <h4>return <code>Bool</code> of "Dark Mode" Setting.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>startPause(1.6.1.10+)</h3>
+                    <h4>return <code>Bool</code> of "Start Pause" Setting.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>defaultGfStrumX0(1.6.0.9+)</h3>
+                    <h4>return <code>Float</code> of strums X0 <code>gfStrums</code>(2nd Opponent Strums only).</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>defaultGfStrumX1(1.6.0.9+)</h3>
+                    <h4>return <code>Float</code> of strums X1 <code>gfStrums</code>(2nd Opponent Strums only).</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>defaultGfStrumX2(1.6.0.9+)</h3>
+                    <h4>return <code>Float</code> of strums X2 <code>gfStrums</code>(2nd Opponent Strums only).</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>defaultGfStrumX3(1.6.0.9+)</h3>
+                    <h4>return <code>Float</code> of strums X3 <code>gfStrums</code>(2nd Opponent Strums only).</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>defaultGfStrumY0(1.6.0.9+)</h3>
+                    <h4>return <code>Float</code> of strums Y0 <code>gfStrums</code>(2nd Opponent Strums only).</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>defaultGfStrumY1(1.6.0.9+)</h3>
+                    <h4>return <code>Float</code> of strums Y1 <code>gfStrums</code>(2nd Opponent Strums only).</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>defaultGfStrumY2(1.6.0.9+)</h3>
+                    <h4>return <code>Float</code> of strums Y2 <code>gfStrums</code>(2nd Opponent Strums only).</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>defaultGfStrumY3(1.6.0.9+)</h3>
+                    <h4>return <code>Float</code> of strums Y3 <code>gfStrums</code>(2nd Opponent Strums only).</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>engineversion(1.6.3.1+)</h3>
+                    <h4>return <code>String</code> of DGE Version.</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,78 @@
+{
+	"animations": [
+		{
+			"loop": false,
+			"offsets": [
+				0,
+				0
+			],
+			"anim": "idle",
+			"fps": 30,
+			"name": "DubEnderDragon Idle",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				0,
+				20
+			],
+			"anim": "singLEFT",
+			"fps": 30,
+			"name": "DubEnderDragon Left",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				0,
+				10
+			],
+			"anim": "singDOWN",
+			"fps": 30,
+			"name": "DubEnderDragon Down",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				0,
+				60
+			],
+			"anim": "singUP",
+			"fps": 30,
+			"name": "DubEnderDragon Up",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				0,
+				0
+			],
+			"anim": "singRIGHT",
+			"fps": 30,
+			"name": "DubEnderDragon Right",
+			"indices": []
+		}
+	],
+	"no_antialiasing": false,
+	"image": "characters/DubEnderDragon",
+	"position": [
+		-420,
+		50
+	],
+	"healthicon": "dubenderdragon",
+	"flip_x": false,
+	"healthbar_colors": [
+		121,
+		0,
+		255
+	],
+	"camera_position": [
+		110,
+		-150
+	],
+	"sing_duration": 6.1,
+	"scale": 1
+}
