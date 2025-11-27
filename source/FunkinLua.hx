@@ -81,7 +81,6 @@ class FunkinLua {
 	public var scriptName:String = '';
 	public var closed:Bool = false;
 	//reset stuff
-	var windowArray:Array<Dynamic> =[ 0, 0, 1280, 720, false, false ];//x, y, width, height, maximized, fullscreen
 	public static var indoTween:Array<FlxTween> = [];//it should not break if use setWindow too much
 	public static var tSongSpeed:FlxTween;
 	public static var tStrumY:Array<FlxTween> = [];
@@ -121,12 +120,6 @@ class FunkinLua {
 		initHaxeModule();
 
 		trace('lua file loaded succesfully:' + script);
-		windowArray[0] = Lib.application.window.x;
-		windowArray[1] = Lib.application.window.y;
-		windowArray[2] = Lib.application.window.width;
-		windowArray[3] = Lib.application.window.height;
-		windowArray[4] = FlxG.fullscreen;
-		windowArray[5] = Lib.application.window.maximized;
 		// Lua shit
 		set('Function_StopLua', Function_StopLua);
 		set('Function_Stop', Function_Stop);
@@ -1084,160 +1077,6 @@ class FunkinLua {
 				setGroupStuff(leArray, variable, value);
 			}
 		});
-		Lua_helper.add_callback(lua, "setWindowDarkMode", function() {
-			#if (WINDOW_ABILITY && WINDOW_COLOR)
-			WindowColorMode.setDarkMode();
-			WindowColorMode.redrawWindowHeader();
-			#end
-		});
-		Lua_helper.add_callback(lua, "setWindowLightMode", function() {
-			#if (WINDOW_ABILITY && WINDOW_COLOR)
-			WindowColorMode.setLightMode();
-			WindowColorMode.redrawWindowHeader();
-			#end
-		});
-		Lua_helper.add_callback(lua, "setWindowColorMode", function(dark:Bool = true) {
-			#if (WINDOW_ABILITY && WINDOW_COLOR)
-			WindowColorMode.setWindowColorMode(dark);
-			WindowColorMode.redrawWindowHeader();
-			#end
-		});
-		Lua_helper.add_callback(lua, "setWindowBorderColor", function(r:Int = 255, g:Int = 0, b:Int = 0, setHeader:Bool = true, setBorder:Bool = true) {
-			#if (WINDOW_ABILITY && WINDOW_COLOR)
-			WindowColorMode.setWindowBorderColor([r, g, b], setHeader, setBorder);
-			WindowColorMode.redrawWindowHeader();
-			#end
-		});
-		Lua_helper.add_callback(lua, "setWindowTitleColor", function(r:Int = 255, g:Int = 255, b:Int = 255) {
-			#if (WINDOW_ABILITY && WINDOW_COLOR)
-			WindowColorMode.setWindowTitleColor([r, g, b]);
-			WindowColorMode.redrawWindowHeader();
-			#end
-		});
-		//Little deprecated but i never remove(for backward compability)
-		Lua_helper.add_callback(lua, "setWindowX", function(value:Int, duration:Float = 0, ease:String) {
-			#if WINDOW_ABILITY
-			if (indoTween[0] != null) {
-				indoTween[0].cancel();
-			}
-			if (duration != 0) {
-				indoTween[0] = FlxTween.tween(Lib.application.window, {x: value}, duration, {ease: getFlxEaseByString(ease)});
-			} else {
-				Lib.application.window.x = value;
-			}
-			#end
-		});
-		Lua_helper.add_callback(lua, "setWindowY", function(value:Int, duration:Float = 0, ease:String) {
-			#if WINDOW_ABILITY
-			if (indoTween[1] != null) {
-				indoTween[1].cancel();
-			}
-			if (duration != 0) {
-				indoTween[1] = FlxTween.tween(Lib.application.window, {y: value}, duration, {ease: getFlxEaseByString(ease)});
-			} else {
-				Lib.application.window.y = value;
-			}
-			#end
-		});
-		Lua_helper.add_callback(lua, "setWindowWidth", function(value:Int, duration:Float = 0, ease:String) {
-			#if WINDOW_ABILITY
-			if (indoTween[2] != null) {
-				indoTween[2].cancel();
-			}
-			if (duration != 0) {
-				indoTween[2] = FlxTween.tween(Lib.application.window, {width: value}, duration, {ease: getFlxEaseByString(ease)});
-			} else {
-				Lib.application.window.width = value;
-			}
-			#end
-		});
-		Lua_helper.add_callback(lua, "setWindowHeight", function(value:Int, duration:Float = 0, ease:String) {
-			#if WINDOW_ABILITY
-			if (indoTween[3] != null) {
-				indoTween[3].cancel();
-			}
-			if (duration != 0) {
-				indoTween[3] = FlxTween.tween(Lib.application.window, {height: value}, duration, {ease: getFlxEaseByString(ease)});
-			} else {
-				Lib.application.window.height = value;
-			}
-			#end
-		});
-		//new window function
-		Lua_helper.add_callback(lua, "setWindowProperty", function(x:Null<Int> = null, y:Null<Int> = null, width:Null<Float> = null, height:Null<Float> = null, duration:Float = 0, ease:String, scale:Bool = false) {
-			#if WINDOW_ABILITY
-			for (i in indoTween) {
-				if (i != null) {
-					i.cancel();
-				}
-			}
-			if (duration != 0) {
-				if (x != null) {
-					indoTween[0] = FlxTween.tween(Lib.application.window, {x: x}, duration, {ease: getFlxEaseByString(ease)});
-				}
-				if (y != null) {
-					indoTween[1] = FlxTween.tween(Lib.application.window, {y: y}, duration, {ease: getFlxEaseByString(ease)});
-				}
-				if (width != null) {
-					if (scale) {
-						indoTween[2] = FlxTween.tween(Lib.application.window, {width: Math.round(width*Lib.application.window.display.bounds.width)}, duration, {ease: getFlxEaseByString(ease)});
-					} else {
-						indoTween[2] = FlxTween.tween(Lib.application.window, {width: Math.round(width)}, duration, {ease: getFlxEaseByString(ease)});
-					}
-				}
-				if (height != null) {
-					if (scale) {
-						indoTween[3] = FlxTween.tween(Lib.application.window, {height: Math.round(height*Lib.application.window.display.bounds.height)}, duration, {ease: getFlxEaseByString(ease)});
-					} else {
-						indoTween[3] = FlxTween.tween(Lib.application.window, {height: Math.round(height)}, duration, {ease: getFlxEaseByString(ease)});
-					}
-				}
-			} else {
-				if (x != null) {
-					Lib.application.window.x = x;
-				}
-				if (y != null) {
-					Lib.application.window.y = y;
-				}
-				if (width != null) {
-					if (scale) {
-						Lib.application.window.width = Math.round(width*Lib.application.window.display.bounds.width);
-					} else {
-						Lib.application.window.width = Math.round(width);
-					}
-				}
-				if (height != null) {
-					if (scale) {
-						Lib.application.window.height = Math.round(height*Lib.application.window.display.bounds.height);
-					} else {
-						Lib.application.window.height = Math.round(height);
-					}
-				}
-			}
-			#end
-		});
-		//reset 
-		Lua_helper.add_callback(lua, "resetWindow", function() {
-			#if WINDOW_ABILITY
-			for (i in indoTween) {
-				if (i != null) {
-					i.cancel();
-				}
-			}
-			Lib.application.window.x = Std.int(windowArray[0]);
-			Lib.application.window.y = Std.int(windowArray[1]);
-			Lib.application.window.width = Std.int(windowArray[2]);
-			Lib.application.window.height = Std.int(windowArray[3]);
-			FlxG.fullscreen = windowArray[4];
-			Lib.application.window.maximized = windowArray[5];
-			#end
-		});
-		Lua_helper.add_callback(lua, "getResolutionWidth", function() {
-			return Lib.application.window.display.bounds.width;
-		});
-		Lua_helper.add_callback(lua, "getResolutionHeight", function() {
-			return Lib.application.window.display.bounds.height;
-		});
 		Lua_helper.add_callback(lua, "removeFromGroup", function(obj:String, index:Int, dontDestroy:Bool = false) {
 			if(Std.isOfType(Reflect.getProperty(getInstance(), obj), FlxTypedGroup)) {
 				var sex = Reflect.getProperty(getInstance(), obj).members[index];
@@ -1821,31 +1660,6 @@ class FunkinLua {
 		});
 		Lua_helper.add_callback(lua, "getSongPosition", function() {
 			return Conductor.songPosition;
-		});
-		Lua_helper.add_callback(lua, "setSecondOpponent", function(value:Null<Bool> = null, transition:Bool = true, trasitionOpt:Bool = true) {
-			if (value != null) {
-				PlayState.instance.changeSecOpt(value, transition, trasitionOpt);
-			}
-		});
-		Lua_helper.add_callback(lua, "createCustomStrum", function(tag:String= '', data:Int = 4, camera:String = 'hud', sfX:Float = 0, sfY:Float = 0, downscroll:Null<Bool> = null) {
-			if (tag != null && tag != '') {
-				PlayState.instance.createStrum(tag, data, camera, sfX, sfY, downscroll);
-			}
-		});
-		Lua_helper.add_callback(lua, "removeStrum", function(tag:String= '') {
-			if (tag != null && tag != '') {
-				PlayState.instance.removeStrum(tag);
-			}
-		});
-		Lua_helper.add_callback(lua, "addCamera", function(name:String= '', x:Int, y:Int, width:Int, height:Int, zoom:Float = 1) {
-			if (name != null && name != '') {
-				PlayState.instance.addCamera(name, x, y, width, height, zoom);
-			}
-		});
-		Lua_helper.add_callback(lua, "removeCamera", function(name:String= '') {
-			if (name != null && name != '') {
-				PlayState.instance.remCamera(name);
-			}
 		});
 
 		Lua_helper.add_callback(lua, "getCharacterX", function(type:String) {
@@ -3036,9 +2850,188 @@ class FunkinLua {
 			#end
 			return list;
 		});
+
+		//DGE script
+		Lua_helper.add_callback(lua, "setWindowDarkMode", function() {
+			#if (WINDOW_ABILITY && WINDOW_COLOR)
+			WindowColorMode.setDarkMode();
+			WindowColorMode.redrawWindowHeader();
+			#end
+		});
+
+		Lua_helper.add_callback(lua, "setWindowLightMode", function() {
+			#if (WINDOW_ABILITY && WINDOW_COLOR)
+			WindowColorMode.setLightMode();
+			WindowColorMode.redrawWindowHeader();
+			#end
+		});
+
+		Lua_helper.add_callback(lua, "setWindowColorMode", function(dark:Bool = true) {
+			#if (WINDOW_ABILITY && WINDOW_COLOR)
+			WindowColorMode.setWindowColorMode(dark);
+			WindowColorMode.redrawWindowHeader();
+			#end
+		});
+
+		Lua_helper.add_callback(lua, "setWindowBorderColor", function(r:Int = 255, g:Int = 0, b:Int = 0, setHeader:Bool = true, setBorder:Bool = true) {
+			#if (WINDOW_ABILITY && WINDOW_COLOR)
+			WindowColorMode.setWindowBorderColor([r, g, b], setHeader, setBorder);
+			WindowColorMode.redrawWindowHeader();
+			#end
+		});
+
+		Lua_helper.add_callback(lua, "setWindowTitleColor", function(r:Int = 255, g:Int = 255, b:Int = 255) {
+			#if (WINDOW_ABILITY && WINDOW_COLOR)
+			WindowColorMode.setWindowTitleColor([r, g, b]);
+			WindowColorMode.redrawWindowHeader();
+			#end
+		});
+
+		//Little deprecated but i never remove(for backward compability)
+		Lua_helper.add_callback(lua, "setWindowX", function(value:Int, duration:Float = 0, ease:String) {
+			luaTrace("setWindowX is deprecated! Use setWindowProperty instead", false, true);
+			#if WINDOW_ABILITY
+			if (indoTween[0] != null) {
+				indoTween[0].cancel();
+			}
+			if (duration != 0) {
+				indoTween[0] = FlxTween.tween(Lib.application.window, {x: value}, duration, {ease: getFlxEaseByString(ease)});
+			} else {
+				Lib.application.window.x = value;
+			}
+			#end
+		});
+		
+		Lua_helper.add_callback(lua, "setWindowY", function(value:Int, duration:Float = 0, ease:String) {
+			luaTrace("setWindowY is deprecated! Use setWindowProperty instead", false, true);
+			#if WINDOW_ABILITY
+			if (indoTween[1] != null) {
+				indoTween[1].cancel();
+			}
+			if (duration != 0) {
+				indoTween[1] = FlxTween.tween(Lib.application.window, {y: value}, duration, {ease: getFlxEaseByString(ease)});
+			} else {
+				Lib.application.window.y = value;
+			}
+			#end
+		});
+
+		Lua_helper.add_callback(lua, "setWindowWidth", function(value:Int, duration:Float = 0, ease:String) {
+			luaTrace("setWindowWidth is deprecated! Use setWindowProperty instead", false, true);
+			#if WINDOW_ABILITY
+			if (indoTween[2] != null) {
+				indoTween[2].cancel();
+			}
+			if (duration != 0) {
+				indoTween[2] = FlxTween.tween(Lib.application.window, {width: value}, duration, {ease: getFlxEaseByString(ease)});
+			} else {
+				Lib.application.window.width = value;
+			}
+			#end
+		});
+
+		Lua_helper.add_callback(lua, "setWindowHeight", function(value:Int, duration:Float = 0, ease:String) {
+			luaTrace("setWindowHeight is deprecated! Use setWindowProperty instead", false, true);
+			#if WINDOW_ABILITY
+			if (indoTween[3] != null) {
+				indoTween[3].cancel();
+			}
+			if (duration != 0) {
+				indoTween[3] = FlxTween.tween(Lib.application.window, {height: value}, duration, {ease: getFlxEaseByString(ease)});
+			} else {
+				Lib.application.window.height = value;
+			}
+			#end
+		});
+
+		//new window function(idea from my Draconis Mods)
+		Lua_helper.add_callback(lua, "setWindowProperty", function(x:Null<Int> = null, y:Null<Int> = null, width:Null<Float> = null, height:Null<Float> = null, duration:Float = 0, ease:String, scale:Bool = false) {
+			#if WINDOW_ABILITY
+			for (i in indoTween) {
+				if (i != null) {
+					i.cancel();
+				}
+			}
+			if (duration != 0) {
+				if (x != null) {
+					indoTween[0] = FlxTween.tween(Lib.application.window, {x: x}, duration, {ease: getFlxEaseByString(ease)});
+				}
+				if (y != null) {
+					indoTween[1] = FlxTween.tween(Lib.application.window, {y: y}, duration, {ease: getFlxEaseByString(ease)});
+				}
+				if (width != null) {
+					if (scale) {
+						indoTween[2] = FlxTween.tween(Lib.application.window, {width: Math.round(width*Lib.application.window.display.bounds.width)}, duration, {ease: getFlxEaseByString(ease)});
+					} else {
+						indoTween[2] = FlxTween.tween(Lib.application.window, {width: Math.round(width)}, duration, {ease: getFlxEaseByString(ease)});
+					}
+				}
+				if (height != null) {
+					if (scale) {
+						indoTween[3] = FlxTween.tween(Lib.application.window, {height: Math.round(height*Lib.application.window.display.bounds.height)}, duration, {ease: getFlxEaseByString(ease)});
+					} else {
+						indoTween[3] = FlxTween.tween(Lib.application.window, {height: Math.round(height)}, duration, {ease: getFlxEaseByString(ease)});
+					}
+				}
+			} else {
+				if (x != null) {
+					Lib.application.window.x = x;
+				}
+				if (y != null) {
+					Lib.application.window.y = y;
+				}
+				if (width != null) {
+					if (scale) {
+						Lib.application.window.width = Math.round(width*Lib.application.window.display.bounds.width);
+					} else {
+						Lib.application.window.width = Math.round(width);
+					}
+				}
+				if (height != null) {
+					if (scale) {
+						Lib.application.window.height = Math.round(height*Lib.application.window.display.bounds.height);
+					} else {
+						Lib.application.window.height = Math.round(height);
+					}
+				}
+			}
+			#end
+		});
+
+		//reset 
+		Lua_helper.add_callback(lua, "resetWindow", function() {
+			#if WINDOW_ABILITY
+			for (i in indoTween) {
+				if (i != null) {
+					i.cancel();
+				}
+			}
+			//default window set
+			var scrWidth = Lib.application.window.display.bounds.width;
+			var scrHeight = Lib.application.window.display.bounds.height;
+			FlxG.fullscreen = false;
+			Lib.application.window.fullscreen = false;
+			Lib.application.window.maximized = false;
+			Lib.application.window.x = Math.round((scrWidth/2)-320);
+			Lib.application.window.y = Math.round((scrHeight/2)-180);
+			Lib.application.window.width = 640;
+			Lib.application.window.height = 360;
+			Lib.application.window.maximized = true;
+			#end
+		});
+
+		Lua_helper.add_callback(lua, "getResolutionWidth", function() {
+			return Lib.application.window.display.bounds.width;
+		});
+
+		Lua_helper.add_callback(lua, "getResolutionHeight", function() {
+			return Lib.application.window.display.bounds.height;
+		});
+
 		Lua_helper.add_callback(lua, "changeGamemode", function(name:String = "none", transition:Bool = true) {
 			PlayState.instance.gamemodeChanger(name, transition);
 		});
+
 		Lua_helper.add_callback(lua, "changeSongSpeed", function(value:Float, dur:Float = 0, ease:String) {
 			if (tSongSpeed != null) {
 				tSongSpeed.cancel();
@@ -3049,10 +3042,38 @@ class FunkinLua {
 				PlayState.instance.songSpeed = value;
 			}
 		});
+
+		Lua_helper.add_callback(lua, "setSecondOpponent", function(value:Null<Bool> = null, transition:Bool = true, trasitionOpt:Bool = true) {
+			if (value != null) {
+				PlayState.instance.changeSecOpt(value, transition, trasitionOpt);
+			}
+		});
+		Lua_helper.add_callback(lua, "createCustomStrum", function(tag:String= '', data:Int = 4, camera:String = 'hud', sfX:Float = 0, sfY:Float = 0, downscroll:Null<Bool> = null) {
+			if (tag != null && tag != '') {
+				PlayState.instance.createStrum(tag, data, camera, sfX, sfY, downscroll);
+			}
+		});
+		Lua_helper.add_callback(lua, "removeStrum", function(tag:String= '') {
+			if (tag != null && tag != '') {
+				PlayState.instance.removeStrum(tag);
+			}
+		});
+		Lua_helper.add_callback(lua, "addCamera", function(name:String= '', x:Int, y:Int, width:Int, height:Int, zoom:Float = 1) {
+			if (name != null && name != '') {
+				PlayState.instance.addCamera(name, x, y, width, height, zoom);
+			}
+		});
+		Lua_helper.add_callback(lua, "removeCamera", function(name:String= '') {
+			if (name != null && name != '') {
+				PlayState.instance.remCamera(name);
+			}
+		});
+
 		Lua_helper.add_callback(lua, "luaAlert", function(content:String='Hi, I\'m the who make this engine', title:String = 'DubEnderDragon') {
 			lime.app.Application.current.window.alert(content, title);
 			return title + ': ' + content;
 		});
+
 		//background color
 		Lua_helper.add_callback(lua, "backgroundColor", function(R:Int = 0, G:Int = 0, B:Int = 0, A:Int = 255) {
 			var colorInt = FlxColor.fromRGB(R, G, B, A);
@@ -3100,18 +3121,12 @@ class FunkinLua {
 			//https://github.com/notmagniill/WallpaperAPI
 			#if windows
 			if (absolute) {
-				var fullPath:String = path.replace('/', '\\');
-				if (FileSystem.exists(fullPath)) {
-					return Wallpaper.changeWallpaper(fullPath, true);
-				} else {
-					return false;
-				}
+				path = path.replace('/', '\\');
+			}
+			if (FileSystem.exists(path)) {//always with safety
+				return Wallpaper.changeWallpaper(path, absolute);
 			} else {
-				if (FileSystem.exists(path)) {//always with safety
-					return Wallpaper.changeWallpaper(path, false);
-				} else {
-					return false;
-				}
+				return false;
 			}
 			#else
 			return false;
@@ -3171,11 +3186,99 @@ class FunkinLua {
 				if (i == null) {
 					i = '';
 				}
-				actTxt += text;
+				actTxt += '\n' + text;
 			}
 			luaTrace('' + actTxt, true, false);
 		});
+
+		Lua_helper.add_callback(lua, "getWindowProperty", function(type:String) {
+			#if WINDOW_ABILITY
+			if (type == null || type.length < 1) {
+				return false;
+			}
+			if (Reflect.hasField(Lib.application.window, type)) {
+				return Reflect.getProperty(Lib.application.window, type);
+			} else {
+				return false;
+			}
+			#else
+			return false;
+			#end
+		});
+
+		Lua_helper.add_callback(lua, "getColorFromRGB", function(R:Int, G:Int, B:Int, A:Int = 255) {
+			//alpha is optional but idk what would be happen if set alpha to 0
+			return FlxColor.fromRGB(R, G, B, A);
+		});
+
+		Lua_helper.add_callback(lua, "customCameraExists", function(tag:String) {
+			return PlayState.instance.customCameraMap.exists(tag);
+		});
+
+		Lua_helper.add_callback(lua, "customStrumExists", function(tag:String) {
+			return PlayState.instance.strumGroupMap.exists(tag);
+		});
 		
+		Lua_helper.add_callback(lua, 'centerWindow', function(duration:Float = 0, ease:String) {
+			#if WINDOW_ABILITY
+			for (i in indoTween) {
+				if (i != null) {
+					i.cancel();
+				}
+			}
+			var getResX = Lib.application.window.display.bounds.width;
+			var getResY = Lib.application.window.display.bounds.height;
+			var getWinX = Lib.application.window.width;
+			var getWinY = Lib.application.window.height;
+			if (duration > 0) {
+				indoTween[0] = FlxTween.tween(Lib.application.window, {x: Math.round((getResX /2) - (getWinX / 2))}, duration, { ease: getFlxEaseByString(ease) });
+				indoTween[1] = FlxTween.tween(Lib.application.window, {y: Math.round((getResY /2) - (getWinY / 2))}, duration, { ease: getFlxEaseByString(ease) });
+			} else {
+				Lib.application.window.x = Math.round((getResX /2) - (getWinX / 2));
+				Lib.application.window.y = Math.round((getResY /2) - (getWinY / 2));
+			}
+			return true;
+			#else
+			return false;
+			#end
+		});
+
+		Lua_helper.add_callback(lua, "callPropertyFromGroup", function(obj:String, index:Int, variable:Dynamic, value:Array<Dynamic>) {
+			var shitMyPants:Array<String> = obj.split('.');
+			var isMap:Array<String> = obj.split('@');
+			var realObject:Dynamic = Reflect.getProperty(getInstance(), obj);
+			if(shitMyPants.length>1)
+				realObject = getPropertyLoopThingWhatever(shitMyPants, true, false);
+
+			if (isMap.length > 1) {
+				if (isMap[0] == 'customStrums' && PlayState.instance.strumGroupMap.exists(isMap[1])) {
+					realObject = PlayState.instance.strumGroupMap.get(isMap[1]);
+				} else {
+					return;
+				}
+			}
+
+			if(Std.isOfType(realObject, FlxTypedGroup)) {
+				return callGroupStuff(realObject.members[index], variable, value);
+			}
+
+			var leArray:Dynamic = realObject[index];
+			if(leArray != null) {
+				if(Type.typeof(variable) == ValueType.TInt) {
+					leArray[variable] = value;
+					return;
+				}
+				return callGroupStuff(leArray, variable, value);
+			}
+		});
+
+		Lua_helper.add_callback(lua, "callProperty", function(variable:String, value:Array<Dynamic>) {
+			var killMe:Array<String> = variable.split('.');
+			if(killMe.length > 1) {
+				return callVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1], value);
+			}
+			return callVarInArray(getInstance(), variable, value);
+		});
 
 		call('onCreate', []);
 		#end
@@ -3238,6 +3341,44 @@ class FunkinLua {
 
 		Reflect.setProperty(instance, variable, value);
 		return true;
+	}
+
+	public static function callVarInArray(instance:Dynamic, variable:String, value:Array<Dynamic>):Any
+	{
+		var shit:Array<String> = variable.split('[');
+		if(shit.length > 1)
+		{
+			var blah:Dynamic = null;
+			if(PlayState.instance.variables.exists(shit[0]))
+			{
+				var retVal:Dynamic = PlayState.instance.variables.get(shit[0]);
+				if(retVal != null)
+					blah = retVal;
+			}
+			else
+				blah = Reflect.getProperty(instance, shit[0]);
+
+			for (i in 1...shit.length)
+			{
+				var leNum:Dynamic = shit[i].substr(0, shit[i].length - 1);
+				if(i >= shit.length-1) //Last array
+					blah[leNum] = value;
+				else //Anything else
+					blah = blah[leNum];
+			}
+			return blah;
+		}
+		/*if(Std.isOfType(instance, Map))
+			instance.set(variable,value);
+		else*/
+			
+		if(PlayState.instance.variables.exists(variable))
+		{
+			PlayState.instance.variables.set(variable, value);
+			return true;
+		}
+		var method = Reflect.field(instance, variable);
+		return Reflect.callMethod(instance, method, value);
 	}
 	public static function getVarInArray(instance:Dynamic, variable:String):Any
 	{
@@ -3400,6 +3541,20 @@ class FunkinLua {
 			return;
 		}
 		Reflect.setProperty(leArray, variable, value);
+	}
+	
+	function callGroupStuff(leArray:Dynamic, variable:String, value:Array<Dynamic>):Any {
+		var killMe:Array<String> = variable.split('.');
+		if(killMe.length > 1) {
+			var coverMeInPiss:Dynamic = Reflect.getProperty(leArray, killMe[0]);
+			for (i in 1...killMe.length-1) {
+				coverMeInPiss = Reflect.getProperty(coverMeInPiss, killMe[i]);
+			}
+			var method = Reflect.field(coverMeInPiss, killMe[killMe.length-1]);
+			return Reflect.callMethod(coverMeInPiss, method, value);
+		}
+		var method1 = Reflect.field(leArray, variable);
+		return Reflect.callMethod(leArray, method1, value);
 	}
 
 	function resetTextTag(tag:String) {

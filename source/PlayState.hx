@@ -136,6 +136,7 @@ class PlayState extends MusicBeatState
 	#end
 	
 	public var strumGroupMap:Map<String, FlxTypedGroup<StrumNote>> = new Map();
+	public var customCameraMap:Map<String, FlxCamera> = new Map();
 	public var BF_X:Float = 770;
 	public var BF_Y:Float = 100;
 	public var DAD_X:Float = 100;
@@ -6439,20 +6440,22 @@ class PlayState extends MusicBeatState
 		}
 	}
 	public function addCamera(name:String = '', x:Int, y:Int, width:Int, height:Int, zoom:Float = 1) {
-		if (name != '' && !variables.exists('camera:' + name)) {
+		if (name != '' && !variables.exists('camera:' + name) && customCameraMap.exists(name)) {
 			var isTemp:FlxCamera = new FlxCamera(x, y, width, height, zoom);
 			isTemp.bgColor.alpha = 0;
 			FlxG.cameras.add(isTemp, false);
 			variables.set('camera:' + name, isTemp);
+			customCameraMap.set(name, isTemp);
 		} else {
 			trace('error. unable to create camera(' + name + '). Does tag of "' + name + '" exists?if yes use other name or remove it');
 		}
 	}
 	public function remCamera(name:String = '') {
-		if (name != '' && variables.exists('camera:' + name)) {
+		if (name != '' && variables.exists('camera:' + name) && customCameraMap.exists(name)) {
 			var getCam:FlxCamera = variables.get('camera:' + name);
 			FlxG.cameras.remove(getCam, true);
 			variables.remove('camera:' + name);
+			customCameraMap.remove(name);
 		} else {
 			trace('error. unable to remove camera(' + name + '). Does "' + name + '" Exists?');
 		}

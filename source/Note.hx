@@ -132,7 +132,7 @@ class Note extends FlxSprite
 	public var noteSplashScrollFactor:Array<Float> = [1, 1];//dont ask why 1 cuz is default of note splash
 	public var offsetStrumTime:Float = 0;
 	public var sustainTail:Bool = false;
-	public var animConfirm(default, set):String = '';//static, confirm, notes, pressed
+	public var animConfirm:String = '';//static, confirm, notes, pressed
 	public var fakeNoHit:Bool = false;//DISABLED!
 	public var copyCam:Bool = true;//attach cam from strums
 	public var copyScrollFactor:Bool = true;//attach scroll factor from strums
@@ -752,20 +752,6 @@ class Note extends FlxSprite
 		#end
 	}
 
-	private function set_animConfirm(value:String):String {
-		var shouldUse:Array<String> = [ '', 'static', 'confirm', 'notes', 'pressed' ];//please lower case
-		if (animConfirm != value) {
-			if (value == null) {
-				value = '';
-			}
-			value = value.toLowerCase();
-			if (shouldUse.indexOf(value) == -1) {
-				value = '';//prevent fallout error
-			}
-			animConfirm = value;
-		}
-		return value;
-	}
 	function updateSusNoteoffset() {
 		if (isSustainNote && parent != null) {
 			offsetX = (parent.width/2)-(width/2);//center the long notes from parent
