@@ -6440,7 +6440,7 @@ class PlayState extends MusicBeatState
 		}
 	}
 	public function addCamera(name:String = '', x:Int, y:Int, width:Int, height:Int, zoom:Float = 1) {
-		if (name != '' && !variables.exists('camera:' + name) && customCameraMap.exists(name)) {
+		if (name != '' && !variables.exists('camera:' + name) && !customCameraMap.exists(name)) {
 			var isTemp:FlxCamera = new FlxCamera(x, y, width, height, zoom);
 			isTemp.bgColor.alpha = 0;
 			FlxG.cameras.add(isTemp, false);

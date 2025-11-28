@@ -3191,15 +3191,22 @@ class FunkinLua {
 			luaTrace('' + actTxt, true, false);
 		});
 
-		Lua_helper.add_callback(lua, "getWindowProperty", function(type:String) {
+		Lua_helper.add_callback(lua, "getWindowProperty", function(type:String):Dynamic {
 			#if WINDOW_ABILITY
 			if (type == null || type.length < 1) {
 				return false;
 			}
-			if (Reflect.hasField(Lib.application.window, type)) {
-				return Reflect.getProperty(Lib.application.window, type);
-			} else {
-				return false;
+			switch(type) {//idk why this not work(as Int should be Bool)
+				case "x":
+					return Lib.application.window.x;
+				case "y":
+					return Lib.application.window.y;
+				case "width":
+					return Lib.application.window.width;
+				case "height":
+					return Lib.application.window.height;
+				default:
+					return false;
 			}
 			#else
 			return false;
