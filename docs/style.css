@@ -211,7 +211,7 @@ div.dialogue_group a{
     text-decoration: none;
 }
 
-div.dialogue_group code{
+code{
     color: var(--third-accent-color);
     text-decoration: underline;
 }
@@ -278,6 +278,12 @@ a.button{
 
 a.button:hover{
     background-color: var(--button-color-hover);
+}
+
+
+li{
+    padding-top: 1.1rem;
+    padding-bottom: 1.1rem;
 }
 
 :root{
