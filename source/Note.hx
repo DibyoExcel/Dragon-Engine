@@ -7,6 +7,7 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
+import flixel.math.FlxRect;
 #if sys
 import sys.FileSystem;
 import sys.io.File;
@@ -771,5 +772,16 @@ class Note extends FlxSprite
 			alignSustainNote = value;
 		}
 		return value;
+	}
+
+	@:noCompletion
+	override function set_clipRect(rect:FlxRect):FlxRect
+	{
+		clipRect = rect;
+
+		if (frames != null)
+			frame = frames.frames[animation.frameIndex];
+
+		return rect;
 	}
 }
