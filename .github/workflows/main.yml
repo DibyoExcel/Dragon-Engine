@@ -58,6 +58,7 @@ jobs:
           haxelib set lime 8.0.1
           haxelib set openfl 9.2.1
           haxelib install hxcpp 4.2.1
+          haxelib install hxWindowColorMode 0.2.0
           haxelib list
         shell: cmd
       - name: Create Version Tag
