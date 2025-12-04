@@ -126,7 +126,7 @@ class Note extends FlxSprite
 	public var noteScale(default, set):Float = 1.0;
 	public var customField:Bool = false;
 	public var fieldTarget:String = '';//warning if not exist it might set 'customField' to false(hopefully)
-	public var camTarget(default, set):String = 'hud';
+	public var camTarget(default, set):String = null;
 	public var scrollFactorCam(default,set):Array<Float> = [0.0, 0.0];//only can see in camGame
 	public var noteSplashCam:String = 'hud';//notesplash on specific cam
 	public var noteSplashScale:Float = 1.0;
@@ -146,6 +146,7 @@ class Note extends FlxSprite
 	public var ignoreTextureChange:Bool = false;//for prevent change when use changeNotesTexture() lua
 
 
+	@:noCompletion
 	override public function set_y(value:Float):Float {
 		if (!inEditor && snapY > 0) {
 			var dist = value - y;
@@ -155,6 +156,7 @@ class Note extends FlxSprite
 		return super.set_y(value);
 	}
 
+	@:noCompletion
 	override public function set_x(value:Float):Float {
 		if (!inEditor && snapX > 0) {
 			var dist = value - x;
@@ -164,6 +166,7 @@ class Note extends FlxSprite
 		return super.set_x(value);
 	}
 
+	@:noCompletion
 	override public function set_angle(value:Float):Float {
 		if (!inEditor && snapAngle > 0) {
 			var dist = value - angle;
@@ -173,6 +176,7 @@ class Note extends FlxSprite
 		return super.set_angle(value);
 	}
 
+	@:noCompletion
 	override public function set_alpha(value:Float):Float {
 		if (!inEditor && snapAlpha > 0) {
 			var dist = value - alpha;
@@ -408,6 +412,7 @@ class Note extends FlxSprite
 			noteScale = 0.75;
 			noteSplashScale = 0.75;
 		}
+		camTarget = 'hud';
 		//sorry
 		//runConfig(noteType);
 	}
@@ -648,7 +653,7 @@ class Note extends FlxSprite
 
 
 	private function set_camTarget(value:String):String {
-		if (camTarget != value) {
+		if (camTarget != value && FlxG.state is PlayState) {
 			if (value != '') {
 				var camArray:Array<String> = value.split(',');
 				var realCam:Array<String> = [];

@@ -427,25 +427,35 @@ class EditorPlayState extends MusicBeatState
 				var strumX:Float = 0;
 				var strumY:Float = 0;
 				var strumAlpha:Float = 0;
+				var strumGroup;
 				if(daNote.mustPress) {
-					strumX = playerStrums.members[daNote.noteData].x;
-					strumY = playerStrums.members[daNote.noteData].y;
-					strumAlpha = playerStrums.members[daNote.noteData].alpha;
+					strumGroup = playerStrums;
 				} else {
 					if (daNote.gfNote && PlayState.SONG.secOpt) {
-						strumX = gfStrums.members[daNote.noteData].x;
-						strumY = gfStrums.members[daNote.noteData].y;
-						strumAlpha = gfStrums.members[daNote.noteData].alpha;
+						strumGroup = gfStrums;
 					} else {
-						strumX = opponentStrums.members[daNote.noteData].x;
-						strumY = opponentStrums.members[daNote.noteData].y;
-						strumAlpha = opponentStrums.members[daNote.noteData].alpha;
+						strumGroup = opponentStrums;
 					}
 				}
+				strumX = strumGroup.members[daNote.noteData].x;
+				strumY = strumGroup.members[daNote.noteData].y;
+				strumAlpha = strumGroup.members[daNote.noteData].alpha;
 
 				strumX += daNote.offsetX;
 				strumY += daNote.offsetY;
-				var center:Float = strumY + Note.swagWidth / 2;
+				if (daNote.isSustainNote && daNote.parent != null) {
+					switch(daNote.alignSustainNote) {
+						case 'left':
+							strumX += 0;//left the long notes from parent(0 cuz is already left align by default)
+						case 'center':
+							strumX += (daNote.parent.width/2)-(daNote.width/2);//center the long notes from parent
+						case 'right':
+							strumX += (daNote.parent.width)-(daNote.width);//right the long notes from parent
+						default:
+							strumX += (daNote.parent.width/2)-(daNote.width/2);//center the long notes from parent
+					}
+				}
+				var center:Float = strumY + (strumGroup.members[daNote.noteData].height * strumGroup.members[daNote.noteData].sustainReducePoint);
 
 				if(daNote.copyAlpha) {
 					daNote.alpha = strumAlpha * daNote.multAlpha;
@@ -522,7 +532,7 @@ class EditorPlayState extends MusicBeatState
 
 					if (!daNote.isSustainNote)
 					{
-						if (!daNote.noteSplashDisabled) {
+						if (!daNote.noteSplashDisabled && !ClientPrefs.clsstrum) {
 							spawnNoteSplashOnNote(daNote, daNote.mustPress);
 						}
 						daNote.kill();
@@ -531,7 +541,7 @@ class EditorPlayState extends MusicBeatState
 					}
 				}
 
-				if (Conductor.songPosition > (noteKillOffset / PlayState.SONG.speed) + (daNote.strumTime + daNote.offsetStrumTime))
+				if (Conductor.songPosition > (noteKillOffset / Math.max(1.0, PlayState.SONG.speed)) + (daNote.strumTime + daNote.offsetStrumTime))
 				{
 					if (daNote.mustPress)
 					{
@@ -819,7 +829,7 @@ class EditorPlayState extends MusicBeatState
 					noteMiss();
 					--songMisses;
 					if(!note.isSustainNote) {
-						if(!note.noteSplashDisabled) {
+						if(!note.noteSplashDisabled && !ClientPrefs.clsstrum) {
 							spawnNoteSplashOnNote(note, note.mustPress);
 						}
 					}
@@ -911,7 +921,7 @@ class EditorPlayState extends MusicBeatState
 			//score = 200;
 		}
 
-		if(daRating == 'sick' && !note.noteSplashDisabled)
+		if(daRating == 'sick' && !note.noteSplashDisabled && !ClientPrefs.clsstrum)
 		{
 			spawnNoteSplashOnNote(note, note.mustPress);
 		}

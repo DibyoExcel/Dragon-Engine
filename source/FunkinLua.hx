@@ -1,6 +1,7 @@
 package;
 
 import lime.app.Application;
+import lime.system.System;
 import openfl.display.BitmapData;
 #if LUA_ALLOWED
 import llua.Lua;
@@ -251,6 +252,12 @@ class FunkinLua {
 		#else
 		set('buildTarget', 'unknown');
 		#end
+		//system info
+		set('deviceModel', System.deviceModel);
+		set('deviceVendor', System.deviceVendor);
+		set('platformLabel', System.platformLabel);
+		set('platformName', System.platformName);
+		set('platformVersion', System.platformVersion);
 
 		// custom substate
 		Lua_helper.add_callback(lua, "openCustomSubstate", function(name:String, pauseGame:Bool = false) {

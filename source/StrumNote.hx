@@ -13,21 +13,22 @@ class StrumNote extends FlxSprite
 	public var direction:Float = 90;//plan on doing scroll directions soon -bb
 	public var downScroll:Bool = false;//plan on doing scroll directions soon -bb
 	public var sustainReduce:Bool = true;
-	public var animConfirm:String = 'confirm';//'confirm', 'static', 'pressed', 'notes'
+	private var player:Int;
+	public var texture(default, set):String = null;
+	//dge core
+	public var animConfirm:String = 'confirm';//'confirm', 'static', 'pressed', 'notes'(mayybe could custom if use callPropertyFromGroup())
 	public var fieldName:String = '';//only use for remove object and target of 'customStrum'
 	public var memberID:Int =0; //only use target 'customStrum'(deprecated)
-	public var camTarget(default, set):String = 'hud';
-	public var scrollFactorCam(default,set):Array<Float> = [0.0, 0.0];//only can see in camGame
+	public var camTarget(default, set):String = null;
+	public var scrollFactorCam(default,set):Array<Float> = [0.0, 0.0];//only can affected in camGame
 	public var gfType:Bool = false;
 	public var snapX:Float = 0;
 	public var snapY:Float = 0;
 	public var snapAngle:Float = 0;
 	public var snapAlpha:Float = 0;
 	public var ignoreTextureChange:Bool = false;
+	public var sustainReducePoint:Float = 0.5;//how height before sustain note cliped(0:top of strum, 1:bottom of strum)
 	
-	private var player:Int;
-	
-	public var texture(default, set):String = null;
 	private function set_texture(value:String):String {
 		if (value == null) {
 			value = '';
@@ -47,6 +48,7 @@ class StrumNote extends FlxSprite
 		gfType = gf;
 		texture = '';
 		shaderType = 'swap';
+		camTarget = 'hud';
 
 		scrollFactor.set(scrollFactorCam[0], scrollFactorCam[1]);
 	}
@@ -218,7 +220,7 @@ class StrumNote extends FlxSprite
 		}
 	}
 	private function set_camTarget(value:String):String {
-		if (camTarget != value) {
+		if (camTarget != value && FlxG.state is PlayState) {
 			if (value != '') {
 				var camArray:Array<String> = value.split(',');
 				var realCam:Array<String> = [];
