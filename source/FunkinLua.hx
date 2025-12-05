@@ -3458,9 +3458,9 @@ class FunkinLua {
 						break;
 					}
 				}
+				Reflect.setProperty(instance, blah, value);
+				return true;
 			}
-			Reflect.setProperty(instance, blah, value);
-			return true;
 		}
 
 		Reflect.setProperty(instance, variable, value);
@@ -3519,9 +3519,9 @@ class FunkinLua {
 						break;
 					}
 				}
+				var methodMap = Reflect.field(instance, blah);
+				return Reflect.callMethod(instance, methodMap, value);
 			}
-			var methodMap = Reflect.field(instance, blah);
-			return Reflect.callMethod(instance, methodMap, value);
 		}
 		var method = Reflect.field(instance, variable);
 		return Reflect.callMethod(instance, method, value);
@@ -3584,8 +3584,8 @@ class FunkinLua {
 						break;
 					}
 				}
+				return blah;
 			}
-			return blah;
 		}
 		return Reflect.getProperty(instance, variable);
 	}
