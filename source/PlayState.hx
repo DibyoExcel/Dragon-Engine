@@ -136,6 +136,8 @@ class PlayState extends MusicBeatState
 	#end
 	
 	public var strumGroupMap:Map<String, FlxTypedGroup<StrumNote>> = new Map();
+	public var notesGroupMap:Map<String, FlxTypedGroup<Note>> = new Map();
+	public var noteSplashGroupMap:Map<String, FlxTypedGroup<NoteSplash>> = new Map();
 	public var customCameraMap:Map<String, FlxCamera> = new Map();
 	public var BF_X:Float = 770;
 	public var BF_Y:Float = 100;
@@ -192,6 +194,7 @@ class PlayState extends MusicBeatState
 	//notes in different lane
 	public var playerNotes:FlxTypedGroup<Note>;
 	public var opponentNotes:FlxTypedGroup<Note>;
+	public var gfNotes:FlxTypedGroup<Note>;
 
 	public var camZooming:Bool = false;
 	public var camZoomingMult:Float = 1;
@@ -1119,9 +1122,8 @@ class PlayState extends MusicBeatState
 		strumLineNotes = new FlxTypedGroup<StrumNote>();
 		customStrum = new FlxTypedGroup<StrumNote>();
 		strumGroupMap = new Map<String, FlxTypedGroup<StrumNote>>();
-		add(customStrum);
-		add(grpNoteSplashes);
-		add(grpNoteSplashesOpt);
+		notesGroupMap = new Map<String, FlxTypedGroup<Note>>();
+		noteSplashGroupMap = new Map<String, FlxTypedGroup<NoteSplash>>();
 
 		if(ClientPrefs.timeBarType == 'Song Name')
 		{
@@ -1129,6 +1131,16 @@ class PlayState extends MusicBeatState
 			timeTxt.y += 3;
 		}
 
+		playerStrums = new FlxTypedGroup<StrumNote>();
+		opponentStrums = new FlxTypedGroup<StrumNote>();
+		gfStrums = new FlxTypedGroup<StrumNote>();
+		//it should able with setObjectOrder()
+		add(opponentStrums);
+		add(gfStrums);
+		add(playerStrums);
+		//sorry for layer issue
+		add(grpNoteSplashes);
+		add(grpNoteSplashesOpt);
 		var splash:NoteSplash = new NoteSplash(100, 100, 0);
 		grpNoteSplashes.add(splash);
 		var splashOpt:NoteSplash = new NoteSplash(100, 100, 0, 'opt');//precache note splash?
@@ -1138,13 +1150,6 @@ class PlayState extends MusicBeatState
 		splash.alpha = 0.0;
 		splashOpt.alpha = 0.0;
 		splashGf.alpha = 0.0;
-		playerStrums = new FlxTypedGroup<StrumNote>();
-		opponentStrums = new FlxTypedGroup<StrumNote>();
-		gfStrums = new FlxTypedGroup<StrumNote>();
-		//it should able with setObjectOrder()
-		add(opponentStrums);
-		add(gfStrums);
-		add(playerStrums);
 
 		// startCountdown();
 
@@ -2582,8 +2587,10 @@ class PlayState extends MusicBeatState
 		notes = new FlxTypedGroup<Note>();
 		playerNotes = new FlxTypedGroup<Note>();
 		opponentNotes = new FlxTypedGroup<Note>();
+		gfNotes = new FlxTypedGroup<Note>();
 		add(opponentNotes);
 		add(playerNotes);
+		add(gfNotes);
 
 		var noteData:Array<SwagSection>;
 
@@ -3565,11 +3572,6 @@ class PlayState extends MusicBeatState
 				{
 					var dunceNote:Note = unspawnNotes[i];
 					notes.insert(0, dunceNote);
-					if (dunceNote.mustPress) {//put at specific note hehe, warning changing 'mustPress' after spawn can break(maybe)
-						playerNotes.insert(0, dunceNote);
-					} else {
-						opponentNotes.insert(0, dunceNote);
-					}
 					dunceNote.spawned=true;
 					callOnLuas('onSpawnNote', [notes.members.indexOf(dunceNote), dunceNote.noteData, dunceNote.noteType, dunceNote.isSustainNote]);
 					var index:Int = unspawnNotes.indexOf(dunceNote);
@@ -3610,7 +3612,7 @@ class PlayState extends MusicBeatState
 				{
 					var strumGroup:FlxTypedGroup<StrumNote> = playerStrums;
 					if (daNote.customField) {
-						if (strumGroupMap.exists(daNote.fieldTarget)) {
+						if (strumGroupMap.exists(daNote.fieldTarget) && notesGroupMap.exists(daNote.fieldTarget)) {
 							strumGroup = strumGroupMap.get(daNote.fieldTarget);//Geometry Dash Group ID reference?!?
 						} else {
 							daNote.customField = false;//auto false if not fieldTarget not created
@@ -3742,7 +3744,69 @@ class PlayState extends MusicBeatState
 							}
 						}
 					}
-
+					//OH HELL NAH
+					if (daNote != null) {//auto move to group in specific variable
+						if (daNote.customField && notesGroupMap.exists(daNote.fieldTarget)) {
+							if (opponentNotes.members.contains(daNote)) {
+								opponentNotes.remove(daNote, true);
+							}
+							if (playerNotes.members.contains(daNote)) {
+								playerNotes.remove(daNote, true);
+							}
+							if (gfNotes.members.contains(daNote)) {
+								gfNotes.remove(daNote, true);
+							}
+							for (i in notesGroupMap.keys()) {
+								var getS = notesGroupMap.get(i);//get the group
+								if (daNote.fieldTarget == i) {
+									if (!getS.members.contains(daNote)) {
+										getS.insert(0, daNote);
+									}
+								} else {
+									if (getS.members.contains(daNote)) {
+										getS.remove(daNote, true);
+									}
+								}
+							}
+						} else {
+							for (i in notesGroupMap.keys()) {
+								var getS = notesGroupMap.get(i);
+								if (getS.members.contains(daNote)) {
+									getS.remove(daNote, true);
+								}
+							}
+							if (daNote.gfNote) {
+								if (opponentNotes.members.contains(daNote)) {
+									opponentNotes.remove(daNote, true);
+								}
+								if (playerNotes.members.contains(daNote)) {
+									playerNotes.remove(daNote, true);
+								}
+								if (!gfNotes.members.contains(daNote)) {
+									gfNotes.insert(0, daNote);
+								}
+							} else {
+								if (gfNotes.members.contains(daNote)) {
+									gfNotes.remove(daNote, true);
+								}
+								if (daNote.mustPress) {
+									if (opponentNotes.members.contains(daNote)) {
+										opponentNotes.remove(daNote, true);
+									}
+									if (!playerNotes.members.contains(daNote)) {
+										playerNotes.insert(0, daNote);
+									}
+								} else {
+									if (playerNotes.members.contains(daNote)) {
+										playerNotes.remove(daNote, true);
+									}
+									if (!opponentNotes.members.contains(daNote)) {
+										opponentNotes.insert(0, daNote);
+									}
+								}
+							}
+						}
+					}
 					if ((gamemode == 'opponent' ? !daNote.blockHit && daNote.mustPress : !daNote.mustPress) && !daNote.hitByOpponent && daNote.wasGoodHit && !daNote.ignoreNote && !daNote.customField && !(gamemode == "bothside v2" || gamemode == "bothside"))
 					{
 						opponentNoteHit(daNote);
@@ -3785,6 +3849,22 @@ class PlayState extends MusicBeatState
 						daNote.visible = false;
 
 						daNote.kill();
+						//remove this shit from group
+						if (playerNotes.members.contains(daNote)) {
+							playerNotes.remove(daNote, true);
+						}
+						if (opponentNotes.members.contains(daNote)) {
+							opponentNotes.remove(daNote, true);
+						}
+						if (gfNotes.members.contains(daNote)) {
+							gfNotes.remove(daNote, true);
+						}
+						for (i in notesGroupMap.keys()) {
+							var obj = notesGroupMap.get(i);
+							if (obj.members.contains(daNote)) {
+								obj.remove(daNote, true);
+							}
+						}
 						notes.remove(daNote, true);
 						daNote.destroy();
 					}
@@ -5460,10 +5540,13 @@ class PlayState extends MusicBeatState
 				brt = note.noteSplashBrt;
 			}
 		}
-
-		var splash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
+		var groupTarget = grpNoteSplashes;
+		if (note != null && note.customField && noteSplashGroupMap.exists(note.fieldTarget)) {
+			groupTarget = noteSplashGroupMap.get(note.fieldTarget);
+		}
+		var splash:NoteSplash = groupTarget.recycle(NoteSplash);
 		splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.noteSplashCam, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1], note);
-		grpNoteSplashes.add(splash);
+		groupTarget.add(splash);
 	}
 
 	public function spawnNoteSplashOpt(x:Float, y:Float, data:Int, ?note:Note = null) {
@@ -5486,9 +5569,13 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		var splashOpt:NoteSplash = grpNoteSplashesOpt.recycle(NoteSplash);
+		var groupTarget = grpNoteSplashesOpt;
+		if (note != null && note.customField && noteSplashGroupMap.exists(note.fieldTarget)) {
+			groupTarget = noteSplashGroupMap.get(note.fieldTarget);
+		}
+		var splashOpt:NoteSplash = groupTarget.recycle(NoteSplash);
 		splashOpt.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.noteSplashCam, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1], note);
-		grpNoteSplashesOpt.add(splashOpt);
+		groupTarget.add(splashOpt);
 	}
 
 	var fastCarCanDrive:Bool = true;
@@ -6262,9 +6349,13 @@ class PlayState extends MusicBeatState
 	}
 	public function createStrum(tag:String= '', data:Int = 4, camera:String = 'hud', sfX:Float = 0, sfY:Float = 0, downScroll:Null<Bool> = null) {
 		//trace("trigger");
-		if (tag != '' && !strumGroupMap.exists(tag) && !variables.exists('customStrums@' + tag)) {
+		if (tag != '' && !strumGroupMap.exists(tag) && !notesGroupMap.exists(tag) && !noteSplashGroupMap.exists(tag)) {
 			var strumTamp:FlxTypedGroup<StrumNote>;
 			strumTamp =  new FlxTypedGroup<StrumNote>();
+			var notesTamp:FlxTypedGroup<Note>;
+			notesTamp =  new FlxTypedGroup<Note>();
+			var noteSplashTamp:FlxTypedGroup<NoteSplash>;
+			noteSplashTamp =  new FlxTypedGroup<NoteSplash>();
 			if (downScroll == null) {
 				downScroll = ClientPrefs.downScroll;
 			}
@@ -6284,11 +6375,15 @@ class PlayState extends MusicBeatState
 				}
 			}
 			strumGroupMap.set(tag, strumTamp);
-			variables.set('customStrums@' + tag, strumTamp);
+			notesGroupMap.set(tag, notesTamp);
+			noteSplashGroupMap.set(tag, noteSplashTamp);
+			add(strumGroupMap.get(tag));//now can be set layer with setObjectOrder('strumGroupMap@youfieldname', 'camName)
+			add(notesGroupMap.get(tag));//now can be set layer with setObjectOrder('strumGroupMap@youfieldname', 'camName)
+			add(noteSplashGroupMap.get(tag));//now can be set layer with setObjectOrder('strumGroupMap@youfieldname', 'camName)
 		}
 	}
 	public function removeStrum(tag:String = '') {
-		if (tag != '' || strumGroupMap.exists(tag)) {
+		if (tag != '' || strumGroupMap.exists(tag) && notesGroupMap.exists(tag) && noteSplashGroupMap.exists(tag)) {
 			while (strumGroupMap.get(tag).length > 0) {
 				var obj = strumGroupMap.get(tag).members[0];
 				obj.kill();
@@ -6299,9 +6394,19 @@ class PlayState extends MusicBeatState
 			}
 			//sstrumGroupMap.get(tag) = null;
 			strumGroupMap.remove(tag);
-			if (variables.exists('customStrums@' + tag)) {
-				variables.remove('customStrums@' + tag);
+			var getV = notesGroupMap.get(tag);
+			while (getV.length > 0) {
+				 var obj = getV.members[0];
+				getV.remove(obj, true);
 			}
+			notesGroupMap.remove(tag);
+			var getVS = noteSplashGroupMap.get(tag);
+			while (getVS.length > 0) {
+				 var obj = getVS.members[0];
+				getVS.remove(obj, true);
+				obj.destroy();
+			}
+			noteSplashGroupMap.remove(tag);
 		}
 	}
 	private function setKey() {

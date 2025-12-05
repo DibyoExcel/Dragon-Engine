@@ -72,6 +72,8 @@ class NoteSplash extends FlxSprite
 			colorRGBSwap.swapB = oriNote.noteSplashRGBSwapB;
 			//pixel
 			pixelSprite.pixelSize = oriNote.noteSplashPixelSize;
+			//posterize
+			posterize.posterizeRange = oriNote.noteSplashPosterizeRange;
 			//angle
 			angle = oriNote.noteSplashAngle;
 			//alpha

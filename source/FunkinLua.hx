@@ -1021,14 +1021,26 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "getPropertyFromGroup", function(obj:String, index:Int, variable:Dynamic) {
 			var shitMyPants:Array<String> = obj.split('.');
 			var isMap:Array<String> = obj.split('@');
+			if (isMap.length > 1) {
+				obj = isMap[0];
+				if (isMap[0] == 'customStrums') {//alias for order version
+					obj = 'strumGroupMap';
+				}
+			}
 			var realObject:Dynamic = Reflect.getProperty(getInstance(), obj);
 			if(shitMyPants.length>1)
 				realObject = getPropertyLoopThingWhatever(shitMyPants, true, false);
-			if (isMap.length > 1) {
-				if (isMap[0] == 'customStrums' && PlayState.instance.strumGroupMap.exists(isMap[1])) {
-					realObject = PlayState.instance.strumGroupMap.get(isMap[1]);
+			if (realObject is haxe.ds.StringMap) {
+				var mapObj:Map<Dynamic, Dynamic> = realObject;
+				if (isMap.length > 0) {
+					if (mapObj.exists(isMap[1])) {
+						realObject = mapObj.get(isMap[1]);
+					}
 				} else {
-					return null;
+					for (i in mapObj.keys()) {
+						realObject = mapObj.get(i);
+						break;
+					}
 				}
 			}
 
@@ -1058,15 +1070,26 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "setPropertyFromGroup", function(obj:String, index:Int, variable:Dynamic, value:Dynamic) {
 			var shitMyPants:Array<String> = obj.split('.');
 			var isMap:Array<String> = obj.split('@');
+			if (isMap.length > 1) {
+				obj = isMap[0];
+				if (obj == 'customStrums') {//alias for order version
+					obj = 'strumGroupMap';
+				}
+			}
 			var realObject:Dynamic = Reflect.getProperty(getInstance(), obj);
 			if(shitMyPants.length>1)
 				realObject = getPropertyLoopThingWhatever(shitMyPants, true, false);
-
-			if (isMap.length > 1) {
-				if (isMap[0] == 'customStrums' && PlayState.instance.strumGroupMap.exists(isMap[1])) {
-					realObject = PlayState.instance.strumGroupMap.get(isMap[1]);
+			if (realObject is haxe.ds.StringMap) {
+				var mapObj:Map<Dynamic, Dynamic> = realObject;
+				if (isMap.length > 0) {
+					if (mapObj.exists(isMap[1])) {
+						realObject = mapObj.get(isMap[1]);
+					}
 				} else {
-					return;
+					for (i in mapObj.keys()) {
+						realObject = mapObj.get(i);
+						break;
+					}
 				}
 			}
 
@@ -1085,16 +1108,40 @@ class FunkinLua {
 			}
 		});
 		Lua_helper.add_callback(lua, "removeFromGroup", function(obj:String, index:Int, dontDestroy:Bool = false) {
-			if(Std.isOfType(Reflect.getProperty(getInstance(), obj), FlxTypedGroup)) {
-				var sex = Reflect.getProperty(getInstance(), obj).members[index];
+			var shitMyPants:Array<String> = obj.split('.');
+			var isMap:Array<String> = obj.split('@');
+			if (isMap.length > 1) {
+				obj = isMap[0];
+				if (isMap[0] == 'customStrums') {//alias for order version
+					obj = 'strumGroupMap';
+				}
+			}
+			var realObject:Dynamic = Reflect.getProperty(getInstance(), obj);
+			if(shitMyPants.length>1)
+				realObject = getPropertyLoopThingWhatever(shitMyPants, true, false);
+			if (realObject is haxe.ds.StringMap) {
+				var mapObj:Map<Dynamic, Dynamic> = realObject;
+				if (isMap.length > 0) {
+					if (mapObj.exists(isMap[1])) {
+						realObject = mapObj.get(isMap[1]);
+					}
+				} else {
+					for (i in mapObj.keys()) {
+						realObject = mapObj.get(i);
+						break;
+					}
+				}
+			}
+			if(Std.isOfType(realObject, FlxTypedGroup)) {
+				var sex = realObject.members[index];
 				if(!dontDestroy)
 					sex.kill();
-				Reflect.getProperty(getInstance(), obj).remove(sex, true);
+				realObject.remove(sex, true);
 				if(!dontDestroy)
 					sex.destroy();
 				return;
 			}
-			Reflect.getProperty(getInstance(), obj).remove(Reflect.getProperty(getInstance(), obj)[index]);
+			realObject.remove(realObject[index]);
 		});
 
 		Lua_helper.add_callback(lua, "getPropertyFromClass", function(classVar:String, variable:String) {
@@ -2053,11 +2100,35 @@ class FunkinLua {
 			luaTrace('updateHitbox: Couldnt find object: ' + obj, false, false, FlxColor.RED);
 		});
 		Lua_helper.add_callback(lua, "updateHitboxFromGroup", function(group:String, index:Int) {
-			if(Std.isOfType(Reflect.getProperty(getInstance(), group), FlxTypedGroup)) {
-				Reflect.getProperty(getInstance(), group).members[index].updateHitbox();
+			var shitMyPants:Array<String> = group.split('.');
+			var isMap:Array<String> = group.split('@');
+			if (isMap.length > 1) {
+				group = isMap[0];
+				if (group == 'customStrums') {//alias for order version
+					group = 'strumGroupMap';
+				}
+			}
+			var realObject:Dynamic = Reflect.getProperty(getInstance(), group);
+			if(shitMyPants.length>1)
+				realObject = getPropertyLoopThingWhatever(shitMyPants, true, false);
+			if (realObject is haxe.ds.StringMap) {
+				var mapObj:Map<Dynamic, Dynamic> = realObject;
+				if (isMap.length > 0) {
+					if (mapObj.exists(isMap[1])) {
+						realObject = mapObj.get(isMap[1]);
+					}
+				} else {
+					for (i in mapObj.keys()) {
+						realObject = mapObj.get(i);
+						break;
+					}
+				}
+			}
+			if(Std.isOfType(realObject, FlxTypedGroup)) {
+				realObject.members[index].updateHitbox();
 				return;
 			}
-			Reflect.getProperty(getInstance(), group)[index].updateHitbox();
+			realObject[index].updateHitbox();
 		});
 
 		Lua_helper.add_callback(lua, "removeLuaSprite", function(tag:String, destroy:Bool = true) {
@@ -3260,15 +3331,26 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "callPropertyFromGroup", function(obj:String, index:Int, variable:Dynamic, value:Array<Dynamic>) {
 			var shitMyPants:Array<String> = obj.split('.');
 			var isMap:Array<String> = obj.split('@');
+			if (isMap.length > 1) {
+				obj = isMap[0];
+				if (isMap[0] == 'customStrums') {//alias for order version
+					obj = 'strumGroupMap';
+				}
+			}
 			var realObject:Dynamic = Reflect.getProperty(getInstance(), obj);
 			if(shitMyPants.length>1)
 				realObject = getPropertyLoopThingWhatever(shitMyPants, true, false);
-
-			if (isMap.length > 1) {
-				if (isMap[0] == 'customStrums' && PlayState.instance.strumGroupMap.exists(isMap[1])) {
-					realObject = PlayState.instance.strumGroupMap.get(isMap[1]);
+			if (realObject is haxe.ds.StringMap) {
+				var mapObj:Map<Dynamic, Dynamic> = realObject;
+				if (isMap.length > 1) {
+					if (mapObj.exists(isMap[1])) {
+						realObject = mapObj.get(isMap[1]);
+					}
 				} else {
-					return;
+					for (i in mapObj.keys()) {
+						realObject = mapObj.get(i);
+						break;
+					}
 				}
 			}
 
@@ -3277,13 +3359,7 @@ class FunkinLua {
 			}
 
 			var leArray:Dynamic = realObject[index];
-			if(leArray != null) {
-				if(Type.typeof(variable) == ValueType.TInt) {
-					leArray[variable] = value;
-					return;
-				}
-				return callGroupStuff(leArray, variable, value);
-			}
+			return callGroupStuff(leArray, variable, value);
 		});
 
 		Lua_helper.add_callback(lua, "callProperty", function(variable:String, value:Array<Dynamic>) {
@@ -3320,18 +3396,35 @@ class FunkinLua {
 
 	public static function setVarInArray(instance:Dynamic, variable:String, value:Dynamic):Any
 	{
+		variable = variable.replace('customStrums@', 'strumGroupMap@');//alias older name for compatible
 		var shit:Array<String> = variable.split('[');
+		var isMap:Array<String> = variable.split('@');
 		if(shit.length > 1)
 		{
+			if (isMap.length > 1) {
+				shit[0] = isMap[0];
+			}
 			var blah:Dynamic = null;
 			if(PlayState.instance.variables.exists(shit[0]))
 			{
 				var retVal:Dynamic = PlayState.instance.variables.get(shit[0]);
 				if(retVal != null)
 					blah = retVal;
-			}
-			else
+			} else {
+
 				blah = Reflect.getProperty(instance, shit[0]);
+				if (blah is haxe.ds.StringMap) {
+					var mapObj:Map<Dynamic, Dynamic> = blah;
+					if (isMap.length > 1) {
+						blah = mapObj.get(isMap[1]);
+					} else {
+						for (i in mapObj.keys()) {
+							blah = mapObj.get(i);
+							break;
+						}
+					}
+				}
+			}
 
 			for (i in 1...shit.length)
 			{
@@ -3346,10 +3439,27 @@ class FunkinLua {
 		/*if(Std.isOfType(instance, Map))
 			instance.set(variable,value);
 		else*/
-			
+		if (isMap.length > 1) {
+			variable = isMap[0];
+		}
 		if(PlayState.instance.variables.exists(variable))
 		{
 			PlayState.instance.variables.set(variable, value);
+			return true;
+		} else {
+			var blah:Dynamic = Reflect.getProperty(instance, variable);
+			if (blah is haxe.ds.StringMap) {
+				var mapObj:Map<Dynamic, Dynamic> = blah;
+				if (isMap.length > 1) {
+					blah = mapObj.get(isMap[1]);
+				} else {
+					for (i in mapObj.keys()) {
+						blah = mapObj.get(i);
+						break;
+					}
+				}
+			}
+			Reflect.setProperty(instance, blah, value);
 			return true;
 		}
 
@@ -3359,9 +3469,14 @@ class FunkinLua {
 
 	public static function callVarInArray(instance:Dynamic, variable:String, value:Array<Dynamic>):Any
 	{
+		variable = variable.replace('customStrums@', 'strumGroupMap@');//alias older name for compatible
 		var shit:Array<String> = variable.split('[');
+		var isMap:Array<String> = variable.split('@');
 		if(shit.length > 1)
 		{
+			if (isMap.length > 1) {
+				shit[0] = isMap[0];
+			}
 			var blah:Dynamic = null;
 			if(PlayState.instance.variables.exists(shit[0]))
 			{
@@ -3385,20 +3500,42 @@ class FunkinLua {
 		/*if(Std.isOfType(instance, Map))
 			instance.set(variable,value);
 		else*/
-			
+		if (isMap.length > 1) {
+			variable = isMap[0];
+		}	
 		if(PlayState.instance.variables.exists(variable))
 		{
 			PlayState.instance.variables.set(variable, value);
 			return true;
+		} else {
+			var blah:Dynamic = Reflect.getProperty(instance, variable);
+			if (blah is haxe.ds.StringMap) {
+				var mapObj:Map<Dynamic, Dynamic> = blah;
+				if (isMap.length > 1) {
+					blah = mapObj.get(isMap[1]);
+				} else {
+					for (i in mapObj.keys()) {
+						blah = mapObj.get(i);
+						break;
+					}
+				}
+			}
+			var methodMap = Reflect.field(instance, blah);
+			return Reflect.callMethod(instance, methodMap, value);
 		}
 		var method = Reflect.field(instance, variable);
 		return Reflect.callMethod(instance, method, value);
 	}
 	public static function getVarInArray(instance:Dynamic, variable:String):Any
 	{
+		variable = variable.replace('customStrums@', 'strumGroupMap@');//alias older name for compatible
 		var shit:Array<String> = variable.split('[');
+		var isMap:Array<String> = variable.split('@');
 		if(shit.length > 1)
-		{
+			{
+			if (isMap.length > 1) {
+				shit[0] = isMap[0];
+			}
 			var blah:Dynamic = null;
 			if(PlayState.instance.variables.exists(shit[0]))
 			{
@@ -3408,6 +3545,17 @@ class FunkinLua {
 			}
 			else
 				blah = Reflect.getProperty(instance, shit[0]);
+				if (blah is haxe.ds.StringMap) {
+					var mapObj:Map<Dynamic, Dynamic> = blah;
+					if (isMap.length > 1) {
+						blah = mapObj.get(isMap[1]);
+					} else {
+						for (i in mapObj.keys()) {
+							blah = mapObj.get(i);
+							break;
+						}
+					}
+				}
 
 			for (i in 1...shit.length)
 			{
@@ -3416,14 +3564,29 @@ class FunkinLua {
 			}
 			return blah;
 		}
-
+		if (isMap.length > 1) {
+			variable = isMap[0];
+		}
 		if(PlayState.instance.variables.exists(variable))
 		{
 			var retVal:Dynamic = PlayState.instance.variables.get(variable);
 			if(retVal != null)
 				return retVal;
+ 		} else {
+			var blah:Dynamic = Reflect.getProperty(instance, variable);
+			if (blah is haxe.ds.StringMap) {
+				var mapObj:Map<Dynamic, Dynamic> = blah;
+				if (isMap.length > 1) {
+					blah = mapObj.get(isMap[1]);
+				} else {
+					for (i in mapObj.keys()) {
+						blah = mapObj.get(i);
+						break;
+					}
+				}
+			}
+			return blah;
 		}
-
 		return Reflect.getProperty(instance, variable);
 	}
 

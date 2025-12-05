@@ -263,12 +263,13 @@ class FlxSprite extends FlxObject
     public var colorSingle:ColorSingle = new ColorSingle();
 	public var colorRGBSwap:ColorRGBSwap = new ColorRGBSwap();
 	public var pixelSprite:PixelSprite = new PixelSprite();
+	public var posterize:Posterize = new Posterize();
 
     public var shaderType(default, set):String = null;
 
     private function set_shaderType(value:String):String {
         if (shaderType != value) {
-            var shouldUse:Array<String> = [ 'none', 'swap', 'invert', 'single', 'rgbswap', 'pixel' ];
+            var shouldUse:Array<String> = [ 'none', 'swap', 'invert', 'single', 'rgbswap', 'pixel', 'posterize' ];
             if (value == null || value.length < 1) {
                 value = shouldUse[0];
             }
@@ -290,6 +291,8 @@ class FlxSprite extends FlxObject
 					shader = colorRGBSwap.shader;
 				case 'pixel':
 					shader = pixelSprite.shader;
+				case 'posterize':
+					shader = posterize.shader;
                 default: 
                     shader = null;
             }
