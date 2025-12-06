@@ -191,6 +191,7 @@ class PlayState extends MusicBeatState
 	public var customStrum:FlxTypedGroup<StrumNote>;//if it might only advanced know this
 	public var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
 	public var grpNoteSplashesOpt:FlxTypedGroup<NoteSplash>;
+	public var grpNoteSplashesGf:FlxTypedGroup<NoteSplash>;
 	//notes in different lane
 	public var playerNotes:FlxTypedGroup<Note>;
 	public var opponentNotes:FlxTypedGroup<Note>;
@@ -452,6 +453,7 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.add(camOther, false);
 		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
 		grpNoteSplashesOpt = new FlxTypedGroup<NoteSplash>();
+		grpNoteSplashesGf = new FlxTypedGroup<NoteSplash>();
 
 		FlxG.cameras.setDefaultDrawTarget(camGame, true);
 		CustomFadeTransition.nextCamera = camOther;
@@ -1139,14 +1141,15 @@ class PlayState extends MusicBeatState
 		add(gfStrums);
 		add(playerStrums);
 		//sorry for layer issue
-		add(grpNoteSplashes);
 		add(grpNoteSplashesOpt);
+		add(grpNoteSplashesGf);
+		add(grpNoteSplashes);
 		var splash:NoteSplash = new NoteSplash(100, 100, 0);
 		grpNoteSplashes.add(splash);
 		var splashOpt:NoteSplash = new NoteSplash(100, 100, 0, 'opt');//precache note splash?
 		var splashGf:NoteSplash = new NoteSplash(100, 100, 0, 'gf');
 		grpNoteSplashesOpt.add(splashOpt);
-		grpNoteSplashesOpt.add(splashGf);
+		grpNoteSplashesGf.add(splashGf);
 		splash.alpha = 0.0;
 		splashOpt.alpha = 0.0;
 		splashGf.alpha = 0.0;
@@ -4753,7 +4756,9 @@ class PlayState extends MusicBeatState
 		//tryna do MS based judgment due to popular demand
 		var daRating:Rating = Conductor.judgeNote(note, noteDiff / playbackRate);
 
-		totalNotesHit += daRating.ratingMod;
+		if ((!practiceMode && !cpuControlled && !note.autoPress && !note.customField)) {
+			totalNotesHit += daRating.ratingMod;
+		}
 		note.ratingMod = daRating.ratingMod;
 		if(!note.ratingDisabled) daRating.increase();
 		note.rating = daRating.name;
@@ -4844,7 +4849,7 @@ class PlayState extends MusicBeatState
 		var xThing:Float = 0;
 		if (showCombo)
 		{
-			insert(members.indexOf(strumLineNotes), comboSpr);
+			insert(members.indexOf(playerStrums), comboSpr);
 		}
 		if (!ClientPrefs.comboStacking)
 		{
@@ -4891,7 +4896,7 @@ class PlayState extends MusicBeatState
 
 			//if (combo >= 10 || combo == 0)
 			if(showComboNum)
-				insert(members.indexOf(strumLineNotes), numScore);
+				insert(members.indexOf(playerStrums), numScore);
 
 			FlxTween.tween(numScore, {alpha: 0}, 0.2 / playbackRate, {
 				onComplete: function(tween:FlxTween)
@@ -5198,9 +5203,7 @@ class PlayState extends MusicBeatState
 		if(!practiceMode) songScore -= 10;
 
 		totalPlayed++;
-		if (!daNote.autoPress || !daNote.customField) {//no cheat :(
-			RecalculateRating(true);
-		}
+		RecalculateRating(true);
 		var char:Character = (((gamemode == "bothside v2" || gamemode == "bothside") && !daNote.mustPress) || daNote.isDad || gamemode == 'opponent' ? dad : boyfriend);
 			if(daNote.gfNote) {
 				char = gf;
@@ -5543,6 +5546,8 @@ class PlayState extends MusicBeatState
 		var groupTarget = grpNoteSplashes;
 		if (note != null && note.customField && noteSplashGroupMap.exists(note.fieldTarget)) {
 			groupTarget = noteSplashGroupMap.get(note.fieldTarget);
+		} else if (note.gfNote) {
+			groupTarget = grpNoteSplashesGf;
 		}
 		var splash:NoteSplash = groupTarget.recycle(NoteSplash);
 		splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.noteSplashCam, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1], note);
@@ -5572,6 +5577,8 @@ class PlayState extends MusicBeatState
 		var groupTarget = grpNoteSplashesOpt;
 		if (note != null && note.customField && noteSplashGroupMap.exists(note.fieldTarget)) {
 			groupTarget = noteSplashGroupMap.get(note.fieldTarget);
+		} else if (note.gfNote) {
+			groupTarget = grpNoteSplashesGf;
 		}
 		var splashOpt:NoteSplash = groupTarget.recycle(NoteSplash);
 		splashOpt.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.noteSplashCam, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1], note);
