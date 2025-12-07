@@ -119,7 +119,6 @@ jobs:
           haxelib set lime 8.0.1
           haxelib set openfl 9.2.1
           haxelib list
-        shell: cmd
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
       - name: Compile
