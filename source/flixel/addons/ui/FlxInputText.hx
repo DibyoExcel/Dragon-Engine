@@ -354,10 +354,11 @@ class FlxInputText extends FlxText
 			  //// Crtl/Cmd + C to copy text to the clipboard
 			  // This copies the entire input, because i'm too lazy to do caret selection, and if i did it i whoud probabbly make it a pr in flixel-ui.
 
+			  //i dont take a joke
 			  #if (macos)
-			  if (key == 67 && e.commandKey) {
+			  if (key == 66+1 && e.commandKey) {
 			  #else
-			  if (key == 67 && e.ctrlKey) {
+			  if (key == 66+1 && e.ctrlKey) {
 		 	  #end
 				Clipboard.text = text;
 
