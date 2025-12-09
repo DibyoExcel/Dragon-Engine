@@ -1,5 +1,6 @@
 package editors;
 
+import flixel.graphics.FlxGraphic;
 import flixel.FlxCamera;
 import mobile.Hitbox;
 import Section.SwagSection;
@@ -51,6 +52,7 @@ class EditorPlayState extends MusicBeatState
 	var startPos:Float = 0;
 	private var hitbox:FlxTypedGroup<Hitbox>;
 	private var hitboxCam:FlxCamera;
+	private var cacheRating:Map<String, FlxGraphic> = new Map();//cache rating(slighty better performance)
 
 	public function new(startPos:Float) {
 		this.startPos = startPos;
@@ -196,6 +198,7 @@ class EditorPlayState extends MusicBeatState
 		}
 		#end
 		super.create();
+		cachePopUpScore();
 	}
 
 	function sayGo() {
@@ -887,6 +890,26 @@ class EditorPlayState extends MusicBeatState
 
 	var COMBO_X:Float = 400;
 	var COMBO_Y:Float = 340;
+	private function cachePopUpScore()
+		{
+			var pixelShitPart1:String = '';
+			var pixelShitPart2:String = '';
+			if (PlayState.isPixelStage)
+			{
+				pixelShitPart1 = 'pixelUI/';
+				pixelShitPart2 = '-pixel';
+			}
+	
+			var ratingTOCache = ['sick', 'good', 'bad', 'shit', 'combo'];
+			for (i in ratingTOCache) {
+				cacheRating.set(i, Paths.image(pixelShitPart1 + i + pixelShitPart2));
+			}
+			
+			for (i in 0...10) {
+				cacheRating.set(Std.string(i), Paths.image(pixelShitPart1 + 'num' + i + pixelShitPart2));
+			}
+		}
+
 	private function popUpScore(note:Note = null):Void
 	{
 		var noteDiff:Float = Math.abs((note.strumTime + note.offsetStrumTime) - Conductor.songPosition + ClientPrefs.ratingOffset);
@@ -935,16 +958,8 @@ class EditorPlayState extends MusicBeatState
 				daRating = 'bad';
 			*/
 
-		var pixelShitPart1:String = "";
-		var pixelShitPart2:String = '';
 
-		if (PlayState.isPixelStage)
-		{
-			pixelShitPart1 = 'pixelUI/';
-			pixelShitPart2 = '-pixel';
-		}
-
-		rating.loadGraphic(Paths.image(pixelShitPart1 + daRating + pixelShitPart2));
+		rating.loadGraphic(cacheRating.get(daRating));
 		rating.screenCenter();
 		rating.x = coolText.x - 40;
 		rating.y -= 60;
@@ -955,7 +970,7 @@ class EditorPlayState extends MusicBeatState
 		rating.x += ClientPrefs.comboOffset[0];
 		rating.y -= ClientPrefs.comboOffset[1];
 
-		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2));
+		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(cacheRating.get('combo'));
 		comboSpr.screenCenter();
 		comboSpr.x = coolText.x;
 		comboSpr.acceleration.y = 600;
@@ -995,7 +1010,7 @@ class EditorPlayState extends MusicBeatState
 		var daLoop:Int = 0;
 		for (i in seperatedScore)
 		{
-			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2));
+			var numScore:FlxSprite = new FlxSprite().loadGraphic(cacheRating.get(Std.string(i)));
 			numScore.screenCenter();
 			numScore.x = coolText.x + (43 * daLoop) - 90;
 			numScore.y += 80;
