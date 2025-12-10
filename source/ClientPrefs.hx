@@ -35,6 +35,8 @@ class ClientPrefs {
 	public static var spaceKeyPosition:String = 'bottom';//space key position. 'bottom', 'top'
 	public static var spaceKey:Bool = false;//space key for mobile
 	public static var hitboxBlend:String = 'normal';
+	public static var invertYSwipe:Bool = false;
+	public static var invertScroll:Bool = false;
 	//end
 	public static var downScroll:Bool = false;
 	public static var middleScroll:Bool = false;
@@ -148,6 +150,8 @@ class ClientPrefs {
 	}
 
 	public static function saveSettings() {
+		FlxG.save.data.invertYSwipe = invertYSwipe;
+		FlxG.save.data.invertScroll = invertScroll;
 		FlxG.save.data.minEditorJson = minEditorJson;
 		FlxG.save.data.hitboxBlend = hitboxBlend;
 		FlxG.save.data.spaceKeyPosition = spaceKeyPosition;

@@ -106,6 +106,20 @@ class MobileSubState extends BaseOptionsMenu
 		'normal',
 		['normal', 'add', 'alpha', 'darken', 'difference', 'erase', 'hardlight', 'invert', 'layer', 'lighten', 'multiply', 'overlay', 'screen', 'shader', 'subtract']);
 		addOption(option);
+
+		var option:Option = new Option('Invert Y Swipe',
+			"Inverting Y Swipe for UI.",
+			'invertYSwipe',
+			'bool',
+			false);
+		addOption(option);
+
+		var option:Option = new Option('Invert Scroll',
+			"Inverting Scrolling for UI.",
+			'invertScroll',
+			'bool',
+			false);
+		addOption(option);
 		#else
 		lime.app.Application.current.window.alert('what ur doing here lol? you\'re even not in mobile.');
 		close();

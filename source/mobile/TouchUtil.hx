@@ -22,16 +22,28 @@ class TouchUtil {
     }
     public static function swipeUp():Bool {
         for (i in FlxG.swipes) {
-            if (i.angle > -45 && i.angle < 45 && i.distance > ClientPrefs.swipeRange) {
-                return true;
+            if (ClientPrefs.invertYSwipe) {
+                if (((i.angle > 135 && i.angle < 180) || (i.angle > -180 && i.angle < -135)) && i.distance > ClientPrefs.swipeRange) {
+                    return true;
+                }
+            } else {
+                if (i.angle > -45 && i.angle < 45 && i.distance > ClientPrefs.swipeRange) {
+                    return true;
+                }
             }
         }
         return false;
     }
     public static function swipeDown():Bool {
         for (i in FlxG.swipes) {
-            if (((i.angle > 135 && i.angle < 180) || (i.angle > -180 && i.angle < -135)) && i.distance > ClientPrefs.swipeRange) {
-                return true;
+            if (ClientPrefs.invertYSwipe) {
+                if (i.angle > -45 && i.angle < 45 && i.distance > ClientPrefs.swipeRange) {
+                    return true;
+                }
+            } else {
+                if (((i.angle > 135 && i.angle < 180) || (i.angle > -180 && i.angle < -135)) && i.distance > ClientPrefs.swipeRange) {
+                    return true;
+                }
             }
         }
         return false;
@@ -51,7 +63,7 @@ class TouchUtil {
                 var delta = touch.screenY - lastTouchY;
                 if (delta != 0 && Math.abs(delta) > (ClientPrefs.swipeRange * swipeMult)) {
                     lastTouchY = touch.screenY;
-                    return delta > 0 ? 1 : -1;
+                    return (delta > 0 ? 1 : -1) * (ClientPrefs.invertScroll ? -1 : 1);
                 }
             } else {
                 lastTouchY = touch.screenY;

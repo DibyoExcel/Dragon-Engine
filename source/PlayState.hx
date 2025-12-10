@@ -139,8 +139,7 @@ class PlayState extends MusicBeatState
 	public var notesGroupMap:Map<String, FlxTypedGroup<Note>> = new Map();
 	public var noteSplashGroupMap:Map<String, FlxTypedGroup<NoteSplash>> = new Map();
 	public var customCameraMap:Map<String, FlxCamera> = new Map();
-	private var cacheRating:Map<String, FlxGraphic> = new Map();//cache rating(slighty better performance)
-	//TODO: optimized spawn rating
+	public var cacheRating:Map<String, FlxGraphic> = new Map();//cache rating(slighty better performance)
 	public var ratingGroup:FlxTypedGroup<FlxSprite>;
 	public var comboGroup:FlxTypedGroup<FlxSprite>;
 	public var numRatingGroup:FlxTypedGroup<FlxSprite>;
@@ -1520,6 +1519,8 @@ class PlayState extends MusicBeatState
 			add(hitboxSpace);
 		}
 		#end
+		cachePopUpScore();
+		cacheCountdown();
 		callOnLuas('onCreatePost', []);
 		
 
@@ -1527,8 +1528,6 @@ class PlayState extends MusicBeatState
 		if (ClientPrefs.startPause) {
 			openPauseMenu();
 		}
-		cacheCountdown();
-		cachePopUpScore();
 		for (key => type in precacheList)
 		{
 			//trace('Key $key is type $type');
@@ -2443,6 +2442,19 @@ class PlayState extends MusicBeatState
 				daNote.ignoreNote = true;
 
 				daNote.kill();
+				//i know is stupid but just in case
+				var specialGroup = [opponentNotes, playerNotes, gfNotes];
+				for (group in specialGroup) {
+					if (group.members.contains(daNote)) {
+						group.remove(daNote, true);
+					}
+				}
+				for (i in notesGroupMap.keys()) {
+					var obj = notesGroupMap.get(i);
+					if (obj.members.contains(daNote)) {
+						obj.remove(daNote, true);
+					}
+				}
 				unspawnNotes.remove(daNote);
 				daNote.destroy();
 			}
@@ -2459,6 +2471,18 @@ class PlayState extends MusicBeatState
 				daNote.ignoreNote = true;
 
 				daNote.kill();
+				var specialGroup = [opponentNotes, playerNotes, gfNotes];
+				for (group in specialGroup) {
+					if (group.members.contains(daNote)) {
+						group.remove(daNote, true);
+					}
+				}
+				for (i in notesGroupMap.keys()) {
+					var obj = notesGroupMap.get(i);
+					if (obj.members.contains(daNote)) {
+						obj.remove(daNote, true);
+					}
+				}
 				notes.remove(daNote, true);
 				daNote.destroy();
 			}
@@ -3763,14 +3787,11 @@ class PlayState extends MusicBeatState
 					//OH HELL NAH
 					if (daNote != null) {//auto move to group in specific variable
 						if (daNote.customField && notesGroupMap.exists(daNote.fieldTarget)) {
-							if (opponentNotes.members.contains(daNote)) {
-								opponentNotes.remove(daNote, true);
-							}
-							if (playerNotes.members.contains(daNote)) {
-								playerNotes.remove(daNote, true);
-							}
-							if (gfNotes.members.contains(daNote)) {
-								gfNotes.remove(daNote, true);
+							var specialGroup = [opponentNotes, playerNotes, gfNotes];
+							for (group in specialGroup) {
+								if (group.members.contains(daNote)) {
+									group.remove(daNote, true);
+								}
 							}
 							for (i in notesGroupMap.keys()) {
 								var getS = notesGroupMap.get(i);//get the group
@@ -3792,33 +3813,15 @@ class PlayState extends MusicBeatState
 								}
 							}
 							if (daNote.gfNote) {
-								if (opponentNotes.members.contains(daNote)) {
-									opponentNotes.remove(daNote, true);
-								}
-								if (playerNotes.members.contains(daNote)) {
-									playerNotes.remove(daNote, true);
-								}
-								if (!gfNotes.members.contains(daNote)) {
-									gfNotes.insert(0, daNote);
-								}
+								moveNote(daNote, opponentNotes, gfNotes);
+								moveNote(daNote, playerNotes, gfNotes);
 							} else {
-								if (gfNotes.members.contains(daNote)) {
-									gfNotes.remove(daNote, true);
-								}
 								if (daNote.mustPress) {
-									if (opponentNotes.members.contains(daNote)) {
-										opponentNotes.remove(daNote, true);
-									}
-									if (!playerNotes.members.contains(daNote)) {
-										playerNotes.insert(0, daNote);
-									}
+									moveNote(daNote, gfNotes, playerNotes);
+									moveNote(daNote, opponentNotes, playerNotes);
 								} else {
-									if (playerNotes.members.contains(daNote)) {
-										playerNotes.remove(daNote, true);
-									}
-									if (!opponentNotes.members.contains(daNote)) {
-										opponentNotes.insert(0, daNote);
-									}
+									moveNote(daNote, gfNotes, opponentNotes);
+									moveNote(daNote, playerNotes, opponentNotes);
 								}
 							}
 						}
@@ -3866,14 +3869,11 @@ class PlayState extends MusicBeatState
 
 						daNote.kill();
 						//remove this shit from group
-						if (playerNotes.members.contains(daNote)) {
-							playerNotes.remove(daNote, true);
-						}
-						if (opponentNotes.members.contains(daNote)) {
-							opponentNotes.remove(daNote, true);
-						}
-						if (gfNotes.members.contains(daNote)) {
-							gfNotes.remove(daNote, true);
+						var specialGroup = [opponentNotes, playerNotes, gfNotes];
+						for (group in specialGroup) {
+							if (group.members.contains(daNote)) {
+								group.remove(daNote, true);
+							}
 						}
 						for (i in notesGroupMap.keys()) {
 							var obj = notesGroupMap.get(i);
@@ -3924,6 +3924,15 @@ class PlayState extends MusicBeatState
 		setOnLuas('cameraY', camFollowPos.y);
 		setOnLuas('botPlay', cpuControlled);
 		callOnLuas('onUpdatePost', [elapsed]);
+	}
+
+	function moveNote(obj:Note, from:FlxTypedGroup<Note>, to:FlxTypedGroup<Note>, splice:Bool = true) {
+		if (from.members.contains(obj)) {
+			from.remove(obj, splice);
+		}
+		if (!to.members.contains(obj)) {
+			to.insert(0, obj);
+		}
 	}
 
 	function openPauseMenu()
@@ -4713,6 +4722,18 @@ class PlayState extends MusicBeatState
 			daNote.visible = false;
 
 			daNote.kill();
+			var specialGroup = [opponentNotes, playerNotes, gfNotes];
+			for (group in specialGroup) {
+				if (group.members.contains(daNote)) {
+					group.remove(daNote, true);
+				}
+			}
+			for (i in notesGroupMap.keys()) {
+				var obj = notesGroupMap.get(i);
+				if (obj.members.contains(daNote)) {
+					obj.remove(daNote, true);
+				}
+			}
 			notes.remove(daNote, true);
 			daNote.destroy();
 		}
@@ -4929,9 +4950,11 @@ class PlayState extends MusicBeatState
 					i.kill();
 				}
 			}
-			for (i in numRatingTween) {
-				if (i != null) {
-					i.cancel();
+			while (numRatingTween.length > 0) {
+				var tween = numRatingTween[0];
+				if (tween != null) {
+					tween.cancel();
+					numRatingTween.remove(tween);
 				}
 			}
 		}
@@ -5059,6 +5082,18 @@ class PlayState extends MusicBeatState
 						for (doubleNote in pressNotes) {
 							if (Math.abs((doubleNote.strumTime + doubleNote.offsetStrumTime) - (epicNote.strumTime + epicNote.offsetStrumTime)) < 1) {
 								doubleNote.kill();
+								var specialGroup = [opponentNotes, playerNotes, gfNotes];
+								for (group in specialGroup) {
+									if (group.members.contains(doubleNote)) {
+										group.remove(doubleNote, true);
+									}
+								}
+								for (i in notesGroupMap.keys()) {
+									var obj = notesGroupMap.get(i);
+									if (obj.members.contains(doubleNote)) {
+										obj.remove(doubleNote, true);
+									}
+								}
 								notes.remove(doubleNote, true);
 								doubleNote.destroy();
 							} else
@@ -5246,6 +5281,18 @@ class PlayState extends MusicBeatState
 		notes.forEachAlive(function(note:Note) {
 			if (daNote != note && (gamemode != 'opponent' ? ((gamemode == "bothside" || gamemode == "bothside v2") ?  true : daNote.mustPress) : !daNote.mustPress) && daNote.noteData == note.noteData && daNote.isSustainNote == note.isSustainNote && Math.abs((daNote.strumTime + daNote.offsetStrumTime) - (note.strumTime + note.offsetStrumTime)) < 1) {
 				note.kill();
+				var specialGroup = [opponentNotes, playerNotes, gfNotes];
+				for (group in specialGroup) {
+					if (group.members.contains(note)) {
+						group.remove(note, true);
+					}
+				}
+				for (i in notesGroupMap.keys()) {
+					var obj = notesGroupMap.get(i);
+					if (obj.members.contains(note)) {
+						obj.remove(note, true);
+					}
+				}
 				notes.remove(note, true);
 				note.destroy();
 			}
@@ -5395,6 +5442,18 @@ class PlayState extends MusicBeatState
 			if (!note.isSustainNote && !note.fakeNoHit)
 			{
 				note.kill();
+				var specialGroup = [opponentNotes, playerNotes, gfNotes];
+				for (group in specialGroup) {
+					if (group.members.contains(note)) {
+						group.remove(note, true);
+					}
+				}
+				for (i in notesGroupMap.keys()) {
+					var obj = notesGroupMap.get(i);
+					if (obj.members.contains(note)) {
+						obj.remove(note, true);
+					}
+				}
 				notes.remove(note, true);
 				note.destroy();
 			}
@@ -5451,6 +5510,18 @@ class PlayState extends MusicBeatState
 				if (!note.isSustainNote && !note.fakeNoHit)
 				{
 					note.kill();
+					var specialGroup = [opponentNotes, playerNotes, gfNotes];
+					for (group in specialGroup) {
+						if (group.members.contains(note)) {
+							group.remove(note, true);
+						}
+					}
+					for (i in notesGroupMap.keys()) {
+						var obj = notesGroupMap.get(i);
+						if (obj.members.contains(note)) {
+							obj.remove(note, true);
+						}
+					}
 					notes.remove(note, true);
 					note.destroy();
 				}
@@ -5567,6 +5638,18 @@ class PlayState extends MusicBeatState
 			if (!note.isSustainNote  && !note.fakeNoHit)
 			{
 				note.kill();
+				var specialGroup = [opponentNotes, playerNotes, gfNotes];
+				for (group in specialGroup) {
+					if (group.members.contains(note)) {
+						group.remove(note, true);
+					}
+				}
+				for (i in notesGroupMap.keys()) {
+					var obj = notesGroupMap.get(i);
+					if (obj.members.contains(note)) {
+						obj.remove(note, true);
+					}
+				}
 				notes.remove(note, true);
 				note.destroy();
 			}

@@ -3370,6 +3370,13 @@ class FunkinLua {
 			return callVarInArray(getInstance(), variable, value);
 		});
 
+		Lua_helper.add_callback(lua, "changeRatingTexture", function(rating:String, path:String) {
+			if (PlayState.instance.cacheRating.exists(rating)) {
+				PlayState.instance.cacheRating.remove(rating);
+			}
+			PlayState.instance.cacheRating.set(rating, Paths.image(path));
+		});
+
 		call('onCreate', []);
 		#end
 	}
