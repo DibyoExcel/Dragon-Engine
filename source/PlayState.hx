@@ -1,6 +1,6 @@
 package;
 
-import addition.Keypress;
+import dge.obj.Keypress;
 import mobile.Hitbox;
 import flixel.graphics.FlxGraphic;
 #if desktop
@@ -139,7 +139,6 @@ class PlayState extends MusicBeatState
 	public var notesGroupMap:Map<String, FlxTypedGroup<Note>> = new Map();
 	public var noteSplashGroupMap:Map<String, FlxTypedGroup<NoteSplash>> = new Map();
 	public var customCameraMap:Map<String, FlxCamera> = new Map();
-	public var cacheRating:Map<String, FlxGraphic> = new Map();//cache rating(slighty better performance)
 	public var ratingGroup:FlxTypedGroup<FlxSprite>;
 	public var comboGroup:FlxTypedGroup<FlxSprite>;
 	public var numRatingGroup:FlxTypedGroup<FlxSprite>;
@@ -314,6 +313,8 @@ class PlayState extends MusicBeatState
 	var scoreTxtTween:FlxTween;
 
 	public static var campaignScore:Int = 0;
+	public static var campaignPercent:Float = 0;
+	public static var storyLength:Float = 0;
 	public static var campaignMisses:Int = 0;
 	public static var seenCutscene:Bool = false;
 	public static var deathCounter:Int = 0;
@@ -343,6 +344,8 @@ class PlayState extends MusicBeatState
 	public var hitboxCam:FlxCamera;
 	public var hitbox:FlxTypedGroup<Hitbox>;
 	public var hitboxSpace:Hitbox;
+	//precache
+	public var cacheRating:Map<String, FlxGraphic> = new Map();//cache rating(slighty better performance)
 
 	#if desktop
 	// Discord RPC variables
@@ -1137,26 +1140,6 @@ class PlayState extends MusicBeatState
 			timeTxt.y += 3;
 		}
 
-		playerStrums = new FlxTypedGroup<StrumNote>();
-		opponentStrums = new FlxTypedGroup<StrumNote>();
-		gfStrums = new FlxTypedGroup<StrumNote>();
-		//it should able with setObjectOrder()
-		add(opponentStrums);
-		add(gfStrums);
-		add(playerStrums);
-		//sorry for layer issue
-		add(grpNoteSplashesOpt);
-		add(grpNoteSplashesGf);
-		add(grpNoteSplashes);
-		var splash:NoteSplash = new NoteSplash(100, 100, 0);
-		grpNoteSplashes.add(splash);
-		var splashOpt:NoteSplash = new NoteSplash(100, 100, 0, 'opt');//precache note splash?
-		var splashGf:NoteSplash = new NoteSplash(100, 100, 0, 'gf');
-		grpNoteSplashesOpt.add(splashOpt);
-		grpNoteSplashesGf.add(splashGf);
-		splash.alpha = 0.0;
-		splashOpt.alpha = 0.0;
-		splashGf.alpha = 0.0;
 
 		// startCountdown();
 
@@ -1241,7 +1224,33 @@ class PlayState extends MusicBeatState
 		}
 		add(scoreTxt);
 
-
+		playerStrums = new FlxTypedGroup<StrumNote>();
+		opponentStrums = new FlxTypedGroup<StrumNote>();
+		gfStrums = new FlxTypedGroup<StrumNote>();
+		//it should able with setObjectOrder()
+		add(opponentStrums);
+		add(gfStrums);
+		add(playerStrums);
+		//sorry for layer issue
+		add(grpNoteSplashesOpt);
+		add(grpNoteSplashesGf);
+		add(grpNoteSplashes);
+		var splash:NoteSplash = new NoteSplash(100, 100, 0);
+		grpNoteSplashes.add(splash);
+		var splashOpt:NoteSplash = new NoteSplash(100, 100, 0, 'opt');//precache note splash?
+		var splashGf:NoteSplash = new NoteSplash(100, 100, 0, 'gf');
+		grpNoteSplashesOpt.add(splashOpt);
+		grpNoteSplashesGf.add(splashGf);
+		splash.alpha = 0.0;
+		splashOpt.alpha = 0.0;
+		splashGf.alpha = 0.0;
+		notes = new FlxTypedGroup<Note>();
+		playerNotes = new FlxTypedGroup<Note>();
+		opponentNotes = new FlxTypedGroup<Note>();
+		gfNotes = new FlxTypedGroup<Note>();
+		add(opponentNotes);
+		add(playerNotes);
+		add(gfNotes);
 
 		ratingGroup = new FlxTypedGroup<FlxSprite>();
 		comboGroup = new FlxTypedGroup<FlxSprite>();
@@ -1485,14 +1494,14 @@ class PlayState extends MusicBeatState
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 		}
+		keyPressUI = new FlxTypedGroup<Keypress>();
+		add(keyPressUI);
 		if (ClientPrefs.extUI) {
-			keyPressUI = new FlxTypedGroup<Keypress>();
 			for (i in 0...keysArray.length) {
 				var notePressUISpr = new Keypress(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4))), colorOrder[i%colorOrder.length]);
 				notePressUISpr.cameras = [ camHUD ];
 				keyPressUI.add(notePressUISpr);
 			}
-			add(keyPressUI);
 		}
 		hitbox = new FlxTypedGroup<Hitbox>();
 		add(hitbox);
@@ -2624,13 +2633,6 @@ class PlayState extends MusicBeatState
 		FlxG.sound.list.add(vocals);
 		FlxG.sound.list.add(new FlxSound().loadEmbedded(Paths.inst(PlayState.SONG.song)));
 
-		notes = new FlxTypedGroup<Note>();
-		playerNotes = new FlxTypedGroup<Note>();
-		opponentNotes = new FlxTypedGroup<Note>();
-		gfNotes = new FlxTypedGroup<Note>();
-		add(opponentNotes);
-		add(playerNotes);
-		add(gfNotes);
 
 		var noteData:Array<SwagSection>;
 
@@ -3210,6 +3212,9 @@ class PlayState extends MusicBeatState
 
 	override public function onFocusLost():Void
 	{
+		if (ClientPrefs.pauseUnFocus && startedCountdown && canPause && !paused) {
+			openPauseMenu();
+		}
 		#if desktop
 		if (health > 0 && !paused)
 		{
@@ -3600,17 +3605,17 @@ class PlayState extends MusicBeatState
 			trace("RESET = True");
 		}
 		doDeathCheck();
-
-		for (i in 0...unspawnNotes.length) {
-			if (unspawnNotes[i] != null)
+		var noteCount = unspawnNotes.length;
+		while (noteCount >= 0) {
+			if (unspawnNotes[noteCount] != null)
 			{
 				var time:Float = spawnTime;
 				if (Math.abs(songSpeed) < 1) time /= Math.max(0.25, Math.abs(songSpeed));
-				if(unspawnNotes[i].multSpeed < 1) time /= unspawnNotes[i].multSpeed;
-	
-				if (unspawnNotes.length > 0 && (unspawnNotes[i].strumTime + unspawnNotes[i].offsetStrumTime) - Conductor.songPosition < time && (ClientPrefs.limitSpawn ? notes.length < ClientPrefs.limitSpawnNotes : true))
+				if(unspawnNotes[noteCount].multSpeed < 1) time /= unspawnNotes[noteCount].multSpeed;
+		
+				if (unspawnNotes.length > 0 && (unspawnNotes[noteCount].strumTime + unspawnNotes[noteCount].offsetStrumTime) - Conductor.songPosition < time && (ClientPrefs.limitSpawn ? notes.length < ClientPrefs.limitSpawnNotes : true))
 				{
-					var dunceNote:Note = unspawnNotes[i];
+					var dunceNote:Note = unspawnNotes[noteCount];
 					notes.insert(0, dunceNote);
 					dunceNote.spawned=true;
 					callOnLuas('onSpawnNote', [notes.members.indexOf(dunceNote), dunceNote.noteData, dunceNote.noteType, dunceNote.isSustainNote]);
@@ -3618,6 +3623,7 @@ class PlayState extends MusicBeatState
 					unspawnNotes.splice(index, 1);
 				}
 			}
+			noteCount--;
 		}
 
 
@@ -3953,7 +3959,7 @@ class PlayState extends MusicBeatState
 			FlxG.sound.music.pause();
 			vocals.pause();
 		}
-		openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+		openSubState(new PauseSubState());
 		//}
 
 		#if desktop
@@ -4160,9 +4166,9 @@ class PlayState extends MusicBeatState
 					case 1: //turn on
 						curLightEvent = FlxG.random.int(0, phillyLightsColors.length-1, [curLightEvent]);
 						var color:FlxColor = phillyLightsColors[curLightEvent];
-						for (i in 0...keyPressUI.length) {
-							keyPressUI.members[i].colorKey = color;
-						}
+							for (i in 0...keyPressUI.length) {
+								keyPressUI.members[i].colorKey = color;
+							}
 						#if mobile
 						for (i in 0...hitbox.length) {
 							hitbox.members[i].color = color;
@@ -4611,19 +4617,26 @@ class PlayState extends MusicBeatState
 			{
 				campaignScore += songScore;
 				campaignMisses += songMisses;
+				campaignPercent += ratingPercent;
 
 				storyPlaylist.remove(storyPlaylist[0]);
 
 				if (storyPlaylist.length <= 0)
 				{
 					WeekData.loadTheFirstEnabledMod();
-					FlxG.sound.playMusic(Paths.music('freakyMenu'));
-
+					
 					cancelMusicFadeTween();
 					if(FlxTransitionableState.skipNextTransIn) {
 						CustomFadeTransition.nextCamera = null;
 					}
-					MusicBeatState.switchState(new StoryMenuState());
+					if (!cpuControlled && ClientPrefs.useResultScr) {
+						var actualState = new dge.states.ResultScreen(campaignScore, campaignMisses, null, campaignPercent/StoryMenuState.songListLength);
+						actualState.toStoryMode = true;
+						MusicBeatState.switchState(actualState);
+					} else {
+						MusicBeatState.switchState(new StoryMenuState());
+						FlxG.sound.playMusic(Paths.music('freakyMenu'));
+					}
 
 					// if ()
 					if(!ClientPrefs.getGameplaySetting('practice', false) && !ClientPrefs.getGameplaySetting('botplay', false)) {
@@ -4687,7 +4700,7 @@ class PlayState extends MusicBeatState
 					CustomFadeTransition.nextCamera = null;
 				}
 				if (!cpuControlled && ClientPrefs.useResultScr) {
-					MusicBeatState.switchState(new addition.ResultScreen(songScore, songMisses, ratingName, ratingPercent));
+					MusicBeatState.switchState(new dge.states.ResultScreen(songScore, songMisses, ratingName, ratingPercent));
 				} else {
 					FlxG.sound.playMusic(Paths.music('freakyMenu'));
 					MusicBeatState.switchState(new FreeplayState());
@@ -4775,6 +4788,7 @@ class PlayState extends MusicBeatState
 		var noteDiff:Float = Math.abs((note.strumTime + note.offsetStrumTime) - Conductor.songPosition + ClientPrefs.ratingOffset);
 		//trace(noteDiff, ' ' + Math.abs(note.strumTime - Conductor.songPosition));
 
+		var noteIdx = notes.members.indexOf(note);
 		// boyfriend.playAnim('hey');
 		vocals.volume = 1;
 
@@ -4843,6 +4857,7 @@ class PlayState extends MusicBeatState
 		rating.visible = (!ClientPrefs.hideHud && showRating);
 		rating.x += ClientPrefs.comboOffset[0];
 		rating.y -= ClientPrefs.comboOffset[1];
+		ratingGroup.remove(rating, true);
 		ratingGroup.add(rating);
 		if (!PlayState.isPixelStage)
 		{
@@ -4872,6 +4887,8 @@ class PlayState extends MusicBeatState
 				startDelay: Conductor.crochet * 0.001/ playbackRate
 			});
 		}
+		var ratingSprOrder = ratingGroup.members.indexOf(rating);
+		callOnLuas('onRatingPopUp', [noteIdx, ratingSprOrder, note.noteData, note.noteType]);
 
 		var xThing:Float = 0;
 		if (showCombo)
@@ -4909,6 +4926,7 @@ class PlayState extends MusicBeatState
 			comboSpr.y -= ClientPrefs.comboOffset[1];
 			comboSpr.y += 60;
 			comboSpr.velocity.x += FlxG.random.int(1, 10) * playbackRate;
+			comboGroup.remove(comboSpr, true);
 			comboGroup.add(comboSpr);
 			comboSpr.updateHitbox();
 			comboSpr.x = xThing + 50;
@@ -4931,6 +4949,8 @@ class PlayState extends MusicBeatState
 					startDelay: Conductor.crochet * 0.002 / playbackRate
 				});
 			}
+			var comboSprOrder = comboGroup.members.indexOf(comboSpr);
+			callOnLuas('onComboPopUp', [noteIdx, comboSprOrder, note.noteData, note.noteType]);
 		}
 		
 
@@ -4994,6 +5014,7 @@ class PlayState extends MusicBeatState
 	
 				//if (combo >= 10 || combo == 0)
 				
+				numRatingGroup.remove(numScore, true);
 				numRatingGroup.add(numScore);
 	
 				if (!ClientPrefs.comboStacking) {
@@ -5016,6 +5037,8 @@ class PlayState extends MusicBeatState
 	
 				daLoop++;
 				if(numScore.x > xThing) xThing = numScore.x;
+				var numSprOrder = numRatingGroup.members.indexOf(numScore);
+				callOnLuas('onNumPopUp', [noteIdx, numSprOrder, note.noteData, note.noteType]);
 			}
 		}
 		/*
@@ -5704,6 +5727,14 @@ class PlayState extends MusicBeatState
 		var splash:NoteSplash = groupTarget.recycle(NoteSplash);
 		splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.noteSplashCam, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1], note);
 		groupTarget.add(splash);
+		splash.color = 0xFFFFFFFF;
+		var splashIndex = groupTarget.members.indexOf(splash);
+		if (note != null) {
+			var noteIndex = notes.members.indexOf(note);
+			callOnLuas('onSpawnNoteSplashes', [noteIndex, splashIndex, note.noteData, note.noteType]);
+		} else {
+			callOnLuas('onSpawnNoteSplashes', [0, splashIndex, 0, '']);
+		}
 	}
 
 	public function spawnNoteSplashOpt(x:Float, y:Float, data:Int, ?note:Note = null) {
@@ -5735,6 +5766,14 @@ class PlayState extends MusicBeatState
 		var splashOpt:NoteSplash = groupTarget.recycle(NoteSplash);
 		splashOpt.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.noteSplashCam, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1], note);
 		groupTarget.add(splashOpt);
+		splashOpt.color = 0xFFFFFFFF;
+		var splashIndex = groupTarget.members.indexOf(splashOpt);
+		if (note != null) {
+			var noteIndex = notes.members.indexOf(note);
+			callOnLuas('onSpawnNoteSplashes', [noteIndex, splashIndex, note.noteData, note.noteType]);
+		} else {
+			callOnLuas('onSpawnNoteSplashes', [0, splashIndex, 0, '']);
+		}
 	}
 
 	var fastCarCanDrive:Bool = true;
@@ -5915,8 +5954,10 @@ class PlayState extends MusicBeatState
 
 	override function destroy() {
 		PlayState.SONG.secOpt = tempSecOpt;//rolled back
-		NoteTypeManager.jsonParse.clear();
-		NoteTypeManager.jsonRaw.clear();
+		CacheTools.jsonParse.clear();
+		CacheTools.cacheNoteSplash.clear();
+		CacheTools.cacheNote.clear();
+		CacheTools.cacheNoteAtlas.clear();
 		for (lua in luaArray) {
 			lua.call('onDestroy', []);
 			lua.stop();
@@ -5979,7 +6020,14 @@ class PlayState extends MusicBeatState
 
 		if (generatedMusic)
 		{
-			notes.sort(FlxSort.byY, ClientPrefs.downScroll ? FlxSort.ASCENDING : FlxSort.DESCENDING);
+			var groupToSort = [playerNotes, gfNotes, opponentNotes];
+			for (group in groupToSort) {
+				group.sort(FlxSort.byY, ClientPrefs.downScroll ? FlxSort.ASCENDING : FlxSort.DESCENDING);
+			}
+			for (i in notesGroupMap.keys()) {
+				var group = notesGroupMap.get(i);
+				group.sort(FlxSort.byY, ClientPrefs.downScroll ? FlxSort.ASCENDING : FlxSort.DESCENDING);
+			}
 		}
 
 		iconP1.scale.set(1.2, 1.2);

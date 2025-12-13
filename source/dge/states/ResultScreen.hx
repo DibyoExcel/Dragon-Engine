@@ -1,4 +1,4 @@
-package addition;
+package dge.states;
 import mobile.VirtualButton;
 import flixel.FlxG;
 import flixel.FlxSubState;
@@ -9,9 +9,10 @@ import haxe.Timer;
 
 class ResultScreen extends MusicBeatState
 {
+    public var toStoryMode:Bool = false;
     private var ForceFreePlay:Timer;
     private var enterButton:VirtualButton;
-    public function new(score:Int, miss:Int, rating:String, percent:Float) {
+    public function new(score:Int, miss:Int, rating:Null<String>, percent:Null<Float>) {
         super();
         var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image((ClientPrefs.darkmode ? 'menuDesatDark' : 'menuDesat')));
         add(bg);
@@ -19,7 +20,9 @@ class ResultScreen extends MusicBeatState
         add(aaaa);
         var aaaa:Alphabet = new Alphabet(0, (FlxG.height/2)-50, (ClientPrefs.dragonW ? 'Slay: ' : 'Misses: ') + miss, false);
         add(aaaa);
-        var aaaa:Alphabet = new Alphabet(0, (FlxG.height/2)+25, (ClientPrefs.dragonW ? 'Fang: ' : 'Rating: ') + rating, false);
+        if (rating != null) {
+            var aaaa:Alphabet = new Alphabet(0, (FlxG.height/2)+25, (ClientPrefs.dragonW ? 'Fang: ' : 'Rating: ') + rating, false);
+        }
         add(aaaa);
         var aaaa:Alphabet = new Alphabet(0, (FlxG.height/2)+100, "Percent: " + Highscore.floorDecimal(percent * 100, 2) + "%", false);
         add(aaaa);
@@ -31,7 +34,11 @@ class ResultScreen extends MusicBeatState
         #end
         ForceFreePlay = new Timer(60000);//60 Second In This Substate Will Force To Free Play
         ForceFreePlay.run = function() {
-            MusicBeatState.switchState(new FreeplayState());
+            if (toStoryMode) {
+                MusicBeatState.switchState(new StoryMenuState());
+            } else {
+                MusicBeatState.switchState(new FreeplayState());
+            }
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
             if (ForceFreePlay != null) {
                 ForceFreePlay.stop();
@@ -40,7 +47,11 @@ class ResultScreen extends MusicBeatState
     }
     override public function update(elapsed:Float) {
         if (controls.ACCEPT #if mobile || enterButton.justPressed #end) {
-            MusicBeatState.switchState(new FreeplayState());
+            if (toStoryMode) {
+                MusicBeatState.switchState(new StoryMenuState());
+            } else {
+                MusicBeatState.switchState(new FreeplayState());
+            }
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
             if (ForceFreePlay != null) {
                 ForceFreePlay.stop();

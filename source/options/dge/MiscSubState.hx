@@ -77,7 +77,7 @@ class MiscSubState extends BaseOptionsMenu
 
 		#if CHECK_FOR_UPDATES
 		var option:Option = new Option('Check for Updates',
-			'On Release builds, turn this on to check for updates when you start the game.',
+			'Turn this on to check for updates when you start the game.',
 			'checkForUpdates',
 			'bool',
 			true);
@@ -101,11 +101,19 @@ class MiscSubState extends BaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('Result Screen',
-			"If Checked The Result screen will show after end song(Free Play).",
+			"If Checked The Result screen will show after end song.",
 			'useResultScr',
 			'bool',
 			false);
 		addOption(option);
+		#if !html5
+		var option:Option = new Option('Pause Unfocus',
+			"If Checked the game will open pause screen.",
+			'pauseUnFocus',
+			'bool',
+			false);
+		addOption(option);
+		#end
 		super();
 		changeBGColor(0xffff0000);
 	}

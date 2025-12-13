@@ -1208,8 +1208,10 @@ class EditorPlayState extends MusicBeatState
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 		}
-		NoteTypeManager.jsonParse.clear();
-		NoteTypeManager.jsonRaw.clear();
+		CacheTools.jsonParse.clear();
+		CacheTools.cacheNoteSplash.clear();
+		CacheTools.cacheNote.clear();
+		CacheTools.cacheNoteAtlas.clear();
 		super.destroy();
 	}
 }

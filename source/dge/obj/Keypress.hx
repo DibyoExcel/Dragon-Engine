@@ -1,4 +1,4 @@
-package addition;
+package dge.obj;
 
 import flixel.FlxSprite;
 

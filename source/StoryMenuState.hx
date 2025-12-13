@@ -52,6 +52,7 @@ class StoryMenuState extends MusicBeatState
 	private var ctrlButton:VirtualButton;
 	private var resetButton:VirtualButton;
 	private var enterButton:VirtualButton;
+	public static var songListLength:Int = 0;
 
 	override function create()
 	{
@@ -331,6 +332,7 @@ class StoryMenuState extends MusicBeatState
 
 			// Nevermind that's stupid lmao
 			PlayState.storyPlaylist = songArray;
+			songListLength = songArray.length;
 			PlayState.isStoryMode = true;
 			selectedWeek = true;
 
@@ -341,6 +343,7 @@ class StoryMenuState extends MusicBeatState
 
 			PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + diffic, PlayState.storyPlaylist[0].toLowerCase());
 			PlayState.campaignScore = 0;
+			PlayState.campaignPercent = 0;
 			PlayState.campaignMisses = 0;
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{

@@ -15,7 +15,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.FlxCamera;
 import flixel.util.FlxStringUtil;
-import StringTools;
+using StringTools;
 
 class PauseSubState extends MusicBeatSubstate
 {
@@ -42,7 +42,7 @@ class PauseSubState extends MusicBeatSubstate
 
 	public static var songName:String = '';
 
-	public function new(x:Float, y:Float)
+	public function new()
 	{
 		super();
 		if (ClientPrefs.dragonW) {
@@ -76,7 +76,7 @@ class PauseSubState extends MusicBeatSubstate
 
 
 		pauseMusic = new FlxSound();
-		if(songName != null && songName != 'None') {
+		if(songName != null && songName.toLowerCase() != 'none') {
 			pauseMusic.loadEmbedded(Paths.music(Paths.formatToSongPath(ClientPrefs.pauseMusic)), true, true);
 		}
 		pauseMusic.volume = 0;

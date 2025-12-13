@@ -1,5 +1,5 @@
 //this shit nothing to do
-package addition.button;
+package dgestuff.button;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;

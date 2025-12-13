@@ -481,19 +481,25 @@ class Note extends FlxSprite
 		if (PlayState.isPixelStage)
 		{
 			if (isSustainNote)
-			{
-				loadGraphic(Paths.image('pixelUI/' + blahblah + 'ENDS'));
+				{
+				if (!CacheTools.cacheNote.exists(blahblah + 'ENDS')) {
+					CacheTools.cacheNote.set(blahblah + 'ENDS', Paths.image('pixelUI/' + blahblah + 'ENDS'));
+				}
+				loadGraphic(CacheTools.cacheNote.get(blahblah + 'ENDS'));
 				width = width / 4;
 				height = height / 2;
 				originalHeightForCalcs = height;
-				loadGraphic(Paths.image('pixelUI/' + blahblah + 'ENDS'), true, Math.floor(width), Math.floor(height));
+				loadGraphic(CacheTools.cacheNote.get(blahblah + 'ENDS'), true, Math.floor(width), Math.floor(height));
 			}
 			else
 			{
-				loadGraphic(Paths.image('pixelUI/' + blahblah));
+				if (!CacheTools.cacheNote.exists(blahblah)) {
+					CacheTools.cacheNote.set(blahblah, Paths.image('pixelUI/' + blahblah));
+				}
+				loadGraphic(CacheTools.cacheNote.get(blahblah));
 				width = width / 4;
 				height = height / 5;
-				loadGraphic(Paths.image('pixelUI/' + blahblah), true, Math.floor(width), Math.floor(height));
+				loadGraphic(CacheTools.cacheNote.get(blahblah), true, Math.floor(width), Math.floor(height));
 			}
 			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 			loadPixelNoteAnims();
@@ -502,7 +508,10 @@ class Note extends FlxSprite
 		}
 		else
 		{
-			frames = Paths.getSparrowAtlas(blahblah);
+			if (!CacheTools.cacheNoteAtlas.exists(blahblah)) {
+				CacheTools.cacheNoteAtlas.set(blahblah, Paths.getSparrowAtlas(blahblah));
+			}
+			frames = CacheTools.cacheNoteAtlas.get(blahblah);
 			loadNoteAnims();
 			setGraphicSize(Std.int(width * ClientPrefs.strumsize));
 			antialiasing = ClientPrefs.globalAntialiasing;
@@ -700,32 +709,41 @@ class Note extends FlxSprite
 		var jsonRa:String = '';
 		var haxeRa:Dynamic = {};
 		//precache system(1 time precache each states reference the note.hx)
-		if (!NoteTypeManager.jsonRaw.exists('all')) {
+		if (!CacheTools.jsonParse.exists('all')) {
+			var jsonString:String = '';
 			if (FileSystem.exists(Paths.modFolders('custom_notetypes/all.json'))) {
-				NoteTypeManager.jsonRaw.set('all', File.getContent(Paths.modFolders('custom_notetypes/all.json')));
+				jsonString =  File.getContent(Paths.modFolders('custom_notetypes/all.json'));
 			} else if (FileSystem.exists(StorageManager.getEngineDir() + Paths.getPreloadPath('custom_notetypes/all.json'))) {
-				NoteTypeManager.jsonRaw.set('all', File.getContent(Paths.getPreloadPath('custom_notetypes/all.json')));
+				jsonString =  File.getContent(StorageManager.getEngineDir() + Paths.getPreloadPath('custom_notetypes/all.json'));
 			} else {
-				NoteTypeManager.jsonRaw.set('all', "");//if not exist turn empty json
+				jsonString = '';
+			}
+			if (jsonString.length > 0) {
+				CacheTools.jsonParse.set('all', haxe.Json.parse(jsonString));
+			} else {
+				CacheTools.jsonParse.set('all', {});
 			}
 		}
-		if (!NoteTypeManager.jsonRaw.exists(value)) {
+		if (!CacheTools.jsonParse.exists(value)) {
+			var jsonString:String = '';
 			if (FileSystem.exists(Paths.modFolders('custom_notetypes/' + value + '.json'))) {
-				NoteTypeManager.jsonRaw.set(value, File.getContent(Paths.modFolders('custom_notetypes/' + value + '.json')));
+				jsonString =  File.getContent(Paths.modFolders('custom_notetypes/' + value + '.json'));
 			} else if (FileSystem.exists(StorageManager.getEngineDir() + Paths.getPreloadPath('custom_notetypes/' + value + '.json'))) {
-				NoteTypeManager.jsonRaw.set(value, File.getContent(StorageManager.getEngineDir() + Paths.getPreloadPath('custom_notetypes/' + value + '.json')));
+				jsonString =  File.getContent(StorageManager.getEngineDir() + Paths.getPreloadPath('custom_notetypes/' + value + '.json'));
 			} else {
-				NoteTypeManager.jsonRaw.set(value, "");//if not exist turn empty json
+				jsonString = '';
+			}
+			if (jsonString.length > 0) {
+				CacheTools.jsonParse.set(value, haxe.Json.parse(jsonString));
+			} else {
+				CacheTools.jsonParse.set(value, {});
 			}
 		}
-		if (NoteTypeManager.jsonRaw.exists('all') && NoteTypeManager.jsonRaw.get('all').length > 0) {
-			if (!NoteTypeManager.jsonParse.exists('all')) {
-				NoteTypeManager.jsonParse.set('all', haxe.Json.parse(NoteTypeManager.jsonRaw.get('all')));
-			}
-			var jokowi = Reflect.fields(NoteTypeManager.jsonParse.get('all'));
+		if (CacheTools.jsonParse.exists('all') && CacheTools.jsonParse.get('all').length > 0) {
+			var jokowi = Reflect.fields(CacheTools.jsonParse.get('all'));
 			for (hidup in jokowi) {
 				var SDM = hidup.split('.');
-				var val = Reflect.field(NoteTypeManager.jsonParse.get('all'), hidup);
+				var val = Reflect.field(CacheTools.jsonParse.get('all'), hidup);
 				if (SDM.length <= 1) {
 					Reflect.setProperty(this, hidup, val);
 				} else {
@@ -737,14 +755,11 @@ class Note extends FlxSprite
 					Reflect.setProperty(target, SDM[SDM.length-1], val);
 				}
 			}
-		} else if (NoteTypeManager.jsonRaw.exists(value) && NoteTypeManager.jsonRaw.get(value).length > 0) {
-			if (!NoteTypeManager.jsonParse.exists(value)) {
-				NoteTypeManager.jsonParse.set(value, haxe.Json.parse(NoteTypeManager.jsonRaw.get(value)));
-			}
-			var jokowi = Reflect.fields(NoteTypeManager.jsonParse.get(value));
+		} else if (CacheTools.jsonParse.exists(value) && CacheTools.jsonParse.get(value).length > 0) {
+			var jokowi = Reflect.fields(CacheTools.jsonParse.get(value));
 			for (hidup in jokowi) {
 				var SDM = hidup.split('.');
-				var val = Reflect.field(NoteTypeManager.jsonParse.get(value), hidup);
+				var val = Reflect.field(CacheTools.jsonParse.get(value), hidup);
 				if (SDM.length <= 1) {
 					Reflect.setProperty(this, hidup, val);
 				} else {

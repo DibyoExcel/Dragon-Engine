@@ -191,3 +191,33 @@ function onCheckForAchievement(name)
 	
 	]]--
 end
+
+function onRatingPopUp(noteId, ratingId, noteData, noteType)
+    --A Rating Pop Up(such like Sick, Good, Bad, Shit)
+	--noteId: a current note hit id
+	--ratingId:a current rating id
+	--noteData: a current noteData
+	--noteType: a current noteType
+end
+function onNumPopUp(noteId, numId, noteData, noteType)
+    --A Number Pop Up(such like combo number)
+	--noteId: a current note hit id
+	--numId:a current num id
+	--noteData: a current noteData
+	--noteType: a current noteType
+end
+function onComboPopUp(noteId, comboId, noteData, noteType)
+    --A Combo Pop Up(such like 'Combo' pop up)
+	--noteId: a current note hit id
+	--comboId:a current combo id
+	--noteData: a current noteData
+	--noteType: a current noteType
+end
+
+function onSpawnNoteSplash(noteId, splashId, noteData, noteType)
+	--A Spawn Note Splash after hit
+	--noteId: a current note hit id
+	--SplashId:a current splash id
+	--noteData: a current noteData
+	--noteType: a current noteType
+end

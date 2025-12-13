@@ -87,7 +87,10 @@ class NoteSplash extends FlxSprite
 	}
 
 	function loadAnims(skin:String) {
-		frames = Paths.getSparrowAtlas(skin);
+		if (!CacheTools.cacheNoteSplash.exists(skin)) {
+			CacheTools.cacheNoteSplash.set(skin, Paths.getSparrowAtlas(skin));
+		}
+		frames = CacheTools.cacheNoteSplash.get(skin);
 		for (i in 1...3) {
 			animation.addByPrefix("note1-" + i, "note splash blue " + i, ClientPrefs.fpsStrumAnim, false);
 			animation.addByPrefix("note2-" + i, "note splash green " + i, ClientPrefs.fpsStrumAnim, false);

@@ -8,6 +8,7 @@ import Controls;
 
 class ClientPrefs {
 	//dge setting
+	public static var pauseUnFocus:Bool = false;
 	public static var minEditorJson:Bool = false;//Minified json when save chart json
 	public static var useResultScr:Bool = false;//should use result screen
 	public static var limitSpawn:Bool = false;//should has limit to spawn?(useful for change scroll speed to negative)
@@ -150,6 +151,7 @@ class ClientPrefs {
 	}
 
 	public static function saveSettings() {
+		FlxG.save.data.pauseUnFocus = pauseUnFocus;
 		FlxG.save.data.invertYSwipe = invertYSwipe;
 		FlxG.save.data.invertScroll = invertScroll;
 		FlxG.save.data.minEditorJson = minEditorJson;
@@ -227,6 +229,9 @@ class ClientPrefs {
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.pauseUnFocus != null) {
+			pauseUnFocus = FlxG.save.data.pauseUnFocus;
 		}
 		if(FlxG.save.data.minEditorJson != null) {
 			minEditorJson = FlxG.save.data.minEditorJson;

@@ -2956,34 +2956,55 @@ class ChartingState extends MusicBeatState
 
 	function updateGrid():Void
 	{
-		for (member in prevRenderedNotes.members) {
-			if (member != null) member.destroy();
-		}	  
-		prevRenderedNotes.clear();
-		for (member in prevRenderedSustains.members) {
-			if (member != null) member.destroy();
+		while (prevRenderedNotes.length > 0) {
+			var member = prevRenderedNotes.members[0];
+			if (member != null) {
+				prevRenderedNotes.remove(member, true);
+				member.destroy();
+			}
 		}
-		prevRenderedSustains.clear();
-		for (member in curRenderedNotes.members) {
-			if (member != null) member.destroy();
+		while (prevRenderedSustains.length > 0) {
+			var member = prevRenderedSustains.members[0];
+			if (member != null) {
+				prevRenderedSustains.remove(member, true);
+				member.destroy();
+			}
 		}
-		curRenderedNotes.clear();
-		for (member in curRenderedSustains.members) {
-			if (member != null) member.destroy();
+		while (curRenderedNotes.length > 0) {
+			var member = curRenderedNotes.members[0];
+			if (member != null) {
+				curRenderedNotes.remove(member, true);
+				member.destroy();
+			}
 		}
-		curRenderedSustains.clear();
-		for (member in curRenderedNoteType.members) {
-			if (member != null) member.destroy();
+		while (curRenderedSustains.length > 0) {
+			var member = curRenderedSustains.members[0];
+			if (member != null) {
+				curRenderedSustains.remove(member, true);
+				member.destroy();
+			}
 		}
-		curRenderedNoteType.clear();
-		for (member in nextRenderedNotes.members) {
-			if (member != null) member.destroy();
+		while (curRenderedNoteType.length > 0) {
+			var member = curRenderedNoteType.members[0];
+			if (member != null) {
+				curRenderedNoteType.remove(member, true);
+				member.destroy();
+			}
 		}
-		nextRenderedNotes.clear();
-		for (member in nextRenderedSustains.members) {
-			if (member != null) member.destroy();
+		while (nextRenderedNotes.length > 0) {
+			var member = nextRenderedNotes.members[0];
+			if (member != null) {
+				nextRenderedNotes.remove(member, true);
+				member.destroy();
+			}
 		}
-		nextRenderedSustains.clear();
+		while (nextRenderedSustains.length > 0) {
+			var member = nextRenderedSustains.members[0];
+			if (member != null) {
+				nextRenderedSustains.remove(member, true);
+				member.destroy();
+			}
+		}
 
 		if (_song.notes[curSec].changeBPM && _song.notes[curSec].bpm > 0)
 		{
@@ -3128,7 +3149,10 @@ class ChartingState extends MusicBeatState
 			note.sustainLength = daSus;
 			note.noteType = i[3];
 		} else { //Event note
-			note.loadGraphic(Paths.image('eventArrow'));
+			if (!CacheTools.cacheNote.exists('evenArrow')) {
+				CacheTools.cacheNote.set('eventArrow', Paths.image('eventArrow'));
+			}
+			note.loadGraphic(CacheTools.cacheNote.get('eventArrow'));
 			note.eventName = getEventName(i[1]);
 			note.eventLength = i[1].length;
 			if(i[1].length < 2)
@@ -3728,8 +3752,9 @@ class AttachedFlxText extends FlxText
 		}
 	}
 	override public function destroy() {
-		NoteTypeManager.jsonParse.clear();
-		NoteTypeManager.jsonRaw.clear();
+		CacheTools.jsonParse.clear();
+		CacheTools.cacheNote.clear();
+		CacheTools.cacheNoteAtlas.clear();
 		super.destroy();
 	}
 }
