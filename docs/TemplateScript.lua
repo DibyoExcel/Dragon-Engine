@@ -214,7 +214,7 @@ function onComboPopUp(noteId, comboId, noteData, noteType)
 	--noteType: a current noteType
 end
 
-function onSpawnNoteSplash(noteId, splashId, noteData, noteType)
+function onSpawnNoteSplashes(noteId, splashId, noteData, noteType)
 	--A Spawn Note Splash after hit
 	--noteId: a current note hit id
 	--SplashId:a current splash id
