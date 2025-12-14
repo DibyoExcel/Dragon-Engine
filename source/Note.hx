@@ -739,9 +739,10 @@ class Note extends FlxSprite
 				CacheTools.jsonParse.set(value, {});
 			}
 		}
-		if (CacheTools.jsonParse.exists('all') && CacheTools.jsonParse.get('all').length > 0) {
+		if (CacheTools.jsonParse.exists('all') && Reflect.fields(CacheTools.jsonParse.get('all')).length > 0) {
 			var jokowi = Reflect.fields(CacheTools.jsonParse.get('all'));
 			for (hidup in jokowi) {
+				if (hidup.startsWith("_")) continue;
 				var SDM = hidup.split('.');
 				var val = Reflect.field(CacheTools.jsonParse.get('all'), hidup);
 				if (SDM.length <= 1) {
@@ -755,9 +756,10 @@ class Note extends FlxSprite
 					Reflect.setProperty(target, SDM[SDM.length-1], val);
 				}
 			}
-		} else if (CacheTools.jsonParse.exists(value) && CacheTools.jsonParse.get(value).length > 0) {
+		} else if (CacheTools.jsonParse.exists(value) && Reflect.fields(CacheTools.jsonParse.get(value)).length > 0) {
 			var jokowi = Reflect.fields(CacheTools.jsonParse.get(value));
 			for (hidup in jokowi) {
+				if (hidup.startsWith("_")) continue;
 				var SDM = hidup.split('.');
 				var val = Reflect.field(CacheTools.jsonParse.get(value), hidup);
 				if (SDM.length <= 1) {
