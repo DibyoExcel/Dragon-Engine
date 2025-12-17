@@ -105,6 +105,7 @@ div.dialogue div.dialogue_content{
 div.dialogue div.dialogue_content h3{
     max-width: 100%;
     margin: 0;
+    font-size: 1.25rem;
 }
 
 div.dialogue div.dialogue_content h3 a{
