@@ -103,7 +103,6 @@ div.dialogue div.dialogue_content{
 }
 
 div.dialogue div.dialogue_content h3{
-    font-size: 1.25rem;
     max-width: 100%;
     margin: 0;
 }
@@ -199,11 +198,13 @@ div.dialogue_group{
 
 div.dialogue_group h3{
     margin: 0;
+    font-size: 1.5rem;
 }
 
 div.dialogue_group h4{
     margin: 0;
     color: var(--secondary-accent-color);
+    font-size: 1.25rem;
 }
 
 div.dialogue_group a{
