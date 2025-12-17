@@ -294,7 +294,7 @@ li{
     --background-color: #000;
     --button-color: #222;
     --button-color-hover: #333;
-    --font-use: 'Mojangles', 'Arial';
+    --font-use: 'PhantomMuff', 'Mojangles', 'Arial';
 }
 
 :root{
@@ -354,6 +354,11 @@ li{
 @font-face {
     font-family: 'Mojangles';
     src: url(/asset/Mojangles.ttf);
+}
+
+@font-face { /*https://fonts2u.com/phantommuff-15.font#google_vignette*/
+    font-family: "PhantomMuff";
+    src: url(/asset/PhantomMuff.ttf);
 }
 
 *, *::before, *::after {
