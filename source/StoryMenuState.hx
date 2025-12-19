@@ -430,6 +430,7 @@ class StoryMenuState extends MusicBeatState
 			bgSprite.visible = false;
 		} else {
 			bgSprite.loadGraphic(Paths.image('menubackgrounds/menu_' + assetName));
+			bgSprite.screenCenter(X);
 		}
 		PlayState.storyWeek = curWeek;
 

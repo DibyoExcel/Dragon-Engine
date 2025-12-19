@@ -59,9 +59,7 @@ class DragonOptionsState extends MusicBeatState
 
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image((ClientPrefs.darkmode ? 'menuDesatDark' : 'menuDesat')));
 		bg.color = 0xffff0000;
-		bg.updateHitbox();
-
-		bg.screenCenter();
+		CoolUtil.fitBackground(bg);
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		add(bg);
 

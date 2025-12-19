@@ -72,7 +72,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image((ClientPrefs.darkmode ? 'menuDesatDark' : 'menuDesat')));
 		bg.color = 0xFFea71fd;
-		bg.screenCenter();
+		CoolUtil.fitBackground(bg);
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		add(bg);
 		bgPublic = bg;
@@ -389,7 +389,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			curSelected = 0;
 
 		descText.text = optionsArray[curSelected].description;
-		descText.screenCenter(Y);
+		descText.screenCenter();
 		descText.y += 270;
 
 		var bullShit:Int = 0;

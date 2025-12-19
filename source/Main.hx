@@ -132,6 +132,13 @@ class Main extends Sprite
 	
 		ClientPrefs.loadDefaultKeys();
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
+		//still in beta test
+		/*var screenWidth:Int = Lib.current.stage.stageWidth;
+		var screenHeight:Int = Lib.current.stage.stageHeight;
+		var targetHeight:Int = 720;
+		var scale = targetHeight / screenHeight;
+		var targetWidth:Int = Math.round(screenWidth * scale);
+		addChild(new FlxGame(targetWidth, targetHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));*/
 
 		fpsVar = new FPS(10, 3, 0x00FF00);
 		addChild(fpsVar);

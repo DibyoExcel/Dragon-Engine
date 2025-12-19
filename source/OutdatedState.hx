@@ -27,6 +27,7 @@ class OutdatedState extends MusicBeatState
 
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image((ClientPrefs.darkmode ? 'menuDesatDark' : 'menuDesat')));
 		bg.color = 0xff800080;
+		CoolUtil.fitBackground(bg);
 		add(bg);
 
 		warnText = new FlxText(0, 0, FlxG.width,

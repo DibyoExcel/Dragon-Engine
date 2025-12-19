@@ -89,7 +89,7 @@ class ControlsSubState extends MusicBeatSubstate {
 
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image((ClientPrefs.darkmode ? 'menuDesatDark' : 'menuDesat')));
 		bg.color = 0xFFea71fd;
-		bg.screenCenter();
+		CoolUtil.fitBackground(bg);
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		add(bg);
 
@@ -106,7 +106,7 @@ class ControlsSubState extends MusicBeatSubstate {
 				isCentered = true;
 			}
 
-			var optionText:Alphabet = new Alphabet(200, 300, optionShit[i][0], (!isCentered || isDefaultKey));
+			var optionText:Alphabet = new Alphabet(200 + (CoolUtil.getXFrom1280P()), 300, optionShit[i][0], (!isCentered || isDefaultKey));
 			optionText.isMenuItem = true;
 			if(isCentered) {
 				optionText.screenCenter(X);

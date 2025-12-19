@@ -12,6 +12,8 @@ import sys.FileSystem;
 #else
 import openfl.utils.Assets;
 #end
+import flixel.FlxSprite;
+import flixel.FlxG;
 
 using StringTools;
 
@@ -166,5 +168,20 @@ class CoolUtil
 		var avgBlue = totalB / totalPixel;
 		var avgGreen = totalG / totalPixel;
 		return (Std.int(avgRed) << 16) | (Std.int(avgGreen) << 8) | Std.int(avgBlue);
+	}
+	public static function fitBackground(spr:FlxSprite, center:Bool = true) {
+		if (spr != null) {
+			var scaleX = FlxG.width / spr.width;
+			var scaleY = FlxG.height / spr.height;
+			var biggestScale = Math.max(scaleX, scaleY);
+			spr.scale.set(biggestScale, biggestScale);
+			spr.updateHitbox();
+			if (center) {
+				spr.screenCenter();
+			}
+		}
+	}
+	public inline static function getXFrom1280P():Float {
+		return (FlxG.width-1280)/2;
 	}
 }

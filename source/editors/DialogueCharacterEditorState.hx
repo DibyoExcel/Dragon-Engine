@@ -114,7 +114,7 @@ class DialogueCharacterEditorState extends MusicBeatState
 		ghostIdle.cameras = [camGame];
 		add(ghostIdle);
 
-		box = new FlxSprite(70, 370);
+		box = new FlxSprite(70 + CoolUtil.getXFrom1280P(), 370);
 		box.frames = Paths.getSparrowAtlas('speech_bubble');
 		box.scrollFactor.set();
 		box.antialiasing = ClientPrefs.globalAntialiasing;
@@ -154,7 +154,7 @@ class DialogueCharacterEditorState extends MusicBeatState
 		reloadCharacter();
 		updateTextBox();
 
-		daText = new TypedAlphabet(DialogueBoxPsych.DEFAULT_TEXT_X, DialogueBoxPsych.DEFAULT_TEXT_Y, '', 0.05, false);
+		daText = new TypedAlphabet(DialogueBoxPsych.DEFAULT_TEXT_X + CoolUtil.getXFrom1280P(), DialogueBoxPsych.DEFAULT_TEXT_Y, '', 0.05, false);
 		daText.scaleX = 0.7;
 		daText.scaleY = 0.7;
 		daText.text = DEFAULT_TEXT;
@@ -175,7 +175,7 @@ class DialogueCharacterEditorState extends MusicBeatState
 		];
 		UI_typebox = new FlxUITabMenu(null, tabs, true);
 		UI_typebox.resize(120, 180);
-		UI_typebox.x = 900;
+		UI_typebox.x = 900 + (CoolUtil.getXFrom1280P() * 2);
 		UI_typebox.y = FlxG.height - UI_typebox.height - 50;
 		UI_typebox.scrollFactor.set();
 		UI_typebox.camera = camHUD;

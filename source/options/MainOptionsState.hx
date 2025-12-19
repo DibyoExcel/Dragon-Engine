@@ -56,9 +56,7 @@ class MainOptionsState extends MusicBeatState
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image((ClientPrefs.darkmode ? 'menuDesatDark' : 'menuDesat')));
 		var randomColor:Int = 0xFF000000 | (Std.random(256) << 16) | (Std.random(256) << 8) | Std.random(256);
 		bg.color = randomColor;
-		bg.updateHitbox();
-
-		bg.screenCenter();
+		CoolUtil.fitBackground(bg);
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		add(bg);
 

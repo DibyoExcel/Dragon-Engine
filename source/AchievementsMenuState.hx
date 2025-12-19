@@ -33,6 +33,7 @@ class AchievementsMenuState extends MusicBeatState
 		#end
 
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
+		CoolUtil.fitBackground(menuBG);
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
 		menuBG.updateHitbox();
 		menuBG.screenCenter();
@@ -116,6 +117,7 @@ class AchievementsMenuState extends MusicBeatState
 			}
 		}
 		descText.text = Achievements.achievementsStuff[achievementIndex[curSelected]][1];
+		descText.screenCenter(X);
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 	}
 	#end

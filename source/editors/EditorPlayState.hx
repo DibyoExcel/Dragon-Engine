@@ -83,6 +83,7 @@ class EditorPlayState extends MusicBeatState
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image((ClientPrefs.darkmode ? 'menuDesatDark' : 'menuDesat')));
 		bg.scrollFactor.set();
 		bg.color = FlxColor.fromHSB(FlxG.random.int(0, 359), FlxG.random.float(0, 0.8), FlxG.random.float(0.3, 1));
+		CoolUtil.fitBackground(bg);
 		add(bg);
 
 		gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
@@ -1077,7 +1078,7 @@ class EditorPlayState extends MusicBeatState
 					{
 						// FlxG.log.add(i);
 			
-						var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll || gamemode == "bothside" ? STRUM_X_MIDDLESCROLL : STRUM_X, strumLine.y, i, player);
+						var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : (player == 1 ? FlxG.width*0.75 : FlxG.width*0.25))-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, player);
 						babyArrow.camTarget = '';
 						if (player == 1)
 						{
@@ -1092,9 +1093,10 @@ class EditorPlayState extends MusicBeatState
 						{
 							if(ClientPrefs.middleScroll)
 							{
-								babyArrow.x += 310;
 								if(i > 1) { //Up and Right
-									babyArrow.x += FlxG.width / 2 + 25;
+									babyArrow.x += FlxG.width / 4;
+								} else {
+									babyArrow.x -= FlxG.width / 4;
 								}
 							}
 							opponentStrums.add(babyArrow);
@@ -1107,15 +1109,19 @@ class EditorPlayState extends MusicBeatState
 				if (player == 0) {
 					for (i in 0...8)
 					{
-						var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X)-50)-(i*37), strumLine.y, i, player, i>3);
+						var noteSize = Note.swagWidth*(Math.min(0.75, 0.7*(FlxG.width/1280)));
+					var noteSizeSub = Note.swagWidth*(Math.min(0.125, 0.15*(FlxG.width/1280)));
+					var number = (-(noteSize*4))+(noteSize*i);
+					var babyArrow:StrumNote = new StrumNote((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : FlxG.width*0.25)+number-noteSizeSub, strumLine.y, i, player, i>3);
 						babyArrow.camTarget ='';
 						if (player != 1)
 						{
 							if(ClientPrefs.middleScroll)
 							{
-								babyArrow.x += 310;
 								if(i > 3) { // Adjust positions for the last 4 arrows
-									babyArrow.x += (FlxG.width / 2 + 25)-99;
+									babyArrow.x += FlxG.width / 4;
+								} else {
+									babyArrow.x -= FlxG.width / 4;
 								}
 							}
 							if (i > 3) {
@@ -1129,9 +1135,13 @@ class EditorPlayState extends MusicBeatState
 						}
 					} else {
 				// Loop for playerStrums (only 4 arrows)
-					for (i in 0...(PlayState.SONG.secOpt && gamemode == 'bothside' ? 8 : 4))
+					for (i in 0...8)
 						{
-							var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, strumLine.y, i, player, i>3);
+							if (!(PlayState.SONG.secOpt && gamemode == 'bothside') && i>3) {
+								continue;//stop only 4 spawn
+							}
+							var number = (PlayState.SONG.secOpt && gamemode == 'bothside' ? (-Note.swagWidth*4) : (-(Note.swagWidth)*2))+(Note.swagWidth*i);
+							var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : FlxG.width*0.75)+number), strumLine.y, i, player, i>3);
 							babyArrow.camTarget ='';
 						
 							if (player == 1)

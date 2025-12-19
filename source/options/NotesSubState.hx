@@ -42,7 +42,7 @@ class NotesSubState extends MusicBeatSubstate
 	var blackBG:FlxSprite;
 	var hsbText:Alphabet;
 
-	var posX = 230;
+	var posX = 230 + (CoolUtil.getXFrom1280P());
 	private var leftButton:VirtualButton;
 	private var rightButton:VirtualButton;
 	private var enterButton:VirtualButton;
@@ -52,7 +52,7 @@ class NotesSubState extends MusicBeatSubstate
 		
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image((ClientPrefs.darkmode ? 'menuDesatDark' : 'menuDesat')));
 		bg.color = 0xFFea71fd;
-		bg.screenCenter();
+		CoolUtil.fitBackground(bg);
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		add(bg);
 		

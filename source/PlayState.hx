@@ -346,6 +346,8 @@ class PlayState extends MusicBeatState
 	public var hitboxSpace:Hitbox;
 	//precache
 	public var cacheRating:Map<String, FlxGraphic> = new Map();//cache rating(slighty better performance)
+	//zoom mullt
+	public var camGameMult:Float = Math.max(FlxG.width/1280, FlxG.height/720);
 
 	#if desktop
 	// Discord RPC variables
@@ -836,6 +838,9 @@ class PlayState extends MusicBeatState
 
 			case 'tank': //Week 7 - Ugh, Guns, Stress
 				var sky:BGSprite = new BGSprite('tankSky', -400, -400, 0, 0);
+				var scale = Math.max(FlxG.width/1280, FlxG.height/720);
+				sky.scale.set(scale, scale);
+				sky.updateHitbox();
 				add(sky);
 
 				if(!ClientPrefs.lowQuality)
@@ -1098,6 +1103,7 @@ class PlayState extends MusicBeatState
 		timeTxt.alpha = 0;
 		timeTxt.borderSize = 2;
 		timeTxt.visible = showTime;
+		timeTxt.screenCenter(X);
 		if(ClientPrefs.downScroll) timeTxt.y = FlxG.height - 44;
 
 		if(ClientPrefs.timeBarType == 'Song Name')
@@ -1115,6 +1121,7 @@ class PlayState extends MusicBeatState
 		timeBarBG.color = FlxColor.BLACK;
 		timeBarBG.xAdd = -4;
 		timeBarBG.yAdd = -4;
+		timeBarBG.screenCenter(X);
 		add(timeBarBG);
 
 		timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), this,
@@ -1126,6 +1133,7 @@ class PlayState extends MusicBeatState
 		timeBar.visible = showTime;
 		add(timeBar);
 		add(timeTxt);
+		timeTxt.screenCenter(X);
 		timeBarBG.sprTracker = timeBar;
 
 		strumLineNotes = new FlxTypedGroup<StrumNote>();
@@ -1166,7 +1174,7 @@ class PlayState extends MusicBeatState
 
 		FlxG.camera.follow(camFollowPos, LOCKON, 1);
 		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
-		FlxG.camera.zoom = defaultCamZoom;
+		FlxG.camera.zoom = defaultCamZoom*camGameMult;
 		FlxG.camera.focusOn(camFollow);
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
@@ -1262,6 +1270,7 @@ class PlayState extends MusicBeatState
 		botplayTxt = new FlxText(400, timeBarBG.y + 55, FlxG.width - 800, (ClientPrefs.dragonW ? "AUTO FLIGHT" : "BOTPLAY"), 32);
 		botplayTxt.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		botplayTxt.scrollFactor.set();
+		botplayTxt.screenCenter(X);
 		botplayTxt.borderSize = 1.25;
 		botplayTxt.visible = cpuControlled;
 		add(botplayTxt);
@@ -1444,7 +1453,7 @@ class PlayState extends MusicBeatState
 					{
 						camHUD.visible = true;
 						remove(blackScreen);
-						FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 2.5, {
+						FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom*camGameMult}, 2.5, {
 							ease: FlxEase.quadInOut,
 							onComplete: function(twn:FlxTween)
 							{
@@ -1964,7 +1973,7 @@ class PlayState extends MusicBeatState
 		{
 			var timeForStuff:Float = Conductor.crochet / 1000 * 4.5;
 			FlxG.sound.music.fadeOut(timeForStuff);
-			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, timeForStuff, {ease: FlxEase.quadInOut});
+			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom*camGameMult}, timeForStuff, {ease: FlxEase.quadInOut});
 			moveCamera(true);
 			startCountdown();
 
@@ -2042,9 +2051,9 @@ class PlayState extends MusicBeatState
 				cutsceneHandler.onStart = function()
 				{
 					tightBars.play(true);
-					FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.2}, 4, {ease: FlxEase.quadInOut});
-					FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.2 * 1.2}, 0.5, {ease: FlxEase.quadInOut, startDelay: 4});
-					FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.2}, 1, {ease: FlxEase.quadInOut, startDelay: 4.5});
+					FlxTween.tween(FlxG.camera, {zoom: (defaultCamZoom * 1.2) * camGameMult}, 4, {ease: FlxEase.quadInOut});
+					FlxTween.tween(FlxG.camera, {zoom: (defaultCamZoom * 1.2 * 1.2) * camGameMult}, 0.5, {ease: FlxEase.quadInOut, startDelay: 4});
+					FlxTween.tween(FlxG.camera, {zoom: (defaultCamZoom * 1.2) * camGameMult}, 1, {ease: FlxEase.quadInOut, startDelay: 4.5});
 				};
 
 				cutsceneHandler.timer(4, function()
@@ -2953,7 +2962,7 @@ class PlayState extends MusicBeatState
 				{
 					// FlxG.log.add(i);
 		
-					var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll || gamemode == "bothside" ? STRUM_X_MIDDLESCROLL : STRUM_X, strumLine.y, i, player);
+					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : (player == 1 ? FlxG.width*0.75 : FlxG.width*0.25))-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, player);
 					if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
 						babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
 					}
@@ -2986,9 +2995,10 @@ class PlayState extends MusicBeatState
 					{
 						if(ClientPrefs.middleScroll)
 						{
-							babyArrow.x += 310;
 							if(i > 1) { //Up and Right
-								babyArrow.x += FlxG.width / 2 + 25;
+								babyArrow.x += FlxG.width / 4;
+							} else {
+								babyArrow.x -= FlxG.width / 4;
 							}
 						}
 						opponentStrums.add(babyArrow);
@@ -3001,7 +3011,10 @@ class PlayState extends MusicBeatState
 			if (player == 0) {
 				for (i in 0...8)
 				{
-					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X)-50)-(i*37), strumLine.y, i, player, i>3);
+					var noteSize = Note.swagWidth*(Math.min(0.75, 0.7*(FlxG.width/1280)));
+					var noteSizeSub = Note.swagWidth*(Math.min(0.125, 0.15*(FlxG.width/1280)));
+					var number = (-(noteSize*4))+(noteSize*i);
+					var babyArrow:StrumNote = new StrumNote((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : FlxG.width*0.25)+number-noteSizeSub, strumLine.y, i, player, i>3);
 					babyArrow.downScroll = ClientPrefs.downScroll;
 					if (gamemode == "bothside") {
 						babyArrow.visible = false;
@@ -3020,28 +3033,30 @@ class PlayState extends MusicBeatState
 					{
 						babyArrow.alpha = targetAlpha;
 					}
-					if (player != 1)
+					if(ClientPrefs.middleScroll)
 					{
-						if(ClientPrefs.middleScroll)
-						{
-							babyArrow.x += 310;
-							if(i > 3) { // Adjust positions for the last 4 arrows
-								babyArrow.x += (FlxG.width / 2 + 25)-99;
-							}
+						if(i > 3) { // Adjust positions for the last 4 arrows
+							babyArrow.x += FlxG.width / 4;
+						} else {
+							babyArrow.x -= FlxG.width / 4;
 						}
-						opponentStrums.add(babyArrow);
-						if ( i > 3) {
-							gfStrums.add(babyArrow);
-						}
+					}
+					opponentStrums.add(babyArrow);
+					if ( i > 3) {
+						gfStrums.add(babyArrow);
 					}
 					strumLineNotes.add(babyArrow);
 					babyArrow.postAddedToGroup();
 					}
 				} else {
 			// Loop for playerStrums (only 4 arrows if not bothside with 2nd strums)
-				for (i in 0...(PlayState.SONG.secOpt && gamemode == 'bothside' ? 8 : 4))
+				for (i in 0...8)
 					{
-						var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll || gamemode == 'bothside' ? STRUM_X_MIDDLESCROLL-(PlayState.SONG.secOpt && gamemode == 'bothside' ? 160 : 0) : STRUM_X, strumLine.y, i, player, i>3);
+						if (!(PlayState.SONG.secOpt && gamemode == 'bothside') && i>3) {
+							continue;//stop only 4 spawn
+						}
+						var number = (PlayState.SONG.secOpt && gamemode == 'bothside' ? (-Note.swagWidth*4) : (-(Note.swagWidth)*2))+(Note.swagWidth*i);
+						var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : FlxG.width*0.75)+number), strumLine.y, i, player, i>3);
 						babyArrow.downScroll = ClientPrefs.downScroll;
 						if (!isStoryMode && !skipArrowStartTween && t)
 						{
@@ -3120,6 +3135,12 @@ class PlayState extends MusicBeatState
 					i.active = false;
 				}
 			}
+			for (i in FunkinLua.resizeGameTween.keys()) {
+				var tween = FunkinLua.resizeGameTween.get(i);
+				if (tween != null) {
+					tween.active = false;
+				}
+			}
 			if (FunkinLua.tSongSpeed != null) {
 				FunkinLua.tSongSpeed.active = false;
 			}
@@ -3168,6 +3189,12 @@ class PlayState extends MusicBeatState
 			for (i in FunkinLua.tStrumY) {
 				if (i != null) {
 					i.active = true;
+				}
+			}
+			for (i in FunkinLua.resizeGameTween.keys()) {
+				var tween = FunkinLua.resizeGameTween.get(i);
+				if (tween != null) {
+					tween.active = true;
 				}
 			}
 			if (FunkinLua.tSongSpeed != null) {
@@ -3590,7 +3617,7 @@ class PlayState extends MusicBeatState
 
 		if (camZooming)
 		{
-			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, CoolUtil.boundTo(1 - (elapsed * 3.125 * camZoomingDecay * playbackRate), 0, 1));
+			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom*camGameMult, FlxG.camera.zoom, CoolUtil.boundTo(1 - (elapsed * 3.125 * camZoomingDecay * playbackRate), 0, 1));
 			camHUD.zoom = FlxMath.lerp(defaultCamZoomHUD, camHUD.zoom, CoolUtil.boundTo(1 - (elapsed * 3.125 * camZoomingDecay * playbackRate), 0, 1));
 		}
 
@@ -5885,7 +5912,7 @@ class PlayState extends MusicBeatState
 			camHUD.zoom += 0.03;
 
 			if(!camZooming) { //Just a way for preventing it to be permanently zoomed until Skid & Pump hits a note
-				FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.5);
+				FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * camGameMult}, 0.5);
 				FlxTween.tween(camHUD, {zoom: 1}, 0.5);
 			}
 		}

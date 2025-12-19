@@ -53,7 +53,7 @@ class CreditsState extends MusicBeatState
 		persistentUpdate = true;
 		bg = new FlxSprite().loadGraphic(Paths.image((ClientPrefs.darkmode ? 'menuDesatDark' : 'menuDesat')));
 		add(bg);
-		bg.screenCenter();
+		CoolUtil.fitBackground(bg);
 		
 		grpOptions = new FlxTypedGroup<Alphabet>();
 		add(grpOptions);

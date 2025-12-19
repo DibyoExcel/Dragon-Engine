@@ -78,7 +78,7 @@ class ModsMenuState extends MusicBeatState
 		bg = new FlxSprite().loadGraphic(Paths.image((ClientPrefs.darkmode ? 'menuDesatDark' : 'menuDesat')));
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		add(bg);
-		bg.screenCenter();
+		CoolUtil.fitBackground(bg);
 
 		noModsTxt = new FlxText(0, 0, FlxG.width, "NO MODS INSTALLED\nPRESS BACK TO EXIT AND INSTALL A MOD", 48);
 		if(FlxG.random.bool(0.1)) noModsTxt.text += '\nBITCH.'; //meanie
@@ -128,7 +128,7 @@ class ModsMenuState extends MusicBeatState
 		visibleWhenHasMods.push(selector);
 
 		//attached buttons
-		var startX:Int = 1120;
+		var startX:Int = Std.int(CoolUtil.getXFrom1280P()*2) + 1120;
 
 		buttonToggle = new FlxButton(startX, 0, "ON", function()
 		{
@@ -615,7 +615,7 @@ class ModsMenuState extends MusicBeatState
 	var cornerSize:Int = 11;
 	function makeSelectorGraphic()
 	{
-		selector.makeGraphic(1100, 450, FlxColor.BLACK);
+		selector.makeGraphic(1100+Std.int(CoolUtil.getXFrom1280P()*2), 450, FlxColor.BLACK);
 		selector.pixels.fillRect(new Rectangle(0, 190, selector.width, 5), 0x0);
 
 		// Why did i do this? Because i'm a lmao stupid, of course

@@ -76,7 +76,7 @@ class DialogueEditorState extends MusicBeatState
 		character.scrollFactor.set();
 		add(character);
 
-		box = new FlxSprite(70, 370);
+		box = new FlxSprite(70 + CoolUtil.getXFrom1280P(), 370);
 		box.frames = Paths.getSparrowAtlas('speech_bubble');
 		box.scrollFactor.set();
 		box.antialiasing = ClientPrefs.globalAntialiasing;
@@ -107,7 +107,7 @@ class DialogueEditorState extends MusicBeatState
 		animText.scrollFactor.set();
 		add(animText);
 		
-		daText = new TypedAlphabet(DialogueBoxPsych.DEFAULT_TEXT_X, DialogueBoxPsych.DEFAULT_TEXT_Y, DEFAULT_TEXT);
+		daText = new TypedAlphabet(DialogueBoxPsych.DEFAULT_TEXT_X + CoolUtil.getXFrom1280P(), DialogueBoxPsych.DEFAULT_TEXT_Y, DEFAULT_TEXT);
 		daText.scaleX = 0.7;
 		daText.scaleY = 0.7;
 		add(daText);

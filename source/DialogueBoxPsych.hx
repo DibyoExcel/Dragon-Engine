@@ -203,7 +203,7 @@ class DialogueBoxPsych extends FlxSpriteGroup
 		this.dialogueList = dialogueList;
 		spawnCharacters();
 
-		box = new FlxSprite(70, 370);
+		box = new FlxSprite(70 + CoolUtil.getXFrom1280P(), 370);
 		box.frames = Paths.getSparrowAtlas('speech_bubble');
 		box.scrollFactor.set();
 		box.antialiasing = ClientPrefs.globalAntialiasing;
@@ -221,7 +221,7 @@ class DialogueBoxPsych extends FlxSpriteGroup
 		box.updateHitbox();
 		add(box);
 
-		daText = new TypedAlphabet(DEFAULT_TEXT_X, DEFAULT_TEXT_Y, '');
+		daText = new TypedAlphabet(DEFAULT_TEXT_X + CoolUtil.getXFrom1280P(), DEFAULT_TEXT_Y, '');
 		daText.scaleX = 0.7;
 		daText.scaleY = 0.7;
 		add(daText);

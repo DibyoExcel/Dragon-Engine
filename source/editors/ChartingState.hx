@@ -310,6 +310,7 @@ class ChartingState extends MusicBeatState
 		bg.scrollFactor.set();
 		bg.color = 0xFF505050;
 		add(bg);
+		CoolUtil.fitBackground(bg);
 
 		gridLayer = new FlxTypedGroup<FlxSprite>();
 		add(gridLayer);
@@ -389,7 +390,7 @@ class ChartingState extends MusicBeatState
 		UI_box = new FlxUITabMenu(null, tabs, true);
 
 		UI_box.resize(300, 550);
-		UI_box.x = 640 + GRID_SIZE / 2;
+		UI_box.x = (FlxG.width / 2) + GRID_SIZE / 2;
 		UI_box.y = 25;
 		UI_box.scrollFactor.set();
 
@@ -410,7 +411,7 @@ class ChartingState extends MusicBeatState
 		Space - Stop/Resume song
 		 Control+ ALT - Multiplace Notes";
 
-		var tipText:FlxText = new FlxText((UI_box.x+UI_box.width)+10, UI_box.y, 300, text, 15);
+		var tipText:FlxText = new FlxText((UI_box.x+UI_box.width)+10, UI_box.y, Std.int(FlxG.width/4), text, 15);
 		tipText.setFormat(Paths.font('vcr.ttf'), 15, FlxColor.WHITE, LEFT/*, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK*/);
 		//tipText.borderSize = 2;
 		tipText.scrollFactor.set();

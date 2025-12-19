@@ -85,6 +85,7 @@ class FunkinLua {
 	public static var indoTween:Array<FlxTween> = [];//it should not break if use setWindow too much
 	public static var tSongSpeed:FlxTween;
 	public static var tStrumY:Array<FlxTween> = [];
+	public static var resizeGameTween:Map<String, FlxTween> = new Map();
 
 	#if hscript
 	public static var hscript:HScript = null;
@@ -258,6 +259,8 @@ class FunkinLua {
 		set('platformLabel', System.platformLabel);
 		set('platformName', System.platformName);
 		set('platformVersion', System.platformVersion);
+		//for custom ratio
+		set('camGameMult', Math.max(FlxG.width/1280, FlxG.height/720));
 
 		// custom substate
 		Lua_helper.add_callback(lua, "openCustomSubstate", function(name:String, pauseGame:Bool = false) {
@@ -3030,7 +3033,7 @@ class FunkinLua {
 					i.cancel();
 				}
 			}
-			if (duration != 0) {
+			if (duration >= 0) {
 				if (x != null) {
 					indoTween[0] = FlxTween.tween(Lib.application.window, {x: x}, duration, {ease: getFlxEaseByString(ease)});
 				}
@@ -3377,8 +3380,184 @@ class FunkinLua {
 			PlayState.instance.cacheRating.set(rating, Paths.image(path));
 		});
 
+		Lua_helper.add_callback(lua, "resizeGame", function(width:Null<Int> = null, height:Null<Int> = null, resetLayout:Bool = false, duration:Float = 0, ease:String, excludeCam:String = ''/**split by comma**/) {
+			var excludeCame:Array<FlxCamera> = [];
+			if (excludeCam.length > 0) {
+				excludeCame = cameraArrayFromString(excludeCam.split(','));
+			}
+			for (keys in resizeGameTween.keys()) {
+				if (resizeGameTween.exists(keys) && resizeGameTween.get(keys) != null) {
+					resizeGameTween.get(keys).cancel();
+				}
+			}
+			if (duration > 0) {
+				@:privateAccess{
+					if (width != null) {
+						resizeGameTween.set('FlxGInitiaWidth', FlxTween.tween(FlxG, {initialWidth: width}, duration, {
+							onUpdate: function(_) {
+								updateGameSize();
+								if (resetLayout) {
+									updateGameLayout();
+									updateStrumLayout();
+								}
+							},
+							ease: getFlxEaseByString(ease)
+						}));
+					}
+					if (height != null) {
+						resizeGameTween.set('FlxGInitiaHeight', FlxTween.tween(FlxG, {initialHeight: height}, duration, {
+							onUpdate: function(_) {
+								updateGameSize();
+								if (resetLayout) {
+									updateGameLayout();
+									updateStrumLayout();
+								}
+							},
+							ease: getFlxEaseByString(ease)
+						}));
+					}
+				}
+				for (cam in 0...FlxG.cameras.list.length) {
+					var camera = FlxG.cameras.list[cam];
+					if (excludeCame.indexOf(camera) != -1) {
+						continue;
+					}
+					if (width != null) {
+						resizeGameTween.set('cam' + cam + 'width', FlxTween.tween(camera, {width: width}, duration, {
+							ease: getFlxEaseByString(ease)
+						}));
+					}
+					if (height != null) {
+						resizeGameTween.set('cam' + cam + 'height', FlxTween.tween(camera, {height: height}, duration, {
+							ease: getFlxEaseByString(ease)
+						}));
+					}
+				}
+			} else {
+				@:privateAccess{
+					if (width != null) {
+						FlxG.initialWidth = width;
+						updateGameSize();
+						if (resetLayout) {
+							updateGameLayout();
+							updateStrumLayout();
+						}
+					}
+					if (height != null) {
+						FlxG.initialHeight = height;
+						updateGameSize();
+						if (resetLayout) {
+							updateGameLayout();
+							updateStrumLayout();
+						}
+					}
+				}
+				for (cam in 0...FlxG.cameras.list.length) {
+					var camera = FlxG.cameras.list[cam];
+					if (excludeCame.indexOf(camera) != -1) {
+						continue;
+					}
+					trace('set cam');
+					if (width != null) {
+						camera.width = width;
+					}
+					if (height != null) {
+						camera.height = height;
+					}
+				}
+			}
+		});
+
 		call('onCreate', []);
 		#end
+	}
+
+	function updateGameSize() {
+		var game = PlayState.instance;
+		var screenWidth:Int = FlxG.stage.stageWidth;
+		var screenHeight:Int = FlxG.stage.stageHeight;
+		@:privateAccess
+		FlxG.game.resizeGame(screenWidth, screenHeight);
+		PlayState.instance.camGameMult = Math.max(FlxG.width/1280, FlxG.height/720);
+		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
+		set('camGameMult', Math.max(FlxG.width/1280, FlxG.height/720));
+		set('screenWidth', FlxG.width);
+		set('screenHeight', FlxG.height);
+	}
+
+	function updateGameLayout() {//this only for game layout. other custom object need manually.
+		var game = PlayState.instance;
+		game.timeBar.screenCenter(X);
+		game.botplayTxt.screenCenter(X);
+		@:privateAccess{
+			game.timeTxt.screenCenter(X);
+			game.timeTxt.y = 19;
+			if (ClientPrefs.downScroll) game.timeTxt.y = FlxG.height - 44;
+			var timeBarY = game.timeTxt.y + (game.timeTxt.height / 4);
+			game.timeBar.y = timeBarY+4;
+			game.botplayTxt.y = timeBarY+55;
+			if (ClientPrefs.downScroll) game.botplayTxt.y = timeBarY - 78;
+		}
+		game.healthBar.screenCenter(X);
+		var helthBARBGY = 0.89 * FlxG.height;
+		if (ClientPrefs.downScroll) helthBARBGY =  (0.11 * FlxG.height);
+		game.healthBar.y =  helthBARBGY + 4;
+		game.iconP1.y = game.healthBar.y - 75;
+		game.iconP2.y = game.healthBar.y - 75;
+		if (game.iconP3 != null) {
+		game.iconP3.y = game.healthBar.y - 75;
+		}
+		game.scoreTxt.screenCenter(X);
+		game.scoreTxt.y =  helthBARBGY + 36;
+	}
+
+	function updateStrumLayout() {
+		var playerStrums = PlayState.instance.playerStrums;
+		var opponentStrums = PlayState.instance.opponentStrums;
+		var gamemode = PlayState.instance.gamemode;
+		var strumLine;
+		@:privateAccess{
+			strumLine = PlayState.instance.strumLine;
+		}
+		strumLine.y = 50;
+		if(ClientPrefs.downScroll) strumLine.y = FlxG.height - 150;
+		for (i in 0...playerStrums.length) {
+			if (gamemode == 'bothside' &&  PlayState.SONG.secOpt) {
+				var noteSize = Note.swagWidth*(Math.min(0.75, 0.7*(FlxG.width/1280)));
+				var number = (PlayState.SONG.secOpt && gamemode == 'bothside' ? (-Note.swagWidth*4) : (-(Note.swagWidth)*2))+(Note.swagWidth*i);
+				playerStrums.members[i].x = (ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : FlxG.width*0.75)+number;
+			} else {
+				playerStrums.members[i].x = ((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : FlxG.width*0.75)-(Note.swagWidth*2))+(Note.swagWidth*i);
+			}
+			playerStrums.members[i].y = strumLine.y;
+		}
+		for (i in 0...opponentStrums.length) {
+			if (PlayState.SONG.secOpt) {
+				var noteSize = Note.swagWidth*(Math.min(0.75, 0.7*(FlxG.width/1280)));
+				var noteSizeSub = Note.swagWidth*(Math.min(0.125, 0.15*(FlxG.width/1280)));
+				var number = (-(noteSize*4))+(noteSize*i);
+				opponentStrums.members[i].x = ((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : FlxG.width*0.25)-(Note.swagWidth*2))+number-noteSizeSub;
+				if(ClientPrefs.middleScroll)
+				{
+					if(i > 3) { // Adjust positions for the last 4 arrows
+						opponentStrums.members[i].x += FlxG.width / 4;
+					} else {
+						opponentStrums.members[i].x -= FlxG.width / 4;
+					}
+				}
+			} else {
+				opponentStrums.members[i].x = ((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : FlxG.width*0.25)-(Note.swagWidth*2))+(Note.swagWidth*i);
+				if(ClientPrefs.middleScroll)
+				{
+					if(i > 1) { // Adjust positions for the last 4 arrows
+						opponentStrums.members[i].x += FlxG.width / 4;
+					} else {
+						opponentStrums.members[i].x -= FlxG.width / 4;
+					}
+				}
+			}
+			opponentStrums.members[i].y = strumLine.y;
+		}
 	}
 
 	public static function isOfTypes(value:Any, types:Array<Dynamic>)
@@ -3862,7 +4041,7 @@ class FunkinLua {
 	public static function cameraArrayFromString(camArray:Array<String>):Array<FlxCamera> {
 		var getCam:Array<FlxCamera> = [];
 		for (i in 0...camArray.length) {
-			getCam.push(cameraBetterFromString(camArray[i]));
+			getCam.push(cameraBetterFromString(camArray[i].trim()));
 		}
 		return getCam;
 	}

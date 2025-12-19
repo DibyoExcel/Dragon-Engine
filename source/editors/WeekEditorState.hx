@@ -349,6 +349,7 @@ class WeekEditorState extends MusicBeatState
 		if(isMissing) {
 			bgSprite.visible = false;
 		}
+		bgSprite.screenCenter(X);
 	}
 
 	function reloadWeekThing() {
@@ -639,6 +640,7 @@ class WeekEditorFreeplayState extends MusicBeatState
 
 		bg.color = FlxColor.WHITE;
 		add(bg);
+		CoolUtil.fitBackground(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);
