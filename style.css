@@ -65,6 +65,10 @@ div.dialogue{
     border-radius: 15px;
 }
 
+div.dialogue:hover{
+    box-shadow: 0 0 20px var(--accent-color);
+}
+
 div.dialogue div.dialogue_title{
     height: auto;
     min-height: 65px;
