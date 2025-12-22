@@ -1,9 +1,7 @@
 package;
 
-import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.graphics.frames.FlxAtlasFrames;
 using StringTools;
 
 class NoteSplash extends FlxSprite
@@ -84,13 +82,11 @@ class NoteSplash extends FlxSprite
 		var animNum:Int = FlxG.random.int(1, 2);
 		animation.play('note' + (note % 4) + '-' + animNum, true);
 		if(animation.curAnim != null)animation.curAnim.frameRate = ClientPrefs.fpsStrumAnim + FlxG.random.int(-2, 2);
+		centerOrigin();
 	}
 
 	function loadAnims(skin:String) {
-		if (!CacheTools.cacheNoteSplash.exists(skin)) {
-			CacheTools.cacheNoteSplash.set(skin, Paths.getSparrowAtlas(skin));
-		}
-		frames = CacheTools.cacheNoteSplash.get(skin);
+		frames = Paths.getSparrowAtlas(skin);
 		for (i in 1...3) {
 			animation.addByPrefix("note1-" + i, "note splash blue " + i, ClientPrefs.fpsStrumAnim, false);
 			animation.addByPrefix("note2-" + i, "note splash green " + i, ClientPrefs.fpsStrumAnim, false);

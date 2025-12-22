@@ -697,7 +697,7 @@ class FlxSound extends FlxBasic
 	@:allow(flixel.system.frontEnds.SoundFrontEnd)
 	function onFocus():Void
 	{
-		if (!_alreadyPaused && (ClientPrefs.pauseUnFocus ? !(FlxG.state is PlayState) : true))
+		if (!_alreadyPaused)
 			resume();
 	}
 

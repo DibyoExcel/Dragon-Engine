@@ -78,6 +78,8 @@ class EditorPlayState extends MusicBeatState
 
 	override function create()
 	{
+		CacheTools.clearCache();
+		Paths.clearStoredMemory();
 		instance = this;
 
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image((ClientPrefs.darkmode ? 'menuDesatDark' : 'menuDesat')));
@@ -200,6 +202,7 @@ class EditorPlayState extends MusicBeatState
 		#end
 		super.create();
 		cachePopUpScore();
+		Paths.clearUnusedMemory();
 	}
 
 	function sayGo() {
@@ -309,6 +312,7 @@ class EditorPlayState extends MusicBeatState
 								sustainNote.scrollFactor.set();
 								sustainNote.camTarget = '';//set to active cam;
 								sustainNote.noteSplashCam = '';//set to active cam;
+								sustainNote.parent = swagNote;
 								unspawnNotes.push(sustainNote);
 
 								if (sustainNote.mustPress)
@@ -1218,10 +1222,7 @@ class EditorPlayState extends MusicBeatState
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 		}
-		CacheTools.jsonParse.clear();
-		CacheTools.cacheNoteSplash.clear();
-		CacheTools.cacheNote.clear();
-		CacheTools.cacheNoteAtlas.clear();
+		CacheTools.clearCache();
 		super.destroy();
 	}
 }

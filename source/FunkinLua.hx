@@ -3457,7 +3457,6 @@ class FunkinLua {
 					if (excludeCame.indexOf(camera) != -1) {
 						continue;
 					}
-					trace('set cam');
 					if (width != null) {
 						camera.width = width;
 					}

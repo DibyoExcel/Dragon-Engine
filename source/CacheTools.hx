@@ -1,12 +1,19 @@
+import openfl.media.Sound;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 
 ///CACHE OF COURSE
 class CacheTools {
-    //PLEASE REMOVE AFTER USING(UNLESS IS IMPORTANT TO STAY)
+    //cache stuff
     public static var jsonParse:Map<String, Dynamic> = new Map();
-    //cache note splash(remove after quick from PlayState, EditorPlayState)
-    public static var cacheNoteSplash:Map<String, FlxAtlasFrames> = new Map();
-    public static var cacheNoteAtlas:Map<String, FlxAtlasFrames> = new Map();
-    public static var cacheNote:Map<String, FlxGraphic> = new Map();
+    public static var cacheSound:Map<String, Sound> = new Map();
+    public static var cacheImage:Map<String, FlxGraphic> = new Map();
+    public static var cacheAtlas:Map<String, FlxAtlasFrames> = new Map();
+
+    public static function clearCache():Void {
+        jsonParse = new Map();
+        cacheSound = new Map();
+        cacheImage = new Map();
+        cacheAtlas = new Map();
+    }
 }

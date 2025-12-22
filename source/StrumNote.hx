@@ -87,13 +87,10 @@ class StrumNote extends FlxSprite
 
 		if(PlayState.isPixelStage)
 		{
-			if (!CacheTools.cacheNote.exists(image)) {
-				CacheTools.cacheNote.set(image, Paths.image('pixelUI/' + image));
-			}
-			loadGraphic(CacheTools.cacheNote.get(image));
+			loadGraphic(Paths.image('pixelUI/' + image));
 			width = width / 4;
 			height = height / 5;
-			loadGraphic(CacheTools.cacheNote.get(image), true, Math.floor(width), Math.floor(height));
+			loadGraphic(Paths.image('pixelUI/' + image), true, Math.floor(width), Math.floor(height));
 
 			antialiasing = false;
 			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
@@ -128,10 +125,7 @@ class StrumNote extends FlxSprite
 		}
 		else
 		{
-			if (!CacheTools.cacheNoteAtlas.exists(image)) {
-				CacheTools.cacheNoteAtlas.set(image, Paths.getSparrowAtlas(image));
-			}
-			frames = CacheTools.cacheNoteAtlas.get(image);
+			frames = Paths.getSparrowAtlas(image);
 			animation.addByPrefix('green', 'arrowUP');
 			animation.addByPrefix('blue', 'arrowDOWN');
 			animation.addByPrefix('purple', 'arrowLEFT');

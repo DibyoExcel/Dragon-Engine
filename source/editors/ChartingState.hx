@@ -411,7 +411,7 @@ class ChartingState extends MusicBeatState
 		Space - Stop/Resume song
 		 Control+ ALT - Multiplace Notes";
 
-		var tipText:FlxText = new FlxText((UI_box.x+UI_box.width)+10, UI_box.y, Std.int(FlxG.width/4), text, 15);
+		var tipText:FlxText = new FlxText((UI_box.x+UI_box.width)+10, UI_box.y, Std.int(300*(FlxG.width/1280)), text, 15);
 		tipText.setFormat(Paths.font('vcr.ttf'), 15, FlxColor.WHITE, LEFT/*, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK*/);
 		//tipText.borderSize = 2;
 		tipText.scrollFactor.set();
@@ -2234,8 +2234,8 @@ class ChartingState extends MusicBeatState
 								strumLineNotes.members[noteDataToCheck].resetAnim = 0.15;
 							}
 							if(!playedSound[data]) {
-								if((playSoundBf.checked && note.mustPress) || (playSoundDad.checked && !note.mustPress)){
-									var soundToPlay = 'hitsound';
+								if(((playSoundBf.checked && note.mustPress) || (playSoundDad.checked && !note.mustPress)) || (!note.hitsoundDisabled || note.forceHitsound)){
+									var soundToPlay = note.hitsound;
 									if(_song.player1 == 'gf') { //Easter egg
 										soundToPlay = 'GF_' + Std.string(data + 1);
 									}
@@ -2288,8 +2288,8 @@ class ChartingState extends MusicBeatState
 								strumLineNotes.members[noteDataToCheck].resetAnim = 0.15;
 							}
 							if(!playedSound[data]) {
-								if((playSoundBf.checked && note.mustPress) || (playSoundDad.checked && !note.mustPress)){
-									var soundToPlay = 'hitsound';
+								if(((playSoundBf.checked && note.mustPress) || (playSoundDad.checked && !note.mustPress)) || (!note.hitsoundDisabled || note.forceHitsound)){
+									var soundToPlay = note.hitsound;
 									if(_song.player1 == 'gf') { //Easter egg
 										soundToPlay = 'GF_' + Std.string(data + 1);
 									}
@@ -2343,8 +2343,8 @@ class ChartingState extends MusicBeatState
 							strumLineNotes.members[noteDataToCheck].resetAnim = 0.15;
 						}
 						if(!playedSound[data]) {
-							if((playSoundBf.checked && note.mustPress) || (playSoundDad.checked && !note.mustPress)){
-								var soundToPlay = 'hitsound';
+							if(((playSoundBf.checked && note.mustPress) || (playSoundDad.checked && !note.mustPress)) || (!note.hitsoundDisabled || note.forceHitsound)){
+								var soundToPlay = note.hitsound;
 								if(_song.player1 == 'gf') { //Easter egg
 									soundToPlay = 'GF_' + Std.string(data + 1);
 								}
@@ -2397,8 +2397,8 @@ class ChartingState extends MusicBeatState
 							strumLineNotes.members[noteDataToCheck].resetAnim = 0.15;
 						}
 						if(!playedSound[data]) {
-							if((playSoundBf.checked && note.mustPress) || (playSoundDad.checked && !note.mustPress)){
-								var soundToPlay = 'hitsound';
+							if(((playSoundBf.checked && note.mustPress) || (playSoundDad.checked && !note.mustPress)) || (!note.hitsoundDisabled || note.forceHitsound)){
+								var soundToPlay = note.hitsound;
 								if(_song.player1 == 'gf') { //Easter egg
 									soundToPlay = 'GF_' + Std.string(data + 1);
 								}
@@ -3150,10 +3150,7 @@ class ChartingState extends MusicBeatState
 			note.sustainLength = daSus;
 			note.noteType = i[3];
 		} else { //Event note
-			if (!CacheTools.cacheNote.exists('evenArrow')) {
-				CacheTools.cacheNote.set('eventArrow', Paths.image('eventArrow'));
-			}
-			note.loadGraphic(CacheTools.cacheNote.get('eventArrow'));
+			note.loadGraphic(Paths.image('eventArrow'));
 			note.eventName = getEventName(i[1]);
 			note.eventLength = i[1].length;
 			if(i[1].length < 2)
@@ -3753,9 +3750,7 @@ class AttachedFlxText extends FlxText
 		}
 	}
 	override public function destroy() {
-		CacheTools.jsonParse.clear();
-		CacheTools.cacheNote.clear();
-		CacheTools.cacheNoteAtlas.clear();
+		CacheTools.clearCache();
 		super.destroy();
 	}
 }

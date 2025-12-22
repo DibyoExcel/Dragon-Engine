@@ -391,6 +391,7 @@ class PlayState extends MusicBeatState
 	override public function create()
 	{
 		//trace('Playback Rate: ' + playbackRate);
+		CacheTools.clearCache();
 		Paths.clearStoredMemory();
 
 		// for lua
@@ -1480,7 +1481,6 @@ class PlayState extends MusicBeatState
 		RecalculateRating();
 
 		//PRECACHING MISS SOUNDS BECAUSE I THINK THEY CAN LAG PEOPLE AND FUCK THEM UP IDK HOW HAXE WORKS
-		if(ClientPrefs.hitsoundVolume > 0) precacheList.set('hitsound', 'sound');
 		precacheList.set('missnote1', 'sound');
 		precacheList.set('missnote2', 'sound');
 		precacheList.set('missnote3', 'sound');
@@ -3239,17 +3239,17 @@ class PlayState extends MusicBeatState
 
 	override public function onFocusLost():Void
 	{
+		#if desktop
+		if (health > 0 && !paused)
+			{
+				DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
+			}
+			#end
+			
+		super.onFocusLost();
 		if (ClientPrefs.pauseUnFocus && startedCountdown && canPause && !paused) {
 			openPauseMenu();
 		}
-		#if desktop
-		if (health > 0 && !paused)
-		{
-			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
-		}
-		#end
-
-		super.onFocusLost();
 	}
 
 	function resyncVocals():Void
@@ -4847,7 +4847,7 @@ class PlayState extends MusicBeatState
 		note.rating = daRating.name;
 		score = daRating.score;
 
-		if(daRating.noteSplash && !note.noteSplashDisabled && !note.fakeNoHit)
+		if((daRating.noteSplash && !note.noteSplashDisabled && !note.fakeNoHit) || note.forceNoteSplash)
 		{
 			spawnNoteSplashOnNote(note, note.mustPress);
 		}
@@ -5442,7 +5442,7 @@ class PlayState extends MusicBeatState
 			 if (gamemode == "opponent") {
 					health += note.hitHealth * healthGain;
 				}
-			if(!note.noteSplashDisabled && !note.isSustainNote && !note.fakeNoHit) {
+			if((!note.noteSplashDisabled && !note.isSustainNote && !note.fakeNoHit) || note.forceNoteSplash) {
 				spawnNoteSplashOnNote(note, note.mustPress);
 			}
 			if (Paths.formatToSongPath(SONG.song) != 'tutorial')
@@ -5515,14 +5515,16 @@ class PlayState extends MusicBeatState
 		{
 			if((cpuControlled || note.autoPress/**forgot autoPress to ignore the deadlist note**/ || (fieldNameAsPlayer == '' ? note.customField : note.fieldTarget != fieldNameAsPlayer)) && (note.ignoreNote || note.hitCausesMiss)) return;
 
-			if (ClientPrefs.hitsoundVolume > 0 && !note.hitsoundDisabled)
+			if ((ClientPrefs.hitsoundVolume > 0 && !note.hitsoundDisabled) || note.forceHitsound)
 			{
-				FlxG.sound.play(Paths.sound('hitsound'), ClientPrefs.hitsoundVolume);
+				if (CacheTools.cacheSound.exists(note.hitsound)) {
+					FlxG.sound.play(CacheTools.cacheSound.get(note.hitsound), (!note.forceHitsound ? ClientPrefs.hitsoundVolume : 1.0));
+				}
 			}
 
 			if(note.hitCausesMiss && gamemode != 'opponent') {
 				noteMiss(note);
-				if(!note.noteSplashDisabled && !note.isSustainNote && !note.fakeNoHit) {
+				if((!note.noteSplashDisabled && !note.isSustainNote && !note.fakeNoHit) || note.forceNoteSplash) {
 					spawnNoteSplashOnNote(note, note.mustPress);
 				}
 
@@ -5709,14 +5711,14 @@ class PlayState extends MusicBeatState
 	public function spawnNoteSplashOnNote(note:Note, player:Bool) {
 		if(note != null && !ClientPrefs.clsstrum) {
 			if (player == true) {
-				if (ClientPrefs.noteSplashes) {
+				if (ClientPrefs.noteSplashes || note.forceNoteSplash) {
 					var strum:StrumNote = (!note.customField ? playerStrums.members[note.noteData] : strumGroupMap.get(note.fieldTarget).members[note.noteData]);
 					if(strum != null) {
 						spawnNoteSplash(strum.x, strum.y, note.noteData, note);
 					}
 				}
 			} else {
-				if (ClientPrefs.noteSplashesOpt) {
+				if (ClientPrefs.noteSplashesOpt || note.forceNoteSplash) {
 					var strum:StrumNote = (!note.customField ? (note.gfNote && PlayState.SONG.secOpt ? gfStrums.members[note.noteData] : opponentStrums.members[note.noteData]) : strumGroupMap.get(note.fieldTarget).members[note.noteData]);
 					if(strum != null) {
 						spawnNoteSplashOpt(strum.x, strum.y, note.noteData, note);
@@ -5981,10 +5983,7 @@ class PlayState extends MusicBeatState
 
 	override function destroy() {
 		PlayState.SONG.secOpt = tempSecOpt;//rolled back
-		CacheTools.jsonParse.clear();
-		CacheTools.cacheNoteSplash.clear();
-		CacheTools.cacheNote.clear();
-		CacheTools.cacheNoteAtlas.clear();
+		CacheTools.clearCache();
 		for (lua in luaArray) {
 			lua.call('onDestroy', []);
 			lua.stop();

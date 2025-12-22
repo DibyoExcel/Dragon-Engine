@@ -146,6 +146,9 @@ class Note extends FlxSprite
 	public var snapAlpha:Float = 0;
 	public var alignSustainNote(default, set):String = 'center';//'center', 'left', 'right'. only for main notes. not effect for long/sustain notes.
 	public var ignoreTextureChange:Bool = false;//for prevent change when use changeNotesTexture() lua
+	public var hitsound(default, set):String = null;//custom hitsound per note
+	public var forceHitsound:Bool = false;//force play hitsound even hitsound disabled in settings
+	public var forceNoteSplash:Bool = false;//force note splash even note splash disabled in settings
 
 
 	@:noCompletion
@@ -385,6 +388,8 @@ class Note extends FlxSprite
 		if (!inEditor) {
 			scrollFactor.set(scrollFactorCam[0], scrollFactorCam[1]);
 		}
+		camTarget = 'hud';
+		hitsound = 'hitsound';
 		this.gfNote = gfSec;
 		this.noteType = noteType;
 		if (skin == null || skin.length < 1) {
@@ -414,7 +419,6 @@ class Note extends FlxSprite
 			noteScale = 0.75;
 			noteSplashScale = 0.75;
 		}
-		camTarget = 'hud';
 		//sorry
 		//runConfig(noteType);
 	}
@@ -482,24 +486,18 @@ class Note extends FlxSprite
 		{
 			if (isSustainNote)
 				{
-				if (!CacheTools.cacheNote.exists(blahblah + 'ENDS')) {
-					CacheTools.cacheNote.set(blahblah + 'ENDS', Paths.image('pixelUI/' + blahblah + 'ENDS'));
-				}
-				loadGraphic(CacheTools.cacheNote.get(blahblah + 'ENDS'));
+				loadGraphic(Paths.image('pixelUI/' + blahblah + 'ENDS'));
 				width = width / 4;
 				height = height / 2;
 				originalHeightForCalcs = height;
-				loadGraphic(CacheTools.cacheNote.get(blahblah + 'ENDS'), true, Math.floor(width), Math.floor(height));
+				loadGraphic(Paths.image('pixelUI/' + blahblah + 'ENDS'), true, Math.floor(width), Math.floor(height));
 			}
 			else
 			{
-				if (!CacheTools.cacheNote.exists(blahblah)) {
-					CacheTools.cacheNote.set(blahblah, Paths.image('pixelUI/' + blahblah));
-				}
-				loadGraphic(CacheTools.cacheNote.get(blahblah));
+				loadGraphic(Paths.image('pixelUI/' + blahblah));
 				width = width / 4;
 				height = height / 5;
-				loadGraphic(CacheTools.cacheNote.get(blahblah), true, Math.floor(width), Math.floor(height));
+				loadGraphic(Paths.image('pixelUI/' + blahblah), true, Math.floor(width), Math.floor(height));
 			}
 			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 			loadPixelNoteAnims();
@@ -508,10 +506,7 @@ class Note extends FlxSprite
 		}
 		else
 		{
-			if (!CacheTools.cacheNoteAtlas.exists(blahblah)) {
-				CacheTools.cacheNoteAtlas.set(blahblah, Paths.getSparrowAtlas(blahblah));
-			}
-			frames = CacheTools.cacheNoteAtlas.get(blahblah);
+			frames = Paths.getSparrowAtlas(blahblah);
 			loadNoteAnims();
 			setGraphicSize(Std.int(width * ClientPrefs.strumsize));
 			antialiasing = ClientPrefs.globalAntialiasing;
@@ -807,5 +802,18 @@ class Note extends FlxSprite
 			frame = frames.frames[animation.frameIndex];
 
 		return rect;
+	}
+
+	function set_hitsound(value:String):String {
+		if (hitsound != value) {
+			if (value.length < 1) {
+				value = 'hitsound';
+			}
+			hitsound = value;
+			if (!CacheTools.cacheSound.exists(hitsound)) {
+				CacheTools.cacheSound.set(hitsound, Paths.sound(hitsound));
+			}
+		}
+		return value;
 	}
 }
