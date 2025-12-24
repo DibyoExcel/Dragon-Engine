@@ -1,4 +1,4 @@
-package mobile;
+package dge.obj.mobile;
 
 class ToggleButton extends VirtualButton//it should could nested?
 {

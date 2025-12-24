@@ -1,6 +1,6 @@
 package;
 
-import mobile.VirtualButton;
+import dge.obj.mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -323,7 +323,7 @@ class FreeplayState extends MusicBeatState
 				changeDiff();
 			}
 			#if mobile
-			var swipeWheel = mobile.TouchUtil.scrollSwipe();
+			var swipeWheel = dge.backend.TouchUtil.scrollSwipe();
 			if(swipeWheel != 0)
 			{
 				FlxG.sound.play(Paths.sound('scrollMenu'), 0.2);
@@ -333,9 +333,9 @@ class FreeplayState extends MusicBeatState
 			#end
 		}
 
-		if (controls.UI_LEFT_P #if mobile || mobile.TouchUtil.swipeLeft() #end)
+		if (controls.UI_LEFT_P #if mobile || dge.backend.TouchUtil.swipeLeft() #end)
 			changeDiff(-1);
-		else if (controls.UI_RIGHT_P #if mobile || mobile.TouchUtil.swipeRight() #end)
+		else if (controls.UI_RIGHT_P #if mobile || dge.backend.TouchUtil.swipeRight() #end)
 			changeDiff(1);
 		else if (upP || downP) changeDiff();
 

@@ -1,6 +1,6 @@
 package;
 
-import mobile.VirtualButton;
+import dge.obj.mobile.VirtualButton;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;

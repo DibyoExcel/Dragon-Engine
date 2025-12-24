@@ -373,7 +373,12 @@ class FlxSprite extends FlxObject
 		graphic = null;
 		_frame = FlxDestroyUtil.destroy(_frame);
 		_frameGraphic = FlxDestroyUtil.destroy(_frameGraphic);
-
+		colorSwap = null;
+		colorInvert = null;
+		colorSingle = null;
+		colorRGBSwap = null;
+		pixelSprite = null;
+		posterize = null;
 		shader = null;
 	}
 

@@ -78,10 +78,10 @@ class AchievementsMenuState extends MusicBeatState
 	override function update(elapsed:Float) {
 		super.update(elapsed);
 
-		if (controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end) {
+		if (controls.UI_UP_P #if mobile || dge.backend.TouchUtil.swipeUp() #end) {
 			changeSelection(-1);
 		}
-		if (controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end) {
+		if (controls.UI_DOWN_P #if mobile || dge.backend.TouchUtil.swipeDown() #end) {
 			changeSelection(1);
 		}
 

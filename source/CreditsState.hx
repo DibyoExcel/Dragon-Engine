@@ -1,6 +1,6 @@
 package;
 
-import mobile.VirtualButton;
+import dge.obj.mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -59,7 +59,7 @@ class CreditsState extends MusicBeatState
 		add(grpOptions);
 
 		#if MODS_ALLOWED
-		var path:String = StorageManager.getEngineDir() + 'modsList.txt';
+		var path:String = Paths.externalFilesPath('modList.txt');
 		if(FileSystem.exists(path))
 		{
 			var leMods:Array<String> = CoolUtil.coolTextFile(path);

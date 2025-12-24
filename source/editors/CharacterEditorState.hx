@@ -1,6 +1,6 @@
 package editors;
 
-import mobile.VirtualButton;
+import dge.obj.mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -1121,7 +1121,7 @@ class CharacterEditorState extends MusicBeatState
 
 		#if MODS_ALLOWED
 		characterList = [];
-		var directories:Array<String> = [Paths.mods('characters/'), Paths.mods(Paths.currentModDirectory + '/characters/'), StorageManager.getEngineDir() + Paths.getPreloadPath('characters/')];
+		var directories:Array<String> = [Paths.mods('characters/'), Paths.mods(Paths.currentModDirectory + '/characters/'), Paths.externalPreloadPath('characters/')];
 		for(mod in Paths.getGlobalMods())
 			directories.push(Paths.mods(mod + '/characters/'));
 		for (i in 0...directories.length) {
@@ -1231,21 +1231,21 @@ class CharacterEditorState extends MusicBeatState
 					camFollow.x += addToCam;
 			}
 			#if mobile
-			if (mobile.TouchUtil.swipeUp() || mobile.TouchUtil.swipeDown() || mobile.TouchUtil.swipeLeft() || mobile.TouchUtil.swipeRight()) {
+			if (dge.backend.TouchUtil.swipeUp() || dge.backend.TouchUtil.swipeDown() || dge.backend.TouchUtil.swipeLeft() || dge.backend.TouchUtil.swipeRight()) {
 				var addToCam:Float = 250;
 				//add shift later
 				if (shiftButton.pressed) {
 					addToCam *= 4;
 				}
-				if (mobile.TouchUtil.swipeUp()) {
+				if (dge.backend.TouchUtil.swipeUp()) {
 					camFollow.y -= addToCam;
-				} else if (mobile.TouchUtil.swipeDown()) {
+				} else if (dge.backend.TouchUtil.swipeDown()) {
 					camFollow.y += addToCam;
 				}
 
-				if (mobile.TouchUtil.swipeLeft()) {
+				if (dge.backend.TouchUtil.swipeLeft()) {
 					camFollow.x -= addToCam;
-				} else if (mobile.TouchUtil.swipeRight()) {
+				} else if (dge.backend.TouchUtil.swipeRight()) {
 					camFollow.x += addToCam;
 				}
 			}
@@ -1394,11 +1394,11 @@ class CharacterEditorState extends MusicBeatState
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 			_file.save(data, daAnim + ".json");
 			#else
-			if (!FileSystem.exists(StorageManager.getEngineDir() + 'saves/characters/' )) {
-				FileSystem.createDirectory(StorageManager.getEngineDir() + 'saves/characters/');
+			if (!FileSystem.exists(Paths.externalFilesPath('saves/characters/'))) {
+				FileSystem.createDirectory(Paths.externalFilesPath('saves/characters/'));
 			}
-			File.saveContent(StorageManager.getEngineDir() + 'saves/characters/' + daAnim + ".json", data);
-			lime.app.Application.current.window.alert('Character has been save in ' + StorageManager.getEngineDir() + 'saves/characters/' + daAnim + ".json", 'Character Editor');
+			File.saveContent(Paths.externalFilesPath('saves/characters/' + daAnim + ".json"), data);
+			lime.app.Application.current.window.alert('Character has been save in ' + Paths.externalFilesPath('saves/characters/' + daAnim + ".json"), 'Character Editor');
 			#end
 		}
 	}

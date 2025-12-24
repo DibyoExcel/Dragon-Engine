@@ -1,6 +1,6 @@
 package editors;
 
-import mobile.VirtualButton;
+import dge.obj.mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -381,8 +381,8 @@ class DialogueEditorState extends MusicBeatState
 				transitioning = true;
 			}
 			var negaMult:Array<Int> = [1, -1];
-			var controlAnim:Array<Bool> = [FlxG.keys.justPressed.W #if mobile || mobile.TouchUtil.swipeUp() #end, FlxG.keys.justPressed.S #if mobile || mobile.TouchUtil.swipeDown() #end];
-			var controlText:Array<Bool> = [FlxG.keys.justPressed.D #if mobile || mobile.TouchUtil.swipeLeft() #end, FlxG.keys.justPressed.A #if mobile || mobile.TouchUtil.swipeRight() #end];
+			var controlAnim:Array<Bool> = [FlxG.keys.justPressed.W #if mobile || dge.backend.TouchUtil.swipeUp() #end, FlxG.keys.justPressed.S #if mobile || dge.backend.TouchUtil.swipeDown() #end];
+			var controlText:Array<Bool> = [FlxG.keys.justPressed.D #if mobile || dge.backend.TouchUtil.swipeLeft() #end, FlxG.keys.justPressed.A #if mobile || dge.backend.TouchUtil.swipeRight() #end];
 			for (i in 0...controlAnim.length) {
 				if(controlAnim[i] && character.jsonFile.animations.length > 0) {
 					curAnim -= negaMult[i];
@@ -481,11 +481,11 @@ class DialogueEditorState extends MusicBeatState
 		_file.addEventListener(IOErrorEvent.IO_ERROR, onLoadError);
 		_file.browse([jsonFilter]);
 		#else
-		if (FileSystem.exists(StorageManager.getEngineDir() + 'load/dialogue/' + loadFileName.text)) {
-			var jsonCode:String = File.getContent(StorageManager.getEngineDir() + 'load/dialogue/' + loadFileName.text);
+		if (FileSystem.exists(Paths.externalFilesPath('load/dialogue/' + loadFileName.text))) {
+			var jsonCode:String = File.getContent(Paths.externalFilesPath('load/dialogue/' + loadFileName.text));
 			dialogueCode(loadFileName.text, jsonCode);
 		} else {
-			lime.app.Application.current.window.alert('Unable to load. ' + StorageManager.getEngineDir() + 'load/dialogue/' + loadFileName.text + ' not found', 'Dialogue Editor');
+			lime.app.Application.current.window.alert('Unable to load. ' + Paths.externalFilesPath('load/dialogue/' + loadFileName.text) + ' not found', 'Dialogue Editor');
 		}
 		#end
 	}
@@ -554,11 +554,11 @@ class DialogueEditorState extends MusicBeatState
 		if (data.length > 0)
 		{
 			#if android
-			if (!FileSystem.exists(StorageManager.getEngineDir() + 'saves/dialogue/' )) {
-				FileSystem.createDirectory(StorageManager.getEngineDir() + 'saves/dialogue/');
+			if (!FileSystem.exists(Paths.externalFilesPath('saves/dialogue/'))) {
+				FileSystem.createDirectory(Paths.externalFilesPath('saves/dialogue/'));
 			}
-			File.saveContent(StorageManager.getEngineDir() + 'saves/dialogue/dialogue.json', data);
-			lime.app.Application.current.window.alert('Dialogue has been save in ' + StorageManager.getEngineDir() + 'saves/dialogue/dialogue.json', 'Dialogue Editor');
+			File.saveContent(Paths.externalFilesPath('saves/dialogue/dialogue.json'), data);
+			lime.app.Application.current.window.alert('Dialogue has been save in ' + Paths.externalFilesPath('saves/dialogue/dialogue.json'), 'Dialogue Editor');
 			#else
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);

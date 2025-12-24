@@ -1,6 +1,6 @@
-package mobile;
+package dge.obj.mobile;
 
-import mobile.FlxButton;
+import dge.obj.mobile.FlxButton;
 
 class VirtualButton extends FlxButton {
     private var image:String;

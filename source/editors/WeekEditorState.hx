@@ -481,8 +481,8 @@ class WeekEditorState extends MusicBeatState
 		_file.browse([jsonFilter]);
 		#else
 		var fileName:String = loadFileName.text;
-		if (FileSystem.exists(StorageManager.getEngineDir() + 'load/weeks/' + fileName)) {
-			var rawJson:String = File.getContent(StorageManager.getEngineDir() + 'load/weeks/' + fileName);
+		if (FileSystem.exists(Paths.externalFilesPath('load/weeks/' + fileName))) {
+			var rawJson:String = File.getContent(Paths.externalFilesPath('load/weeks/' + fileName));
 			if (rawJson != null)
 			{
 				loadedWeek = cast Json.parse(rawJson);
@@ -498,7 +498,7 @@ class WeekEditorState extends MusicBeatState
 				}
 			}
 		} else {
-			lime.app.Application.current.window.alert('Unable to load. ' + StorageManager.getEngineDir() + 'load/weeks/' + loadFileName.text + ' not found', 'Week Editor');
+			lime.app.Application.current.window.alert('Unable to load. ' + Paths.externalFilesPath('load/weeks/' + loadFileName.text) + ' not found', 'Week Editor');
 		}
 		#end
 	}
@@ -575,11 +575,11 @@ class WeekEditorState extends MusicBeatState
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 			_file.save(data, weekFileName + ".json");
 			#else
-			if (!FileSystem.exists(StorageManager.getEngineDir() + 'saves/weeks/' )) {
-				FileSystem.createDirectory(StorageManager.getEngineDir() + 'saves/weeks/');
+			if (!FileSystem.exists(Paths.externalFilesPath('saves/weeks/'))) {
+				FileSystem.createDirectory(Paths.externalFilesPath('saves/weeks/'));
 			}
-			File.saveContent(StorageManager.getEngineDir() + 'saves/weeks/' + weekFileName + ".json", data);
-			lime.app.Application.current.window.alert('Weeks has been save in ' + StorageManager.getEngineDir() + 'saves/weeks/' + weekFileName + ".json", 'Week Editor');
+			File.saveContent(Paths.externalFilesPath('saves/weeks/' + weekFileName + ".json"), data);
+			lime.app.Application.current.window.alert('Weeks has been save in ' + Paths.externalFilesPath('saves/weeks/' + weekFileName + ".json"), 'Week Editor');
 			#end
 		}
 	}
@@ -860,8 +860,8 @@ class WeekEditorFreeplayState extends MusicBeatState
 				FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			}
 
-			if(controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end) changeSelection(-1);
-			if(controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end) changeSelection(1);
+			if(controls.UI_UP_P #if mobile || dge.backend.TouchUtil.swipeUp() #end) changeSelection(-1);
+			if(controls.UI_DOWN_P #if mobile || dge.backend.TouchUtil.swipeDown() #end) changeSelection(1);
 		}
 		super.update(elapsed);
 	}

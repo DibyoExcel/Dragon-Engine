@@ -102,7 +102,7 @@ class Character extends FlxSprite
 				#if MODS_ALLOWED
 				var path:String = Paths.modFolders(characterPath);
 				if (!FileSystem.exists(path)) {
-					path = StorageManager.getEngineDir() + Paths.getPreloadPath(characterPath);
+					path = Paths.externalPreloadPath(characterPath);
 				}
 
 				if (!FileSystem.exists(path))

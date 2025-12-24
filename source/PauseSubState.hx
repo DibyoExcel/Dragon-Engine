@@ -1,6 +1,6 @@
 package;
 
-import mobile.VirtualButton;
+import dge.obj.mobile.VirtualButton;
 import Controls.Control;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -178,8 +178,8 @@ class PauseSubState extends MusicBeatSubstate
 
 		super.update(elapsed);
 		updateSkipTextStuff();
-		var upP = controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end;
-		var downP = controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end;
+		var upP = controls.UI_UP_P #if mobile || dge.backend.TouchUtil.swipeUp() #end;
+		var downP = controls.UI_DOWN_P #if mobile || dge.backend.TouchUtil.swipeDown() #end;
 		var accepted = controls.ACCEPT #if mobile || enterButton.justPressed #end;
 		if (upP)
 		{

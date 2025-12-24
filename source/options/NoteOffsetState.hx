@@ -1,6 +1,6 @@
 package options;
 
-import mobile.VirtualButton;
+import dge.obj.mobile.VirtualButton;
 import flixel.util.FlxStringUtil;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;

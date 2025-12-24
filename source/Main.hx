@@ -75,17 +75,17 @@ class Main extends Sprite
 			}
 			var loadData:Array<String> = ['dialogue', 'dialoguecharacter', 'menucharacter', 'weeks'];
 			for (i in 0...loadData.length) {
-				if (!FileSystem.exists(StorageManager.getEngineDir() + 'load/')) {
-					FileSystem.createDirectory(StorageManager.getEngineDir() + 'load/');
+				if (!FileSystem.exists(Paths.externalFilesPath('load/'))) {
+					FileSystem.createDirectory(Paths.externalFilesPath('load/'));
 				}
-				if (!FileSystem.exists(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/')) {
-					FileSystem.createDirectory(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/');
+				if (!FileSystem.exists(Paths.externalFilesPath('load/' + loadData[i] + '/'))) {
+					FileSystem.createDirectory(Paths.externalFilesPath('load/' + loadData[i] + '/'));
 				}
-				if (!FileSystem.exists(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/')) {
-					FileSystem.createDirectory(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/');
+				if (!FileSystem.exists(Paths.externalFilesPath('load/' + loadData[i] + '/'))) {
+					FileSystem.createDirectory(Paths.externalFilesPath('load/' + loadData[i] + '/'));
 				}
-				if (!FileSystem.exists(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/put json file here.txt')) {
-					File.saveContent(StorageManager.getEngineDir() + 'load/' + loadData[i] + '/put json file here.txt', '');
+				if (!FileSystem.exists(Paths.externalFilesPath('load/' + loadData[i] + '/put json file here.txt'))) {
+					File.saveContent(Paths.externalFilesPath('load/' + loadData[i] + '/put json file here.txt'), '');
 				}
 			}
 		}
@@ -176,7 +176,7 @@ class Main extends Sprite
 		dateNow = dateNow.replace(" ", "_");
 		dateNow = dateNow.replace(":", "'");
 
-		path = StorageManager.getEngineDir() + "crash/DragonEngine_" + dateNow + ".txt";
+		path = Paths.externalFilesPath("crash/DragonEngine_" + dateNow + ".txt");
 
 		for (stackItem in callStack)
 		{
@@ -191,8 +191,8 @@ class Main extends Sprite
 
 		errMsg += "\nUncaught Error: " + e.error + "\nPlease report this error to the GitHub page: https://github.com/DibyoExcel/Dragon-Engine\n\n> Crash Handler written by: sqirra-rng";
 
-		if (!FileSystem.exists(StorageManager.getEngineDir() + "crash/"))
-			FileSystem.createDirectory(StorageManager.getEngineDir() + "crash/");
+		if (!FileSystem.exists(Paths.externalFilesPath("crash/")))
+			FileSystem.createDirectory(Paths.externalFilesPath("crash/"));
 
 		File.saveContent(path, errMsg + "\n");
 

@@ -1,5 +1,5 @@
 package dge.states;
-import mobile.VirtualButton;
+import dge.obj.mobile.VirtualButton;
 import flixel.FlxG;
 import flixel.FlxSubState;
 import flixel.FlxSprite;

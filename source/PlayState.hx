@@ -1,7 +1,8 @@
 package;
 
 import dge.obj.Keypress;
-import mobile.Hitbox;
+import dge.obj.mobile.Hitbox;
+import dge.backend.CacheTools;
 import flixel.graphics.FlxGraphic;
 #if desktop
 import Discord.DiscordClient;
@@ -936,7 +937,7 @@ class PlayState extends MusicBeatState
 		if (!disableLuaScript) {
 			#if LUA_ALLOWED
 			var filesPushed:Array<String> = [];
-			var foldersToCheck:Array<String> = [StorageManager.getEngineDir() + Paths.getPreloadPath('scripts/')];
+			var foldersToCheck:Array<String> = [Paths.externalPreloadPath('scripts/')];
 
 			#if MODS_ALLOWED
 			foldersToCheck.insert(0, Paths.mods('scripts/'));
@@ -974,7 +975,7 @@ class PlayState extends MusicBeatState
 				luaFile = Paths.modFolders(luaFile);
 				doPush = true;
 			} else {
-				luaFile = StorageManager.getEngineDir() + Paths.getPreloadPath(luaFile);
+				luaFile = Paths.externalPreloadPath(luaFile);
 				if(FileSystem.exists(luaFile)) {
 					doPush = true;
 				}
@@ -1312,7 +1313,7 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				luaToLoad = StorageManager.getEngineDir() + Paths.getPreloadPath('custom_notetypes/' + notetype + '.lua');
+				luaToLoad = Paths.externalPreloadPath('custom_notetypes/' + notetype + '.lua');
 				if(FileSystem.exists(luaToLoad))
 				{
 					luaArray.push(new FunkinLua(luaToLoad));
@@ -1337,7 +1338,7 @@ class PlayState extends MusicBeatState
 				}
 				else
 				{
-					luaToLoad = StorageManager.getEngineDir() + Paths.getPreloadPath('custom_events/' + event + '.lua');
+					luaToLoad = Paths.externalPreloadPath('custom_events/' + event + '.lua');
 					if(FileSystem.exists(luaToLoad))
 					{
 						luaArray.push(new FunkinLua(luaToLoad));
@@ -1364,7 +1365,7 @@ class PlayState extends MusicBeatState
 		if (FileSystem.exists(luaGamemode)) {
 			luaArray.push(new FunkinLua(luaGamemode));
 		} else {
-			luaGamemode = StorageManager.getEngineDir() + Paths.getPreloadPath("gamemode/" + gamemode + ".lua");
+			luaGamemode = Paths.externalPreloadPath("gamemode/" + gamemode + ".lua");
 			if (FileSystem.exists(luaGamemode)) {
 				luaArray.push(new FunkinLua(luaGamemode));
 			}
@@ -1376,7 +1377,7 @@ class PlayState extends MusicBeatState
 		if (!disableLuaSong) {
 			#if LUA_ALLOWED
 			var filesPushed:Array<String> = [];
-			var foldersToCheck:Array<String> = [StorageManager.getEngineDir() + Paths.getPreloadPath('data/' + Paths.formatToSongPath(SONG.song) + '/')];
+			var foldersToCheck:Array<String> = [Paths.externalPreloadPath('data/' + Paths.formatToSongPath(SONG.song) + '/')];
 
 			#if MODS_ALLOWED
 			foldersToCheck.insert(0, Paths.mods('data/' + Paths.formatToSongPath(SONG.song) + '/'));
@@ -1732,7 +1733,7 @@ class PlayState extends MusicBeatState
 			luaFile = Paths.modFolders(luaFile);
 			doPush = true;
 		} else {
-			luaFile = StorageManager.getEngineDir() + Paths.getPreloadPath(luaFile);
+			luaFile = Paths.externalPreloadPath(luaFile);
 			if(FileSystem.exists(luaFile)) {
 				doPush = true;
 			}
@@ -2653,7 +2654,7 @@ class PlayState extends MusicBeatState
 		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
 
 		var songName:String = Paths.formatToSongPath(SONG.song);
-		var file:String = StorageManager.getEngineDir() + Paths.json(songName + '/events');
+		var file:String = Paths.externalFilesPath(Paths.json(songName + '/events'));
 		#if MODS_ALLOWED
 		if (FileSystem.exists(Paths.modsJson(songName + '/events')) || FileSystem.exists(file)) {
 		#else

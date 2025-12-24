@@ -1,6 +1,6 @@
 package;
 
-import mobile.VirtualButton;
+import dge.obj.mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -194,13 +194,13 @@ class MainMenuState extends MusicBeatState
 
 		if (!selectedSomethin)
 		{
-			if (controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end)
+			if (controls.UI_UP_P #if mobile || dge.backend.TouchUtil.swipeUp() #end)
 			{
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 				changeItem(-1);
 			}
 
-			if (controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end)
+			if (controls.UI_DOWN_P #if mobile || dge.backend.TouchUtil.swipeDown() #end)
 			{
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 				changeItem(1);

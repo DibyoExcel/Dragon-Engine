@@ -12,6 +12,7 @@ import flixel.math.FlxRect;
 import sys.FileSystem;
 import sys.io.File;
 #end
+import dge.backend.CacheTools;
 
 using StringTools;
 
@@ -708,8 +709,8 @@ class Note extends FlxSprite
 			var jsonString:String = '';
 			if (FileSystem.exists(Paths.modFolders('custom_notetypes/all.json'))) {
 				jsonString =  File.getContent(Paths.modFolders('custom_notetypes/all.json'));
-			} else if (FileSystem.exists(StorageManager.getEngineDir() + Paths.getPreloadPath('custom_notetypes/all.json'))) {
-				jsonString =  File.getContent(StorageManager.getEngineDir() + Paths.getPreloadPath('custom_notetypes/all.json'));
+			} else if (FileSystem.exists(Paths.externalPreloadPath('custom_notetypes/all.json'))) {
+				jsonString =  File.getContent(Paths.externalPreloadPath('custom_notetypes/all.json'));
 			} else {
 				jsonString = '';
 			}
@@ -723,8 +724,8 @@ class Note extends FlxSprite
 			var jsonString:String = '';
 			if (FileSystem.exists(Paths.modFolders('custom_notetypes/' + value + '.json'))) {
 				jsonString =  File.getContent(Paths.modFolders('custom_notetypes/' + value + '.json'));
-			} else if (FileSystem.exists(StorageManager.getEngineDir() + Paths.getPreloadPath('custom_notetypes/' + value + '.json'))) {
-				jsonString =  File.getContent(StorageManager.getEngineDir() + Paths.getPreloadPath('custom_notetypes/' + value + '.json'));
+			} else if (FileSystem.exists(Paths.externalPreloadPath('custom_notetypes/' + value + '.json'))) {
+				jsonString =  File.getContent(Paths.externalPreloadPath('custom_notetypes/' + value + '.json'));
 			} else {
 				jsonString = '';
 			}

@@ -338,14 +338,14 @@ class TitleState extends MusicBeatState
 
 		titleText = new FlxSprite(CoolUtil.getXFrom1280P() + titleJSON.startx, titleJSON.starty);
 		#if ((desktop || android) && MODS_ALLOWED)
-		var path = StorageManager.getEngineDir() + "mods/" + Paths.currentModDirectory + "/images/titleEnter.png";
+		var path = Paths.externalFilesPath("mods/" + Paths.currentModDirectory + "/images/titleEnter.png");
 		//trace(path, FileSystem.exists(path));
 		if (!FileSystem.exists(path)){
-			path = StorageManager.getEngineDir() + "mods/images/titleEnter.png";
+			path = Paths.externalFilesPath("mods/images/titleEnter.png");
 		}
 		//trace(path, FileSystem.exists(path));
 		if (!FileSystem.exists(path)){
-			path = StorageManager.getEngineDir() + "assets/images/titleEnter.png";
+			path = Paths.externalFilesPath("assets/images/titleEnter.png");
 		}
 		//trace(path, FileSystem.exists(path));
 		titleText.frames = FlxAtlasFrames.fromSparrow(BitmapData.fromFile(path),File.getContent(StringTools.replace(path,".png",".xml")));
@@ -424,8 +424,8 @@ class TitleState extends MusicBeatState
 		#if MODS_ALLOWED
 		if (FileSystem.exists(Paths.modFolders('data/introText.txt'))) {
 			fullText = File.getContent(Paths.modFolders('data/introText.txt'));
-		} else if (FileSystem.exists(StorageManager.getEngineDir() + Paths.getPreloadPath('data/introText.txt'))) {
-			fullText = File.getContent(StorageManager.getEngineDir() + Paths.getPreloadPath('data/introText.txt'));
+		} else if (FileSystem.exists(Paths.externalPreloadPath('data/introText.txt'))) {
+			fullText = File.getContent(Paths.externalPreloadPath('data/introText.txt'));
 		} else {
 			fullText = Assets.getText(Paths.txt('introText'));
 		}

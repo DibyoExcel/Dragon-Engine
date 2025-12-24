@@ -1,4 +1,4 @@
-package mobile;
+package dge.obj.mobile;
 
 import flixel.FlxCamera;
 import flash.events.MouseEvent;

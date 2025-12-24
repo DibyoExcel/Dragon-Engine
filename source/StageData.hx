@@ -76,8 +76,8 @@ class StageData {
 		var modPath:String = Paths.modFolders('stages/' + stage + '.json');
 		if(FileSystem.exists(modPath)) {
 			rawJson = File.getContent(modPath);
-		} else if(FileSystem.exists(StorageManager.getEngineDir() + path)) {
-			rawJson = File.getContent(StorageManager.getEngineDir() + path);
+		} else if(FileSystem.exists(Paths.externalFilesPath(path))) {
+			rawJson = File.getContent(Paths.externalFilesPath(path));
 		}
 		#else
 		if(Assets.exists(path)) {

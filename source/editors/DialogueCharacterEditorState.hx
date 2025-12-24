@@ -661,7 +661,7 @@ class DialogueCharacterEditorState extends MusicBeatState
 			if(UI_mainbox.selected_tab_id == 'Character')
 			{
 				var negaMult:Array<Int> = [1, -1];
-				var controlAnim:Array<Bool> = [FlxG.keys.justPressed.W #if mobile || mobile.TouchUtil.swipeUp() #end, FlxG.keys.justPressed.S #if mobile || mobile.TouchUtil.swipeDown() #end];
+				var controlAnim:Array<Bool> = [FlxG.keys.justPressed.W #if mobile || dge.backend.TouchUtil.swipeUp() #end, FlxG.keys.justPressed.S #if mobile || dge.backend.TouchUtil.swipeDown() #end];
 
 				if(controlAnim.contains(true))
 				{
@@ -698,11 +698,11 @@ class DialogueCharacterEditorState extends MusicBeatState
 	var _file:FileReference = null;
 	function loadCharacter() {
 		#if android
-		if (FileSystem.exists(StorageManager.getEngineDir() + 'load/dialoguecharacter/' + loadFileName.text)) {
-			var jsonCode:String = File.getContent(StorageManager.getEngineDir() + 'load/dialoguecharacter/' + loadFileName.text);
+		if (FileSystem.exists(Paths.externalFilesPath('load/dialoguecharacter/' + loadFileName.text))) {
+			var jsonCode:String = File.getContent(Paths.externalFilesPath('load/dialoguecharacter/' + loadFileName.text));
 			charDiagCode(loadFileName.text, jsonCode);
 		} else {
-			lime.app.Application.current.window.alert('Unable to load. ' + StorageManager.getEngineDir() + 'load/dialoguecharacter/' + loadFileName.text + ' not found', 'Dialogue Character Editor');
+			lime.app.Application.current.window.alert('Unable to load. ' + Paths.externalFilesPath('load/dialoguecharacter/' + loadFileName.text) + ' not found', 'Dialogue Character Editor');
 		}
 		#else
 		var jsonFilter:FileFilter = new FileFilter('JSON', 'json');
@@ -789,11 +789,11 @@ class DialogueCharacterEditorState extends MusicBeatState
 			var splittedImage:Array<String> = imageInputText.text.trim().split('_');
 			var characterName:String = splittedImage[0].toLowerCase().replace(' ', '');
 			#if android
-			if (!FileSystem.exists(StorageManager.getEngineDir() + 'saves/dialoguecharacter/' )) {
-				FileSystem.createDirectory(StorageManager.getEngineDir() + 'saves/dialoguecharacter/');
+			if (!FileSystem.exists(Paths.externalFilesPath('saves/dialoguecharacter/'))) {
+				FileSystem.createDirectory(Paths.externalFilesPath('saves/dialoguecharacter/'));
 			}
-			File.saveContent(StorageManager.getEngineDir() + 'saves/dialoguecharacter/' + characterName + ".json", data);
-			lime.app.Application.current.window.alert('Dialogue Character has been save in ' + StorageManager.getEngineDir() + 'saves/dialoguecharacter/' + characterName + ".json", 'Dialogue Character Editor');
+			File.saveContent(Paths.externalFilesPath('saves/dialoguecharacter/' + characterName + ".json"), data);
+			lime.app.Application.current.window.alert('Dialogue Character has been save in ' + Paths.externalFilesPath('saves/dialoguecharacter/' + characterName + ".json"), 'Dialogue Character Editor');
 			#else
 
 			_file = new FileReference();

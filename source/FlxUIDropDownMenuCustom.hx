@@ -434,13 +434,13 @@ class FlxUIDropDownMenuCustom extends FlxUIGroup implements IFlxUIWidget impleme
 		if (dropPanel.visible)
 		{
 			if(list.length > 1 && canScroll) {
-				if(FlxG.mouse.wheel > 0 || FlxG.keys.justPressed.UP #if mobile || mobile.TouchUtil.swipeDown() #end) {
+				if(FlxG.mouse.wheel > 0 || FlxG.keys.justPressed.UP #if mobile || dge.backend.TouchUtil.swipeDown() #end) {
 					// Go up
 					--currentScroll;
 					if(currentScroll < 0) currentScroll = 0;
 					updateButtonPositions();
 				}
-				else if (FlxG.mouse.wheel < 0 || FlxG.keys.justPressed.DOWN #if mobile || mobile.TouchUtil.swipeUp() #end) {
+				else if (FlxG.mouse.wheel < 0 || FlxG.keys.justPressed.DOWN #if mobile || dge.backend.TouchUtil.swipeUp() #end) {
 					// Go down
 					currentScroll++;
 					if(currentScroll >= list.length) currentScroll = list.length-1;
@@ -448,7 +448,7 @@ class FlxUIDropDownMenuCustom extends FlxUIGroup implements IFlxUIWidget impleme
 				}
 			}
 			#if mobile
-			if (mobile.TouchUtil.tap() && !mouseOverlapping())
+			if (dge.backend.TouchUtil.tap() && !mouseOverlapping())
 			{
 				showList(false);
 			}

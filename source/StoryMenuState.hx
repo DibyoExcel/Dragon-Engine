@@ -1,6 +1,6 @@
 package;
 
-import mobile.VirtualButton;
+import dge.obj.mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -240,7 +240,7 @@ class StoryMenuState extends MusicBeatState
 				changeDifficulty();
 			}
 			#if mobile
-			var swipeWheel = mobile.TouchUtil.scrollSwipe();
+			var swipeWheel = dge.backend.TouchUtil.scrollSwipe();
 			if(swipeWheel != 0)
 			{
 				FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
@@ -249,19 +249,19 @@ class StoryMenuState extends MusicBeatState
 			}
 			#end
 
-			if (controls.UI_RIGHT #if mobile || mobile.TouchUtil.swipeRight() #end)
+			if (controls.UI_RIGHT #if mobile || dge.backend.TouchUtil.swipeRight() #end)
 				rightArrow.animation.play('press')
 			else
 				rightArrow.animation.play('idle');
 
-			if (controls.UI_LEFT #if mobile || mobile.TouchUtil.swipeLeft() #end)
+			if (controls.UI_LEFT #if mobile || dge.backend.TouchUtil.swipeLeft() #end)
 				leftArrow.animation.play('press');
 			else
 				leftArrow.animation.play('idle');
 
-			if (controls.UI_RIGHT_P #if mobile || mobile.TouchUtil.swipeRight() #end)
+			if (controls.UI_RIGHT_P #if mobile || dge.backend.TouchUtil.swipeRight() #end)
 				changeDifficulty(1);
-			else if (controls.UI_LEFT_P #if mobile || mobile.TouchUtil.swipeLeft() #end)
+			else if (controls.UI_LEFT_P #if mobile || dge.backend.TouchUtil.swipeLeft() #end)
 				changeDifficulty(-1);
 			else if (upP || downP)
 				changeDifficulty();

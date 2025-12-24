@@ -1,6 +1,6 @@
 package options;
 
-import mobile.VirtualButton;
+import dge.obj.mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -230,11 +230,11 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			spriteNote[3].centerOrigin();
 			spriteNote[3].centerOffsets();
 		}
-		if (controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end)
+		if (controls.UI_UP_P #if mobile || dge.backend.TouchUtil.swipeUp() #end)
 		{
 			changeSelection(-1);
 		}
-		if (controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end)
+		if (controls.UI_DOWN_P #if mobile || dge.backend.TouchUtil.swipeDown() #end)
 		{
 			changeSelection(1);
 		}

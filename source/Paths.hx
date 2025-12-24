@@ -21,6 +21,7 @@ import flixel.graphics.FlxGraphic;
 import openfl.display.BitmapData;
 import haxe.Json;
 import flash.media.Sound;
+import dge.backend.CacheTools;
 
 using StringTools;
 
@@ -240,32 +241,51 @@ class Paths
 		return returnAsset;
 	}
 
-	static public function getTextFromFile(key:String, ?ignoreMods:Bool = false):String
+	static public function getTextFromFile(key:String, ?ignoreMods:Bool = false, forceFromDisk:Bool = false):String
 	{
-		#if sys
-		#if MODS_ALLOWED
-		if (!ignoreMods && FileSystem.exists(modFolders(key)))
-			return File.getContent(modFolders(key));
-		#end
-
-		if (FileSystem.exists(StorageManager.getEngineDir() + getPreloadPath(key)))
-			return File.getContent(StorageManager.getEngineDir() + getPreloadPath(key));
-
-		if (currentLevel != null)
-		{
-			var levelPath:String = '';
-			if(currentLevel != 'shared') {
-				levelPath = getLibraryPathForce(key, currentLevel);
-				if (FileSystem.exists(levelPath))
-					return File.getContent(levelPath);
+		//info forceFromDisk will override cache existed text
+		var keyName:String = key + (ignoreMods ? '_ignoreMods' : '');
+		if (!CacheTools.cacheText.exists(keyName) || forceFromDisk) {
+			#if sys
+			#if MODS_ALLOWED
+			if (!ignoreMods && FileSystem.exists(modFolders(key))) {
+				var content = File.getContent(modFolders(key));
+				CacheTools.cacheText.set(keyName, content);
+				return content;
 			}
-
-			levelPath = getLibraryPathForce(key, 'shared');
-			if (FileSystem.exists(levelPath))
-				return File.getContent(levelPath);
+			#end
+	
+			if (FileSystem.exists(externalPreloadPath(key))) {
+				var content = File.getContent(externalPreloadPath(key));
+				CacheTools.cacheText.set(keyName, content);
+				return content;
+			}
+	
+			if (currentLevel != null)
+			{
+				var levelPath:String = '';
+				if(currentLevel != 'shared') {
+					levelPath = getLibraryPathForce(key, currentLevel);
+					if (FileSystem.exists(levelPath)) {
+						var content = File.getContent(levelPath);
+						CacheTools.cacheText.set(keyName, content);
+						return content;
+					}
+				}
+	
+				levelPath = getLibraryPathForce(key, 'shared');
+				if (FileSystem.exists(levelPath)) {
+					var content = File.getContent(levelPath);
+					CacheTools.cacheText.set(keyName, content);
+					return content;
+				}
+			}
+			#end
+			var content = Assets.getText(getPath(key, TEXT));
+			CacheTools.cacheText.set(keyName, content);
+			return content;
 		}
-		#end
-		return Assets.getText(getPath(key, TEXT));
+		return CacheTools.cacheText.get(keyName);
 	}
 
 	inline static public function font(key:String)
@@ -295,7 +315,7 @@ class Paths
 
 	inline static public function getSparrowAtlas(key:String, ?library:String):FlxAtlasFrames
 	{
-		if (!CacheTools.cacheAtlas.exists(key)) {
+		if (!CacheTools.cacheAtlas.exists(key + '_sparrow')) {
 			#if MODS_ALLOWED
 			var imageLoaded:FlxGraphic = returnGraphic(key);
 			var xmlExists:Bool = false;
@@ -303,21 +323,21 @@ class Paths
 				xmlExists = true;
 			}
 			var atlas = FlxAtlasFrames.fromSparrow((imageLoaded != null ? imageLoaded : image(key, library)), (xmlExists ? File.getContent(modsXml(key)) : file('images/$key.xml', library)));
-			CacheTools.cacheAtlas.set(key, atlas);
+			CacheTools.cacheAtlas.set(key + '_sparrow', atlas);
 			return atlas;
 			#else
 			var atlas =  FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
-			CacheTools.cacheAtlas.set(key, atlas);
+			CacheTools.cacheAtlas.set(key + '_sparrow', atlas);
 			return atlas;
 			#end
 		}
-		return CacheTools.cacheAtlas.get(key);
+		return CacheTools.cacheAtlas.get(key + '_sparrow');
 	}
 
 
 	inline static public function getPackerAtlas(key:String, ?library:String)
 	{
-		if (!CacheTools.cacheAtlas.exists(key)) {
+		if (!CacheTools.cacheAtlas.exists(key + '_packer')) {
 			#if MODS_ALLOWED
 			var imageLoaded:FlxGraphic = returnGraphic(key);
 			var txtExists:Bool = false;
@@ -326,15 +346,15 @@ class Paths
 			}
 	
 			var atlas = FlxAtlasFrames.fromSpriteSheetPacker((imageLoaded != null ? imageLoaded : image(key, library)), (txtExists ? File.getContent(modsTxt(key)) : file('images/$key.txt', library)));
-			CacheTools.cacheAtlas.set(key, atlas);
+			CacheTools.cacheAtlas.set(key + '_packer', atlas);
 			return atlas;
 			#else
 			var atlas = FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
-			CacheTools.cacheAtlas.set(key, atlas);
+			CacheTools.cacheAtlas.set(key + '_packer', atlas);
 			return atlas;
 			#end
 		}
-		return CacheTools.cacheAtlas.get(key);
+		return CacheTools.cacheAtlas.get(key + '_packer');
 	}
 
 	inline static public function formatToSongPath(path:String) {
@@ -359,7 +379,21 @@ class Paths
 					currentTrackedAssets.set(modKey, newGraphic);
 				}
 				localTrackedAssets.push(modKey);
+				CacheTools.cacheImage.set(key, currentTrackedAssets.get(modKey));
 				return currentTrackedAssets.get(modKey);
+			}
+
+			var preloadPath:String = externalPreloadPath('images/$key.png');
+			if(FileSystem.exists(preloadPath)) {
+				if(!currentTrackedAssets.exists(preloadPath)) {
+					var newBitmap:BitmapData = BitmapData.fromFile(preloadPath);
+					var newGraphic:FlxGraphic = FlxGraphic.fromBitmapData(newBitmap, false, preloadPath);
+					newGraphic.persist = true;
+					currentTrackedAssets.set(preloadPath, newGraphic);
+				}
+				localTrackedAssets.push(preloadPath);
+				CacheTools.cacheImage.set(key, currentTrackedAssets.get(preloadPath));
+				return currentTrackedAssets.get(preloadPath);
 			}
 			#end
 	
@@ -395,6 +429,15 @@ class Paths
 				CacheTools.cacheSound.set('$path/$key', currentTrackedSounds.get(file));
 				return currentTrackedSounds.get(file);
 			}
+			var external_file:String = externalPreloadPath('images/$key$SOUND_EXT');
+			if(FileSystem.exists(external_file)) {
+				if(!currentTrackedSounds.exists(external_file)) {
+					currentTrackedSounds.set(external_file, Sound.fromFile(external_file));
+				}
+				localTrackedAssets.push(key);
+				CacheTools.cacheSound.set('$path/$key', currentTrackedSounds.get(external_file));
+				return currentTrackedSounds.get(external_file);
+			}
 			#end
 			// I hate this so god damn much
 			var gottenPath:String = getPath('$path/$key.$SOUND_EXT', SOUND, library);
@@ -402,7 +445,7 @@ class Paths
 			// trace(gottenPath);
 			if(!currentTrackedSounds.exists(gottenPath))
 			#if MODS_ALLOWED
-				currentTrackedSounds.set(gottenPath, Sound.fromFile(StorageManager.getEngineDir() + gottenPath));
+				currentTrackedSounds.set(gottenPath, Sound.fromFile(externalFilesPath(gottenPath)));
 			#else
 			{
 				var folder:String = '';
@@ -420,7 +463,7 @@ class Paths
 
 	#if MODS_ALLOWED
 	inline static public function mods(key:String = '') {
-		return StorageManager.getEngineDir() + 'mods/' + key;
+		return externalFilesPath('mods/' + key);
 	}
 
 	inline static public function modsFont(key:String) {
@@ -479,7 +522,7 @@ class Paths
 				return fileToCheck;
 
 		}
-		return StorageManager.getEngineDir() + 'mods/' + key;
+		return externalFilesPath('mods/' + key);
 	}
 
 	public static var globalMods:Array<String> = [];
@@ -490,7 +533,7 @@ class Paths
 	static public function pushGlobalMods() // prob a better way to do this but idc
 	{
 		globalMods = [];
-		var path:String = StorageManager.getEngineDir() + 'modsList.txt';
+		var path:String = Paths.externalFilesPath('modsList.txt');
 		if(FileSystem.exists(path))
 		{
 			var list:Array<String> = CoolUtil.coolTextFile(path);
@@ -533,4 +576,13 @@ class Paths
 		return list;
 	}
 	#end
+	public static function externalPreloadPath(file:String = '')
+	{
+		return externalFilesPath(getPreloadPath(file));
+	}
+	
+	public static function externalFilesPath(file:String = '')
+	{
+		return StorageManager.getEngineDir() + file;
+	}
 }

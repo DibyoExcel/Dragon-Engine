@@ -112,7 +112,7 @@ class Song
 
 		if(rawJson == null) {
 			#if sys
-			rawJson = File.getContent(StorageManager.getEngineDir() + Paths.json(formattedFolder + '/' + formattedSong)).trim();
+			rawJson = File.getContent(Paths.externalFilesPath(Paths.json(formattedFolder + '/' + formattedSong))).trim();
 			#else
 			rawJson = Assets.getText(Paths.json(formattedFolder + '/' + formattedSong)).trim();
 			#end

@@ -1,6 +1,6 @@
 package editors;
 
-import mobile.VirtualButton;
+import dge.obj.mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -94,20 +94,20 @@ class MasterEditorMenu extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if (controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end)
+		if (controls.UI_UP_P #if mobile || dge.backend.TouchUtil.swipeUp() #end)
 		{
 			changeSelection(-1);
 		}
-		if (controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end)
+		if (controls.UI_DOWN_P #if mobile || dge.backend.TouchUtil.swipeDown() #end)
 		{
 			changeSelection(1);
 		}
 		#if MODS_ALLOWED
-		if(controls.UI_LEFT_P #if mobile || mobile.TouchUtil.swipeLeft() #end)
+		if(controls.UI_LEFT_P #if mobile || dge.backend.TouchUtil.swipeLeft() #end)
 		{
 			changeDirectory(-1);
 		}
-		if(controls.UI_RIGHT_P #if mobile || mobile.TouchUtil.swipeRight() #end)
+		if(controls.UI_RIGHT_P #if mobile || dge.backend.TouchUtil.swipeRight() #end)
 		{
 			changeDirectory(1);
 		}

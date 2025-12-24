@@ -1,7 +1,7 @@
 package;
 
 import flixel.FlxCamera;
-import mobile.VirtualButton;
+import dge.obj.mobile.VirtualButton;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSubState;

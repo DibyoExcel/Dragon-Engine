@@ -1,4 +1,4 @@
-import mobile.VirtualButton;
+import dge.obj.mobile.VirtualButton;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
@@ -88,7 +88,7 @@ class ResetScoreSubState extends MusicBeatSubstate
 		}
 		if(week == -1) icon.alpha += elapsed * 2.5;
 
-		if((controls.UI_LEFT_P #if mobile || mobile.TouchUtil.swipeLeft() #end) || (controls.UI_RIGHT_P #if mobile || mobile.TouchUtil.swipeRight() #end)) {
+		if((controls.UI_LEFT_P #if mobile || dge.backend.TouchUtil.swipeLeft() #end) || (controls.UI_RIGHT_P #if mobile || dge.backend.TouchUtil.swipeRight() #end)) {
 			FlxG.sound.play(Paths.sound('scrollMenu'), 1);
 			onYes = !onYes;
 			updateOptions();

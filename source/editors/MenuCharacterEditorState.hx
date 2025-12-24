@@ -1,6 +1,6 @@
 package editors;
 
-import mobile.VirtualButton;
+import dge.obj.mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -321,19 +321,19 @@ class MenuCharacterEditorState extends MusicBeatState
 			var shiftMult:Int = 1;
 			if(FlxG.keys.pressed.SHIFT #if mobile || shiftButton.pressed #end) shiftMult = 10;
 
-			if(FlxG.keys.justPressed.LEFT #if mobile || mobile.TouchUtil.swipeLeft() #end) {
+			if(FlxG.keys.justPressed.LEFT #if mobile || dge.backend.TouchUtil.swipeLeft() #end) {
 				characterFile.position[0] += shiftMult;
 				updateOffset();
 			}
-			if(FlxG.keys.justPressed.RIGHT #if mobile || mobile.TouchUtil.swipeRight() #end) {
+			if(FlxG.keys.justPressed.RIGHT #if mobile || dge.backend.TouchUtil.swipeRight() #end) {
 				characterFile.position[0] -= shiftMult;
 				updateOffset();
 			}
-			if(FlxG.keys.justPressed.UP #if mobile || mobile.TouchUtil.swipeUp() #end) {
+			if(FlxG.keys.justPressed.UP #if mobile || dge.backend.TouchUtil.swipeUp() #end) {
 				characterFile.position[1] += shiftMult;
 				updateOffset();
 			}
-			if(FlxG.keys.justPressed.DOWN #if mobile || mobile.TouchUtil.swipeDown() #end) {
+			if(FlxG.keys.justPressed.DOWN #if mobile || dge.backend.TouchUtil.swipeDown() #end) {
 				characterFile.position[1] -= shiftMult;
 				updateOffset();
 			}
@@ -360,11 +360,11 @@ class MenuCharacterEditorState extends MusicBeatState
 	var _file:FileReference = null;
 	function loadCharacter() {
 		#if android
-		if (FileSystem.exists(StorageManager.getEngineDir() + 'load/menucharacter/' + loadFileName.text)) {
-			var jsonCode:String = File.getContent(StorageManager.getEngineDir() + 'load/menucharacter/' + loadFileName.text);
+		if (FileSystem.exists(Paths.externalFilesPath('load/menucharacter/' + loadFileName.text))) {
+			var jsonCode:String = File.getContent(Paths.externalFilesPath('load/menucharacter/' + loadFileName.text));
 			menuCharCode(loadFileName.text, jsonCode);
 		} else {
-			lime.app.Application.current.window.alert('Unable to load. ' + StorageManager.getEngineDir() + 'load/menucharacter/' + loadFileName.text + ' not found', 'Menu Character Editor');
+			lime.app.Application.current.window.alert('Unable to load. ' + Paths.externalFilesPath('load/menucharacter/' + loadFileName.text) + ' not found', 'Menu Character Editor');
 		}
 		#else
 		var jsonFilter:FileFilter = new FileFilter('JSON', 'json');
@@ -454,11 +454,11 @@ class MenuCharacterEditorState extends MusicBeatState
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 			_file.save(data, characterName + ".json");
 			#else
-			if (!FileSystem.exists(StorageManager.getEngineDir() + 'saves/menucharacter/' )) {
-				FileSystem.createDirectory(StorageManager.getEngineDir() + 'saves/menucharacter/');
+			if (!FileSystem.exists(Paths.externalFilesPath('saves/menucharacter/'))) {
+				FileSystem.createDirectory(Paths.externalFilesPath('saves/menucharacter/'));
 			}
-			File.saveContent(StorageManager.getEngineDir() + 'saves/menucharacter/' + characterName + ".json", data);
-			lime.app.Application.current.window.alert('Menu Character has been save in ' + StorageManager.getEngineDir() + 'saves/menucharacter/' + characterName + ".json", 'Menu Character Editor');
+			File.saveContent(Paths.externalFilesPath('saves/menucharacter/' + characterName + ".json"), data);
+			lime.app.Application.current.window.alert('Menu Character has been save in ' + Paths.externalFilesPath('saves/menucharacter/' + characterName + ".json"), 'Menu Character Editor');
 			#end
 		}
 	}

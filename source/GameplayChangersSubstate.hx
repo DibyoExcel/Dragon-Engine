@@ -1,6 +1,6 @@
 package;
 
-import mobile.VirtualButton;
+import dge.obj.mobile.VirtualButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -167,7 +167,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 		var gamemodeThingy:Array<String> = [];
 
 		#if MODS_ALLOWED
-		gamemodeThingy.push(StorageManager.getEngineDir() + Paths.getPreloadPath('gamemode/'));
+		gamemodeThingy.push(Paths.externalPreloadPath('gamemode/'));
 		gamemodeThingy.push(Paths.mods('gamemode/'));
 		gamemodeThingy.push(Paths.mods(Paths.currentModDirectory + '/gamemode/'));
 		for(mod in Paths.getGlobalMods())
@@ -260,11 +260,11 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 	var holdValue:Float = 0;
 	override function update(elapsed:Float)
 	{
-		if (controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end)
+		if (controls.UI_UP_P #if mobile || dge.backend.TouchUtil.swipeUp() #end)
 		{
 			changeSelection(-1);
 		}
-		if (controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end)
+		if (controls.UI_DOWN_P #if mobile || dge.backend.TouchUtil.swipeDown() #end)
 		{
 			changeSelection(1);
 		}

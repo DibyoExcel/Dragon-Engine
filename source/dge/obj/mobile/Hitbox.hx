@@ -1,6 +1,6 @@
-package mobile;
+package dge.obj.mobile;
 
-import mobile.FlxButton;
+import dge.obj.mobile.FlxButton;
 
 //abused FlxButton lol
 class Hitbox extends FlxButton {

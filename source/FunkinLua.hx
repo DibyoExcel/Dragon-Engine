@@ -569,7 +569,7 @@ class FunkinLua {
 				doPush = true;
 			}
 			else {
-				cervix = StorageManager.getEngineDir() + Paths.getPreloadPath(cervix);
+				cervix = Paths.externalPreloadPath(cervix);
 				if(FileSystem.exists(cervix)) {
 					doPush = true;
 				}
@@ -624,7 +624,7 @@ class FunkinLua {
 				doPush = true;
 			}
 			else {
-				cervix = StorageManager.getEngineDir() + Paths.getPreloadPath(cervix);
+				cervix = Paths.externalPreloadPath(cervix);
 				if(FileSystem.exists(cervix)) {
 					doPush = true;
 				}
@@ -677,7 +677,7 @@ class FunkinLua {
 				doPush = true;
 			}
 			else {
-				cervix = StorageManager.getEngineDir() + Paths.getPreloadPath(cervix);
+				cervix = Paths.externalPreloadPath(cervix);
 				if(FileSystem.exists(cervix)) {
 					doPush = true;
 				}
@@ -800,7 +800,7 @@ class FunkinLua {
 				doPush = true;
 			}
 			else {
-				cervix = StorageManager.getEngineDir() + Paths.getPreloadPath(cervix);
+				cervix = Paths.externalPreloadPath(cervix);
 				if(FileSystem.exists(cervix)) {
 					doPush = true;
 				}
@@ -885,7 +885,7 @@ class FunkinLua {
 				doPush = true;
 			}
 			else {
-				cervix = StorageManager.getEngineDir() + Paths.getPreloadPath(cervix);
+				cervix = Paths.externalPreloadPath(cervix);
 				if(FileSystem.exists(cervix)) {
 					doPush = true;
 				}
@@ -2324,7 +2324,7 @@ class FunkinLua {
 			path = Paths.modsJson(Paths.formatToSongPath(PlayState.SONG.song) + '/' + dialogueFile);
 			if(!FileSystem.exists(path))
 			#end
-				path = StorageManager.getEngineDir() + Paths.json(Paths.formatToSongPath(PlayState.SONG.song) + '/' + dialogueFile);
+				path = Paths.externalFilesPath(Paths.json(Paths.formatToSongPath(PlayState.SONG.song)) + '/' + dialogueFile);
 
 			luaTrace('startDialogue: Trying to load dialogue: ' + path);
 
@@ -2704,7 +2704,7 @@ class FunkinLua {
 			#if MODS_ALLOWED
 			if(absolute)
 			{
-				return FileSystem.exists(filename);
+				return FileSystem.exists(Paths.externalFilesPath(filename));
 			}
 
 			var path:String = Paths.modFolders(filename);
@@ -2712,7 +2712,7 @@ class FunkinLua {
 			{
 				return true;
 			}
-			return FileSystem.exists(Paths.getPath('assets/$filename', TEXT));
+			return FileSystem.exists(Paths.externalPreloadPath(filename));
 			#else
 			if(absolute)
 			{
@@ -2727,7 +2727,7 @@ class FunkinLua {
 				if(!absolute)
 					File.saveContent(Paths.mods(path), content);
 				else
-					File.saveContent(path, content);
+					File.saveContent(Paths.externalFilesPath(path), content);
 
 				return true;
 			} catch (e:Dynamic) {
@@ -2750,10 +2750,9 @@ class FunkinLua {
 				}
 				#end
 
-				var lePath:String = Paths.getPath(path, TEXT);
-				if(Assets.exists(lePath))
+				if(FileSystem.exists(Paths.externalPreloadPath(path)))
 				{
-					FileSystem.deleteFile(lePath);
+					FileSystem.deleteFile(Paths.externalPreloadPath(path));
 					return true;
 				}
 			} catch (e:Dynamic) {
@@ -2761,8 +2760,8 @@ class FunkinLua {
 			}
 			return false;
 		});
-		Lua_helper.add_callback(lua, "getTextFromFile", function(path:String, ?ignoreModFolders:Bool = false) {
-			return Paths.getTextFromFile(path, ignoreModFolders);
+		Lua_helper.add_callback(lua, "getTextFromFile", function(path:String, ?ignoreModFolders:Bool = false, ?forceFromDisk = false) {
+			return Paths.getTextFromFile(path, ignoreModFolders, forceFromDisk);
 		});
 
 		// DEPRECATED, DONT MESS WITH THESE SHITS, ITS JUST THERE FOR BACKWARD COMPATIBILITY
@@ -2921,10 +2920,11 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "directoryFileList", function(folder:String) {
 			var list:Array<String> = [];
 			#if sys
-			if(FileSystem.exists(StorageManager.getEngineDir() + folder)) {
-				for (folder in FileSystem.readDirectory(StorageManager.getEngineDir() + folder)) {
-					if (!list.contains(StorageManager.getEngineDir() + folder)) {
-						list.push(StorageManager.getEngineDir() + folder);
+			var filePath = Paths.externalFilesPath(folder);
+			if(FileSystem.exists(filePath)) {
+				for (folder in FileSystem.readDirectory(filePath)) {
+					if (!list.contains(filePath)) {
+						list.push(filePath);
 					}
 				}
 			}
@@ -3465,6 +3465,15 @@ class FunkinLua {
 					}
 				}
 			}
+		});
+
+		//i wonder why did't make this hmm....
+		Lua_helper.add_callback(lua, "precacheSparrowAtlas", function(name:String) {
+			Paths.getSparrowAtlas(name);
+		});
+
+		Lua_helper.add_callback(lua, "precachePackerAtlas", function(name:String) {
+			Paths.getPackerAtlas(name);
 		});
 
 		call('onCreate', []);

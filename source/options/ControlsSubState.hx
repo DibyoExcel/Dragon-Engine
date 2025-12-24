@@ -132,13 +132,13 @@ class ControlsSubState extends MusicBeatSubstate {
 	var bindingTime:Float = 0;
 	override function update(elapsed:Float) {
 		if(!rebindingKey) {
-			if (controls.UI_UP_P #if mobile || mobile.TouchUtil.swipeUp() #end) {
+			if (controls.UI_UP_P #if mobile || dge.backend.TouchUtil.swipeUp() #end) {
 				changeSelection(-1);
 			}
-			if (controls.UI_DOWN_P #if mobile || mobile.TouchUtil.swipeDown() #end) {
+			if (controls.UI_DOWN_P #if mobile || dge.backend.TouchUtil.swipeDown() #end) {
 				changeSelection(1);
 			}
-			if ((controls.UI_LEFT_P #if mobile || mobile.TouchUtil.swipeLeft() #end) || (controls.UI_RIGHT_P #if mobile || mobile.TouchUtil.swipeRight() #end)) {
+			if ((controls.UI_LEFT_P #if mobile || dge.backend.TouchUtil.swipeLeft() #end) || (controls.UI_RIGHT_P #if mobile || dge.backend.TouchUtil.swipeRight() #end)) {
 				changeAlt();
 			}
 

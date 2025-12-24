@@ -1,8 +1,9 @@
 package editors;
+import dge.obj.mobile.Hitbox;
+import dge.backend.CacheTools;
 
 import flixel.graphics.FlxGraphic;
 import flixel.FlxCamera;
-import mobile.Hitbox;
 import Section.SwagSection;
 import Song.SwagSong;
 import flixel.group.FlxGroup.FlxTypedGroup;

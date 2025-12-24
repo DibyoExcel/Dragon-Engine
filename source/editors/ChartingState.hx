@@ -1,7 +1,8 @@
 package editors;
 
-import mobile.VirtualButton;
-import mobile.ToggleButton;
+import dge.obj.mobile.VirtualButton;
+import dge.obj.mobile.ToggleButton;
+import dge.backend.CacheTools;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -596,7 +597,7 @@ class ChartingState extends MusicBeatState
 		{
 
 			var songName:String = Paths.formatToSongPath(_song.song);
-			var file:String = StorageManager.getEngineDir() + Paths.json(songName + '/events');
+			var file:String = Paths.externalFilesPath(Paths.json(songName + '/events'));
 			#if sys
 			if (#if MODS_ALLOWED FileSystem.exists(Paths.modsJson(songName + '/events')) || #end FileSystem.exists(file))
 			#else
@@ -640,7 +641,7 @@ class ChartingState extends MusicBeatState
 		stepperSpeed.name = 'song_speed';
 		blockPressWhileTypingOnStepper.push(stepperSpeed);
 		#if MODS_ALLOWED
-		var directories:Array<String> = [Paths.mods('characters/'), Paths.mods(Paths.currentModDirectory + '/characters/'), StorageManager.getEngineDir() + Paths.getPreloadPath('characters/')];
+		var directories:Array<String> = [Paths.mods('characters/'), Paths.mods(Paths.currentModDirectory + '/characters/'), Paths.externalPreloadPath('characters/')];
 		for(mod in Paths.getGlobalMods())
 			directories.push(Paths.mods(mod + '/characters/'));
 		#else
@@ -648,7 +649,7 @@ class ChartingState extends MusicBeatState
 		#end
 
 		var tempMap:Map<String, Bool> = new Map<String, Bool>();
-		var characters:Array<String> = CoolUtil.coolTextFile(StorageManager.getEngineDir() + Paths.txt('characterList'));
+		var characters:Array<String> = CoolUtil.coolTextFile(Paths.externalFilesPath(Paths.txt('characterList')));
 		for (i in 0...characters.length) {
 			tempMap.set(characters[i], true);
 		}
@@ -696,7 +697,7 @@ class ChartingState extends MusicBeatState
 		blockPressWhileScrolling.push(player2DropDown);
 
 		#if MODS_ALLOWED
-		var directories:Array<String> = [Paths.mods('stages/'), Paths.mods(Paths.currentModDirectory + '/stages/'), StorageManager.getEngineDir() + Paths.getPreloadPath('stages/')];
+		var directories:Array<String> = [Paths.mods('stages/'), Paths.mods(Paths.currentModDirectory + '/stages/'), Paths.externalPreloadPath('stages/')];
 		for(mod in Paths.getGlobalMods())
 			directories.push(Paths.mods(mod + '/stages/'));
 		#else
@@ -1954,7 +1955,7 @@ class ChartingState extends MusicBeatState
 			}
 			#if mobile
 			if (handButton.enable) {
-				var wheelRange = mobile.TouchUtil.scrollSwipe(0.5);
+				var wheelRange = dge.backend.TouchUtil.scrollSwipe(0.5);
 				if (wheelRange != 0)
 				{
 					FlxG.sound.music.pause();
@@ -2910,7 +2911,7 @@ class ChartingState extends MusicBeatState
 			path = Paths.getPreloadPath(characterPath);
 		}
 
-		if (!FileSystem.exists(StorageManager.getEngineDir() + path))
+		if (!FileSystem.exists(Paths.externalFilesPath(path)))
 		#else
 		var path:String = Paths.getPreloadPath(characterPath);
 		if (!OpenFlAssets.exists(path))
@@ -2920,7 +2921,7 @@ class ChartingState extends MusicBeatState
 		}
 
 		#if MODS_ALLOWED
-		var rawJson = File.getContent(StorageManager.getEngineDir() + path);
+		var rawJson = File.getContent(Paths.externalFilesPath(path));
 		#else
 		var rawJson = OpenFlAssets.getText(path);
 		#end
@@ -3542,11 +3543,11 @@ class ChartingState extends MusicBeatState
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 			_file.save(data.trim(), Paths.formatToSongPath(_song.song) + ".json");
 			#else
-			if (!FileSystem.exists(StorageManager.getEngineDir() + 'saves/chart/' + _song.song + '/')) {
-				FileSystem.createDirectory(StorageManager.getEngineDir() + 'saves/chart/' + _song.song + '/');
+			if (!FileSystem.exists(Paths.externalFilesPath('saves/chart/' + _song.song + '/'))) {
+				FileSystem.createDirectory(Paths.externalFilesPath('saves/chart/' + _song.song + '/'));
 			}
-			File.saveContent(StorageManager.getEngineDir() + 'saves/chart/' + _song.song + '/' + Paths.formatToSongPath(_song.song) + ".json", data.trim());
-			lime.app.Application.current.window.alert('Chart has been save in ' + StorageManager.getEngineDir() + 'saves/chart/' + _song.song + '/' + Paths.formatToSongPath(_song.song) + ".json", 'Chart Editor');
+			File.saveContent(Paths.externalFilesPath('saves/chart/' + _song.song + '/' + Paths.formatToSongPath(_song.song) + ".json"), data.trim());
+			lime.app.Application.current.window.alert('Chart has been save in ' + Paths.externalFilesPath('saves/chart/' + _song.song + '/' + Paths.formatToSongPath(_song.song) + ".json"), 'Chart Editor');
 			#end
 		}
 	}
@@ -3577,11 +3578,11 @@ class ChartingState extends MusicBeatState
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 			_file.save(data.trim(), "events.json");
 			#else
-			if (!FileSystem.exists(StorageManager.getEngineDir() + 'saves/chart/' + _song.song + '/')) {
-				FileSystem.createDirectory(StorageManager.getEngineDir() + 'saves/chart/' + _song.song + '/');
+			if (!FileSystem.exists(Paths.externalFilesPath('saves/chart/' + _song.song + '/'))) {
+				FileSystem.createDirectory(Paths.externalFilesPath('saves/chart/' + _song.song + '/'));
 			}
-			File.saveContent(StorageManager.getEngineDir() + 'saves/chart/' + _song.song + "/events.json", data.trim());
-			lime.app.Application.current.window.alert('Event has been save in ' + StorageManager.getEngineDir() + 'saves/chart/' + _song.song + "/events.json", 'Chart Editor');
+			File.saveContent(Paths.externalFilesPath('saves/chart/' + _song.song + "/events.json"), data.trim());
+			lime.app.Application.current.window.alert('Event has been save in ' + Paths.externalFilesPath('saves/chart/' + _song.song + "/events.json"), 'Chart Editor');
 			#end
 		}
 	}
