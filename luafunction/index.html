@@ -235,6 +235,14 @@
                     <h3>debugPrintArray(text:Array&lt;Dynamic&gt;)</h3>
                     <h4>same as <code>debugPrint()</code> but with array.</h4>
                 </div>
+                <div class="dialogue_group">
+                    <h3>precacheSparrowAtlas(name:String)</h3>
+                    <h4>precache Sparrow Atlas Frames(Recommended put in <code>onCreate()</code>)<br>name:name of atlas file in <code>images/</code>.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>precachePackerAtlas(name:String)</h3>
+                    <h4>precache Packer Atlas Frames(Recommended put in <code>onCreate()</code>)<br>name:name of atlas file in <code>images/</code>.</h4>
+                </div>
             </div>
         </div>
         <div class="dialogue" id="callfunc">
@@ -360,6 +368,23 @@
                 <div class="dialogue_group">
                     <h3>camGameMult(1.6.3.16m2+)</h3>
                     <h4>return <code>Float</code> of Multiply resolution fill content from <code>resizeGame()</code>.</h4>
+                </div>
+            </div>
+        </div>
+        <div class="dialogue" id="modfunc">
+            <div class="dialogue_title">
+                <h3>
+                    LUA Build In(Override) Function
+                </h3><!--This is Modified Build In Lua-->
+            </div>
+            <div class="dialogue_content">
+                <div class="dialogue_group">
+                    <h3>setObjectCamera(obj:String, camera:String)(1.6.2+)</h3>
+                    <h4>Changes on which camera should your object be drawn on.<br>obj: Lua Sprite tag or Object variable name.<br>camera: camera to set, like <code>game</code>, <code>hud</code>, <code>other</code> or <code>customCamera</code>(use <code>addCamera()</code>)(Separate with comma. Example: <code>game, hud</code>).</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>getTextFromFile(path:String, ?ignoreModFolders:Bool = false, ?forceFromDisk = false)(1.6.3.17m1+)</h3>
+                    <h4>Returns content of specific file in text.<br>path: Path to file<br>ignoreModFolders: If true, it'll ignore mod folders and only check in base game folder<br>forceFromDisk: If true, it'll force load file from disk instead of cache(false by default for performance).</h4>
                 </div>
             </div>
         </div>
