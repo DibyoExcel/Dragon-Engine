@@ -174,7 +174,7 @@ class FunkinLua {
 		set('ratingName', '');
 		set('ratingFC', '');
 		set('version', MainMenuState.psychEngineVersion.trim());
-		set('engineversion', Application.current.meta.get('version').split('-')[0] + (Application.current.meta.get('version').split('-')[1] != null && Application.current.meta.get('version').split('-')[1] != 'release' ? ('(' +Application.current.meta.get('version').split('-')[1].replace('.', ' ') + ')') : ''));
+		set('engineversion', Application.current.meta.get('version'));
 
 		set('inGameOver', false);
 		set('mustHitSection', false);
@@ -250,6 +250,8 @@ class FunkinLua {
 		set('buildTarget', 'browser');
 		#elseif android
 		set('buildTarget', 'android');
+		#elseif ios
+		set('buildTarget', 'ios');
 		#else
 		set('buildTarget', 'unknown');
 		#end
@@ -2975,7 +2977,7 @@ class FunkinLua {
 			if (indoTween[0] != null) {
 				indoTween[0].cancel();
 			}
-			if (duration != 0) {
+			if (duration > 0) {
 				indoTween[0] = FlxTween.tween(Lib.application.window, {x: value}, duration, {ease: getFlxEaseByString(ease)});
 			} else {
 				Lib.application.window.x = value;
@@ -2989,7 +2991,7 @@ class FunkinLua {
 			if (indoTween[1] != null) {
 				indoTween[1].cancel();
 			}
-			if (duration != 0) {
+			if (duration > 0) {
 				indoTween[1] = FlxTween.tween(Lib.application.window, {y: value}, duration, {ease: getFlxEaseByString(ease)});
 			} else {
 				Lib.application.window.y = value;
@@ -3003,7 +3005,7 @@ class FunkinLua {
 			if (indoTween[2] != null) {
 				indoTween[2].cancel();
 			}
-			if (duration != 0) {
+			if (duration > 0) {
 				indoTween[2] = FlxTween.tween(Lib.application.window, {width: value}, duration, {ease: getFlxEaseByString(ease)});
 			} else {
 				Lib.application.window.width = value;
@@ -3017,7 +3019,7 @@ class FunkinLua {
 			if (indoTween[3] != null) {
 				indoTween[3].cancel();
 			}
-			if (duration != 0) {
+			if (duration > 0) {
 				indoTween[3] = FlxTween.tween(Lib.application.window, {height: value}, duration, {ease: getFlxEaseByString(ease)});
 			} else {
 				Lib.application.window.height = value;
@@ -3033,7 +3035,7 @@ class FunkinLua {
 					i.cancel();
 				}
 			}
-			if (duration >= 0) {
+			if (duration > 0) {
 				if (x != null) {
 					indoTween[0] = FlxTween.tween(Lib.application.window, {x: x}, duration, {ease: getFlxEaseByString(ease)});
 				}

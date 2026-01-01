@@ -150,6 +150,10 @@ class Note extends FlxSprite
 	public var hitsound(default, set):String = null;//custom hitsound per note
 	public var forceHitsound:Bool = false;//force play hitsound even hitsound disabled in settings
 	public var forceNoteSplash:Bool = false;//force note splash even note splash disabled in settings
+	//idea from GD
+	//jack note gimmick lol
+	public var multiPress:Int = 0;//how many multi press remaining(0 = no multi press)
+	public var strumTimeOffsetMultiPress:Float = 500;//how much offset for each multi press notes(lol so long name)
 
 
 	@:noCompletion
@@ -287,6 +291,8 @@ class Note extends FlxSprite
 				case 'Snap Note Y':
 					snapY = 50;
 					snapAngle = 20;
+				case 'Multi Press':
+					multiPress = 2;//so it click 3 times
 			}
 			noteType = value;
 		}
@@ -559,18 +565,10 @@ class Note extends FlxSprite
 		super.update(elapsed);
 		if (!inEditor) {
 			var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
-			if (gamemode != null) {
+			/*if (gamemode != null) {
 				if ((gamemode != "opponent" ? (gamemode == "bothside v2" || gamemode == "bothside" ? true : mustPress) : !mustPress))
 				{
 					// ok river
-					if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * lateHitMult)
-						&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * earlyHitMult))
-						canBeHit = true;
-					else
-						canBeHit = false;
-
-					if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
-						tooLate = true;
 				}
 				else
 				{
@@ -582,7 +580,14 @@ class Note extends FlxSprite
 							wasGoodHit = true;
 					}
 				}
-			}
+			}*/
+			if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * lateHitMult)
+				&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * earlyHitMult))
+				canBeHit = true;
+			else
+				canBeHit = false;
+			
+			if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit) tooLate = true;
 		}
 
 		if (tooLate && !inEditor)

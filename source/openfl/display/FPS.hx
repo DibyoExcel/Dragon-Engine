@@ -48,7 +48,9 @@ class FPS extends TextField
 		currentFPS = 0;
 		selectable = false;
 		mouseEnabled = false;
-		defaultTextFormat = new TextFormat("_sans", 14, color);
+		defaultTextFormat = new TextFormat("_sans", ClientPrefs.fpsFontSize, color);
+		background = true;
+		backgroundColor = 0xFF000000;
 		autoSize = LEFT;
 		multiline = true;
 		text = "FPS: ";
@@ -84,22 +86,20 @@ class FPS extends TextField
 
 		if (currentCount != cacheCount /*&& visible*/)
 		{
-			text = "FPS: " + currentFPS + " | SPF: " + Math.floor((1/currentFPS)*10000)/10000;
 			var memoryMegas:Float = 0;
 			var formatMegas:String = '';
+			#if android
+			text = "Dragon Engine(Android)";
+			#elseif html5
+			text = "Dragon Engine(HTML5)";
+			#else
+			text = "Dragon Engine";
+			#end
+			text += "\nFPS: " + currentFPS + " | SPF: " + Math.floor((1/currentFPS)*10000)/10000;
 			#if openfl
 			memoryMegas = Math.abs(System.totalMemory / 1000000);
 			formatMegas = (memoryMegas > 1000 ? Math.floor(memoryMegas / 10) / 100 + ' GB(' + Math.floor(memoryMegas*100)/100 + ' MB)' : Math.floor(memoryMegas*100)/100 + ' MB');
-			text += " | Memory: " + formatMegas;
-			#end
-			#if android
-			text += "\nDragon Engine(Android)";
-			#elseif html5
-			text += "\nDragon Engine(HTML5)";
-			#else
-			if ((Lib.application.window.width >= Lib.application.window.display.bounds.width && Lib.application.window.height >= Lib.application.window.display.bounds.height && Lib.application.window.x == 0 && Lib.application.window.y == 0) || FlxG.fullscreen) {
-				text += "\nDragon Engine";
-			}
+			text += "\nMemory: " + formatMegas;
 			#end
 			textColor = 0xFF00FF00;
 			if (memoryMegas > 3000 || currentFPS <= ClientPrefs.framerate / 2)

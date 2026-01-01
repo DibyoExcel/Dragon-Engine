@@ -82,7 +82,8 @@ class ChartingState extends MusicBeatState
 		"Fake No Hit",
 		"Snap Note",
 		"Snap Note X",
-		"Snap Note Y"
+		"Snap Note Y",
+		"Multi Press"
 	];
 	private var noteTypeIntMap:Map<Int, String> = new Map<Int, String>();
 	private var noteTypeMap:Map<String, Null<Int>> = new Map<String, Null<Int>>();
@@ -348,7 +349,8 @@ class ChartingState extends MusicBeatState
 		Conductor.changeBPM(_song.bpm);
 		Conductor.mapBPMChanges(_song);
 
-		bpmTxt = new FlxText(10, 100, 0, "", 16);
+		bpmTxt = new FlxText(10, 0, 0, "", 16);
+		bpmTxt.y = FlxG.height - (bpmTxt.height+10);
 		bpmTxt.scrollFactor.set();
 		add(bpmTxt);
 
@@ -466,7 +468,8 @@ class ChartingState extends MusicBeatState
 		}
 		lastSong = currentSongName;
 
-		zoomTxt = new FlxText(10, 10, 0, "Zoom: 1 / 1", 16);
+		zoomTxt = new FlxText(10, 0, 0, "Zoom: 1 / 1", 16);
+		zoomTxt.y = bpmTxt.y - (zoomTxt.height+10);
 		zoomTxt.scrollFactor.set();
 		add(zoomTxt);
 
@@ -2198,6 +2201,8 @@ class ChartingState extends MusicBeatState
 		"\n\nBeat: " + Std.string(curDecBeat).substring(0,4) +
 		"\n\nStep: " + curStep +
 		"\n\nBeat Snap: " + quantization + "th";
+		bpmTxt.y = FlxG.height - (bpmTxt.height+10);
+		zoomTxt.y = bpmTxt.y - (zoomTxt.height+10);
 
 		var playedSound:Array<Bool> = [false, false, false, false]; //Prevents ouchy GF sex sounds
 		if (curSec > 0) {
@@ -2908,20 +2913,20 @@ class ChartingState extends MusicBeatState
 		#if MODS_ALLOWED
 		var path:String = Paths.modFolders(characterPath);
 		if (!FileSystem.exists(path)) {
-			path = Paths.getPreloadPath(characterPath);
+			path = Paths.externalPreloadPath(characterPath);
 		}
 
-		if (!FileSystem.exists(Paths.externalFilesPath(path)))
+		if (!FileSystem.exists(path))
 		#else
 		var path:String = Paths.getPreloadPath(characterPath);
 		if (!OpenFlAssets.exists(path))
 		#end
 		{
-			path = Paths.getPreloadPath('characters/' + Character.DEFAULT_CHARACTER + '.json'); //If a character couldn't be found, change him to BF just to prevent a crash
+			path = Paths.externalPreloadPath('characters/' + Character.DEFAULT_CHARACTER + '.json'); //If a character couldn't be found, change him to BF just to prevent a crash
 		}
 
 		#if MODS_ALLOWED
-		var rawJson = File.getContent(Paths.externalFilesPath(path));
+		var rawJson = File.getContent(path);
 		#else
 		var rawJson = OpenFlAssets.getText(path);
 		#end

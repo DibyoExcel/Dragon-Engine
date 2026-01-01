@@ -29,16 +29,31 @@ class OutdatedState extends MusicBeatState
 		bg.color = 0xff800080;
 		CoolUtil.fitBackground(bg);
 		add(bg);
-
+		var splitVersion = Application.current.meta.get('version').split('.');
+		var getMinotAndMajor = splitVersion[0] + "." + splitVersion[1] + '.X';
+		var warnTxt = "Sup bro, i think you currently running a\n
+			outdated version of Dragon Engine (" + getMinotAndMajor + "),\n
+			please update to " + TitleState.updateVersion + "!";
+		if (TitleState.confusedLOL) {//LMAO
+			warnTxt = "Sup bro, i think you currently running a\n
+			version of Dragon Engine (" + getMinotAndMajor + ") this version did't even exists yet lmao\n
+			please be sure this version ever exists!(unless you're dev lol)";
+		}
+		if (ClientPrefs.dragonW) {
+			warnTxt = "Greetings, noble warrior! it appears that you are currently utilizing an\n
+			outdated version of Dragon Engine (" + getMinotAndMajor + ").\n
+			For a more powerful and enhanced experience, please update to " + TitleState.updateVersion + "!";
+			if (TitleState.confusedLOL) {//LMAO
+				warnTxt = "Greetings, noble warrior! it appears that you are currently utilizing a\n
+				version of Dragon Engine (" + getMinotAndMajor + ") this not even exists yet..\n
+				please be sure this version ever exists!(unless you're dev lol)";
+			}
+		}
 		warnText = new FlxText(0, 0, FlxG.width,
-			(ClientPrefs.dragonW ? "Greetings, noble warrior! it appears that you are currently utilizing an\n
-			outdated version of Dragon Engine (" + Application.current.meta.get('version').split('-')[0].trim() + ").\n
-			For a more powerful and enhanced experience, please update to " + TitleState.updateVersion + "!"  : "Sup bro, i think you currently running a\n
-			outdated version of Dragon Engine (" + Application.current.meta.get('version').split('-')[0].trim() + "),\n
-			please update to " + TitleState.updateVersion + "!") + "\n
+			warnTxt + "\n\n
 			Press ESCAPE to proceed anyway.\n
 			\n
-			Thank you for using the Engine." + (ClientPrefs.dragonW ? " Squeak!" : ""),
+			Thank you for using the Engine.",
 			32);
 		warnText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER);
 		warnText.screenCenter(Y);
@@ -73,5 +88,11 @@ class OutdatedState extends MusicBeatState
 			}
 		}
 		super.update(elapsed);
+	}
+	override function destroy()
+	{
+		super.destroy();
+		leftState = false;
+		TitleState.confusedLOL = false;
 	}
 }

@@ -12,13 +12,10 @@ import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.display.StageScaleMode;
 import flixel.FlxSprite;
-#if WINDOW_COLOR
-import hxwindowmode.WindowColorMode;
-#end
 
 //crash handler stuff
-#if CRASH_HANDLER
 import lime.app.Application;
+#if CRASH_HANDLER
 import openfl.events.UncaughtErrorEvent;
 import haxe.CallStack;
 import haxe.io.Path;
@@ -60,40 +57,6 @@ class Main extends Sprite
 
 	public function new()
 	{
-		#if android
-		if (!Permissions.hasPermission(Permissions.WRITE_EXTERNAL_STORAGE))
-		{
-			lime.app.Application.current.window.alert('This app required external storage permission.', 'Storage Manager');
-			Permissions.requestPermission(Permissions.WRITE_EXTERNAL_STORAGE);
-			lime.app.Application.current.window.alert('This required restart.', 'Storage Manager');
-			Sys.exit(0);
-		} else {
-			if (!FileSystem.exists(StorageManager.getEngineDir())) {
-				FileSystem.createDirectory(StorageManager.getEngineDir());
-				Application.current.window.alert('External(' + StorageManager.getEngineDir() + ')Folder has been created. Extract app assets bundles("assets" and "mods") to' + StorageManager.getEngineDir() + '. This required restart.', 'Storage Manager');
-				Sys.exit(0);
-			}
-			var loadData:Array<String> = ['dialogue', 'dialoguecharacter', 'menucharacter', 'weeks'];
-			for (i in 0...loadData.length) {
-				if (!FileSystem.exists(Paths.externalFilesPath('load/'))) {
-					FileSystem.createDirectory(Paths.externalFilesPath('load/'));
-				}
-				if (!FileSystem.exists(Paths.externalFilesPath('load/' + loadData[i] + '/'))) {
-					FileSystem.createDirectory(Paths.externalFilesPath('load/' + loadData[i] + '/'));
-				}
-				if (!FileSystem.exists(Paths.externalFilesPath('load/' + loadData[i] + '/'))) {
-					FileSystem.createDirectory(Paths.externalFilesPath('load/' + loadData[i] + '/'));
-				}
-				if (!FileSystem.exists(Paths.externalFilesPath('load/' + loadData[i] + '/put json file here.txt'))) {
-					File.saveContent(Paths.externalFilesPath('load/' + loadData[i] + '/put json file here.txt'), '');
-				}
-			}
-		}
-		#end
-		#if WINDOW_COLOR
-		WindowColorMode.setWindowBorderColor([255, 0, 0]);
-		WindowColorMode.redrawWindowHeader();
-		#end
 		super();
 
 		if (stage != null)
@@ -140,7 +103,7 @@ class Main extends Sprite
 		var targetWidth:Int = Math.round(screenWidth * scale);
 		addChild(new FlxGame(targetWidth, targetHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));*/
 
-		fpsVar = new FPS(10, 3, 0x00FF00);
+		fpsVar = new FPS(15, 15, 0x00FF00);
 		addChild(fpsVar);
 		if(fpsVar != null) {
 			fpsVar.visible = ClientPrefs.showFPS;

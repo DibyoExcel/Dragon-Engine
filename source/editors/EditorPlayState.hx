@@ -524,46 +524,48 @@ class EditorPlayState extends MusicBeatState
 				if (daNote.isSustainNote) {
 					daNote.flipY = ClientPrefs.downScroll;
 				}
-
-				if (!daNote.mustPress && daNote.wasGoodHit && !daNote.hitByOpponent && !daNote.ignoreNote)
+				//this kinda shit than PlayState
+				if (!daNote.mustPress && daNote.canBeHit && !daNote.hitByOpponent && !daNote.ignoreNote)
 				{
-					if (PlayState.SONG.needsVoices)
-						vocals.volume = 1;
-
 					var time:Float = 0.15;
-					if(daNote.isSustainNote && !daNote.animation.curAnim.name.endsWith('end')) {
-						time += 0.15;
-					}
-					if (!ClientPrefs.clsstrum) {
-						StrumPlayAnim(true, Std.int(Math.abs(daNote.noteData)), time, daNote);
-					}
-					daNote.hitByOpponent = true;
-
-					if (!daNote.isSustainNote)
-					{
+					if(daNote.isSustainNote) {
+						if (PlayState.SONG.needsVoices) vocals.volume = 1;
+						if(daNote.isSustainNote && !daNote.animation.curAnim.name.endsWith('end')) {
+							time += 0.15;
+						}
+						if (!ClientPrefs.clsstrum) {
+							StrumPlayAnim(true, Std.int(Math.abs(daNote.noteData)), time, daNote);
+						}
+					} else if((daNote.strumTime + daNote.offsetStrumTime) <= Conductor.songPosition || daNote.isSustainNote) {
 						if (!daNote.noteSplashDisabled && !ClientPrefs.clsstrum) {
 							spawnNoteSplashOnNote(daNote, daNote.mustPress);
 						}
 						daNote.kill();
 						notes.remove(daNote, true);
 						daNote.destroy();
+						daNote.hitByOpponent = true;
+						if (PlayState.SONG.needsVoices) vocals.volume = 1;
+						if (!ClientPrefs.clsstrum) {
+							StrumPlayAnim(true, Std.int(Math.abs(daNote.noteData)), time, daNote);
+						}
 					}
 				}
 
 				if (Conductor.songPosition > (noteKillOffset / Math.max(1.0, PlayState.SONG.speed)) + (daNote.strumTime + daNote.offsetStrumTime))
 				{
+					//remove note off screen
 					if (daNote.mustPress)
 					{
+						//Dupe note remove
+						notes.forEachAlive(function(note:Note) {
+							if (daNote != note && daNote.mustPress && daNote.noteData == note.noteData && daNote.isSustainNote == note.isSustainNote && Math.abs((daNote.strumTime + daNote.offsetStrumTime) - (note.strumTime + note.offsetStrumTime)) < 10) {
+								note.kill();
+								notes.remove(note, true);
+								note.destroy();
+							}
+						});
 						if (daNote.tooLate || !daNote.wasGoodHit)
 						{
-							//Dupe note remove
-							notes.forEachAlive(function(note:Note) {
-								if (daNote != note && daNote.mustPress && daNote.noteData == note.noteData && daNote.isSustainNote == note.isSustainNote && Math.abs((daNote.strumTime + daNote.offsetStrumTime) - (note.strumTime + note.offsetStrumTime)) < 10) {
-									note.kill();
-									notes.remove(note, true);
-									note.destroy();
-								}
-							});
 
 							if(!daNote.ignoreNote) {
 								songMisses++;
@@ -871,14 +873,18 @@ class EditorPlayState extends MusicBeatState
 				}
 			});
 
-			note.wasGoodHit = true;
-			vocals.volume = 1;
-
-			if (!note.isSustainNote)
-			{
-				note.kill();
-				notes.remove(note, true);
-				note.destroy();
+			if (note.multiPress <= 0) {
+				note.wasGoodHit = true;
+				vocals.volume = 1;
+				if (!note.isSustainNote)
+				{
+					note.kill();
+					notes.remove(note, true);
+					note.destroy();
+				}
+			} else {
+				note.strumTime += note.strumTimeOffsetMultiPress;
+				note.multiPress--;
 			}
 		}
 	}
@@ -1117,7 +1123,7 @@ class EditorPlayState extends MusicBeatState
 						var noteSize = Note.swagWidth*(Math.min(0.75, 0.7*(FlxG.width/1280)));
 					var noteSizeSub = Note.swagWidth*(Math.min(0.125, 0.15*(FlxG.width/1280)));
 					var number = (-(noteSize*4))+(noteSize*i);
-					var babyArrow:StrumNote = new StrumNote((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : FlxG.width*0.25)+number-noteSizeSub, strumLine.y, i, player, i>3);
+					var babyArrow:StrumNote = new StrumNote((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : (FlxG.width*0.25)+(Note.swagWidth/2))+number-noteSizeSub, strumLine.y, i, player, i>3);
 						babyArrow.camTarget ='';
 						if (player != 1)
 						{

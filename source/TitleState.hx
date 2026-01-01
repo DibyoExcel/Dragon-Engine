@@ -82,6 +82,7 @@ class TitleState extends MusicBeatState
 	#end
 
 	var mustUpdate:Bool = false;
+	public static var confusedLOL:Bool = false;
 
 	var titleJSON:TitleData;
 
@@ -142,11 +143,22 @@ class TitleState extends MusicBeatState
 			http.onData = function (data:String)
 			{
 				updateVersion = data.split('\n')[0].trim();
-				var curVersion:String = Application.current.meta.get('version').split('-')[0].trim();
+				var getMJMNGit = updateVersion.split('.');
+				updateVersion = getMJMNGit[0] + "." + getMJMNGit[1] + ".X";
+				var splitVersion = Application.current.meta.get('version').split('.');
+				var getMinotAndMajor = splitVersion[0] + "." + splitVersion[1] + '.X';
+				var curVersion:String = getMinotAndMajor;
 				trace('version online: ' + updateVersion + ', your version: ' + curVersion);
-				if(updateVersion != curVersion) {
-					trace('versions arent matching!');
+				var localMajor = splitVersion[0];
+				var localMinor = splitVersion[1];
+				var onlineMajor = getMJMNGit[0];
+				var onlineMinor = getMJMNGit[1];
+				if (localMajor < onlineMajor || (localMajor == onlineMajor && localMinor < onlineMinor) ) {
+					trace('version aret matching');
 					mustUpdate = true;
+				} else if (localMajor > onlineMajor || (localMajor == onlineMajor && localMinor > onlineMinor) ) {//when dev joke even though impossible to happen
+					trace('i wonder where you get this unrelease version come from... or... are you Dev?');//joke when people get unexisted or too new that official not even release version yet, lol
+					confusedLOL = true;
 				}
 			}
 
@@ -523,7 +535,7 @@ class TitleState extends MusicBeatState
 
 				new FlxTimer().start(1, function(tmr:FlxTimer)
 				{
-					if (mustUpdate) {
+					if (mustUpdate || confusedLOL) {
 						MusicBeatState.switchState(new OutdatedState());
 					} else {
 						MusicBeatState.switchState(new MainMenuState());

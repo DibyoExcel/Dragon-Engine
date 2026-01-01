@@ -10,7 +10,7 @@ class StorageManager {
 		return getPath(dirFile);
 	}
     public static inline function getEngineDir():String {
-        #if android
+        #if (android && MODS_ALLOWED)
         return getAndroidStorage() + '/.DragonEngine/';
         #else
         return '';

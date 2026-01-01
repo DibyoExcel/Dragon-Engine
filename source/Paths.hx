@@ -315,7 +315,7 @@ class Paths
 
 	inline static public function getSparrowAtlas(key:String, ?library:String):FlxAtlasFrames
 	{
-		if (!CacheTools.cacheAtlas.exists(key + '_sparrow')) {
+		if (!CacheTools.cacheAtlas.exists(key)) {
 			#if MODS_ALLOWED
 			var imageLoaded:FlxGraphic = returnGraphic(key);
 			var xmlExists:Bool = false;
@@ -323,21 +323,21 @@ class Paths
 				xmlExists = true;
 			}
 			var atlas = FlxAtlasFrames.fromSparrow((imageLoaded != null ? imageLoaded : image(key, library)), (xmlExists ? File.getContent(modsXml(key)) : file('images/$key.xml', library)));
-			CacheTools.cacheAtlas.set(key + '_sparrow', atlas);
+			CacheTools.cacheAtlas.set(key, atlas);
 			return atlas;
 			#else
 			var atlas =  FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
-			CacheTools.cacheAtlas.set(key + '_sparrow', atlas);
+			CacheTools.cacheAtlas.set(key, atlas);
 			return atlas;
 			#end
 		}
-		return CacheTools.cacheAtlas.get(key + '_sparrow');
+		return CacheTools.cacheAtlas.get(key);
 	}
 
 
 	inline static public function getPackerAtlas(key:String, ?library:String)
 	{
-		if (!CacheTools.cacheAtlas.exists(key + '_packer')) {
+		if (!CacheTools.cachePackerAtlas.exists(key)) {
 			#if MODS_ALLOWED
 			var imageLoaded:FlxGraphic = returnGraphic(key);
 			var txtExists:Bool = false;
@@ -346,15 +346,15 @@ class Paths
 			}
 	
 			var atlas = FlxAtlasFrames.fromSpriteSheetPacker((imageLoaded != null ? imageLoaded : image(key, library)), (txtExists ? File.getContent(modsTxt(key)) : file('images/$key.txt', library)));
-			CacheTools.cacheAtlas.set(key + '_packer', atlas);
+			CacheTools.cachePackerAtlas.set(key, atlas);
 			return atlas;
 			#else
 			var atlas = FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
-			CacheTools.cacheAtlas.set(key + '_packer', atlas);
+			CacheTools.cachePackerAtlas.set(key, atlas);
 			return atlas;
 			#end
 		}
-		return CacheTools.cacheAtlas.get(key + '_packer');
+		return CacheTools.cachePackerAtlas.get(key);
 	}
 
 	inline static public function formatToSongPath(path:String) {

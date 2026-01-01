@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
-
-	<app title="Friday Night Funkin': Dragon Engine" file="Dragon Engine" packageName="id.dubenderdragon.dge" package="id.dubenderdragon.dge" main="Main" version="1.6.3.17-minor.1" company="DubEnderDragon" />
+	<!--YY.MJ.MN-->
+	<app title="Friday Night Funkin': Dragon Engine" file="Dragon Engine" packageName="id.dubenderdragon.dge" package="id.dubenderdragon.dge" main="Main" version="26.0.0" company="DubEnderDragon" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="604ad46f-7283-4853-8d1e-c2fc250a4926" />
@@ -13,8 +13,7 @@
 	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
 		or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal"-->
 	<!-- <app preloader="Preloader" resizable="true" /> -->
-	<app preloader="DubEnderLoader" if="html5" />
-	<app preloader="flixel.system.FlxPreloader" unless="html5"/>
+	<app preloader="dge.DubEnderLoader"/>
 
 	<!--Minimum without FLX_NO_GAMEPAD: 11.8, without FLX_NO_NATIVE_CURSOR: 11.2-->
 	<set name="SWF_VERSION" value="11.8" />

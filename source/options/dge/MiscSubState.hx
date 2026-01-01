@@ -1,5 +1,6 @@
 package options.dge;
 
+import openfl.text.TextFormat;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -107,13 +108,27 @@ class MiscSubState extends BaseOptionsMenu
 			false);
 		addOption(option);
 		#if !html5
-		var option:Option = new Option('Pause Unfocus',
+		/*var option:Option = new Option('Pause Unfocus',
 			"If Checked the game will open pause screen.",
 			'pauseUnFocus',
 			'bool',
 			false);
-		addOption(option);
+		addOption(option);*/
 		#end
+		var option:Option = new Option('FPS Font Size',
+			"FPS Counter Font Size.",
+			'fpsFontSize',
+			'int',
+			#if mobile 18 #else 14 #end);
+		option.minValue = 5;
+		option.scrollSpeed = 15;
+		option.onChange = function() {
+			if (Main.fpsVar != null) {
+				Main.fpsVar.defaultTextFormat = new TextFormat("_sans", ClientPrefs.fpsFontSize);
+			}
+		}
+		addOption(option);
+
 		super();
 		changeBGColor(0xffff0000);
 	}
