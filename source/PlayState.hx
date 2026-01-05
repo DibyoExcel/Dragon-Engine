@@ -1,5 +1,6 @@
 package;
 
+import dge.backend.PrivateData;
 import dge.obj.Keypress;
 import dge.obj.mobile.Hitbox;
 import dge.backend.CacheTools;
@@ -94,7 +95,7 @@ class PlayState extends MusicBeatState
 		['Golden', 0.8], //From 70% to 79%
 		['Majestic', 0.9], //From 80% to 89%
 		['Fiery', 1], //From 90% to 99%
-		['Legendary', 1] //The value on this one isn't used actually, since Perfect is always "1"
+		['Legendary', 1] //The value on this one isn't used actually, since Fiery is always "1"
 	];
 	public static var ratingStuff:Array<Dynamic> = [
 		['You Suck!', 0.2], //From 0% to 19%
@@ -143,6 +144,8 @@ class PlayState extends MusicBeatState
 	public var ratingGroup:FlxTypedGroup<FlxSprite>;
 	public var comboGroup:FlxTypedGroup<FlxSprite>;
 	public var numRatingGroup:FlxTypedGroup<FlxSprite>;
+	//private stuff
+	private var privateData(default, set):PrivateData = new PrivateData();//dont remove
 	public var BF_X:Float = 770;
 	public var BF_Y:Float = 100;
 	public var DAD_X:Float = 100;
@@ -248,6 +251,7 @@ class PlayState extends MusicBeatState
 	public var disableLuaStage:Bool = false;
 	public var disableLuaScript:Bool = false;
 	public var disableLuaEvent:Bool = false;
+	public var healthDrainMult:Float = 1;
 
 	public var botplaySine:Float = 0;
 	public var botplayTxt:FlxText;
@@ -349,6 +353,8 @@ class PlayState extends MusicBeatState
 	public var cacheRating:Map<String, FlxGraphic> = new Map();//cache rating(slighty better performance)
 	//zoom mullt
 	public var camGameMult:Float = Math.max(FlxG.width/1280, FlxG.height/720);
+	//bypass stuff
+	public var limitCamZoom:Bool = false;
 
 	#if desktop
 	// Discord RPC variables
@@ -420,6 +426,7 @@ class PlayState extends MusicBeatState
 		disableLuaScript = ClientPrefs.getGameplaySetting('disableLuaScript', false);
 		disableLuaStage = ClientPrefs.getGameplaySetting('disableLuaStage', false);
 		disableLuaEvent = ClientPrefs.getGameplaySetting('disableLuaEvent', false);
+		healthDrainMult = ClientPrefs.getGameplaySetting('healthDrainMult', 1);
 		setKey();
 
 		//Ratings
@@ -2474,6 +2481,7 @@ class PlayState extends MusicBeatState
 						obj.remove(daNote, true);
 					}
 				}
+				if (!daNote.mustPress || (daNote.mustPress && daNote.isDad)) camZooming = true;
 				unspawnNotes.remove(daNote);
 				daNote.destroy();
 			}
@@ -2502,6 +2510,7 @@ class PlayState extends MusicBeatState
 						obj.remove(daNote, true);
 					}
 				}
+				if (!daNote.mustPress || (daNote.mustPress && daNote.isDad)) camZooming = true;
 				notes.remove(daNote, true);
 				daNote.destroy();
 			}
@@ -3927,6 +3936,9 @@ class PlayState extends MusicBeatState
 								obj.remove(daNote, true);
 							}
 						}
+						if ((!daNote.hitByOpponent && !daNote.mustPress) || (!daNote.wasGoodHit && daNote.mustPress && daNote.isDad)) {//if opponent lag
+							camZooming = true;
+						}
 						notes.remove(daNote, true);
 						daNote.destroy();
 					}
@@ -4277,7 +4289,7 @@ class PlayState extends MusicBeatState
 				killHenchmen();
 
 			case 'Add Camera Zoom':
-				if(ClientPrefs.camZooms && FlxG.camera.zoom < 1.35) {
+				if(ClientPrefs.camZooms && (!limitCamZoom || FlxG.camera.zoom < 1.35)) {
 					var camZoom:Float = Std.parseFloat(value1);
 					var hudZoom:Float = Std.parseFloat(value2);
 					if(Math.isNaN(camZoom)) camZoom = 0.015;
@@ -4501,7 +4513,7 @@ class PlayState extends MusicBeatState
 		callOnLuas('onEvent', [eventName, value1, value2]);
 	}
 
-	function moveCameraSection():Void {
+	function moveCameraSection(curSection:Int = 0):Void {
 		if(SONG.notes[curSection] == null) return;
 
 		if (gf != null && SONG.notes[curSection].gfSection)
@@ -4716,18 +4728,23 @@ class PlayState extends MusicBeatState
 
 					prevCamFollow = camFollow;
 					prevCamFollowPos = camFollowPos;
-
-					PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0] + difficulty, PlayState.storyPlaylist[0]);
+					var songData = Song.loadFromJson(PlayState.storyPlaylist[0] + difficulty, PlayState.storyPlaylist[0]);
 					FlxG.sound.music.stop();
-
-					if(winterHorrorlandNext) {
-						new FlxTimer().start(1.5, function(tmr:FlxTimer) {
+					if (songData != null) {
+						PlayState.SONG = songData;
+						if(winterHorrorlandNext) {
+							new FlxTimer().start(1.5, function(tmr:FlxTimer) {
+								cancelMusicFadeTween();
+								LoadingState.loadAndSwitchState(new PlayState());
+							});
+						} else {
 							cancelMusicFadeTween();
 							LoadingState.loadAndSwitchState(new PlayState());
-						});
+						}
 					} else {
-						cancelMusicFadeTween();
-						LoadingState.loadAndSwitchState(new PlayState());
+						trace('SOMETHING WENT WRONG LOADING NEXT SONG IN STORY MODE. RETURNING TO STORY MENU.' + (FlxG.random.bool(0.1) ? ' ALSO YOU GET A RANDOM EASTER EGG BECAUSE WHY NOT, LOL' : ''));
+						MusicBeatState.switchState(new StoryMenuState());
+						FlxG.sound.playMusic(Paths.music('freakyMenu'));
 					}
 				}
 			}
@@ -5446,20 +5463,20 @@ class PlayState extends MusicBeatState
 			if (!note.hitByOpponent && !note.wasGoodHit) {
 				if (healthdrain) {
 					if (gamemode != "opponent") {
-						if (health > note.hitHealth * healthGain) {
-							health -= note.hitHealth * healthGain;
+						if (health > note.hitHealth * healthDrainMult) {
+							health -= note.hitHealth * healthDrainMult;
 						} else {
 							health = 0.001;
 						}
 					}
 				}
 				 if (gamemode == "opponent") {
-						health += note.hitHealth * healthGain;
+						health += note.hitHealth * healthDrainMult;
 					}
 				if((!note.noteSplashDisabled && !note.isSustainNote && !note.fakeNoHit) || note.forceNoteSplash) {
 					spawnNoteSplashOnNote(note, note.mustPress);
 				}
-				if (Paths.formatToSongPath(SONG.song) != 'tutorial')
+				if (Paths.formatToSongPath(SONG.song) != 'tutorial' && (!note.mustPress || (note.mustPress && note.isDad)))
 					camZooming = true;
 		
 				if(note.noteType == 'Hey!' && dad.animOffsets.exists('hey')) {
@@ -5614,8 +5631,8 @@ class PlayState extends MusicBeatState
 				if (Paths.formatToSongPath(SONG.song) != 'tutorial')
 					camZooming = true;
 				if (healthdrain) {
-					if (health > note.hitHealth * healthGain) {
-						health -= note.hitHealth * healthGain;
+					if (health > note.hitHealth * healthDrainMult) {
+						health -= note.hitHealth * healthDrainMult;
 					} else {
 						health = 0.001;
 					}
@@ -6041,6 +6058,8 @@ class PlayState extends MusicBeatState
 	}
 
 	var lastStepHit:Int = -1;
+	//dont fuck messed this
+	var stepCount:Int = -1;
 	override function stepHit()
 	{
 		super.stepHit();
@@ -6055,6 +6074,13 @@ class PlayState extends MusicBeatState
 		}
 
 		lastStepHit = curStep;
+		privateData.add_stepCount();
+		while (privateData.get_stepCount() < curStep) {
+			privateData.add_stepCount();
+			setOnLuas('curStep', privateData.get_stepCount());
+			callOnLuas('onStepHit', []);
+		}
+		if (privateData.get_stepCount() > curStep) privateData.set_stepCount(curStep); 
 		setOnLuas('curStep', curStep);
 		callOnLuas('onStepHit', []);
 	}
@@ -6163,27 +6189,21 @@ class PlayState extends MusicBeatState
 			lightningStrikeShit();
 		}
 		lastBeatHit = curBeat;
+		privateData.add_beatCount();
+		while (privateData.get_beatCount() < curBeat) {
+			privateData.add_beatCount();
+			setOnLuas('curBeat', privateData.get_beatCount()); //DAWGG?????
+			callOnLuas('onBeatHit', []);
+		}
+		if (privateData.get_beatCount() > curStep) privateData.set_beatCount(curStep);
 
 		setOnLuas('curBeat', curBeat); //DAWGG?????
 		callOnLuas('onBeatHit', []);
 	}
 
-	override function sectionHit()
-	{
-		super.sectionHit();
-
+	private function sectionStuff(curSection:Int) {
 		if (SONG.notes[curSection] != null)
 		{
-			if (generatedMusic && !endingSong && !isCameraOnForcedPos)
-			{
-				moveCameraSection();
-			}
-
-			if (camZooming && FlxG.camera.zoom < 1.35 && ClientPrefs.camZooms)
-			{
-				FlxG.camera.zoom += 0.015 * camZoomingMult;
-				camHUD.zoom += 0.03 * camZoomingMult;
-			}
 
 			if (SONG.notes[curSection].changeBPM)
 			{
@@ -6199,6 +6219,33 @@ class PlayState extends MusicBeatState
 		
 		setOnLuas('curSection', curSection);
 		callOnLuas('onSectionHit', []);
+	}
+
+	override function sectionHit()
+	{
+		super.sectionHit();
+		privateData.add_sectionCount();
+		while (privateData.get_sectionCount() < curSection) {
+			privateData.add_sectionCount();
+			sectionStuff(privateData.get_sectionCount());
+			//CHAOS CAM
+			if (generatedMusic && !endingSong && !isCameraOnForcedPos)
+			{
+				moveCameraSection(curSection);
+			}
+		}
+		if (privateData.get_sectionCount() > curStep) privateData.set_sectionCount(curStep);
+		sectionStuff(curSection);
+		if (generatedMusic && !endingSong && !isCameraOnForcedPos)
+		{
+			moveCameraSection(curSection);
+		}
+
+		if (camZooming && (!limitCamZoom || FlxG.camera.zoom < 1.35) && ClientPrefs.camZooms)
+		{
+			FlxG.camera.zoom += 0.015 * camZoomingMult;
+			camHUD.zoom += 0.03 * camZoomingMult;
+		}
 	}
 
 	public function callOnLuas(event:String, args:Array<Dynamic>, ignoreStops = true, exclusions:Array<String> = null):Dynamic {
@@ -6833,6 +6880,14 @@ class PlayState extends MusicBeatState
 		} else {
 			trace('error. unable to remove camera(' + name + '). Does "' + name + '" Exists?');
 		}
+	}
+
+	private function set_privateData(value:PrivateData):PrivateData {
+		if (privateData == null) {//same like final but cant edit(maybe?)
+			privateData = value;
+			return value;
+		}
+		return privateData;//dont let changes
 	}
 }
 

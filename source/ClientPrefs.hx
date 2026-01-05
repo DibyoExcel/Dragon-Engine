@@ -94,7 +94,8 @@ class ClientPrefs {
 	 	'disableLuaStage' => false,//Stage lua
 		'disableLuaEvent' => false,
 		'opponent' => false,
-		'randomNote' => false
+		'randomNote' => false,
+		'healthDrainMult' => 1.0
 	];
 
 	public static var comboOffset:Array<Int> = [0, 0, 0, 0];

@@ -254,12 +254,22 @@ class PauseSubState extends MusicBeatSubstate
 				if(menuItems.length - 1 != curSelected && difficultyChoices.contains(daSelected)) {
 					var name:String = PlayState.SONG.song;
 					var poop = Highscore.formatSong(name, curSelected);
-					PlayState.SONG = Song.loadFromJson(poop, name);
-					PlayState.storyDifficulty = curSelected;
-					MusicBeatState.resetState();
-					FlxG.sound.music.volume = 0;
-					PlayState.changedDifficulty = true;
-					PlayState.chartingMode = false;
+					var songData = Song.loadFromJson(poop, name);
+					if (songData != null) {
+						PlayState.SONG = Song.loadFromJson(poop, name);
+						PlayState.storyDifficulty = curSelected;
+						MusicBeatState.resetState();
+						FlxG.sound.music.volume = 0;
+						PlayState.changedDifficulty = true;
+						PlayState.chartingMode = false;
+					} else {
+						if (FlxG.random.bool(0.1)) {
+							trace('PAUSE MENU REFUSE CHANGE DIFFICULT BECAUSE YOU DIDT GAVE A JSON FILE');//lmao. why so funny
+						} else {
+							trace('PAUSE MENU HAS BEEN CRASHED BECAUSE OF MISSING SONG DATA');//lmao even paused screen can crashed instead entire app.
+						}
+						close();
+					}
 					return;
 				}
 

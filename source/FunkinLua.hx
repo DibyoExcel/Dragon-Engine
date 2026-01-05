@@ -189,6 +189,7 @@ class FunkinLua {
 		set('instakillOnMiss', PlayState.instance.instakillOnMiss);
 		set('botPlay', PlayState.instance.cpuControlled);
 		set('practice', PlayState.instance.practiceMode);
+		set('healthDrainMult', PlayState.instance.healthDrainMult);
 
 		for (i in 0...4) {
 			set('defaultPlayerStrumX' + i, 0);
@@ -263,6 +264,12 @@ class FunkinLua {
 		set('platformVersion', System.platformVersion);
 		//for custom ratio
 		set('camGameMult', Math.max(FlxG.width/1280, FlxG.height/720));
+		//detect if mobile or not
+		#if mobile
+		set('isMobile', true);
+		#else
+		set('isMobile', false);
+		#end
 
 		// custom substate
 		Lua_helper.add_callback(lua, "openCustomSubstate", function(name:String, pauseGame:Bool = false) {
@@ -962,17 +969,20 @@ class FunkinLua {
 				difficultyNum = PlayState.storyDifficulty;
 
 			var poop = Highscore.formatSong(name, difficultyNum);
-			PlayState.SONG = Song.loadFromJson(poop, name);
-			PlayState.storyDifficulty = difficultyNum;
-			PlayState.instance.persistentUpdate = false;
-			LoadingState.loadAndSwitchState(new PlayState());
-
-			FlxG.sound.music.pause();
-			FlxG.sound.music.volume = 0;
-			if(PlayState.instance.vocals != null)
-			{
-				PlayState.instance.vocals.pause();
-				PlayState.instance.vocals.volume = 0;
+			var songData = Song.loadFromJson(poop, name);
+			if (songData != null) {
+				PlayState.SONG = songData;
+				PlayState.storyDifficulty = difficultyNum;
+				PlayState.instance.persistentUpdate = false;
+				LoadingState.loadAndSwitchState(new PlayState());
+	
+				FlxG.sound.music.pause();
+				FlxG.sound.music.volume = 0;
+				if(PlayState.instance.vocals != null)
+				{
+					PlayState.instance.vocals.pause();
+					PlayState.instance.vocals.volume = 0;
+				}
 			}
 		});
 
@@ -3486,13 +3496,12 @@ class FunkinLua {
 		var game = PlayState.instance;
 		var screenWidth:Int = FlxG.stage.stageWidth;
 		var screenHeight:Int = FlxG.stage.stageHeight;
-		@:privateAccess
-		FlxG.game.resizeGame(screenWidth, screenHeight);
-		PlayState.instance.camGameMult = Math.max(FlxG.width/1280, FlxG.height/720);
+		@:privateAccess FlxG.game.resizeGame(screenWidth, screenHeight);
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
-		set('camGameMult', Math.max(FlxG.width/1280, FlxG.height/720));
-		set('screenWidth', FlxG.width);
-		set('screenHeight', FlxG.height);
+		PlayState.instance.camGameMult = Math.max(FlxG.width/1280, FlxG.height/720);
+		PlayState.instance.setOnLuas('camGameMult', Math.max(FlxG.width/1280, FlxG.height/720));
+		PlayState.instance.setOnLuas('screenWidth', FlxG.width);
+		PlayState.instance.setOnLuas('screenHeight', FlxG.height);
 	}
 
 	function updateGameLayout() {//this only for game layout. other custom object need manually.

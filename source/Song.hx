@@ -1,5 +1,7 @@
 package;
 
+import flixel.FlxG;
+import lime.app.Application;
 import Section.SwagSection;
 import haxe.Json;
 import haxe.format.JsonParser;
@@ -55,6 +57,20 @@ class Song
 	public var player2:String = 'dad';
 	public var gfVersion:String = 'gf';
 	public var secOpt:Bool = false;
+
+	private static var eggs:Array<String> = [//easter egg msg for json song file no found
+		'Json file went vacation.',
+		'Json file is missing, probably hiding from you.',
+		'Json file not found. Did it run away?',
+		'Json file is playing hide and seek.',
+		'Json file got stolen by dragon.',//HUH?
+		'Json file is lost in the void.',
+		'Json file got burned by a fire spell.',
+		'Json file forgot the map.',
+		'Json file is on a secret mission.',
+		'Json file got abducted by aliens.',//GD?
+		'Json file is missing, maybe check under the couch.'
+	];
 
 	private static function onLoadJson(songJson:Dynamic) // Convert old charts to newest format
 	{
@@ -112,9 +128,19 @@ class Song
 
 		if(rawJson == null) {
 			#if sys
-			rawJson = File.getContent(Paths.externalFilesPath(Paths.json(formattedFolder + '/' + formattedSong))).trim();
+			if (FileSystem.exists(Paths.externalFilesPath(Paths.json(formattedFolder + '/' + formattedSong)))) {
+				rawJson = File.getContent(Paths.externalFilesPath(Paths.json(formattedFolder + '/' + formattedSong))).trim();
+			} else {
+				missingWarning(Paths.externalFilesPath(Paths.json(formattedFolder + '/' + formattedSong)));//anti crash
+				return null;
+			}
 			#else
-			rawJson = Assets.getText(Paths.json(formattedFolder + '/' + formattedSong)).trim();
+			if (Assets.exists(Paths.json(formattedFolder + '/' + formattedSong))) {
+				rawJson = Assets.getText(Paths.json(formattedFolder + '/' + formattedSong)).trim();
+			} else {
+				missingWarning(Paths.json(formattedFolder + '/' + formattedSong));//anti crash
+				return null;
+			}
 			#end
 		}
 
@@ -151,5 +177,24 @@ class Song
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
 		swagShit.validScore = true;
 		return swagShit;
+	}
+	public static function missingWarning(path:String) {
+		#if html5
+		if (FlxG.random.bool(0.1)) {
+			var msg = FlxG.random.getObject(eggs);
+			trace(msg + '(Json file not found: ' + path + ').');
+		} else {
+			trace('Json file not found: ' + path + '.');
+		}
+		#else
+		if (FlxG.random.bool(0.1)) {
+			var msg = FlxG.random.getObject(eggs);
+			trace(msg + '(Json file not found: ' + path + ').');
+			Application.current.window.alert(msg + ' (Json file not found: ' + path + ').', 'File Not Found');
+		} else {
+			trace('Json file not found: ' + path + '.');
+			Application.current.window.alert('Json file not found: ' + path + '.', 'File Not Found');
+		}
+		#end
 	}
 }

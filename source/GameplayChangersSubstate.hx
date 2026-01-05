@@ -122,10 +122,21 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 
 		var option:GameplayOption = new GameplayOption('Health Drain', 'healthdrain', 'bool', false);//My favorite build in mechanic
 		optionsArray.push(option);
+
+		var option:GameplayOption = new GameplayOption('Health Drain Multiplier', 'healthDrainMult', 'float', 1);
+		option.scrollSpeed = 2.5;
+		option.minValue = 0;
+		option.maxValue = 5;
+		option.changeValue = 0.1;
+		option.displayFormat = '%vX';
+		optionsArray.push(option);
+
 		var option:GameplayOption = new GameplayOption('Game Mode', 'gamemode', 'string', "none", gamemodeArray);//My favorite build in mechanic
 		optionsArray.push(option);//goblog
+
 		var option:GameplayOption = new GameplayOption('Modchart', 'modcharttype', 'string', "none", [ 'none', 'wave note', 'fade note', 'random flip scroll', 'random direction scroll ' ]);//Messing Around with this
 		optionsArray.push(option);
+
 		var option:GameplayOption = new GameplayOption('Note Multiplier', //Name
 			'multNote', //Save data variable name
 			'int', //Variable type
@@ -135,12 +146,16 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 			option.maxValue = 1000000000;//are your crazy?
 			option.scrollSpeed = 10;
 			optionsArray.push(option);
+
 		var option:GameplayOption = new GameplayOption('Disable Lua Song', 'disableLuaSong', 'bool', false);//Dis lua song
 		optionsArray.push(option);
+
 		var option:GameplayOption = new GameplayOption('Disable Lua Script', 'disableLuaScript', 'bool', false);//Dis lua scripts
 		optionsArray.push(option);
+
 		var option:GameplayOption = new GameplayOption('Disable Lua Stage', 'disableLuaStage', 'bool', false);//Dis lua Stage
 		optionsArray.push(option);
+
 		var option:GameplayOption = new GameplayOption('Disable Lua Event', 'disableLuaEvent', 'bool', false);//Dis lua Event
 		optionsArray.push(option);
 		
