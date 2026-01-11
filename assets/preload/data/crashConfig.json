@@ -1,0 +1,16 @@
+{
+    "background": "",
+    "background_dark": "",
+    "errorTextColor": "#FF0000",
+    "exitGameButtonColor": "#FF0000",
+    "restartGameButtonColor": "#00FF00",
+    "copyLogButtonColor": "#FF8000",
+    "exitGameButtonTextColor": "#FFFFFF",
+    "restartGameButtonTextColor": "#FFFFFF",
+    "copyLogButtonTextColor": "#FFFFFF",
+    "exitGameButtonText": "Exit Game",
+    "restartGameButtonText": "Restart Game",
+    "copyLogButtonText": "Copy Error Log",
+    "fontType": "vcr.ttf",
+    "errorMessage": "ERROR!!\n\n{logmsg}\n\nDevice Info:\nModel: {deviceModel}\nVendor: {deviceVendor}\nPlatform: {platformLabel} ({platformName} {platformVersion})", "comment": "The {logmsg} will be replaced with the actual error message."
+}

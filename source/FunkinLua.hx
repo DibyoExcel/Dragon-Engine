@@ -1,5 +1,8 @@
 package;
 
+//imort custom dge lua
+import dge.obj.lua.*;
+
 import lime.app.Application;
 import lime.system.System;
 import openfl.display.BitmapData;
@@ -3486,6 +3489,64 @@ class FunkinLua {
 
 		Lua_helper.add_callback(lua, "precachePackerAtlas", function(name:String) {
 			Paths.getPackerAtlas(name);
+		});
+
+		Lua_helper.add_callback(lua, "addButton", function(tag:String, x:Float, y:Float, texture:String, camera:String = 'hud', ?width:Int = 125, ?height:Int = 125) {
+			if (tag.length > 0 && !PlayState.instance.customButtonMap.exists(tag)) {
+				var btn:Button = new Button(x, y, texture, width, height);
+				var camArray:Array<String> = camera.split(',');
+				var realCam:Array<String> = [];
+				for (i in 0...camArray.length) {
+					realCam[i] = camArray[i].trim();
+				}
+				btn.cameras = cameraArrayFromString(realCam);
+				PlayState.instance.customButtonMap.set(tag, btn);
+				PlayState.instance.add(btn);
+				return true;
+			}
+			return false;
+		});
+		Lua_helper.add_callback(lua, "removeButton", function(tag:String) {
+			if (tag.length > 0 && PlayState.instance.customButtonMap.exists(tag)) {
+				var btn:Button = PlayState.instance.customButtonMap.get(tag);
+				PlayState.instance.remove(btn, true);
+				btn.destroy();
+				PlayState.instance.customButtonMap.remove(tag);
+				return true;
+			}
+			return false;
+		});
+		Lua_helper.add_callback(lua, "addToggle", function(tag:String, x:Float, y:Float, texture:String, camera:String = 'hud', ?width:Int = 125, ?height:Int = 125, ?initialState:Bool = false) {
+			if (tag.length > 0 && !PlayState.instance.customToggleMap.exists(tag)) {
+				var tgl:Toggle = new Toggle(x, y, texture, width, height, initialState);
+				var camArray:Array<String> = camera.split(',');
+				var realCam:Array<String> = [];
+				for (i in 0...camArray.length) {
+					realCam[i] = camArray[i].trim();
+				}
+				tgl.cameras = cameraArrayFromString(realCam);
+				PlayState.instance.customToggleMap.set(tag, tgl);
+				PlayState.instance.add(tgl);
+				return true;
+			}
+			return false;
+		});
+		Lua_helper.add_callback(lua, "removeToggle", function(tag:String) {
+			if (tag.length > 0 && PlayState.instance.customToggleMap.exists(tag)) {
+				var tgl:Toggle = PlayState.instance.customToggleMap.get(tag);
+				PlayState.instance.remove(tgl, true);
+				tgl.destroy();
+				PlayState.instance.customToggleMap.remove(tag);
+				return true;
+			}
+			return false;
+		});
+		Lua_helper.add_callback(lua, 'customButtonExists', function(tag:String) {
+			return PlayState.instance.customButtonMap.exists(tag);
+		});
+		
+		Lua_helper.add_callback(lua, 'customToggleExists', function(tag:String) {
+			return PlayState.instance.customToggleMap.exists(tag);
 		});
 
 		call('onCreate', []);

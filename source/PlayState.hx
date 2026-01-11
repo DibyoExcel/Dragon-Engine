@@ -1,5 +1,6 @@
 package;
 
+import dge.obj.lua.*;
 import dge.backend.PrivateData;
 import dge.obj.Keypress;
 import dge.obj.mobile.Hitbox;
@@ -144,6 +145,9 @@ class PlayState extends MusicBeatState
 	public var ratingGroup:FlxTypedGroup<FlxSprite>;
 	public var comboGroup:FlxTypedGroup<FlxSprite>;
 	public var numRatingGroup:FlxTypedGroup<FlxSprite>;
+	//.custom button
+	public var customButtonMap:Map<String, Button> = new Map();
+	public var customToggleMap:Map<String, Toggle> = new Map();
 	//private stuff
 	private var privateData(default, set):PrivateData = new PrivateData();//dont remove
 	public var BF_X:Float = 770;
@@ -3694,6 +3698,7 @@ class PlayState extends MusicBeatState
 				notes.forEachAlive(function(daNote:Note)
 				{
 					var strumGroup:FlxTypedGroup<StrumNote> = playerStrums;
+					var actualStrum:StrumNote;
 					if (daNote.customField) {
 						if (strumGroupMap.exists(daNote.fieldTarget) && notesGroupMap.exists(daNote.fieldTarget)) {
 							strumGroup = strumGroupMap.get(daNote.fieldTarget);//Geometry Dash Group ID reference?!?
@@ -3710,14 +3715,16 @@ class PlayState extends MusicBeatState
 						}
 					} 
 					if (strumGroup != null && (daNote.noteData < strumGroup.length) && daNote.noteData >= 0) {//try prevent crash when change gamemode throught script or out ranged noteData:D
-						var strumX:Float = strumGroup.members[daNote.noteData].x;
-						var strumSC:Array<Float> = strumGroup.members[daNote.noteData].scrollFactorCam;
-						var strumCam:String = strumGroup.members[daNote.noteData].camTarget;
-						var strumY:Float = strumGroup.members[daNote.noteData].y;
-						var strumAngle:Float = strumGroup.members[daNote.noteData].angle;
-						var strumDirection:Float = strumGroup.members[daNote.noteData].direction;
-						var strumAlpha:Float = strumGroup.members[daNote.noteData].alpha;
-						var strumScroll:Bool = strumGroup.members[daNote.noteData].downScroll;
+						actualStrum = strumGroup.members[daNote.noteData];
+						daNote.strumNote = actualStrum;//fuck
+						var strumX:Float = actualStrum.x;
+						var strumSC:Array<Float> = actualStrum.scrollFactorCam;
+						var strumCam:String = actualStrum.camTarget;
+						var strumY:Float = actualStrum.y;
+						var strumAngle:Float = actualStrum.angle;
+						var strumDirection:Float = actualStrum.direction;
+						var strumAlpha:Float = actualStrum.alpha;
+						var strumScroll:Bool = actualStrum.downScroll;
 						if (songSpeed < 0) {
 							strumScroll = !strumScroll;
 						}
@@ -3763,7 +3770,7 @@ class PlayState extends MusicBeatState
 							//daNote.y = (strumY - 0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed);
 							daNote.distance = (-0.45 * (Conductor.songPosition - daNote.strumTime + daNote.offsetStrumTime) * Math.abs(songSpeed * daNote.multSpeed));
 						}
-						if (daNote.isSustainNote && daNote.copyFlipY) {
+						if (daNote.copyFlipY) {
 							daNote.flipY = strumScroll;
 						}
 
@@ -5461,6 +5468,12 @@ class PlayState extends MusicBeatState
 	function opponentNoteHit(note:Note):Void
 		{
 			if (!note.hitByOpponent && !note.wasGoodHit) {
+				var noteDiff:Float = Math.abs((note.strumTime + note.offsetStrumTime) - Conductor.songPosition + ClientPrefs.ratingOffset);
+				var daRating:Rating = Conductor.judgeNote(note, noteDiff / playbackRate);
+				if (note.opponentRating) {
+					note.ratingMod = daRating.ratingMod;
+					note.rating = daRating.name;
+				}
 				if (healthdrain) {
 					if (gamemode != "opponent") {
 						if (health > note.hitHealth * healthDrainMult) {
@@ -5473,7 +5486,7 @@ class PlayState extends MusicBeatState
 				 if (gamemode == "opponent") {
 						health += note.hitHealth * healthDrainMult;
 					}
-				if((!note.noteSplashDisabled && !note.isSustainNote && !note.fakeNoHit) || note.forceNoteSplash) {
+				if((((note.opponentRating && daRating.noteSplash) || !note.opponentRating) && !note.noteSplashDisabled && !note.isSustainNote && !note.fakeNoHit) || note.forceNoteSplash) {
 					spawnNoteSplashOnNote(note, note.mustPress);
 				}
 				if (Paths.formatToSongPath(SONG.song) != 'tutorial' && (!note.mustPress || (note.mustPress && note.isDad)))
@@ -5720,6 +5733,10 @@ class PlayState extends MusicBeatState
 					}
 				}
 			}
+			var isSus:Bool = note.isSustainNote; //GET OUT OF MY HEAD, GET OUT OF MY HEAD, GET OUT OF MY HEAD
+			var leData:Int = Math.round(Math.abs(note.noteData));
+			var leType:String = note.noteType;
+			callOnLuas((!note.mustPress || note.isDad ? 'opponentNoteHit' : 'goodNoteHit'), [notes.members.indexOf(note), leData, leType, isSus]);
 			if (note.multiPress <= 0) {
 				note.wasGoodHit = true;
 				if (!note.isSustainNote  && !note.fakeNoHit)
@@ -5745,12 +5762,6 @@ class PlayState extends MusicBeatState
 				note.multiPress--;
 			}
 			vocals.volume = 1;
-
-			var isSus:Bool = note.isSustainNote; //GET OUT OF MY HEAD, GET OUT OF MY HEAD, GET OUT OF MY HEAD
-			var leData:Int = Math.round(Math.abs(note.noteData));
-			var leType:String = note.noteType;
-			callOnLuas((!note.mustPress || note.isDad ? 'opponentNoteHit' : 'goodNoteHit'), [notes.members.indexOf(note), leData, leType, isSus]);
-
 		}
 	}
 

@@ -60,6 +60,15 @@ class CoolUtil
 		return Math.max(min, Math.min(max, value));
 	}
 
+	public static function keyTOVariable(src:String, map:Map<String, String>):String
+		{
+			var str = src;
+			for (keys in map.keys()) {
+				str = str.replace('{' + keys + '}', map.get(keys));
+			}
+			return str;
+		}
+
 	public static function coolTextFile(path:String):Array<String>
 	{
 		var daList:Array<String> = [];

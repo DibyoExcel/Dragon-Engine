@@ -17,6 +17,7 @@ import flixel.FlxSprite;
 import lime.app.Application;
 #if CRASH_HANDLER
 import openfl.events.UncaughtErrorEvent;
+import dge.states.ErrorState;
 import haxe.CallStack;
 import haxe.io.Path;
 #if desktop
@@ -58,7 +59,6 @@ class Main extends Sprite
 	public function new()
 	{
 		super();
-
 		if (stage != null)
 		{
 			init();
@@ -131,6 +131,7 @@ class Main extends Sprite
 	#if CRASH_HANDLER
 	function onCrash(e:UncaughtErrorEvent):Void
 	{
+		e.preventDefault();
 		var errMsg:String = "";
 		var path:String;
 		var callStack:Array<StackItem> = CallStack.exceptionStack(true);
@@ -151,7 +152,6 @@ class Main extends Sprite
 					Sys.println(stackItem);
 			}
 		}
-
 		errMsg += "\nUncaught Error: " + e.error + "\nPlease report this error to the GitHub page: https://github.com/DibyoExcel/Dragon-Engine\n\n> Crash Handler written by: sqirra-rng";
 
 		if (!FileSystem.exists(Paths.externalFilesPath("crash/")))
@@ -161,7 +161,12 @@ class Main extends Sprite
 
 		Sys.println(errMsg);
 		Sys.println("Crash dump saved in " + Path.normalize(path));
-		#if android
+		if (FlxG.sound != null)
+		{
+			FlxG.sound.destroy();
+		}
+		FlxG.switchState(new ErrorState(errMsg));
+		/*#if android
 		var chunk:Array<String> = errMsg.split('\n');
 		var chunkSize:Int = 5;
 		var arrayChunk:Array<String> = [];
@@ -178,10 +183,11 @@ class Main extends Sprite
 		#else
 		Application.current.window.alert(errMsg, "Error!");
 		#end
+		*/
 		#if desktop
 		DiscordClient.shutdown();
 		#end
-		Sys.exit(1);
+		//Sys.exit(1);
 	}
 	#end
 }

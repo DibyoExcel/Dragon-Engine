@@ -140,7 +140,7 @@ class Note extends FlxSprite
 	public var fakeNoHit:Bool = false;//DISABLED!
 	public var copyCam:Bool = true;//attach cam from strums
 	public var copyScrollFactor:Bool = true;//attach scroll factor from strums
-	public var copyFlipY:Bool = true;//for auto flip when use between downscroll and upscroll(for sustain note)
+	public var copyFlipY:Bool = false;//for auto flip when use between downscroll and upscroll
 	public var snapX:Float = 0;
 	public var snapY:Float = 0;
 	public var snapAngle:Float = 0;
@@ -154,6 +154,8 @@ class Note extends FlxSprite
 	//jack note gimmick lol
 	public var multiPress:Int = 0;//how many multi press remaining(0 = no multi press)
 	public var strumTimeOffsetMultiPress:Float = 500;//how much offset for each multi press notes(lol so long name)
+	public var strumNote:StrumNote;//current notes being attach to strum note
+	public var opponentRating:Bool = false;//whether this note give rating to opponent when hit
 
 
 	@:noCompletion
@@ -355,6 +357,7 @@ class Note extends FlxSprite
 			hitsoundDisabled = true;
 
 			copyAngle = false;
+			copyFlipY = true;
 
 			animation.play(colArray[noteData % 4] + (tail ? 'holdend': 'hold'));
 
@@ -777,7 +780,7 @@ class Note extends FlxSprite
 		}
 		#end
 	}
-
+	//bruh useless
 	function updateSusNoteoffset() {
 		if (isSustainNote && parent != null) {
 			offsetX = (parent.width/2)-(width/2);//center the long notes from parent

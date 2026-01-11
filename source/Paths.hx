@@ -319,10 +319,16 @@ class Paths
 			#if MODS_ALLOWED
 			var imageLoaded:FlxGraphic = returnGraphic(key);
 			var xmlExists:Bool = false;
-			if(FileSystem.exists(modsXml(key))) {
+			var pathXml:String = modsXml(key);
+			if (FileSystem.exists(pathXml)) {
 				xmlExists = true;
+			} else {
+				if(FileSystem.exists(externalPreloadPath('images/$key.xml'))) {
+					pathXml = externalPreloadPath('images/$key.xml');
+					xmlExists = true;
+				}
 			}
-			var atlas = FlxAtlasFrames.fromSparrow((imageLoaded != null ? imageLoaded : image(key, library)), (xmlExists ? File.getContent(modsXml(key)) : file('images/$key.xml', library)));
+			var atlas = FlxAtlasFrames.fromSparrow((imageLoaded != null ? imageLoaded : image(key, library)), (xmlExists ? File.getContent(pathXml) : file('images/$key.xml', library)));
 			CacheTools.cacheAtlas.set(key, atlas);
 			return atlas;
 			#else
