@@ -198,6 +198,14 @@
                     <h3>getWindowProperty(type:String = 'x')(1.6.3.11+)</h3>
                     <h4>return <code>Dynamic</code> of window property.<br>type:type property to get(only <code>x</code>, <code>y</code>, <code>width</code>, <code>height</code>)</h4>
                 </div>
+                <div class="dialogue_group">
+                    <h3>customButtonExists(tag:String = '')(26.1.0+)</h3>
+                    <h4>return <code>Bool</code> if customm button exists.<br>tag: name of custom button to check if exists</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>customToggleExists(tag:String = '')(26.1.0+)</h3>
+                    <h4>return <code>Bool</code> if customm toggle exists.<br>tag: name of custom toggle to check if exists</h4>
+                </div>
             </div>
         </div>
         <div class="dialogue" id="objfunc">
@@ -242,6 +250,22 @@
                 <div class="dialogue_group">
                     <h3>precachePackerAtlas(name:String)</h3>
                     <h4>precache Packer Atlas Frames(Recommended put in <code>onCreate()</code>)<br>name:name of atlas file in <code>images/</code>.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>addButton(tag:String, x:Float, y:Float, texture:String, camera:String = 'hud', ?width:Int = 125, ?height:Int = 125)(26.1.0+)</h3>
+                    <h4>Add button object.<br>tag: tag name of button(access object as <code>customButtonMap@tag</code>).<br>x: x position of button.<br>y: y position of button.<br>texture: texture file in <code>images/</code>.<br>camera: camera target to button(selection: 'game', 'hud', 'other')(can be multi cam with comma. example: <code>hud, other</code>.).<br>width: width size of button.<br>height: height size of button.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>removeButton(tag:String)(26.1.0+)</h3>
+                    <h4>Remove button object.<br>tag: tag name of button.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>addToggle(tag:String, x:Float, y:Float, texture:String, camera:String = 'hud', ?width:Int = 125, ?height:Int = 125, ?initialState:Bool = false)(26.1.0+)</h3>
+                    <h4>Add toggle object.<br>tag: tag name of toggle(access object as <code>customToggleMap@tag</code>).<br>x: x position of toggle.<br>y: y position of toggle.<br>texture: texture file in <code>images/</code>.<br>camera: camera target to toggle(selection: 'game', 'hud', 'other')(can be multi cam with comma. example: <code>hud, other</code>.).<br>width: width size of toggle.<br>height: height size of toggle.<br>initialState: initial state of toggle(true:on, false:off).</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>removeToggle(tag:String)(26.1.0+)</h3>
+                    <h4>Remove toggle object.<br>tag: tag name of toggle.</h4>
                 </div>
             </div>
         </div>
