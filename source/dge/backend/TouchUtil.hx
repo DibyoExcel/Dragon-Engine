@@ -3,7 +3,8 @@ package dge.backend;
 import flixel.FlxG;
 
 class TouchUtil {
-    static var lastTouchY:Null<Float> = null;
+    //static var lastTouchY:Null<Float> = null;//trace('goodbye old code');
+    static var touchMapY:Map<Int, Float> = new Map<Int, Float>();
     public static function swipeLeft():Bool {
         for (i in FlxG.swipes) {
             if (i.angle > -135 && i.angle < -45 && i.distance > ClientPrefs.swipeRange) {
@@ -57,7 +58,8 @@ class TouchUtil {
         return false;
     }
     public static function scrollSwipe(swipeMult:Float = 1):Int {
-        var touch = FlxG.touches.getFirst();
+        //bye bye old code lol
+        /*var touch = FlxG.touches.getFirst();
         if (touch != null && touch.pressed) {
             if (lastTouchY != null) {
                 var delta = touch.screenY - lastTouchY;
@@ -70,7 +72,24 @@ class TouchUtil {
             }
         } else {
             lastTouchY = null;
+        }*/
+        var number = 0;
+        for (touch in FlxG.touches.list) {
+            if (touch != null && touch.pressed) {
+                var id = touch.touchPointID;
+                if (touchMapY.exists(id)) {
+                    var delta = touch.screenY - touchMapY.get(id);
+                    if (delta != 0 && Math.abs(delta) > (ClientPrefs.swipeRange * swipeMult)) {
+                        touchMapY.set(id, touch.screenY);
+                        number += (delta > 0 ? 1 : -1) * (ClientPrefs.invertScroll ? -1 : 1);
+                    }
+                } else {
+                    touchMapY.set(id, touch.screenY);
+                }
+            } else if (touchMapY.exists(touch.touchPointID)) {
+                touchMapY.remove(touch.touchPointID);
+            }
         }
-        return 0;
+        return number;
     }
 }

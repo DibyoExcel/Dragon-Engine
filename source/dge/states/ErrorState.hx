@@ -170,7 +170,14 @@ class ErrorState extends FlxState
         fullText = Assets.getText(Paths.getPreloadPath('data/crashConfig.json'));
         #end
         if (fullText.length > 0) {
-            var parsed = Json.parse(fullText);
+            var parsed:Dynamic;
+            try {
+                parsed = Json.parse(fullText);
+            } catch (e:Dynamic) {
+                lime.app.Application.current.window.alert("crashConfig.json is not valid JSON! Using default config.(" + e + ')', "Error");
+                trace('ErrorState: Invalid JSON in crashConfig.json, using default config.(' + e + ')');//add reason why crash cuz why not
+                return defaultJson;
+            }
             var jsonConfig:JsonError = {
                 background: parsed.background != null ? parsed.background : defaultJson.background,
                 background_dark: parsed.background_dark != null ? parsed.background_dark : defaultJson.background_dark,

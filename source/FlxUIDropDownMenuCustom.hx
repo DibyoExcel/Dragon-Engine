@@ -434,13 +434,16 @@ class FlxUIDropDownMenuCustom extends FlxUIGroup implements IFlxUIWidget impleme
 		if (dropPanel.visible)
 		{
 			if(list.length > 1 && canScroll) {
-				if(FlxG.mouse.wheel > 0 || FlxG.keys.justPressed.UP #if mobile || dge.backend.TouchUtil.swipeDown() #end) {
+				#if mobile
+				var mobileScroll = dge.backend.TouchUtil.scrollSwipe();
+				#end
+				if(FlxG.mouse.wheel > 0 || FlxG.keys.justPressed.UP #if mobile || mobileScroll > 0 #end) {
 					// Go up
 					--currentScroll;
 					if(currentScroll < 0) currentScroll = 0;
 					updateButtonPositions();
 				}
-				else if (FlxG.mouse.wheel < 0 || FlxG.keys.justPressed.DOWN #if mobile || dge.backend.TouchUtil.swipeUp() #end) {
+				else if (FlxG.mouse.wheel < 0 || FlxG.keys.justPressed.DOWN #if mobile || mobileScroll < 0 #end) {
 					// Go down
 					currentScroll++;
 					if(currentScroll >= list.length) currentScroll = list.length-1;

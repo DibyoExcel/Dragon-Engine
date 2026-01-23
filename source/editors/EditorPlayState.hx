@@ -446,82 +446,87 @@ class EditorPlayState extends MusicBeatState
 						strumGroup = opponentStrums;
 					}
 				}
-				strumX = strumGroup.members[daNote.noteData].x;
-				strumY = strumGroup.members[daNote.noteData].y;
-				strumAlpha = strumGroup.members[daNote.noteData].alpha;
-
-				strumX += daNote.offsetX;
-				strumY += daNote.offsetY;
-				if (daNote.isSustainNote && daNote.parent != null) {
-					switch(daNote.alignSustainNote) {
-						case 'left':
-							strumX += 0;//left the long notes from parent(0 cuz is already left align by default)
-						case 'center':
-							strumX += (daNote.parent.width/2)-(daNote.width/2);//center the long notes from parent
-						case 'right':
-							strumX += (daNote.parent.width)-(daNote.width);//right the long notes from parent
-						default:
-							strumX += (daNote.parent.width/2)-(daNote.width/2);//center the long notes from parent
+				if (strumGroup != null && daNote.noteData < strumGroup.length && daNote.attachStrum && daNote.noteData >= 0) {
+					var actualStrum:StrumNote = strumGroup.members[daNote.noteData];
+					daNote.strumNote = actualStrum;
+					strumX = actualStrum.x;
+					strumY = actualStrum.y;
+					strumAlpha = actualStrum.alpha;
+	
+					strumX += daNote.offsetX;
+					strumY += daNote.offsetY;
+					if (daNote.isSustainNote && daNote.parent != null) {
+						switch(daNote.alignSustainNote) {
+							case 'left':
+								strumX += 0;//left the long notes from parent(0 cuz is already left align by default)
+							case 'center':
+								strumX += (daNote.parent.width/2)-(daNote.width/2);//center the long notes from parent
+							case 'right':
+								strumX += (daNote.parent.width)-(daNote.width);//right the long notes from parent
+							default:
+								strumX += (daNote.parent.width/2)-(daNote.width/2);//center the long notes from parent
+						}
 					}
-				}
-				var center:Float = strumY + (strumGroup.members[daNote.noteData].height * strumGroup.members[daNote.noteData].sustainReducePoint);
-
-				if(daNote.copyAlpha) {
-					daNote.alpha = strumAlpha * daNote.multAlpha;
-				}
-				if(daNote.copyX) {
-					daNote.x = strumX;
-				}
-				if(daNote.copyY) {
-					if (ClientPrefs.downScroll) {
-						daNote.y = (strumY + 0.45 * (Conductor.songPosition - (daNote.strumTime + daNote.offsetStrumTime)) * PlayState.SONG.speed);
-						if (daNote.isSustainNote) {
-							//Jesus fuck this took me so much mother fucking time AAAAAAAAAA
-							if (daNote.animation.curAnim.name.endsWith('end')) {
-								daNote.y += 10.5 * (fakeCrochet / 400) * 1.5 * PlayState.SONG.speed + (46 * (PlayState.SONG.speed - 1));
-								daNote.y -= 46 * (1 - (fakeCrochet / 600)) * PlayState.SONG.speed;
-								if(PlayState.isPixelStage) {
-									daNote.y += 8;
-								} else {
-									daNote.y -= 19;
+					var center:Float = strumY + (actualStrum.height * actualStrum.sustainReducePoint);
+	
+					if(daNote.copyAlpha) {
+						daNote.alpha = strumAlpha * daNote.multAlpha;
+					}
+					if(daNote.copyX) {
+						daNote.x = strumX;
+					}
+					if(daNote.copyY) {
+						if (ClientPrefs.downScroll) {
+							daNote.y = (strumY + 0.45 * (Conductor.songPosition - (daNote.strumTime + daNote.offsetStrumTime)) * PlayState.SONG.speed);
+							if (daNote.isSustainNote) {
+								if (daNote.animation.curAnim.name.endsWith('end')) {
+									daNote.y += 10.5 * (fakeCrochet / 400) * 1.5 * PlayState.SONG.speed + (46 * (PlayState.SONG.speed - 1));
+									daNote.y -= 46 * (1 - (fakeCrochet / 600)) * PlayState.SONG.speed;
+									if(PlayState.isPixelStage) {
+										daNote.y += 8;
+									} else {
+										daNote.y -= 19;
+									}
+								} 
+								daNote.y += (Note.swagWidth / 2) - (60.5 * (PlayState.SONG.speed - 1));
+								daNote.y += 27.5 * ((PlayState.SONG.bpm / 100) - 1) * (PlayState.SONG.speed - 1);
+	
+								if(daNote.mustPress || !daNote.ignoreNote)
+								{
+									if(daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= center
+										&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
+									{
+										var swagRect = new FlxRect(0, 0, daNote.frameWidth, daNote.frameHeight);
+										swagRect.height = (center - daNote.y) / daNote.scale.y;
+										swagRect.y = daNote.frameHeight - swagRect.height;
+	
+										daNote.clipRect = swagRect;
+									}
 								}
-							} 
-							daNote.y += (Note.swagWidth / 2) - (60.5 * (PlayState.SONG.speed - 1));
-							daNote.y += 27.5 * ((PlayState.SONG.bpm / 100) - 1) * (PlayState.SONG.speed - 1);
-
+							}
+						} else {
+							daNote.y = (strumY - 0.45 * (Conductor.songPosition - (daNote.strumTime + daNote.offsetStrumTime)) * PlayState.SONG.speed);
+	
 							if(daNote.mustPress || !daNote.ignoreNote)
 							{
-								if(daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= center
+								if (daNote.isSustainNote
+									&& daNote.y + daNote.offset.y * daNote.scale.y <= center
 									&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
 								{
-									var swagRect = new FlxRect(0, 0, daNote.frameWidth, daNote.frameHeight);
-									swagRect.height = (center - daNote.y) / daNote.scale.y;
-									swagRect.y = daNote.frameHeight - swagRect.height;
-
+									var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
+									swagRect.y = (center - daNote.y) / daNote.scale.y;
+									swagRect.height -= swagRect.y;
+	
 									daNote.clipRect = swagRect;
 								}
 							}
 						}
-					} else {
-						daNote.y = (strumY - 0.45 * (Conductor.songPosition - (daNote.strumTime + daNote.offsetStrumTime)) * PlayState.SONG.speed);
-
-						if(daNote.mustPress || !daNote.ignoreNote)
-						{
-							if (daNote.isSustainNote
-								&& daNote.y + daNote.offset.y * daNote.scale.y <= center
-								&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
-							{
-								var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
-								swagRect.y = (center - daNote.y) / daNote.scale.y;
-								swagRect.height -= swagRect.y;
-
-								daNote.clipRect = swagRect;
-							}
-						}
 					}
+				} else {
+					daNote.strumNote = null;
 				}
 
-				if (daNote.isSustainNote) {
+				if (daNote.copyFlipY) {
 					daNote.flipY = ClientPrefs.downScroll;
 				}
 				//this kinda shit than PlayState

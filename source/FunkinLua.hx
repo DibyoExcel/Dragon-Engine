@@ -1,6 +1,7 @@
 package;
 
 //imort custom dge lua
+import flixel.util.FlxStringUtil;
 import dge.obj.lua.*;
 
 import lime.app.Application;
@@ -3449,22 +3450,20 @@ class FunkinLua {
 					}
 				}
 			} else {
-				@:privateAccess{
-					if (width != null) {
-						FlxG.initialWidth = width;
-						updateGameSize();
-						if (resetLayout) {
-							updateGameLayout();
-							updateStrumLayout();
-						}
+				if (width != null) {
+					@:privateAccess FlxG.initialWidth = width;
+					updateGameSize();
+					if (resetLayout) {
+						updateGameLayout();
+						updateStrumLayout();
 					}
-					if (height != null) {
-						FlxG.initialHeight = height;
-						updateGameSize();
-						if (resetLayout) {
-							updateGameLayout();
-							updateStrumLayout();
-						}
+				}
+				if (height != null) {
+					@:privateAccess FlxG.initialHeight = height;
+					updateGameSize();
+					if (resetLayout) {
+						updateGameLayout();
+						updateStrumLayout();
 					}
 				}
 				for (cam in 0...FlxG.cameras.list.length) {
@@ -3506,6 +3505,7 @@ class FunkinLua {
 			}
 			return false;
 		});
+
 		Lua_helper.add_callback(lua, "removeButton", function(tag:String) {
 			if (tag.length > 0 && PlayState.instance.customButtonMap.exists(tag)) {
 				var btn:Button = PlayState.instance.customButtonMap.get(tag);
@@ -3516,6 +3516,7 @@ class FunkinLua {
 			}
 			return false;
 		});
+
 		Lua_helper.add_callback(lua, "addToggle", function(tag:String, x:Float, y:Float, texture:String, camera:String = 'hud', ?width:Int = 125, ?height:Int = 125, ?initialState:Bool = false) {
 			if (tag.length > 0 && !PlayState.instance.customToggleMap.exists(tag)) {
 				var tgl:Toggle = new Toggle(x, y, texture, width, height, initialState);
@@ -3531,6 +3532,7 @@ class FunkinLua {
 			}
 			return false;
 		});
+
 		Lua_helper.add_callback(lua, "removeToggle", function(tag:String) {
 			if (tag.length > 0 && PlayState.instance.customToggleMap.exists(tag)) {
 				var tgl:Toggle = PlayState.instance.customToggleMap.get(tag);
@@ -3541,6 +3543,7 @@ class FunkinLua {
 			}
 			return false;
 		});
+
 		Lua_helper.add_callback(lua, 'customButtonExists', function(tag:String) {
 			return PlayState.instance.customButtonMap.exists(tag);
 		});
@@ -3549,20 +3552,32 @@ class FunkinLua {
 			return PlayState.instance.customToggleMap.exists(tag);
 		});
 
+		Lua_helper.add_callback(lua, 'formatTimeFromSecond', function(second:Float = 0, showMS:Bool = false) {
+			return FlxStringUtil.formatTime(second, showMS);
+		});
+
 		call('onCreate', []);
 		#end
 	}
 
 	function updateGameSize() {
-		var game = PlayState.instance;
 		var screenWidth:Int = FlxG.stage.stageWidth;
 		var screenHeight:Int = FlxG.stage.stageHeight;
 		@:privateAccess FlxG.game.resizeGame(screenWidth, screenHeight);
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
-		PlayState.instance.camGameMult = Math.max(FlxG.width/1280, FlxG.height/720);
-		PlayState.instance.setOnLuas('camGameMult', Math.max(FlxG.width/1280, FlxG.height/720));
-		PlayState.instance.setOnLuas('screenWidth', FlxG.width);
-		PlayState.instance.setOnLuas('screenHeight', FlxG.height);
+		var game = PlayState.instance;
+		var camGameMult:Float = Math.max(FlxG.width/1280, FlxG.height/720);
+		game.camGameMult = camGameMult;
+		if (game != null) {
+			//for own lua instance(idk why without this it won't work)
+			set('screenWidth', FlxG.width);
+			set('screenHeight', FlxG.height);
+			set('camGameMult', camGameMult);
+			//for all lua instance in playstate
+			game.setOnLuas('screenWidth', FlxG.width);
+			game.setOnLuas('screenHeight', FlxG.height);
+			game.setOnLuas('camGameMult', camGameMult);
+		}
 	}
 
 	function updateGameLayout() {//this only for game layout. other custom object need manually.

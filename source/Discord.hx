@@ -49,7 +49,7 @@ class DiscordClient
 			details: "In the Menus",
 			state: null,
 			largeImageKey: 'draconicmods',
-			largeImageText: "Dragon Engine"
+			largeImageText: "Dragon Engine v" + Application.current.meta.get('version')
 		});
 	}
 
@@ -85,8 +85,8 @@ class DiscordClient
 		DiscordRpc.presence({
 			details: details,
 			state: state,
-			largeImageKey: 'icon',
-			largeImageText: "Mods Version: 2.0, Engine Version:" + Application.current.meta.get('version'),
+			largeImageKey: 'draconicmods',
+			largeImageText: "Dragon Engine v" + Application.current.meta.get('version'),
 			smallImageKey : smallImageKey,
 			// Obtained times are in milliseconds so they are divided so Discord can use it
 			startTimestamp : Std.int(startTimestamp / 1000),

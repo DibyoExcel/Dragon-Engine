@@ -1572,8 +1572,6 @@ class PlayState extends MusicBeatState
 			}
 		}
 		Paths.clearUnusedMemory();
-		
-		CustomFadeTransition.nextCamera = camOther;
 		//var notePressUISpr:FlxSprite;
 	}
 
@@ -3714,7 +3712,7 @@ class PlayState extends MusicBeatState
 							}
 						}
 					} 
-					if (strumGroup != null && (daNote.noteData < strumGroup.length) && daNote.noteData >= 0) {//try prevent crash when change gamemode throught script or out ranged noteData:D
+					if (strumGroup != null && (daNote.noteData < strumGroup.length) && daNote.noteData >= 0 && daNote.attachStrum) {//try prevent crash when change gamemode throught script or out ranged noteData:D
 						actualStrum = strumGroup.members[daNote.noteData];
 						daNote.strumNote = actualStrum;//fuck
 						var strumX:Float = actualStrum.x;
@@ -3734,6 +3732,9 @@ class PlayState extends MusicBeatState
 						//flip against flipScroll
 						if (daNote.flipScroll) {//idk this effience code?
 							strumScroll = !strumScroll;//just flip the scroll when detect 'flipScroll'
+						}
+						if (daNote.downScroll != null) {//no overwrite downScroll
+							strumScroll = daNote.downScroll;//force downScroll
 						}
 						if (daNote.isSustainNote && daNote.parent != null) {
 							switch(daNote.alignSustainNote) {
@@ -3775,8 +3776,15 @@ class PlayState extends MusicBeatState
 						}
 
 						var angleDir = strumDirection * Math.PI / 180;
-						if (daNote.copyAngle)
+						if (daNote.copyAngle && daNote.copyDirection) {
 							daNote.angle = strumDirection - 90 + strumAngle;
+						} else {
+							if (daNote.copyAngle)
+								daNote.angle = strumAngle;
+	
+							if (daNote.copyDirection)
+								daNote.angle = strumDirection - 90;
+						}
 
 						if(daNote.copyAlpha)
 							daNote.alpha = strumAlpha;
@@ -3833,6 +3841,8 @@ class PlayState extends MusicBeatState
 								}
 							}
 						}
+					} else {
+						daNote.strumNote = null;
 					}
 					//OH HELL NAH
 					if (daNote != null) {//auto move to group in specific variable
@@ -4750,6 +4760,9 @@ class PlayState extends MusicBeatState
 						}
 					} else {
 						trace('SOMETHING WENT WRONG LOADING NEXT SONG IN STORY MODE. RETURNING TO STORY MENU.' + (FlxG.random.bool(0.1) ? ' ALSO YOU GET A RANDOM EASTER EGG BECAUSE WHY NOT, LOL' : ''));
+						if(FlxTransitionableState.skipNextTransIn) {
+							CustomFadeTransition.nextCamera = null;
+						}
 						MusicBeatState.switchState(new StoryMenuState());
 						FlxG.sound.playMusic(Paths.music('freakyMenu'));
 					}

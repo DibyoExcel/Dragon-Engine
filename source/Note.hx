@@ -121,42 +121,66 @@ class Note extends FlxSprite
 	public var distance:Float = 2000; // plan on doing scroll directions soon -bb
 
 	public var hitsoundDisabled:Bool = false;
+	//end of psych core
+
 	//dge core
-	public var autoPress:Bool = false; // auto press like cpuController behavior but specific notes
-	public var playStrumAnim:Bool = true; // play strums anim when hit this notes
+	public var autoPress:Bool = false; // auto press like cpuControlled behavior but specific notes(cant be pressed by player)
 	public var direction:Float = 0;
-	public var flipScroll(default, set):Bool = false;//flip between scroll
 	public var noteScale(default, set):Float = 1.0;
-	public var customField:Bool = false;
-	public var fieldTarget:String = '';//warning if not exist it might set 'customField' to false(hopefully)
-	public var camTarget(default, set):String = null;
 	public var scrollFactorCam(default,set):Array<Float> = [0.0, 0.0];//only can see in camGame
 	public var noteSplashCam:String = 'hud';//notesplash on specific cam
 	public var noteSplashScale:Float = 1.0;
 	public var noteSplashScrollFactor:Array<Float> = [1, 1];//dont ask why 1 cuz is default of note splash
 	public var offsetStrumTime:Float = 0;
-	public var sustainTail:Bool = false;
-	public var animConfirm:String = '';//static, confirm, notes, pressed
 	public var fakeNoHit:Bool = false;//DISABLED!
-	public var copyCam:Bool = true;//attach cam from strums
-	public var copyScrollFactor:Bool = true;//attach scroll factor from strums
-	public var copyFlipY:Bool = false;//for auto flip when use between downscroll and upscroll
-	public var snapX:Float = 0;
-	public var snapY:Float = 0;
-	public var snapAngle:Float = 0;
-	public var snapAlpha:Float = 0;
-	public var alignSustainNote(default, set):String = 'center';//'center', 'left', 'right'. only for main notes. not effect for long/sustain notes.
 	public var ignoreTextureChange:Bool = false;//for prevent change when use changeNotesTexture() lua
+	//strum hit anim
+	public var playStrumAnim:Bool = true; // play strums anim when hit this notes
+	public var animConfirm:String = '';//static, confirm, notes, pressed
+	//end of strum anim when hit
+	//custom field
+	public var customField:Bool = false;
+	public var fieldTarget:String = '';//warning if not exist it might set 'customField' to false(hopefully)
+	public var camTarget(default, set):String = null;
+	//end of custom field
+	//sustain thing
+	public var sustainTail:Bool = false;
+	public var alignSustainNote(default, set):String = 'center';//'center', 'left', 'right'. only for main notes. not effect for long/sustain notes.
+	//end sustain thing
+	//hitsound
 	public var hitsound(default, set):String = null;//custom hitsound per note
 	public var forceHitsound:Bool = false;//force play hitsound even hitsound disabled in settings
 	public var forceNoteSplash:Bool = false;//force note splash even note splash disabled in settings
+	//end of hitsound
+	//scroll stuff
+	public var flipScroll(default, set):Bool = false;//flip between scroll
+	public var downScroll(default, set):Null<Bool> = null;
+	//end of scroll stuff
 	//idea from GD
 	//jack note gimmick lol
 	public var multiPress:Int = 0;//how many multi press remaining(0 = no multi press)
 	public var strumTimeOffsetMultiPress:Float = 500;//how much offset for each multi press notes(lol so long name)
-	public var strumNote:StrumNote;//current notes being attach to strum note
+	//end jack note gimmick lol
+	//strum attach
+	public var attachStrum:Bool = true;
+	public var strumNote:StrumNote;//current notes being attach to strum note(will null if not attach)
+	//end strum attach
+	//opponent rating
 	public var opponentRating:Bool = false;//whether this note give rating to opponent when hit
-
+	//end opponent rating
+	//copy thing
+	public var copyCam:Bool = true;//attach cam from strums
+	public var copyScrollFactor:Bool = true;//attach scroll factor from strums
+	public var copyFlipY:Bool = false;//for auto flip when use between downscroll and upscroll
+	public var copyDirection:Bool = true;//attach direction from strums
+	//end copy thing
+	//snap prop
+	public var snapX:Float = 0;
+	public var snapY:Float = 0;
+	public var snapAngle:Float = 0;
+	public var snapAlpha:Float = 0;
+	//end snap prop
+	//end dge core
 
 	@:noCompletion
 	override public function set_y(value:Float):Float {
@@ -295,6 +319,10 @@ class Note extends FlxSprite
 					snapAngle = 20;
 				case 'Multi Press':
 					multiPress = 2;//so it click 3 times
+				case 'Down Scroll': 
+					downScroll = true;
+				case 'Up Scroll':
+					downScroll = false;
 			}
 			noteType = value;
 		}
@@ -387,13 +415,6 @@ class Note extends FlxSprite
 		else if (!isSustainNote)
 		{
 			earlyHitMult = 1;
-		}
-		if (!inEditor) {
-			var opponentGamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
-			if (opponentGamemode == "opponent" && mustPress)
-				{
-					rating = "sick"; // uuuuhhhhhh
-				}
 		}
 		if (!inEditor) {
 			scrollFactor.set(scrollFactorCam[0], scrollFactorCam[1]);
@@ -723,7 +744,12 @@ class Note extends FlxSprite
 				jsonString = '';
 			}
 			if (jsonString.length > 0) {
-				CacheTools.jsonParse.set('all', haxe.Json.parse(jsonString));
+				try {
+					CacheTools.jsonParse.set('all', haxe.Json.parse(jsonString));
+				} catch (e:Dynamic) {
+					trace('Error parsing custom_notetypes/all.json.(' + e + ')');
+					CacheTools.jsonParse.set('all', {});
+				}
 			} else {
 				CacheTools.jsonParse.set('all', {});
 			}
@@ -738,7 +764,12 @@ class Note extends FlxSprite
 				jsonString = '';
 			}
 			if (jsonString.length > 0) {
-				CacheTools.jsonParse.set(value, haxe.Json.parse(jsonString));
+				try {
+					CacheTools.jsonParse.set(value, haxe.Json.parse(jsonString));
+				} catch (e:Dynamic) {
+					trace('Error parsing custom_notetypes/' + value + '.json.(' + e + ')');
+					CacheTools.jsonParse.set(value, {});
+				}
 			} else {
 				CacheTools.jsonParse.set(value, {});
 			}
@@ -750,31 +781,50 @@ class Note extends FlxSprite
 				var SDM = hidup.split('.');
 				var val = Reflect.field(CacheTools.jsonParse.get('all'), hidup);
 				if (SDM.length <= 1) {
-					Reflect.setProperty(this, hidup, val);
+					try{
+						Reflect.setProperty(this, hidup, val);
+					} catch (e:Dynamic) {
+						trace(e);
+					}
 				} else {
 					//get this shit from FunkinLua.hx
-					var target = Reflect.getProperty(this, SDM[0]);
-					for (key in 1...SDM.length-1) {
-						target = Reflect.getProperty(target, SDM[key]);
+					try{
+						var target = Reflect.getProperty(this, SDM[0]);
+						for (key in 1...SDM.length-1) {
+							target = Reflect.getProperty(target, SDM[key]);
+						}
+						Reflect.setProperty(target, SDM[SDM.length-1], val);
+					} catch (e:Dynamic) {
+						trace(e);
+						CacheTools.jsonParse.set('all', {});
 					}
-					Reflect.setProperty(target, SDM[SDM.length-1], val);
 				}
 			}
 		} else if (CacheTools.jsonParse.exists(value) && Reflect.fields(CacheTools.jsonParse.get(value)).length > 0) {
-			var jokowi = Reflect.fields(CacheTools.jsonParse.get(value));
-			for (hidup in jokowi) {
-				if (hidup.startsWith("_")) continue;
-				var SDM = hidup.split('.');
-				var val = Reflect.field(CacheTools.jsonParse.get(value), hidup);
-				if (SDM.length <= 1) {
-					Reflect.setProperty(this, hidup, val);
+			var koruptor = Reflect.fields(CacheTools.jsonParse.get(value));
+			for (tikus in koruptor) {
+				if (tikus.startsWith("_")) continue;
+				var beban = tikus.split('.');
+				var val = Reflect.field(CacheTools.jsonParse.get(value), tikus);
+				if (beban.length <= 1) {
+					try{
+						Reflect.setProperty(this, tikus, val);
+					} catch (e:Dynamic) {
+						trace(e);
+					}
 				} else {
 					//get this shit from FunkinLua.hx
-					var target = Reflect.getProperty(this, SDM[0]);
-					for (key in 1...SDM.length-1) {
-						target = Reflect.getProperty(target, SDM[key]);
+					try{
+						var target = Reflect.getProperty(this, beban[0]);
+						for (key in 1...beban.length-1) {
+							target = Reflect.getProperty(target, beban[key]);
+						}
+						Reflect.setProperty(target, beban[beban.length-1], val);
+					} catch (e:Dynamic) {
+						trace(e);
+						//dont repeat when is error
+						CacheTools.jsonParse.set(value, {});
 					}
-					Reflect.setProperty(target, SDM[SDM.length-1], val);
 				}
 			}
 		}
@@ -783,7 +833,7 @@ class Note extends FlxSprite
 	//bruh useless
 	function updateSusNoteoffset() {
 		if (isSustainNote && parent != null) {
-			offsetX = (parent.width/2)-(width/2);//center the long notes from parent
+			x = (parent.width/2)-(width/2);//center the long notes from parent
 		}
 	}
 
@@ -822,6 +872,14 @@ class Note extends FlxSprite
 			if (!CacheTools.cacheSound.exists(hitsound)) {
 				CacheTools.cacheSound.set(hitsound, Paths.sound(hitsound));
 			}
+		}
+		return value;
+	}
+
+	function set_downScroll(value:Null<Bool>):Null<Bool> {
+		if (value != null && downScroll != value) {
+			downScroll = value;
+			flipY = value;
 		}
 		return value;
 	}
