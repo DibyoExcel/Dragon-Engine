@@ -50,10 +50,15 @@ class FlxStringUtil
 	 //sysinternal.sleep(2) // just kidding dont do this plz(philza)
 	public static function formatTime(Seconds:Float, ShowMS:Bool = false):String
 	{
-        var week = Std.int(Seconds / (3600*24)*7);
-        var day = Std.int(Seconds / 3600*24);
-        var hour = Std.int(Seconds / 3600);
-        var timeString = "";
+		var timeString = "";
+		if (Seconds < 0)
+		{
+			Seconds = -Seconds;//hmm kinda odd to have negative time but i think it work fine
+			timeString += "-";
+		}
+        var week = Std.int(Seconds / (3600*24*7));
+        var day = Std.int(Seconds / (3600*24)) % 7;
+        var hour = Std.int(Seconds / 3600) % 24;
 		//many jokes about overengineering go brrr
         //did you even need this much precision? even week?!?
 		//who need days and weeks in a game timer?(unless game design calls for it lol)
@@ -73,7 +78,7 @@ class FlxStringUtil
         if (hour > 0) {
             timeString += hour + ":";
         }
-		timeString += Std.int(Seconds / 60) + ":";
+		timeString += Std.int(Seconds / 60) % 60 + ":";
 		var timeStringHelper:Int = Std.int(Seconds) % 60;
 		if (timeStringHelper < 10)
 		{

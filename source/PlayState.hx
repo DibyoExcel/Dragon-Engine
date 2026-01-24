@@ -1573,6 +1573,8 @@ class PlayState extends MusicBeatState
 		}
 		Paths.clearUnusedMemory();
 		//var notePressUISpr:FlxSprite;
+		//oopsie
+		CustomFadeTransition.nextCamera = camOther;
 	}
 
 	#if (!flash && sys)
