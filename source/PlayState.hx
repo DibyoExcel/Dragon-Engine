@@ -3815,9 +3815,9 @@ class PlayState extends MusicBeatState
 						}
 						if (!daNote.fakeNoHit) {
 
-							var center:Float = strumY + (strumGroup.members[daNote.noteData].height * strumGroup.members[daNote.noteData].sustainReducePoint);
-							if(strumGroup.members[daNote.noteData].sustainReduce && daNote.isSustainNote && ((gamemode != "opponent" ? (gamemode == "bothside v2" || gamemode == "bothside" ? false : daNote.mustPress) : !daNote.mustPress) || !daNote.ignoreNote) &&
-								((gamemode != 'opponent' ? (gamemode == "bothside v2" || gamemode == "bothside" ? false : !daNote.mustPress) : daNote.mustPress) || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
+							var center:Float = strumY + (actualStrum.height * actualStrum.sustainReducePoint);
+							if(actualStrum.sustainReduce && daNote.isSustainNote && (gamemodeManager(daNote) || !daNote.ignoreNote) &&
+								(!gamemodeManager(daNote) || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && (!daNote.canBeHit || cpuControlled)))))
 							{
 								if (strumScroll)
 								{
@@ -3888,7 +3888,7 @@ class PlayState extends MusicBeatState
 							}
 						}
 					}
-					if ((gamemode == 'opponent' ? !daNote.blockHit && daNote.mustPress : !daNote.mustPress) && !daNote.tooLate && daNote.canBeHit && !daNote.ignoreNote && !daNote.customField && !(gamemode == "bothside v2" || gamemode == "bothside"))
+					if ((gamemode == 'opponent' ? !daNote.blockHit && daNote.mustPress : !daNote.mustPress) && daNote.canBeHit && !daNote.ignoreNote && !daNote.customField && !(gamemode == "bothside v2" || gamemode == "bothside"))
 					{
 						if(daNote.isSustainNote) {
 							if(daNote.canBeHit) {
@@ -6914,6 +6914,18 @@ class PlayState extends MusicBeatState
 			return value;
 		}
 		return privateData;//dont let changes
+	}
+	function gamemodeManager(note:Note):Bool {
+		if (note != null) {
+			if (gamemode == 'opponent') {
+				return !note.mustPress;
+			} else if (gamemode == 'bothside' || gamemode == 'bothside v2') {
+				return true;
+			} else {
+				return note.mustPress;
+			}
+		} 
+		return false;
 	}
 }
 
