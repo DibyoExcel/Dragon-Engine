@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 	<app title="Friday Night Funkin': Dragon Engine" unless="mobile"/>
-	<app title="FNF: Dragon Engine" ig="mobile"/> <!--Shorter title for mobile because too long titles get cut off. idk why so fucking long comments lol-->
+	<app title="FNF: Dragon Engine" if="mobile"/> <!--Shorter title for mobile because too long titles get cut off. idk why so fucking long comments lol-->
 	<!--YY.MJ.MN-->
 	<app file="Dragon Engine" packageName="id.dubenderdragon.dge" package="id.dubenderdragon.dge" main="Main" version="26.1.2" company="DubEnderDragon" />
 
