@@ -84,7 +84,7 @@ class PauseSubState extends MusicBeatSubstate
 
 		FlxG.sound.list.add(pauseMusic);
 
-		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, (PlayState.instance != null ? PlayState.instance.bgPauseColor : FlxColor.BLACK));
 		bg.alpha = 0;
 		bg.scrollFactor.set();
 		add(bg);
@@ -143,7 +143,7 @@ class PauseSubState extends MusicBeatSubstate
 		levelDifficulty.x = FlxG.width - (levelDifficulty.width + 20);
 		blueballedTxt.x = FlxG.width - (blueballedTxt.width + 20);
 
-		FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
+		FlxTween.tween(bg, {alpha: (PlayState.instance != null ? PlayState.instance.bgPauseAlpha : ClientPrefs.pauseBGAlpha)}, 0.4, {ease: FlxEase.quartInOut});
 		FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 		FlxTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
 		FlxTween.tween(blueballedTxt, {alpha: 1, y: blueballedTxt.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
@@ -479,6 +479,11 @@ class PauseSubState extends MusicBeatSubstate
 
 		for (i in 0...menuItems.length) {
 			var item = new Alphabet(90, 320, menuItems[i], true);
+			var maxWidth = 980*(FlxG.width/1280);//adapt any resolution ig
+			if (item.width > maxWidth)
+			{
+				item.scaleX = maxWidth / item.width;
+			}
 			item.isMenuItem = true;
 			item.targetY = i;
 			grpMenuShit.add(item);

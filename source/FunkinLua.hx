@@ -3556,6 +3556,19 @@ class FunkinLua {
 			return FlxStringUtil.formatTime(second, showMS);
 		});
 
+		Lua_helper.add_callback(lua, "changeNotesSplashTexture", function(player:Bool = false, gf:Bool = false, texture:String = 'noteSplashes') {
+			for (i in PlayState.instance.notes) {
+				if (!i.ignoreTextureChange && i.mustPress == player && i.gfNote == gf) {
+					i.noteSplashTexture = texture;
+				}
+			}
+			for (i in PlayState.instance.unspawnNotes) {
+				if (!i.ignoreTextureChange && i.mustPress == player && i.gfNote == gf) {
+					i.noteSplashTexture = texture;
+				}
+			}
+		});
+
 		call('onCreate', []);
 		#end
 	}

@@ -491,7 +491,7 @@ class EditorPlayState extends MusicBeatState
 								daNote.y += (Note.swagWidth / 2) - (60.5 * (PlayState.SONG.speed - 1));
 								daNote.y += 27.5 * ((PlayState.SONG.bpm / 100) - 1) * (PlayState.SONG.speed - 1);
 	
-								if(daNote.mustPress || !daNote.ignoreNote)
+								if(daNote.mustPress || (!daNote.ignoreNote && !daNote.canFreeze))
 								{
 									if(daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= center
 										&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
@@ -507,7 +507,7 @@ class EditorPlayState extends MusicBeatState
 						} else {
 							daNote.y = (strumY - 0.45 * (Conductor.songPosition - (daNote.strumTime + daNote.offsetStrumTime)) * PlayState.SONG.speed);
 	
-							if(daNote.mustPress || !daNote.ignoreNote)
+							if(daNote.mustPress || (!daNote.ignoreNote && !daNote.canFreeze))
 							{
 								if (daNote.isSustainNote
 									&& daNote.y + daNote.offset.y * daNote.scale.y <= center
@@ -530,7 +530,7 @@ class EditorPlayState extends MusicBeatState
 					daNote.flipY = ClientPrefs.downScroll;
 				}
 				//this kinda shit than PlayState
-				if (!daNote.mustPress && daNote.canBeHit && !daNote.hitByOpponent && !daNote.ignoreNote)
+				if (!daNote.mustPress && daNote.canBeHit && !daNote.hitByOpponent && (!daNote.ignoreNote && !daNote.canFreeze))
 				{
 					var time:Float = 0.15;
 					if(daNote.isSustainNote) {
@@ -572,7 +572,7 @@ class EditorPlayState extends MusicBeatState
 						if (daNote.tooLate || !daNote.wasGoodHit)
 						{
 
-							if(!daNote.ignoreNote) {
+							if((!daNote.ignoreNote && !daNote.canFreeze)) {
 								songMisses++;
 								vocals.volume = 0;
 							}

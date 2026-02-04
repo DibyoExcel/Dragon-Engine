@@ -347,8 +347,14 @@ class Paths
 			#if MODS_ALLOWED
 			var imageLoaded:FlxGraphic = returnGraphic(key);
 			var txtExists:Bool = false;
-			if(FileSystem.exists(modsTxt(key))) {
+			var pathTxt:String = modsTxt(key);
+			if(FileSystem.exists(pathTxt)) {
 				txtExists = true;
+			} else {
+				if(FileSystem.exists(externalPreloadPath('images/$key.txt'))) {
+					pathTxt = externalPreloadPath('images/$key.txt');
+					txtExists = true;
+				}
 			}
 	
 			var atlas = FlxAtlasFrames.fromSpriteSheetPacker((imageLoaded != null ? imageLoaded : image(key, library)), (txtExists ? File.getContent(modsTxt(key)) : file('images/$key.txt', library)));
@@ -415,9 +421,11 @@ class Paths
 				CacheTools.cacheImage.set(key, currentTrackedAssets.get(path));
 				return currentTrackedAssets.get(path);
 			}
-			trace('oh no its returning null NOOOO');
-			CacheTools.cacheImage.set(key, null);
-			return null;
+			trace('Missing image asset: ' + key + '. Using Checkerboard placeholder.');
+			var checkBoard = CoolUtil.makeCheckerboardGraphic();
+			checkBoard.persist = true;
+			CacheTools.cacheImage.set(key, checkBoard);
+			return checkBoard;
 		}
 		return CacheTools.cacheImage.get(key);
 	}

@@ -1,5 +1,7 @@
 package;
 
+import flixel.graphics.FlxGraphic;
+import openfl.display.BitmapData;
 import flixel.FlxG;
 import openfl.utils.Assets;
 import lime.utils.Assets as LimeAssets;
@@ -193,4 +195,18 @@ class CoolUtil
 	public inline static function getXFrom1280P():Float {
 		return (FlxG.width-1280)/2;
 	}
+	
+	public static function makeCheckerboardGraphic(width:Int = 64, height:Int = 64, size:Int = 32, color1:Int = 0x000000, color2:Int = 0xff0000):FlxGraphic
+		{
+			var bitmapData:BitmapData = new BitmapData(width, height, false);
+			for (y in 0...height)
+			{
+				for (x in 0...width)
+				{
+					var isColor1:Bool = (Std.int(x / size) + Std.int(y / size)) % 2 == 0;
+					bitmapData.setPixel(x, y, if (isColor1) color1 else color2);
+				}
+			}
+			return FlxGraphic.fromBitmapData(bitmapData);
+		}
 }

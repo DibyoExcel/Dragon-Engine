@@ -128,6 +128,17 @@ class VisualUISubState extends BaseOptionsMenu
 			option.decimals = 2;
 			addOption(option);
 		}
+		var option:Option = new Option('Pause BG Transparency',
+		'How much transparent should the Pause Background.',
+		'pauseBGAlpha',
+		'percent',
+		0.6);
+		option.scrollSpeed = 1.6;
+		option.minValue = 0.0;
+		option.maxValue = 1;
+		option.changeValue = 0.01;
+		option.decimals = 2;
+		addOption(option);
 
 		super();
 		changeBGColor(0xffff0000);

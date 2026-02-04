@@ -124,7 +124,7 @@ class FreeplayState extends MusicBeatState
 			songText.targetY = i - curSelected;
 			grpSongs.add(songText);
 
-			var maxWidth = 980;
+			var maxWidth = 980*(FlxG.width/1280);//adapt any resolution ig
 			if (songText.width > maxWidth)
 			{
 				songText.scaleX = maxWidth / songText.width;

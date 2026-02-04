@@ -28,6 +28,8 @@ import Controls;
 
 using StringTools;
 
+import dge.shaders.ColorSwap;
+
 class NotesSubState extends MusicBeatSubstate
 {
 	private static var curSelected:Int = 0;

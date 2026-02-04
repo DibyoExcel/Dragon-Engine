@@ -31,7 +31,7 @@ class Note extends FlxSprite
 	public var strumTime:Float = 0;
 	public var mustPress:Bool = false;
 	public var isDad:Bool = false; // For Player play as opponent
-	public var noteData:Int = 0;
+	public var noteData(default, set):Int = 0;//add for adaptive note(not color swap change)
 	public var canBeHit:Bool = false;
 	public var tooLate:Bool = false;
 	public var wasGoodHit:Bool = false;
@@ -95,6 +95,10 @@ class Note extends FlxSprite
 	public var noteSplashPixelSize:Float = 0;
 	//posterize
 	public var noteSplashPosterizeRange:Float = 0;
+	//rgb palette
+	public var noteSplashR:Int = 0xFFFF0000;
+	public var noteSplashG:Int = 0xFF00FF00;
+	public var noteSplashB:Int = 0xFF0000FF;
 
 	public var offsetX:Float = 0;
 	public var offsetY:Float = 0;
@@ -179,6 +183,8 @@ class Note extends FlxSprite
 	public var snapY:Float = 0;
 	public var snapAngle:Float = 0;
 	public var snapAlpha:Float = 0;
+	//freeze able note
+	public var canFreeze:Bool = false;//whether this note can be frozen by freeze note event(false cuz will destroy note)(the note not mean to be pressed just for visual). will trigger from lua 'freezeNote()'
 	//end snap prop
 	//end dge core
 
@@ -323,6 +329,8 @@ class Note extends FlxSprite
 					downScroll = true;
 				case 'Up Scroll':
 					downScroll = false;
+				case 'Freeze Note'://can only trigger by event or lua
+					canFreeze = true;
 			}
 			noteType = value;
 		}
@@ -360,16 +368,16 @@ class Note extends FlxSprite
 		if (!inEditor)
 			this.strumTime += ClientPrefs.noteOffset;
 		
-		this.noteData = noteData;
-
+		
 		texture = '';
+		this.noteData = noteData;
 		shaderType = 'swap';
 		
 		x += swagWidth * (noteData);
-		if (!isSustainNote && noteData > -1 && noteData < 8)
+		if (!isSustainNote) //i think still need this to prevent crash(idk why)
 			{ // Doing this 'if' check to fix the warnings on Senpai songs
 			var animToPlay:String = '';
-			animToPlay = colArray[noteData % 4];
+			animToPlay = colArray[noteData % colArray.length];
 			animation.play(animToPlay + 'Scroll');
 		}
 
@@ -387,7 +395,7 @@ class Note extends FlxSprite
 			copyAngle = false;
 			copyFlipY = true;
 
-			animation.play(colArray[noteData % 4] + (tail ? 'holdend': 'hold'));
+			animation.play(colArray[noteData % colArray.length] + (tail ? 'holdend': 'hold'));
 
 			updateHitbox();
 
@@ -537,7 +545,11 @@ class Note extends FlxSprite
 		}
 		else
 		{
-			frames = Paths.getSparrowAtlas(blahblah);
+			try{
+				frames = Paths.getSparrowAtlas(blahblah);
+			} catch (e:Dynamic) {
+				frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
+			}
 			loadNoteAnims();
 			setGraphicSize(Std.int(width * ClientPrefs.strumsize));
 			antialiasing = ClientPrefs.globalAntialiasing;
@@ -561,26 +573,28 @@ class Note extends FlxSprite
 
 	function loadNoteAnims()
 	{
-		animation.addByPrefix(colArray[noteData % 4] + 'Scroll', colArray[noteData % 4] + '0');
-
-		if (isSustainNote)
-		{
-			animation.addByPrefix('purpleholdend', 'pruple end hold'); // ?????
-			animation.addByPrefix(colArray[noteData%4] + 'holdend', colArray[noteData%4] + ' hold end');
-			animation.addByPrefix(colArray[noteData%4] + 'hold', colArray[noteData%4] + ' hold piece');
+		for (i in 0...colArray.length) {//i just want it adaptive to when change noteData
+			animation.addByPrefix(colArray[i] + 'Scroll', colArray[i] + '0');
+			if (isSustainNote)
+			{
+				animation.addByPrefix('purpleholdend', 'pruple end hold'); // ?????
+				animation.addByPrefix(colArray[i] + 'holdend', colArray[i] + ' hold end');
+				animation.addByPrefix(colArray[i] + 'hold', colArray[i] + ' hold piece');
+			}
 		}
+
 	}
 
 	function loadPixelNoteAnims()
 	{
-		if (isSustainNote)
-		{
-			animation.add(colArray[noteData % 4] + 'holdend', [pixelInt[noteData % 4] + 4]);
-			animation.add(colArray[noteData % 4] + 'hold', [pixelInt[noteData % 4]]);
-		}
-		else
-		{
-			animation.add(colArray[noteData % 4] + 'Scroll', [pixelInt[noteData % 4] + 4]);
+		for (i in 0...colArray.length) {//i just want it adaptive to when change noteData
+			if (isSustainNote)
+			{
+				animation.add(colArray[i % colArray.length] + 'holdend', [pixelInt[i % pixelInt.length] + 4]);
+				animation.add(colArray[i % colArray.length] + 'hold', [pixelInt[i % pixelInt.length]]);
+			} else {
+				animation.add(colArray[i % colArray.length] + 'Scroll', [pixelInt[i % pixelInt.length] + 4]);
+			}
 		}
 	}
 
@@ -880,6 +894,20 @@ class Note extends FlxSprite
 		if (value != null && downScroll != value) {
 			downScroll = value;
 			flipY = value;
+		}
+		return value;
+	}
+	private function set_noteData(value:Int):Int {
+		if (noteData != value) {
+			noteData = value;
+			//info: the color swap not work when change noteData midgame, so dont blame at me, lol
+			if (!isSustainNote) {
+				var animToPlay:String = '';
+				animToPlay = colArray[noteData % colArray.length];
+				animation.play(animToPlay + 'Scroll');
+			} else {
+				animation.play(colArray[noteData % colArray.length] + (sustainTail ? 'holdend': 'hold'));
+			}
 		}
 		return value;
 	}

@@ -27,6 +27,14 @@ import flixel.util.FlxDirectionFlags;
 using flixel.util.FlxColorTransformUtil;
 using StringTools;
 
+import dge.shaders.ColorSwap;
+import dge.shaders.ColorInvert;
+import dge.shaders.ColorSingle;
+import dge.shaders.ColorRGBSwap;
+import dge.shaders.PixelSprite;
+import dge.shaders.Posterize;
+import dge.shaders.RGBPalette;
+
 // TODO: add updateSizeFromFrame bool which will tell sprite whether to update it's size to frame's size (when frame setter is called) or not (useful for sprites with adjusted hitbox)
 // And don't forget about sprites with clipped frames: what i should do with their size in this case?
 // TODO: add option to "center origin" or create special subclass for it
@@ -264,12 +272,16 @@ class FlxSprite extends FlxObject
 	public var colorRGBSwap:ColorRGBSwap = new ColorRGBSwap();
 	public var pixelSprite:PixelSprite = new PixelSprite();
 	public var posterize:Posterize = new Posterize();
+	public var rgbShader:RGBPalette = new RGBPalette();
 
     public var shaderType(default, set):String = null;
 
     private function set_shaderType(value:String):String {
         if (shaderType != value) {
-            var shouldUse:Array<String> = [ 'none', 'swap', 'invert', 'single', 'rgbswap', 'pixel', 'posterize' ];
+            var shouldUse:Array<String> = [ 'none', 'swap', 'invert', 'single', 'rgbswap', 'pixel', 'posterize', 'rgbpalette' ];
+			for (i in 0...shouldUse.length) {
+				shouldUse[i] = shouldUse[i].toLowerCase();
+			}
             if (value == null || value.length < 1) {
                 value = shouldUse[0];
             }
@@ -279,8 +291,6 @@ class FlxSprite extends FlxObject
             }
             shaderType = value;
             switch (value) {
-                case 'none':
-                    shader = null;
                 case 'swap':
                     shader = colorSwap.shader;
                 case 'invert':
@@ -293,6 +303,8 @@ class FlxSprite extends FlxObject
 					shader = pixelSprite.shader;
 				case 'posterize':
 					shader = posterize.shader;
+				case 'rgbpalette':
+					shader = rgbShader.shader;
                 default: 
                     shader = null;
             }

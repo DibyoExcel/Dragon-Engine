@@ -32,7 +32,7 @@ class NoteSplash extends FlxSprite
 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
 		alpha = ClientPrefs.noteSplashAlpha;//for case
 
-		if(texture == null) {
+		if(texture == null || texture.length <= 0) {
 			texture = 'noteSplashes';
 			if(PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0) texture = PlayState.SONG.splashSkin;
 		}
@@ -72,6 +72,10 @@ class NoteSplash extends FlxSprite
 			pixelSprite.pixelSize = oriNote.noteSplashPixelSize;
 			//posterize
 			posterize.posterizeRange = oriNote.noteSplashPosterizeRange;
+			//rgb palette
+			rgbShader.r = oriNote.noteSplashR;
+			rgbShader.g = oriNote.noteSplashG;
+			rgbShader.b = oriNote.noteSplashB;
 			//angle
 			angle = oriNote.noteSplashAngle;
 			//alpha
@@ -86,7 +90,12 @@ class NoteSplash extends FlxSprite
 	}
 
 	function loadAnims(skin:String) {
-		frames = Paths.getSparrowAtlas(skin);
+		try{
+			frames = Paths.getSparrowAtlas(skin);
+		}
+		catch(e:Dynamic) {
+			frames = Paths.getSparrowAtlas('noteSplashes');
+		}
 		for (i in 1...3) {
 			animation.addByPrefix("note1-" + i, "note splash blue " + i, ClientPrefs.fpsStrumAnim, false);
 			animation.addByPrefix("note2-" + i, "note splash green " + i, ClientPrefs.fpsStrumAnim, false);

@@ -74,10 +74,18 @@ class Song
 
 	private static function onLoadJson(songJson:Dynamic) // Convert old charts to newest format
 	{
+		if (songJson.secOpt == null)
+		{
+			songJson.secOpt = false;
+		}
 		if(songJson.gfVersion == null)
 		{
-			songJson.gfVersion = songJson.player3;
-			songJson.player3 = null;
+			if (songJson.player3 != null) {
+				songJson.gfVersion = songJson.player3;
+				songJson.player3 = null;
+			} else {
+				songJson.gfVersion = "gf";
+			}
 		}
 
 
@@ -174,9 +182,19 @@ class Song
 
 	public static function parseJSONshit(rawJson:String):SwagSong
 	{
-		var swagShit:SwagSong = cast Json.parse(rawJson).song;
-		swagShit.validScore = true;
-		return swagShit;
+	//MORE ANTI CRASH
+		try{
+			var swagShit:SwagSong = cast Json.parse(rawJson).song;
+			swagShit.validScore = true;
+			return swagShit;
+		} catch (e:Dynamic) {
+			#if html5
+			trace('Error parsing JSON data. The file may be corrupted or improperly formatted.(' + e + ')');
+			#else
+			Application.current.window.alert('Error parsing JSON data. The file may be corrupted or improperly formatted.(' + e + ')', 'JSON Parse Error');
+			#end
+		}
+		return null;
 	}
 	public static function missingWarning(path:String) {
 		#if html5

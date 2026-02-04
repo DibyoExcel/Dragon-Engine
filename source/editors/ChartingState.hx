@@ -86,7 +86,8 @@ class ChartingState extends MusicBeatState
 		"Snap Note Y",
 		"Multi Press",
 		"Down Scroll",
-		"Up Scroll"
+		"Up Scroll",
+		"Freeze Note"
 	];
 	private var noteTypeIntMap:Map<Int, String> = new Map<Int, String>();
 	private var noteTypeMap:Map<String, Null<Int>> = new Map<String, Null<Int>>();
@@ -113,7 +114,8 @@ class ChartingState extends MusicBeatState
 		['Set Property', "Value 1: Variable name\nValue 2: New value"],
 		['Change Gamemode', "Value 1: Name of gamemode to change.\nValue 2: transition(1 = true 0 = false)"],
 		['Change Second Strums', "Value 1: should use 2nd strums mode(1 = true 0 = false).\nValue 2: transition(1 is true 0 is false)\n\nexample: \"1, 0\". the first number(1) is a transition for\nplayer side. The second number(0) is a disable\nopponent strums transition"],
-		['Alert', "Value1: content of alert.\nValue2: title of alert."]
+		['Alert', "Value1: content of alert.\nValue2: title of alert."],
+		['Freeze Note', "Freeze the notes on the screen for a duration.\nValue 1: Duration in seconds(Default 1).\nValue 2: Should destroy after freeze (1 = true 0 = false)\n(default 1)."],
 	];
 
 	var _file:FileReference;
@@ -2209,8 +2211,7 @@ class ChartingState extends MusicBeatState
 
 		var playedSound:Array<Bool> = [false, false, false, false]; //Prevents ouchy GF sex sounds
 		if (curSec > 0) {
-
-			prevRenderedNotes.forEachAlive(function(note:Note) {
+			prevRenderedSustains.forEachAlive(function(note:Note) {
 				note.alpha = 1;
 				if(curSelectedNote != null) {
 					var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
@@ -2230,7 +2231,8 @@ class ChartingState extends MusicBeatState
 						var data:Int = note.noteData % 4;
 						var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
 						var noteDataToCheck:Int = actualNoteData;
-						if (!note.ignoreNote) {
+						if (!note.ignoreNote && !note.canFreeze) {
+
 							if (!note.noAnimation) {
 								if (!note.mustPress) {
 									optChar.animation.play("sing"+animAssets[note.noteData].toUpperCase(), true);
@@ -2263,7 +2265,7 @@ class ChartingState extends MusicBeatState
 					}
 				}
 			});
-			prevRenderedSustains.forEachAlive(function(note:Note) {
+			prevRenderedNotes.forEachAlive(function(note:Note) {
 				note.alpha = 1;
 				if(curSelectedNote != null) {
 					var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
@@ -2283,8 +2285,7 @@ class ChartingState extends MusicBeatState
 						var data:Int = note.noteData % 4;
 						var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
 						var noteDataToCheck:Int = actualNoteData;
-						if (!note.ignoreNote) {
-
+						if (!note.ignoreNote && !note.canFreeze) {
 							if (!note.noAnimation) {
 								if (!note.mustPress) {
 									optChar.animation.play("sing"+animAssets[note.noteData].toUpperCase(), true);
@@ -2318,60 +2319,6 @@ class ChartingState extends MusicBeatState
 				}
 			});
 		}
-		curRenderedNotes.forEachAlive(function(note:Note) {
-			note.alpha = 1;
-			if(curSelectedNote != null) {
-				var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
-				var noteDataToCheck:Int = actualNoteData;
-
-				if (curSelectedNote[0] == note.strumTime && ((curSelectedNote[2] == null && noteDataToCheck < 0) || (curSelectedNote[2] != null && curSelectedNote[1] == noteDataToCheck)))
-				{
-					colorSine += elapsed;
-					var colorVal:Float = 0.7 + Math.sin(Math.PI * colorSine) * 0.3;
-					note.color = FlxColor.fromRGBFloat(colorVal, colorVal, colorVal, 0.999); //Alpha can't be 100% or the color won't be updated for some reason, guess i will die
-				}
-			}
-
-			if(note.strumTime <= Conductor.songPosition) {
-				note.alpha = 0.4;
-				if(note.strumTime > lastConductorPos && FlxG.sound.music.playing && note.noteData > -1) {
-					var data:Int = note.noteData % 4;
-					var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
-					var noteDataToCheck:Int = actualNoteData;
-					if (!note.ignoreNote) {
-
-						if (!note.noAnimation) {
-							if (!note.mustPress) {
-								optChar.animation.play("sing"+animAssets[note.noteData].toUpperCase(), true);
-							} else {
-								plyChar.animation.play("sing"+animAssets[note.noteData].toUpperCase(), true);
-							}
-						}
-						if (note.playStrumAnim && !note.fakeNoHit) {
-							strumLineNotes.members[noteDataToCheck].playAnim(note.animConfirm.length == 0 ? 'confirm' : note.animConfirm, true);
-							strumLineNotes.members[noteDataToCheck].resetAnim = 0.15;
-						}
-						if(!playedSound[data]) {
-							if((((playSoundBf.checked && note.mustPress) || (playSoundDad.checked && !note.mustPress)) && !note.hitsoundDisabled) || note.forceHitsound){
-								var soundToPlay = note.hitsound;
-								if(_song.player1 == 'gf') { //Easter egg
-									soundToPlay = 'GF_' + Std.string(data + 1);
-								}
-	
-								FlxG.sound.play(Paths.sound(soundToPlay)).pan = note.noteData < 4? -0.3 : 0.3; //would be coolio
-								playedSound[data] = true;
-							}
-	
-							data = note.noteData;
-							if(note.mustPress != _song.notes[curSec].mustHitSection)
-							{
-								data += 4;
-							}
-						}
-					}
-				}
-			}
-		});
 		curRenderedSustains.forEachAlive(function(note:Note) {
 			note.alpha = 1;
 			if(curSelectedNote != null) {
@@ -2392,7 +2339,7 @@ class ChartingState extends MusicBeatState
 					var data:Int = note.noteData % 4;
 					var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
 					var noteDataToCheck:Int = actualNoteData;
-					if (!note.ignoreNote) {
+					if (!note.ignoreNote && !note.canFreeze) {
 
 						if (!note.noAnimation) {
 							if (!note.mustPress) {
@@ -2426,7 +2373,60 @@ class ChartingState extends MusicBeatState
 				}
 			}
 		});
+		curRenderedNotes.forEachAlive(function(note:Note) {
+			note.alpha = 1;
+			if(curSelectedNote != null) {
+				var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
+				var noteDataToCheck:Int = actualNoteData;
 
+				if (curSelectedNote[0] == note.strumTime && ((curSelectedNote[2] == null && noteDataToCheck < 0) || (curSelectedNote[2] != null && curSelectedNote[1] == noteDataToCheck)))
+				{
+					colorSine += elapsed;
+					var colorVal:Float = 0.7 + Math.sin(Math.PI * colorSine) * 0.3;
+					note.color = FlxColor.fromRGBFloat(colorVal, colorVal, colorVal, 0.999); //Alpha can't be 100% or the color won't be updated for some reason, guess i will die
+				}
+			}
+
+			if(note.strumTime <= Conductor.songPosition) {
+				note.alpha = 0.4;
+				if(note.strumTime > lastConductorPos && FlxG.sound.music.playing && note.noteData > -1) {
+					var data:Int = note.noteData % 4;
+					var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
+					var noteDataToCheck:Int = actualNoteData;
+					if (!note.ignoreNote && !note.canFreeze) {
+
+						if (!note.noAnimation) {
+							if (!note.mustPress) {
+								optChar.animation.play("sing"+animAssets[note.noteData].toUpperCase(), true);
+							} else {
+								plyChar.animation.play("sing"+animAssets[note.noteData].toUpperCase(), true);
+							}
+						}
+						if (note.playStrumAnim && !note.fakeNoHit) {
+							strumLineNotes.members[noteDataToCheck].playAnim(note.animConfirm.length == 0 ? 'confirm' : note.animConfirm, true);
+							strumLineNotes.members[noteDataToCheck].resetAnim = 0.15;
+						}
+						if(!playedSound[data]) {
+							if((((playSoundBf.checked && note.mustPress) || (playSoundDad.checked && !note.mustPress)) && !note.hitsoundDisabled) || note.forceHitsound){
+								var soundToPlay = note.hitsound;
+								if(_song.player1 == 'gf') { //Easter egg
+									soundToPlay = 'GF_' + Std.string(data + 1);
+								}
+	
+								FlxG.sound.play(Paths.sound(soundToPlay)).pan = note.noteData < 4? -0.3 : 0.3; //would be coolio
+								playedSound[data] = true;
+							}
+	
+							data = note.noteData;
+							if(note.mustPress != _song.notes[curSec].mustHitSection)
+							{
+								data += 4;
+							}
+						}
+					}
+				}
+			}
+		});
 		if(metronome.checked && lastConductorPos != Conductor.songPosition) {
 			var metroInterval:Float = 60 / metronomeStepper.value;
 			var metroStep:Int = Math.floor(((Conductor.songPosition + metronomeOffsetStepper.value) / metroInterval) / 1000);
@@ -3312,6 +3312,7 @@ class ChartingState extends MusicBeatState
 
 	function selectNote(note:Note):Void
 	{
+		if (note.isSustainNote) return;
 		var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
 		var noteDataToCheck:Int = actualNoteData;
 
@@ -3346,6 +3347,7 @@ class ChartingState extends MusicBeatState
 
 	function deleteNote(note:Note):Void
 	{
+		if (note.isSustainNote) return;//long note tails cant be deleted alone which kinda oddly enough
 		var actualNoteData:Int = (Math.floor(note.x/GRID_SIZE))-1;
 		var noteDataToCheck:Int = actualNoteData;
 		trace(noteDataToCheck);
@@ -3513,18 +3515,24 @@ class ChartingState extends MusicBeatState
 				var songData = Song.loadFromJson(song.toLowerCase(), song.toLowerCase());
 				if (songData != null) {
 					PlayState.SONG = songData;
+				} else {
+					return;
 				}
 			}else{
 				var songData = Song.loadFromJson(song.toLowerCase() + "-" + CoolUtil.difficulties[PlayState.storyDifficulty], song.toLowerCase());
 				if (songData != null) {
 					PlayState.SONG = songData;
+				} else {
+					return;
 				}
 			}
 		}else{
-		var songData = Song.loadFromJson(song.toLowerCase(), song.toLowerCase());
-		if (songData != null) {
-			PlayState.SONG = songData;
-		}
+			var songData = Song.loadFromJson(song.toLowerCase(), song.toLowerCase());
+			if (songData != null) {
+				PlayState.SONG = songData;
+			} else {
+				return;
+			}
 		}
 		MusicBeatState.resetState();
 	}

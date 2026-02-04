@@ -1,3 +1,5 @@
+package dge.shaders;
+
 import flixel.system.FlxAssets.FlxShader;
 
 class Posterize {

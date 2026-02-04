@@ -1,4 +1,4 @@
-package;
+package dge.shaders;
 
 import flixel.system.FlxAssets.FlxShader;
 

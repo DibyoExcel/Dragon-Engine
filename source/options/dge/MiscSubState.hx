@@ -129,6 +129,13 @@ class MiscSubState extends BaseOptionsMenu
 		}
 		addOption(option);
 
+		var option:Option = new Option('Classic Spawn Note',
+			"If Checked It Will Use Classic Note Spawn.(Might Reduce Lag)",
+			'classicNoteSpawn',
+			'bool',
+			false);
+		addOption(option);
+
 		super();
 		changeBGColor(0xffff0000);
 	}

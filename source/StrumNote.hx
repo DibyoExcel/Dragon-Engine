@@ -125,7 +125,11 @@ class StrumNote extends FlxSprite
 		}
 		else
 		{
-			frames = Paths.getSparrowAtlas(image);
+			try{
+				frames = Paths.getSparrowAtlas(image);
+			} catch(e:Dynamic) {
+				frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
+			}
 			animation.addByPrefix('green', 'arrowUP');
 			animation.addByPrefix('blue', 'arrowDOWN');
 			animation.addByPrefix('purple', 'arrowLEFT');

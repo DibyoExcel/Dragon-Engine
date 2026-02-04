@@ -1,8 +1,10 @@
 package;
 
+//thank M.A jigsaw for hxdiscord_rpc
 #if desktop
-import Sys.sleep;
-import discord_rpc.DiscordRpc;
+import hxdiscord_rpc.Discord;
+import hxdiscord_rpc.Types;
+import sys.thread.Thread;
 import lime.app.Application;
 #end
 
@@ -11,96 +13,128 @@ import llua.Lua;
 import llua.State;
 #end
 
-using StringTools;
 
 class DiscordClient
 {
 	#if desktop
-	public static var isInitialized:Bool = false;
-	public function new()
-	{
-		trace("Discord Client starting...");
-		DiscordRpc.start({
-			clientID: "1301540053843050556",
-			onReady: onReady,
-			onError: onError,
-			onDisconnected: onDisconnected
-		});
-		trace("Discord Client started.");
+    public static var isInitialized:Bool = false;
 
-		while (true)
-		{
-			DiscordRpc.process();
-			sleep(2);
-			//trace("Discord Client Update");
-		}
+    public static function initialize():Void
+    {
+        Sys.println("Discord Client starting...");
 
-		DiscordRpc.shutdown();
-	}
-	
-	public static function shutdown()
-	{
-		DiscordRpc.shutdown();
-	}
-	
-	static function onReady()
-	{
-		DiscordRpc.presence({
-			details: "In the Menus",
-			state: null,
-			largeImageKey: 'draconicmods',
-			largeImageText: "Dragon Engine v" + Application.current.meta.get('version')
-		});
-	}
+        final handlers:DiscordEventHandlers = new DiscordEventHandlers();
+        handlers.ready = cpp.Function.fromStaticFunction(onReady);
+        handlers.disconnected = cpp.Function.fromStaticFunction(onDisconnected);
+        handlers.errored = cpp.Function.fromStaticFunction(onError);
 
-	static function onError(_code:Int, _message:String)
-	{
-		trace('Error! $_code : $_message');
-	}
+        Discord.Initialize("1301540053843050556", cpp.RawPointer.addressOf(handlers), false, null);
 
-	static function onDisconnected(_code:Int, _message:String)
-	{
-		trace('Disconnected! $_code : $_message');
-	}
+        Thread.create(function():Void
+        {
+            while (true)
+            {
+                #if DISCORD_DISABLE_IO_THREAD
+                Discord.UpdateConnection();
+                #end
 
-	public static function initialize()
-	{
-		var DiscordDaemon = sys.thread.Thread.create(() ->
-		{
-			new DiscordClient();
-		});
-		trace("Discord Client initialized");
-		isInitialized = true;
-	}
+                Discord.RunCallbacks();
+                Sys.sleep(2);
+            }
+        });
 
-	public static function changePresence(details:String, state:Null<String>, ?smallImageKey : String, ?hasStartTimestamp : Bool, ?endTimestamp: Float)
-	{
-		var startTimestamp:Float = if(hasStartTimestamp) Date.now().getTime() else 0;
+        isInitialized = true;
+        Sys.println("Discord Client initialized");
+    }
 
-		if (endTimestamp > 0)
-		{
-			endTimestamp = startTimestamp + endTimestamp;
-		}
+    public static function shutdown():Void
+    {
+        Discord.Shutdown();
+        Sys.println("Discord Client shutdown");
+    }
 
-		DiscordRpc.presence({
-			details: details,
-			state: state,
-			largeImageKey: 'draconicmods',
-			largeImageText: "Dragon Engine v" + Application.current.meta.get('version'),
-			smallImageKey : smallImageKey,
-			// Obtained times are in milliseconds so they are divided so Discord can use it
-			startTimestamp : Std.int(startTimestamp / 1000),
-            endTimestamp : Std.int(endTimestamp / 1000)
-		});
+    private static function onReady(request:cpp.RawConstPointer<DiscordUser>):Void
+    {
+        final username:String = request[0].username;
+        final discriminator:Int = Std.parseInt(request[0].discriminator);
 
-		//trace('Discord RPC Updated. Arguments: $details, $state, $smallImageKey, $hasStartTimestamp, $endTimestamp');
-	}
+        if (discriminator != 0)
+            Sys.println('Discord: Connected to user ${username}#${discriminator}');
+        else
+            Sys.println('Discord: Connected to user ${username}');
+
+        // Set initial presence
+        final presence:DiscordRichPresence = new DiscordRichPresence();
+        presence.details = "In the Menus";
+        presence.state = null;
+        presence.largeImageKey = "draconicmods";
+        presence.largeImageText = "Dragon Engine v" + Application.current.meta.get("version");
+		final button:DiscordButton = new DiscordButton();
+		button.label = "Download";
+		button.url = "https://github.com/DibyoExcel/Dragon-Engine/";
+		presence.buttons[0] = button;
+
+		final button:DiscordButton = new DiscordButton();
+		button.label = "Documentation";
+		button.url = "https://dibyoexcel.github.io/Dragon-Engine/";
+		presence.buttons[1] = button;
+
+        Discord.UpdatePresence(cpp.RawPointer.addressOf(presence));
+    }
+
+    private static function onError(errorCode:Int, message:cpp.ConstCharStar):Void
+    {
+        Sys.println('Error! $errorCode : ${message.toString()}');
+    }
+
+    private static function onDisconnected(errorCode:Int, message:cpp.ConstCharStar):Void
+    {
+        Sys.println('Disconnected! $errorCode : ${message.toString()}');
+    }
+
+    public static function changePresence(details:String, state:Null<String>, ?smallImageKey:String, ?hasStartTimestamp:Bool, ?endTimestamp:Float):Void
+    {
+        var startTimestamp:Float = if (hasStartTimestamp) Date.now().getTime() else 0;
+
+        if (endTimestamp > 0)
+        {
+            endTimestamp = startTimestamp + endTimestamp;
+        }
+
+        final presence:DiscordRichPresence = new DiscordRichPresence();
+        presence.details = details;
+        presence.state = state;
+        presence.largeImageKey = "draconicmods";
+        presence.largeImageText = "Dragon Engine v" + Application.current.meta.get("version");
+        presence.smallImageKey = smallImageKey;
+        presence.startTimestamp = Std.int(startTimestamp / 1000);
+        presence.endTimestamp = Std.int(endTimestamp / 1000);
+		
+		final button:DiscordButton = new DiscordButton();
+		button.label = "Download";
+		button.url = "https://github.com/DibyoExcel/Dragon-Engine/";
+		presence.buttons[0] = button;
+
+		final button:DiscordButton = new DiscordButton();
+		button.label = "Documentation";
+		button.url = "https://dibyoexcel.github.io/Dragon-Engine/";
+		presence.buttons[1] = button;
+
+        Discord.UpdatePresence(cpp.RawPointer.addressOf(presence));
+
+        Sys.println('Discord RPC Updated. Arguments: $details, $state, $smallImageKey, $hasStartTimestamp, $endTimestamp');
+    }
 	#end
-	public static function addLuaCallbacks(lua:State) {
-		Lua_helper.add_callback(lua, "changePresence", function(details:String, state:Null<String>, ?smallImageKey:String, ?hasStartTimestamp:Bool, ?endTimestamp:Float) {
-			#if desktop
-			changePresence(details, state, smallImageKey, hasStartTimestamp, endTimestamp);
-			#end
-		});
+	public static function addLuaCallbacks(lua:State):Void {
+        #if LUA_ALLOWED
+		Lua_helper.add_callback(lua, "changePresence", 
+			function(details:String, state:Null<String>, ?smallImageKey:String, ?hasStartTimestamp:Bool, ?endTimestamp:Float) {
+				#if desktop
+				changePresence(details, state, smallImageKey, hasStartTimestamp, endTimestamp);
+				#end
+			}
+		);
+        #end
 	}
+	
 }

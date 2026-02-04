@@ -8,6 +8,8 @@ import Controls;
 
 class ClientPrefs {
 	//dge setting
+	public static var pauseBGAlpha:Float = 0.6;
+	public static var classicNoteSpawn:Bool = false;//classic note spawn
 	public static var fpsFontSize:Int = #if mobile 18 #else 14 #end;
 	//public static var pauseUnFocus:Bool = false;
 	public static var minEditorJson:Bool = false;//Minified json when save chart json
@@ -153,6 +155,8 @@ class ClientPrefs {
 	}
 
 	public static function saveSettings() {
+		FlxG.save.data.pauseBGAlpha = pauseBGAlpha;
+		FlxG.save.data.classicNoteSpawn = classicNoteSpawn;
 		FlxG.save.data.fpsFontSize = fpsFontSize;
 		//FlxG.save.data.pauseUnFocus = pauseUnFocus;
 		FlxG.save.data.invertYSwipe = invertYSwipe;
@@ -232,6 +236,12 @@ class ClientPrefs {
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.pauseBGAlpha != null) {
+			pauseBGAlpha = FlxG.save.data.pauseBGAlpha;
+		}
+		if(FlxG.save.data.classicNoteSpawn != null) {
+			classicNoteSpawn = FlxG.save.data.classicNoteSpawn;
 		}
 		if(FlxG.save.data.fpsFontSize != null) {
 			fpsFontSize = FlxG.save.data.fpsFontSize;
