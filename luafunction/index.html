@@ -45,6 +45,7 @@
         <a class="dialogue_link" href="/Dragon-Engine/luafunction/">Lua Function</a>
         <a class="dialogue_link" href="/Dragon-Engine/noteprefix/">Notetype Prefix</a>
         <a class="dialogue_link" href="/Dragon-Engine/html5/">HTML5 Version</a>
+        <a class="dialogue_link" href="/Dragon-Engine/freeze-notes/">Freeze Notes</a>
         Extras
         <a class="dialogue_link" href="/Dragon-Engine/draconis/">Draconic Mods</a>
     </div>
@@ -136,7 +137,7 @@
                 </div>
                 <div class="dialogue_group">
                     <h3>changeNotesTexture(player:Bool = false, gf:Bool = false, texture:String = '')(1.6.3.9 minor 2+)</h3>
-                    <h4>Change the notes texture.<br>player: Player or Opponent notes.<br>gf: Gf notes or normal notes.<br>texture: What texture should use?.<br>Info: for ignore change texture, set notes or strums 'ignoreTextureChange' to true.</h4>
+                    <h4>Change the notes texture.<br>player: Player or Opponent notes.<br>gf: Gf notes or normal notes.<br>texture: What texture should use?.<br>Info: for ignore change texture, set notes or strums <code>ignoreTextureChange</code> to <code>true</code>.</h4>
                 </div>
                 <div class="dialogue_group">
                     <h3>centerWindow(duration:Float, ease:String)(1.6.3.11+)</h3>
@@ -157,6 +158,10 @@
                 <div class="dialogue_group">
                     <h3>resizeGame(width:Null&lt;Int&gt; = null, height:&lt;Int&gt; = null, resetLayout:Bool = false, duration:Float = 0, ease:String, excludeCam:String)(1.6.3.16m2+)</h3>
                     <h4>resize game world resolution.<br>width: size width of game world resolution.<br>height: size height of game world resolution.<br>resetLayout: should layout ui layout reset?<br>duration: duration for transition.<br>ease: The tweening method used, example: 'linear', 'circInOut'. <a href="https://api.haxeflixel.com/flixel/tweens/FlxEase.html">All Tween Method</a>.<br>excludeCam: exclude cam from resize(separate with comma example: 'hud, game').<br>Warning: best use in <code>onCreate()</code>. in other function can use but the camera character slightly bit off.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>changeNotesSplashTexture(player:Bool = false, gf:Bool = false, texture:String = 'noteSplashes')(26.2.0+)</h3>
+                    <h4>Change the notes splash texture.<br>player: Player or Opponent notes.<br>gf: Gf notes or normal notes.<br>texture: What splash texture should use?.<br>Info: for ignore change texture, set notes or strums <code>ignoreTextureChange</code> to <code>true</code>.</h4>
                 </div>
             </div>
         </div>

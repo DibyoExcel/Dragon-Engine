@@ -370,3 +370,7 @@ li{
 *, *::before, *::after {
     box-sizing: border-box;
 }
+
+video{
+    aspect-ratio: 16/9;
+}

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="https://raw.githubusercontent.com/DibyoExcel/Dragon-Engine/refs/heads/main/art/dge_logo.svg" type="image/png">
+    <link rel="stylesheet" href="/Dragon-Engine/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark light">
+    <!-- HTML Meta Tags -->
+    <title>Dragon Engine</title>
+    <meta name="description" content="Dragon Engine Documentation🐲">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:url" content="https://dibyoexcel.github.io/dragon-engine">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Dragon Engine">
+    <meta property="og:description" content="Dragon Engine Documentation🐲">
+    <meta property="og:image" content="https://raw.githubusercontent.com/DibyoExcel/Dragon-Engine/refs/heads/website/opengraph.png">
+    <meta property="og:image:width" content="1280">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="twitter:domain" content="dibyoexcel.github.io">
+    <meta property="twitter:url" content="https://dibyoexcel.github.io/dragon-engine">
+    <meta name="twitter:title" content="Dragon Engine">
+    <meta name="twitter:description" content="Dragon Engine Documentation🐲">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/DibyoExcel/Dragon-Engine/refs/heads/website/opengraph.png">
+
+    <!-- Meta Tags Generated via https://opengraph.dev -->
+</head>
+<body>
+    <header class="header">
+        <img onclick="document.getElementById('sidebar').classList.toggle('open');" src="https://raw.githubusercontent.com/DibyoExcel/Dragon-Engine/refs/heads/main/art/dge_logo.svg" alt="DGElogo">
+        <h3>Dragon Engine</h3>
+    </header>
+    <div class="sidebar" id="sidebar">
+        Introduction
+        <a class="dialogue_link" href="/Dragon-Engine/">Introduction</a>
+        Tutorial
+        <a class="dialogue_link" href="/Dragon-Engine/mobile_tutorial/">Mobile Tutorial</a>
+        Features
+        <a class="dialogue_link" href="/Dragon-Engine/secoptstrums/">2nd Oppponent Strums</a>
+        <a class="dialogue_link" href="/Dragon-Engine/customfield/">Custom Field</a>
+        <a class="dialogue_link" href="/Dragon-Engine/luafunction/">Lua Function</a>
+        <a class="dialogue_link" href="/Dragon-Engine/noteprefix/">Notetype Prefix</a>
+        <a class="dialogue_link" href="/Dragon-Engine/html5/">HTML5 Version</a>
+        <a class="dialogue_link" href="/Dragon-Engine/freeze-notes/">Freeze Notes</a>
+        Extras
+        <a class="dialogue_link" href="/Dragon-Engine/draconis/">Draconic Mods</a>
+    </div>
+    <div class="content">
+        <div class="dialogue">
+            <div class="dialogue_title">
+                <h3>
+                    Freeze Notes(26.2.0+)
+                </h3>
+            </div>
+            <div class="dialogue_content">
+                <iframe class="ratio border_accent" src="https://www.youtube.com/embed/ZW9A59xW5Xc?si=bnJ4Sn2fypV6399T&amp;start=27" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen width="75%"></iframe>
+            </div>
+        </div>
+        <div class="dialogue">
+            <div class="dialogue_title">
+                <h3>
+                    How To Use
+                </h3>
+            </div>
+            <div class="dialogue_content">
+                <h3>1. Open in Chart Editor.</h3>
+                <h3>2. Select <code>Freeze Note</code> In Note Type Selection.</h3>
+                <img src="image/select_notetype.png" alt="select notetype" width="75%">
+                <h3>3. Place <code>Freeze Note</code> Note Type In Chart Grid.</h3>
+                <img src="image/place_notetype.png" alt="place notetype" width="75%">
+                <h3>4. Select <code>Freeze Note</code> Event In Event Selection.</h3>
+                <img src="image/select event.png" alt="select event" width="75%">
+                <h3>5. Place <code>Freeze Note</code> Event In Chart Grid.</h3>
+                <img src="image/place_event.png" alt="place event" width="75%">
+                <h3>About Event:<br>Value 1: Duration Freeze Note(Also Note Range to Freeze Between Current Duration to Current Duration + Duration)(Default: 1).<br>Value 2: Should It Destroy Note After Freeze?(0 = false, 1 = true)(Default: 1)(Info: when set not destroy(1). It will move event and Freeze Note time to <code>value1</code> second more earlier. and after freeze the note can be pressable)</h3>
+                <h3>Warning: if use <code>Freeze Note</code> event while old event still run it might will broken. use with caution.</h3>
+            </div>
+        </div>
+        <div class="dialogue">
+            <div class="dialogue_title">
+                <h3>
+                    Result
+                </h3>
+            </div>
+            <div class="dialogue_content">
+                <h3>1. Destroy(Value2: 1)</h3>
+                <video class="border_accent" width="75%" controls>
+                    <source src="video/destroy.mp4" type="video/mp4">
+                </video>
+                <h3>2. Not Destroy(Value2: 0)</h3>
+                <video class="border_accent" width="75%" controls>
+                    <source src="video/no_destroy.mp4" type="video/mp4">
+            </div>
+        </div>
+    </div>
+</body>
+</html>
