@@ -186,6 +186,7 @@ class Note extends FlxSprite
 	//freeze able note
 	public var canFreeze:Bool = false;//whether this note can be frozen by freeze note event(false cuz will destroy note)(the note not mean to be pressed just for visual). will trigger from lua 'freezeNote()'
 	//end snap prop
+	public var mechanicNote:Bool = false;//whether this note is a mechanic note(only for lua or check)(recommend use json for change this)
 	//end dge core
 
 	@:noCompletion

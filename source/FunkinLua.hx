@@ -274,6 +274,8 @@ class FunkinLua {
 		#else
 		set('isMobile', false);
 		#end
+		set('modchart', ClientPrefs.modchart);
+		set('noteMechanic', ClientPrefs.noteMechanic);
 
 		// custom substate
 		Lua_helper.add_callback(lua, "openCustomSubstate", function(name:String, pauseGame:Bool = false) {
@@ -2022,8 +2024,8 @@ class FunkinLua {
 		});
 
 		Lua_helper.add_callback(lua, "setScrollFactor", function(obj:String, scrollX:Float, scrollY:Float) {
-			if(PlayState.instance.getLuaObject(obj,false)!=null) {
-				PlayState.instance.getLuaObject(obj,false).scrollFactor.set(scrollX, scrollY);
+			if(PlayState.instance.getLuaObject(obj)!=null) {
+				PlayState.instance.getLuaObject(obj).scrollFactor.set(scrollX, scrollY);
 				return;
 			}
 
@@ -3155,9 +3157,9 @@ class FunkinLua {
 				PlayState.instance.removeStrum(tag);
 			}
 		});
-		Lua_helper.add_callback(lua, "addCamera", function(name:String= '', x:Int, y:Int, width:Int, height:Int, zoom:Float = 1) {
+		Lua_helper.add_callback(lua, "addCamera", function(name:String= '', x:Int, y:Int, width:Int, height:Int, zoom:Float = 1, ?sectionZoom:Bool = false) {
 			if (name != null && name != '') {
-				PlayState.instance.addCamera(name, x, y, width, height, zoom);
+				PlayState.instance.addCamera(name, x, y, width, height, zoom, sectionZoom);
 			}
 		});
 		Lua_helper.add_callback(lua, "removeCamera", function(name:String= '') {

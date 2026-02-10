@@ -8,6 +8,8 @@ import Controls;
 
 class ClientPrefs {
 	//dge setting
+	public static var modchart:Bool = true;//enable modchart
+	public static var noteMechanic:Bool = true;//enable note mechanic(useful for new players)
 	public static var pauseBGAlpha:Float = 0.6;
 	public static var classicNoteSpawn:Bool = false;//classic note spawn
 	public static var fpsFontSize:Int = #if mobile 18 #else 14 #end;
@@ -155,6 +157,8 @@ class ClientPrefs {
 	}
 
 	public static function saveSettings() {
+		FlxG.save.data.noteMechanic = noteMechanic;
+		FlxG.save.data.modchart = modchart;
 		FlxG.save.data.pauseBGAlpha = pauseBGAlpha;
 		FlxG.save.data.classicNoteSpawn = classicNoteSpawn;
 		FlxG.save.data.fpsFontSize = fpsFontSize;
@@ -236,6 +240,12 @@ class ClientPrefs {
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.noteMechanic != null) {
+			noteMechanic = FlxG.save.data.noteMechanic;
+		}
+		if(FlxG.save.data.modchart != null) {
+			modchart = FlxG.save.data.modchart;
 		}
 		if(FlxG.save.data.pauseBGAlpha != null) {
 			pauseBGAlpha = FlxG.save.data.pauseBGAlpha;

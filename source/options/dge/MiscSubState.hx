@@ -136,6 +136,20 @@ class MiscSubState extends BaseOptionsMenu
 			false);
 		addOption(option);
 
+		var option:Option = new Option('Modchart',
+			"If Checked It Enabled Modchart.(For Mods)",
+			'modchart',
+			'bool',
+			true);
+		addOption(option);
+
+		var option:Option = new Option('Note Mechanic',
+			"If Checked It Enabled Note Mechanic.(For Mods)",
+			'noteMechanic',
+			'bool',
+			true);
+		addOption(option);
+
 		super();
 		changeBGColor(0xffff0000);
 	}

@@ -146,7 +146,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 			option.maxValue = 1000000000;//are your crazy?
 			option.scrollSpeed = 10;
 			optionsArray.push(option);
-
+		#if debug
 		var option:GameplayOption = new GameplayOption('Disable Lua Song', 'disableLuaSong', 'bool', false);//Dis lua song
 		optionsArray.push(option);
 
@@ -158,6 +158,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 
 		var option:GameplayOption = new GameplayOption('Disable Lua Event', 'disableLuaEvent', 'bool', false);//Dis lua Event
 		optionsArray.push(option);
+		#end
 		
 		var option:GameplayOption = new GameplayOption('Randomized Note Placement', 'randomNote', 'bool', false);
 		optionsArray.push(option);
