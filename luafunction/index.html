@@ -132,11 +132,11 @@
                     <h4>Mirror song scroll speed and strums y.<br>duration: duration of transition mirror scroll speed.<br>ease: The tweening method used, example: 'linear', 'circInOut'. <a href="https://api.haxeflixel.com/flixel/tweens/FlxEase.html">All Tween Method</a>.</h4>
                 </div>
                 <div class="dialogue_group">
-                    <h3>changeWallpaper(path:String, absolute:Bool = false)(1.6.3.8 minor 2+)(Windows Only)</h3>
+                    <h3>changeWallpaper(path:String, absolute:Bool = false)(1.6.3.8m2+)(Windows Only)</h3>
                     <h4>Change os wallpaper.<br>path: the path of images file(must be absolute. example: the <code>example.png</code> in <code>mods/modname/images/</code> you had write <code>path</code> as <code>mods/modname/images/example.png</code>).<br>absolute(1.6.3.9+): if true it will use system path(example: <code>C:\Windows\Web\Wallpaper\Windows\img0.jpg</code>. the <code>path</code> must write like <code>C:\\Windows\\Web\\Wallpaper\\Windows\\img0.jpg</code>).</h4>
                 </div>
                 <div class="dialogue_group">
-                    <h3>changeNotesTexture(player:Bool = false, gf:Bool = false, texture:String = '')(1.6.3.9 minor 2+)</h3>
+                    <h3>changeNotesTexture(player:Bool = false, gf:Bool = false, texture:String = '')(1.6.3.9m2+)</h3>
                     <h4>Change the notes texture.<br>player: Player or Opponent notes.<br>gf: Gf notes or normal notes.<br>texture: What texture should use?.<br>Info: for ignore change texture, set notes or strums <code>ignoreTextureChange</code> to <code>true</code>.</h4>
                 </div>
                 <div class="dialogue_group">
@@ -234,8 +234,8 @@
                     <h4>remove custom field.<br>tag: tag name custom field.</h4>
                 </div>
                 <div class="dialogue_group">
-                    <h3>addCamera(name:String = '', x:Int, y:Int, width:Int, height:Int, zoom:Float = 1)(1.6.2+)</h3>
-                    <h4>add custom camera.<br>name: name custom camera(use 'camera:yourcameraname' if want access to <code>setProperty()</code> or <code>getProperty()</code>).<br>x: camera x position.<br>y: camera y position.<br>width: camera width.<br>height: camera height.<br>zoom: camera zoom.<br>Warning: the last cameras always use by pause screen(not related after 1.6.3+).</h4>
+                    <h3>addCamera(name:String = '', x:Int, y:Int, width:Int, height:Int, zoom:Float = 1, ?sectionZoom:Bool = false)(1.6.2+)</h3>
+                    <h4>add custom camera.<br>name: name custom camera(use 'camera:yourcameraname' if want access to <code>setProperty()</code> or <code>getProperty()</code>).<br>x: camera x position.<br>y: camera y position.<br>width: camera width.<br>height: camera height.<br>zoom: camera zoom(also as default zoom if <code>sectionZoom</code> is <code>true</code>(26.2.1+)).<br>Warning: the last cameras always use by pause screen(not related after 1.6.3+).<br>sectionZoom(26.2.1+): make camera act like camHUD zooming.</h4>
                 </div>
                 <div class="dialogue_group">
                     <h3>removeCamera(name:String = '')(1.6.2+)</h3>
@@ -250,15 +250,15 @@
                     <h4>open the webpage.<br>web: the link to open pages.</h4>
                 </div>
                 <div class="dialogue_group">
-                    <h3>debugPrintArray(text:Array&lt;Dynamic&gt;)</h3>
+                    <h3>debugPrintArray(text:Array&lt;Dynamic&gt;)(1.6.3.10+)</h3>
                     <h4>same as <code>debugPrint()</code> but with array.</h4>
                 </div>
                 <div class="dialogue_group">
-                    <h3>precacheSparrowAtlas(name:String)</h3>
+                    <h3>precacheSparrowAtlas(name:String)(1.6.3.17m1+)</h3>
                     <h4>precache Sparrow Atlas Frames(Recommended put in <code>onCreate()</code>)<br>name:name of atlas file in <code>images/</code>.</h4>
                 </div>
                 <div class="dialogue_group">
-                    <h3>precachePackerAtlas(name:String)</h3>
+                    <h3>precachePackerAtlas(name:String)(1.6.3.17m1+)</h3>
                     <h4>precache Packer Atlas Frames(Recommended put in <code>onCreate()</code>)<br>name:name of atlas file in <code>images/</code>.</h4>
                 </div>
                 <div class="dialogue_group">
@@ -408,9 +408,17 @@
                     <h3>isMobile(26.0.1+)</h3>
                     <h4>return <code>Bool</code> if current platform is mobile.</h4>
                 </div>
+                <div class="dialogue_group">
+                    <h3>modchart(26.2.1+)</h3>
+                    <h4>return <code>Bool</code> of "Modchart" Setting.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>noteMechanic(26.2.1+)</h3>
+                    <h4>return <code>Bool</code> of "Note Mechanic" Setting.</h4>
+                </div>
             </div>
         </div>
-        <div class="dialogue" id="modfunc">
+        <div class="dialogue" id="modsetfunc">
             <div class="dialogue_title">
                 <h3>
                     LUA Set(Build In Override) Function
@@ -423,7 +431,7 @@
                 </div>
             </div>
         </div>
-        <div class="dialogue" id="modfunc">
+        <div class="dialogue" id="modgetfunc">
             <div class="dialogue_title">
                 <h3>
                     LUA Get(Build In Override) Function
