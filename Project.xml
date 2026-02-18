@@ -5,7 +5,7 @@
 	<app title="FNF: Dragon Engine" if="mobile"/> <!--Shorter title for mobile because too long titles get cut off. idk why so fucking long comments lol-->
 	<!--YY.MJ.MN-->
 	<!--app version-->
-	<app version="26.2.1"/>
+	<app version="26.2.2"/>
 	<!--compile msg-->
 	<echo value="Make your idea creativity become true."/>
 	<echo value="Dragon Engine - DubEnderDragon" />
@@ -33,8 +33,9 @@
    %##*          #%*              **    
      #*          *                      "/>
 
-	<app file="Dragon Engine" packageName="id.dubenderdragon.dge" package="id.dubenderdragon.dge" main="Main" company="DubEnderDragon" />
-
+	<app main="Main" company="DubEnderDragon" />
+	<app file="Dragon Engine" packageName="id.dubenderdragon.dge" package="id.dubenderdragon.dge" if="release" />
+	<app file="Dragon Engine Debug" packageName="id.dubenderdragon.dge.debug" package="id.dubenderdragon.dge.debug" if="debug" />
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="604ad46f-7283-4853-8d1e-c2fc250a4926" />
 

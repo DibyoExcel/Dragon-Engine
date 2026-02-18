@@ -44,9 +44,9 @@ class DubEnderLoader extends FlxBasePreloader
 			Sys.exit(0);
 		} 
 		if (Permissions.hasPermission(Permissions.WRITE_EXTERNAL_STORAGE)) {
-			if (!FileSystem.exists(StorageManager.getEngineDir())) {
-				FileSystem.createDirectory(StorageManager.getEngineDir());
-				Application.current.window.alert('External(' + StorageManager.getEngineDir() + ')Folder has been created. Please insert app assets bundles("assets") to' + StorageManager.getEngineDir() + '.', 'Storage Manager');
+			if (!FileSystem.exists(dge.backend.StorageManager.getEngineDir())) {
+				FileSystem.createDirectory(dge.backend.StorageManager.getEngineDir());
+				Application.current.window.alert('External(' + dge.backend.StorageManager.getEngineDir() + ')Folder has been created. Please insert app assets bundles("assets") to' + dge.backend.StorageManager.getEngineDir() + '.', 'Storage Manager');
 				Sys.exit(0);
 			}
 			var loadData:Array<String> = ['dialogue', 'dialoguecharacter', 'menucharacter', 'weeks'];
@@ -69,7 +69,7 @@ class DubEnderLoader extends FlxBasePreloader
 				File.saveContent(Paths.externalFilesPath('mods/put mods folder here.txt'), 'only mobile have this generated text.');
 			}
 			if (!FileSystem.exists(Paths.externalFilesPath('assets/'))) {
-				Application.current.window.alert('Assets Folder is Missing. Please insert app assets bundles("assets") to ' + StorageManager.getEngineDir() + '. If you don\'t know press OK to open how to insert assets.', 'Storage Manager');
+				Application.current.window.alert('Assets Folder is Missing. Please insert app assets bundles("assets") to ' + dge.backend.StorageManager.getEngineDir() + '. If you don\'t know press OK to open how to insert assets.', 'Storage Manager');
 				FlxG.openURL('https://dibyoexcel.github.io/Dragon-Engine/mobile_tutorial/');
 				Sys.exit(0);
 			}
@@ -95,7 +95,7 @@ class DubEnderLoader extends FlxBasePreloader
 
 		// Loading bar
 		loadingText = new TextField();
-		loadingText.defaultTextFormat = new TextFormat("_sans", Std.int(#if mobile 40 #else 20*ratio #end), 0xFFFFFF, true);
+		loadingText.defaultTextFormat = new TextFormat("_sans", Std.int(#if mobile 40 #else 20 #end * ratio), 0xFFFFFF, true);
 		loadingText.text = "Loading...";
 		loadingText.width = stage.stageWidth;
 		loadingText.x = 10;

@@ -187,6 +187,7 @@ class Note extends FlxSprite
 	public var canFreeze:Bool = false;//whether this note can be frozen by freeze note event(false cuz will destroy note)(the note not mean to be pressed just for visual). will trigger from lua 'freezeNote()'
 	//end snap prop
 	public var mechanicNote:Bool = false;//whether this note is a mechanic note(only for lua or check)(recommend use json for change this)
+	public var secondOpponent:Bool = false;//similar when enable gfNote in 2nd opponent mode but not apply as gf type.(only afffected if 2nd mode active)(idea from:https://youtu.be/QmXwPl3bzwk)
 	//end dge core
 
 	@:noCompletion
@@ -332,6 +333,8 @@ class Note extends FlxSprite
 					downScroll = false;
 				case 'Freeze Note'://can only trigger by event or lua
 					canFreeze = true;
+				case 'Second Opponent'://only work if 2nd opponent mode is active
+					secondOpponent = true;
 			}
 			noteType = value;
 		}
@@ -620,13 +623,13 @@ class Note extends FlxSprite
 					}
 				}
 			}*/
-			if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * lateHitMult)
-				&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * earlyHitMult))
+			if ((strumTime + offsetStrumTime) > Conductor.songPosition - (Conductor.safeZoneOffset * lateHitMult)
+				&& (strumTime + offsetStrumTime) < Conductor.songPosition + (Conductor.safeZoneOffset * earlyHitMult))
 				canBeHit = true;
 			else
 				canBeHit = false;
 			
-			if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit) tooLate = true;
+			if ((strumTime + offsetStrumTime) < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit) tooLate = true;
 		}
 
 		if (tooLate && !inEditor)

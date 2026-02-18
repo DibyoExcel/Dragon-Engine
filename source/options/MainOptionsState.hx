@@ -30,7 +30,7 @@ using StringTools;
 
 class MainOptionsState extends MusicBeatState
 {
-	var options:Array<String> = ['Dragon Settings', 'Psych Settings'];
+	var options:Array<String> = ['DGE Settings', 'Psych Settings'];
 	private var grpOptions:FlxTypedGroup<Alphabet>;
 	private static var curSelected:Int = 0;
 	public static var menuBG:FlxSprite;
@@ -38,8 +38,8 @@ class MainOptionsState extends MusicBeatState
 
 	function openSelectedSubstate(label:String) {
 		switch(label) {
-			case 'Dragon Settings':
-				LoadingState.loadAndSwitchState(new options.DragonOptionsState());
+			case 'DGE Settings':
+				LoadingState.loadAndSwitchState(new dge.states.options.DragonOptionsState());
 			case 'Psych Settings':
 				LoadingState.loadAndSwitchState(new options.PsychOptionsState());
 		}

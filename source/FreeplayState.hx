@@ -113,82 +113,98 @@ class FreeplayState extends MusicBeatState
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		CoolUtil.fitBackground(bg);
 		add(bg);
-
+	
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);
+		if (songs.length > 0) {
 
-		for (i in 0...songs.length)
-		{
-			var songText:Alphabet = new Alphabet(90, 320, songs[i].songName, true);
-			songText.isMenuItem = true;
-			songText.targetY = i - curSelected;
-			grpSongs.add(songText);
-
-			var maxWidth = 980*(FlxG.width/1280);//adapt any resolution ig
-			if (songText.width > maxWidth)
+			for (i in 0...songs.length)
 			{
-				songText.scaleX = maxWidth / songText.width;
+				var songText:Alphabet = new Alphabet(90, 320, songs[i].songName, true);
+				songText.isMenuItem = true;
+				songText.targetY = i - curSelected;
+				grpSongs.add(songText);
+	
+				var maxWidth = 980*(FlxG.width/1280);//adapt any resolution ig
+				if (songText.width > maxWidth)
+				{
+					songText.scaleX = maxWidth / songText.width;
+				}
+				songText.snapToPosition();
+	
+				Paths.currentModDirectory = songs[i].folder;
+				var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
+				icon.sprTracker = songText;
+	
+				// using a FlxGroup is too much fuss!
+				iconArray.push(icon);
+				add(icon);
+	
+				// songText.x += 40;
+				// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
+				// songText.screenCenter(X);
 			}
-			songText.snapToPosition();
-
-			Paths.currentModDirectory = songs[i].folder;
-			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
-			icon.sprTracker = songText;
-
-			// using a FlxGroup is too much fuss!
-			iconArray.push(icon);
-			add(icon);
-
-			// songText.x += 40;
-			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-			// songText.screenCenter(X);
+			WeekData.setDirectoryFromWeek();
+	
+			scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
+			scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
+	
+			scoreBG = new FlxSprite(scoreText.x - 6, 0).makeGraphic(1, 66, 0xFF000000);
+			scoreBG.alpha = 0.6;
+			add(scoreBG);
+	
+			diffText = new FlxText(scoreText.x, scoreText.y + 36, 0, "", 24);
+			diffText.font = scoreText.font;
+			add(diffText);
+	
+			add(scoreText);
+	
+			if(curSelected >= songs.length) curSelected = 0;
+			bg.color = songs[curSelected].color;
+			intendedColor = bg.color;
+	
+			if(lastDifficultyName == '')
+			{
+				lastDifficultyName = CoolUtil.defaultDifficulty;
+			}
+			curDifficulty = Math.round(Math.max(0, CoolUtil.defaultDifficulties.indexOf(lastDifficultyName)));
+			
+			changeSelection();
+			changeDiff();
+	
+			var swag:Alphabet = new Alphabet(1, 0, "swag");
+	
+			// JUST DOIN THIS SHIT FOR TESTING!!!
+			/* 
+				var md:String = Markdown.markdownToHtml(Assets.getText('CHANGELOG.md'));
+	
+				var texFel:TextField = new TextField();
+				texFel.width = FlxG.width;
+				texFel.height = FlxG.height;
+				// texFel.
+				texFel.htmlText = md;
+	
+				FlxG.stage.addChild(texFel);
+	
+				// scoreText.textField.htmlText = md;
+	
+				trace(md);
+			 */
+		} else {
+			//i know is impossible get empty week unless modified weekList.txt(bundle not external)
+			var noWeek:FlxText = new FlxText(0, 0, 'NO WEEK EVER TO PLAY.', 48);
+			if (FlxG.random.bool(0.1)) {//hehe
+				noWeek.text += "\nMaybe it's time to end this game?";
+			}
+			noWeek.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			add(noWeek);
+			noWeek.scrollFactor.set();
+			noWeek.borderSize = 2;
+			noWeek.screenCenter();
+			bg.color = 0xFFFF0000;
 		}
-		WeekData.setDirectoryFromWeek();
 
-		scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
-		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
 
-		scoreBG = new FlxSprite(scoreText.x - 6, 0).makeGraphic(1, 66, 0xFF000000);
-		scoreBG.alpha = 0.6;
-		add(scoreBG);
-
-		diffText = new FlxText(scoreText.x, scoreText.y + 36, 0, "", 24);
-		diffText.font = scoreText.font;
-		add(diffText);
-
-		add(scoreText);
-
-		if(curSelected >= songs.length) curSelected = 0;
-		bg.color = songs[curSelected].color;
-		intendedColor = bg.color;
-
-		if(lastDifficultyName == '')
-		{
-			lastDifficultyName = CoolUtil.defaultDifficulty;
-		}
-		curDifficulty = Math.round(Math.max(0, CoolUtil.defaultDifficulties.indexOf(lastDifficultyName)));
-		
-		changeSelection();
-		changeDiff();
-
-		var swag:Alphabet = new Alphabet(1, 0, "swag");
-
-		// JUST DOIN THIS SHIT FOR TESTING!!!
-		/* 
-			var md:String = Markdown.markdownToHtml(Assets.getText('CHANGELOG.md'));
-
-			var texFel:TextField = new TextField();
-			texFel.width = FlxG.width;
-			texFel.height = FlxG.height;
-			// texFel.
-			texFel.htmlText = md;
-
-			FlxG.stage.addChild(texFel);
-
-			// scoreText.textField.htmlText = md;
-
-			trace(md);
-		 */
 		#if mobile
 		shiftButton = new VirtualButton(0, (FlxG.height-26)-250, 'shift');
 		add(shiftButton);
@@ -279,7 +295,7 @@ class FreeplayState extends MusicBeatState
 			ratingSplit[1] += '0';
 		}
 
-		scoreText.text = 'PERSONAL BEST: ' + lerpScore + ' (' + ratingSplit.join('.') + '%)';
+		if (scoreText != null) scoreText.text = 'PERSONAL BEST: ' + lerpScore + ' (' + ratingSplit.join('.') + '%)';
 		positionHighscore();
 
 		var upP = controls.UI_UP_P ;
@@ -291,7 +307,7 @@ class FreeplayState extends MusicBeatState
 		var shiftMult:Int = 1;
 		if(FlxG.keys.pressed.SHIFT #if mobile || shiftButton.pressed #end) shiftMult = 3;
 
-		if(songs.length > 1)
+		if(songs.length > 0)
 		{
 			if (upP)
 			{
@@ -354,7 +370,7 @@ class FreeplayState extends MusicBeatState
 			persistentUpdate = false;
 			openSubState(new GameplayChangersSubstate());
 		}
-		else if(space)
+		else if(space && songs.length > 0)
 		{
 			if(instPlaying != curSelected)
 			{
@@ -383,7 +399,7 @@ class FreeplayState extends MusicBeatState
 			}
 		}
 
-		else if (accepted)
+		else if (accepted && songs.length > 0)
 		{
 			persistentUpdate = false;
 			var songLowercase:String = Paths.formatToSongPath(songs[curSelected].songName);
@@ -422,9 +438,14 @@ class FreeplayState extends MusicBeatState
 		}
 		else if(controls.RESET #if mobile || resetButton.justPressed #end)
 		{
-			persistentUpdate = false;
-			openSubState(new ResetScoreSubState(songs[curSelected].songName, curDifficulty, songs[curSelected].songCharacter));
-			FlxG.sound.play(Paths.sound('scrollMenu'));
+			if (songs.length > 0) {
+				persistentUpdate = false;
+				openSubState(new ResetScoreSubState(songs[curSelected].songName, curDifficulty, songs[curSelected].songCharacter));
+				FlxG.sound.play(Paths.sound('scrollMenu'));
+			} else {
+				FlxG.resetState();//unique way to prevent crash if no songs(reset state instead LOL)
+				FlxG.sound.play(Paths.sound('cancelMenu'));
+			}
 		}
 		super.update(elapsed);
 	}
@@ -439,6 +460,9 @@ class FreeplayState extends MusicBeatState
 
 	function changeDiff(change:Int = 0)
 	{
+		if (songs.length < 1) {
+			return;
+		}
 		curDifficulty += change;
 
 		if (curDifficulty < 0)
@@ -460,6 +484,9 @@ class FreeplayState extends MusicBeatState
 
 	function changeSelection(change:Int = 0, playSound:Bool = true)
 	{
+		if (songs.length < 1) {
+			return;
+		}
 		if(playSound) FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
 		curSelected += change;
@@ -468,7 +495,7 @@ class FreeplayState extends MusicBeatState
 			curSelected = songs.length - 1;
 		if (curSelected >= songs.length)
 			curSelected = 0;
-			
+		
 		var newColor:Int = songs[curSelected].color;
 		if(newColor != intendedColor) {
 			if(colorTween != null) {
@@ -495,7 +522,6 @@ class FreeplayState extends MusicBeatState
 		{
 			iconArray[i].alpha = 0.6;
 		}
-
 		iconArray[curSelected].alpha = 1;
 
 		for (item in grpSongs.members)
@@ -512,7 +538,6 @@ class FreeplayState extends MusicBeatState
 				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
-		
 		Paths.currentModDirectory = songs[curSelected].folder;
 		PlayState.storyWeek = songs[curSelected].week;
 
@@ -558,6 +583,7 @@ class FreeplayState extends MusicBeatState
 	}
 
 	private function positionHighscore() {
+		if (songs.length < 1) return;
 		scoreText.x = FlxG.width - scoreText.width - 6;
 
 		scoreBG.scale.x = FlxG.width - scoreText.x + 6;

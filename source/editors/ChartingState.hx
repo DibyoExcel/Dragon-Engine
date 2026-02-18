@@ -87,7 +87,8 @@ class ChartingState extends MusicBeatState
 		"Multi Press",
 		"Down Scroll",
 		"Up Scroll",
-		"Freeze Note"
+		"Freeze Note",
+		"Second Opponent"
 	];
 	private var noteTypeIntMap:Map<Int, String> = new Map<Int, String>();
 	private var noteTypeMap:Map<String, Null<Int>> = new Map<String, Null<Int>>();

@@ -1,5 +1,6 @@
 bf
 dad
+DubEnderDragon
 gf
 spooky
 pico
@@ -19,6 +20,7 @@ senpai-angry
 spirit
 bf-pixel-opponent
 gf-tankmen
+MintEnderDragon
 tankman
 pico-speaker
 bf-holding-gf

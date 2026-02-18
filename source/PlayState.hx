@@ -3753,7 +3753,7 @@ class PlayState extends MusicBeatState
 						}
 					} else {
 						if(!daNote.mustPress) {
-							if (daNote.gfNote && PlayState.SONG.secOpt) {
+							if ((daNote.gfNote || daNote.secondOpponent) && PlayState.SONG.secOpt) {
 								strumGroup = gfStrums;
 							} else {
 								strumGroup = opponentStrums;
@@ -3920,7 +3920,7 @@ class PlayState extends MusicBeatState
 									getS.remove(daNote, true);
 								}
 							}
-							if (daNote.gfNote) {
+							if (daNote.gfNote || daNote.secondOpponent) {
 								moveNote(daNote, opponentNotes, gfNotes);
 								moveNote(daNote, playerNotes, gfNotes);
 							} else {
@@ -3934,47 +3934,23 @@ class PlayState extends MusicBeatState
 							}
 						}
 					}
-					if ((gamemode == 'opponent' ? (!daNote.blockHit && !daNote.canFreeze) && daNote.mustPress : !daNote.mustPress) && daNote.canBeHit && (!daNote.ignoreNote && !daNote.canFreeze) && !daNote.customField && !(gamemode == "bothside v2" || gamemode == "bothside"))
+					var botCanHit = (daNote.isSustainNote && (daNote.strumTime + daNote.offsetStrumTime) < Conductor.songPosition + (Conductor.safeZoneOffset * daNote.earlyHitMult)) || (!daNote.isSustainNote && ((daNote.strumTime + daNote.offsetStrumTime) <= Conductor.songPosition));//just be sure bot only hit in perfect time :) and also cant miss when lagging like hell.
+					if ((gamemode == 'opponent' ? (!daNote.blockHit && !daNote.canFreeze) && daNote.mustPress : !daNote.mustPress) && (!daNote.ignoreNote && !daNote.canFreeze) && !daNote.customField && !(gamemode == "bothside v2" || gamemode == "bothside") && botCanHit)
 					{
-						if(daNote.isSustainNote) {
-							if(daNote.canBeHit) {
-								opponentNoteHit(daNote);
-							}
-						} else if((daNote.strumTime + daNote.offsetStrumTime) <= Conductor.songPosition || daNote.isSustainNote) {
-							opponentNoteHit(daNote);
-						}
+						opponentNoteHit(daNote);
 					}
 					//custom field use opponent(bot 2)
-					if ((gamemode == 'opponent' ? (!daNote.blockHit && !daNote.canFreeze) && daNote.mustPress : !daNote.mustPress) && daNote.canBeHit && (!daNote.ignoreNote && !daNote.canFreeze) && daNote.customField)
+					if ((gamemode == 'opponent' ? (!daNote.blockHit && !daNote.canFreeze) && daNote.mustPress : !daNote.mustPress) && (!daNote.ignoreNote && !daNote.canFreeze) && daNote.customField && botCanHit)
 					{
-						if(daNote.isSustainNote) {
-							if(daNote.canBeHit) {
-								opponentNoteHit(daNote);
-							}
-						} else if((daNote.strumTime + daNote.offsetStrumTime) <= Conductor.songPosition || daNote.isSustainNote) {
-							opponentNoteHit(daNote);
-						}
+						opponentNoteHit(daNote);
 					}
 
-					if((gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && cpuControlled && daNote.canBeHit && !(daNote.autoPress || (fieldNameAsPlayer == '' ? daNote.customField : daNote.fieldTarget != fieldNameAsPlayer))) {
-						if(daNote.isSustainNote) {
-							if(daNote.canBeHit) {
-								goodNoteHit(daNote);
-								
-							}
-						} else if((daNote.strumTime + daNote.offsetStrumTime) <= Conductor.songPosition || daNote.isSustainNote) {//bit perfect
-							goodNoteHit(daNote);
-						}
+					if((gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && cpuControlled && !(daNote.autoPress || (fieldNameAsPlayer == '' ? daNote.customField : daNote.fieldTarget != fieldNameAsPlayer)) && botCanHit) {
+						goodNoteHit(daNote);
 					}
 					//custom field player(bot)
-					if((gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && (daNote.autoPress || (fieldNameAsPlayer == '' ? daNote.customField : daNote.fieldTarget != fieldNameAsPlayer)) && daNote.canBeHit) {
-						if(daNote.isSustainNote) {
-							if(daNote.canBeHit) {
-								goodNoteHit(daNote);
-							}
-						} else if((daNote.strumTime + daNote.offsetStrumTime) <= Conductor.songPosition || daNote.isSustainNote) {
-							goodNoteHit(daNote);
-						}
+					if((gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && (daNote.autoPress || (fieldNameAsPlayer == '' ? daNote.customField : daNote.fieldTarget != fieldNameAsPlayer)) && botCanHit) {
+						goodNoteHit(daNote);
 					}
 
 					// Kill extremely late notes and cause misses
@@ -5188,9 +5164,9 @@ class PlayState extends MusicBeatState
 				var sortedNotesList:Array<Note> = [];
 				notes.forEachAlive(function(daNote:Note)
 				{
-					if (strumsBlocked[daNote.noteData + ((gamemode == "bothside v2" && !daNote.mustPress ? keyCount : 0)+(!daNote.mustPress && daNote.gfNote && PlayState.SONG.secOpt ? keyCount : 0))] != true && (daNote.canBeHit && (((gamemode == 'opponent') || (gamemode == "bothside v2" && key >= keyCount)) ? !daNote.mustPress : (gamemode == "bothside" ? true : daNote.mustPress)) && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote && (gamemode == "opponent"  ? (!daNote.ignoreNote && !daNote.canFreeze) : (!daNote.blockHit && !daNote.canFreeze)) && !daNote.autoPress) && !((fieldNameAsPlayer == '' ? daNote.customField : daNote.fieldTarget != fieldNameAsPlayer)))//when player play as opponent the player cant press ignore note(based opponent itself), you cant press autoPress notes
+					if (strumsBlocked[daNote.noteData + ((gamemode == "bothside v2" && !daNote.mustPress ? keyCount : 0)+(!daNote.mustPress && (daNote.gfNote || daNote.secondOpponent) && PlayState.SONG.secOpt ? keyCount : 0))] != true && (daNote.canBeHit && (((gamemode == 'opponent') || (gamemode == "bothside v2" && key >= keyCount)) ? !daNote.mustPress : (gamemode == "bothside" ? true : daNote.mustPress)) && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote && (gamemode == "opponent"  ? (!daNote.ignoreNote && !daNote.canFreeze) : (!daNote.blockHit && !daNote.canFreeze)) && !daNote.autoPress) && !((fieldNameAsPlayer == '' ? daNote.customField : daNote.fieldTarget != fieldNameAsPlayer)))//when player play as opponent the player cant press ignore note(based opponent itself), you cant press autoPress notes
 					{
-						if(daNote.noteData == key-(((daNote.gfNote && !daNote.mustPress) && PlayState.SONG.secOpt ? keyCount : 0)+(daNote.mustPress && gamemode=='bothside v2' ? keyCount : 0)))
+						if(daNote.noteData == key-((((daNote.gfNote || daNote.secondOpponent) && !daNote.mustPress) && PlayState.SONG.secOpt ? keyCount : 0)+(daNote.mustPress && gamemode=='bothside v2' ? keyCount : 0)))
 						{
 							sortedNotesList.push(daNote);
 							//notesDatas.push(daNote.noteData);
@@ -5328,7 +5304,7 @@ class PlayState extends MusicBeatState
 			notes.forEachAlive(function(daNote:Note)
 			{
 				// hold note functions
-				if (strumsBlocked[daNote.noteData+(((gamemode == "bothside v2" && !daNote.mustPress) ? keyCount : 0)+(!daNote.mustPress && daNote.gfNote && PlayState.SONG.secOpt ? keyCount : 0))] != true && daNote.isSustainNote && parsedHoldArray[daNote.noteData+(((gamemode == "bothside v2" && !daNote.mustPress) ? keyCount : 0)+(!daNote.mustPress && daNote.gfNote && PlayState.SONG.secOpt ? keyCount : 0))] && daNote.canBeHit
+				if (strumsBlocked[daNote.noteData+(((gamemode == "bothside v2" && !daNote.mustPress) ? keyCount : 0)+(!daNote.mustPress && (daNote.gfNote || daNote.secondOpponent) && PlayState.SONG.secOpt ? keyCount : 0))] != true && daNote.isSustainNote && parsedHoldArray[daNote.noteData+(((gamemode == "bothside v2" && !daNote.mustPress) ? keyCount : 0)+(!daNote.mustPress && (daNote.gfNote || daNote.secondOpponent) && PlayState.SONG.secOpt ? keyCount : 0))] && daNote.canBeHit
 				&& (gamemode != 'opponent' ? (gamemode == "bothside v2" || gamemode == "bothside" ? true : daNote.mustPress) : !daNote.mustPress) && !daNote.tooLate && !daNote.wasGoodHit && (gamemode == 'opponent' || ((gamemode == "bothside v2" || gamemode == "bothside") && !daNote.mustPress) ? (!daNote.ignoreNote && !daNote.canFreeze) : (!daNote.blockHit && !daNote.canFreeze))) {
 					goodNoteHit(daNote);
 				}
@@ -5705,7 +5681,7 @@ class PlayState extends MusicBeatState
 						StrumPlayAnim(!note.mustPress ? true : false, Std.int(Math.abs(note.noteData)), time, note.customField, note.fieldTarget, note);
 					}
 				} else {
-					var spr = (!note.customField ? ((gamemode == "opponent" || !note.mustPress) ? (note.gfNote && PlayState.SONG.secOpt ? gfStrums.members[note.noteData] : opponentStrums.members[note.noteData]) : playerStrums.members[note.noteData]) : strumGroupMap.get(note.fieldTarget).members[note.noteData]);
+					var spr = (!note.customField ? ((gamemode == "opponent" || !note.mustPress) ? ((note.gfNote || note.secondOpponent) && PlayState.SONG.secOpt ? gfStrums.members[note.noteData] : opponentStrums.members[note.noteData]) : playerStrums.members[note.noteData]) : strumGroupMap.get(note.fieldTarget).members[note.noteData]);
 					if(spr != null)
 					{
 						if (note.playStrumAnim  && !note.fakeNoHit) {
@@ -5743,7 +5719,7 @@ class PlayState extends MusicBeatState
 				}
 			} else {
 				if (ClientPrefs.noteSplashesOpt || note.forceNoteSplash) {
-					var strum:StrumNote = (!note.customField ? (note.gfNote && PlayState.SONG.secOpt ? gfStrums.members[note.noteData] : opponentStrums.members[note.noteData]) : strumGroupMap.get(note.fieldTarget).members[note.noteData]);
+					var strum:StrumNote = (!note.customField ? ((note.gfNote || note.secondOpponent) && PlayState.SONG.secOpt ? gfStrums.members[note.noteData] : opponentStrums.members[note.noteData]) : strumGroupMap.get(note.fieldTarget).members[note.noteData]);
 					if(strum != null) {
 						spawnNoteSplashOpt(strum.x, strum.y, note.noteData, note);
 					}
@@ -5774,7 +5750,7 @@ class PlayState extends MusicBeatState
 		var groupTarget = grpNoteSplashes;
 		if (note != null && note.customField && noteSplashGroupMap.exists(note.fieldTarget)) {
 			groupTarget = noteSplashGroupMap.get(note.fieldTarget);
-		} else if (note.gfNote) {
+		} else if (note.gfNote || note.secondOpponent) {
 			groupTarget = grpNoteSplashesGf;
 		}
 		var splash:NoteSplash = groupTarget.recycle(NoteSplash);
@@ -5813,7 +5789,7 @@ class PlayState extends MusicBeatState
 		var groupTarget = grpNoteSplashesOpt;
 		if (note != null && note.customField && noteSplashGroupMap.exists(note.fieldTarget)) {
 			groupTarget = noteSplashGroupMap.get(note.fieldTarget);
-		} else if (note.gfNote) {
+		} else if (note.gfNote || note.secondOpponent) {
 			groupTarget = grpNoteSplashesGf;
 		}
 		var splashOpt:NoteSplash = groupTarget.recycle(NoteSplash);
@@ -6266,7 +6242,7 @@ class PlayState extends MusicBeatState
 	function StrumPlayAnim(isDad:Bool, id:Int, time:Float, custom:Bool = false, ft:String = '', ?note:Note) {
 		var spr:StrumNote = null;
 		if(isDad) {
-			spr = (custom ? strumGroupMap.get(ft).members[id] : (note.gfNote && PlayState.SONG.secOpt ? gfStrums.members[id] : opponentStrums.members[id]));
+			spr = (custom ? strumGroupMap.get(ft).members[id] : ((note.gfNote || note.secondOpponent) && PlayState.SONG.secOpt ? gfStrums.members[id] : opponentStrums.members[id]));
 			if(spr != null) {
 				spr.playAnim(note.animConfirm == null || note.animConfirm.length < 1 ? (spr.animConfirm == null || spr.animConfirm.length < 1 ? 'confirm' : spr.animConfirm) : note.animConfirm, true);
 				spr.resetAnim = time;

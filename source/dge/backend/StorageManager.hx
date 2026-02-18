@@ -1,4 +1,4 @@
-package;
+package dge.backend;
 
 import lime.system.JNI;
 

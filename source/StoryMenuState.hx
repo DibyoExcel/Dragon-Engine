@@ -98,94 +98,113 @@ class StoryMenuState extends MusicBeatState
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 
-		var num:Int = 0;
-		for (i in 0...WeekData.weeksList.length)
-		{
-			var weekFile:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
-			var isLocked:Bool = weekIsLocked(WeekData.weeksList[i]);
-			if(!isLocked || !weekFile.hiddenUntilUnlocked)
+		if (WeekData.weeksList.length > 0) {
+
+			var num:Int = 0;
+			for (i in 0...WeekData.weeksList.length)
 			{
-				loadedWeeks.push(weekFile);
-				WeekData.setDirectoryFromWeek(weekFile);
-				var weekThing:MenuItem = new MenuItem(0, bgSprite.y + 396, WeekData.weeksList[i]);
-				weekThing.y += ((weekThing.height + 20) * num);
-				weekThing.targetY = num;
-				grpWeekText.add(weekThing);
-
-				weekThing.screenCenter(X);
-				weekThing.antialiasing = ClientPrefs.globalAntialiasing;
-				// weekThing.updateHitbox();
-
-				// Needs an offset thingie
-				if (isLocked)
+				var weekFile:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
+				var isLocked:Bool = weekIsLocked(WeekData.weeksList[i]);
+				if(!isLocked || !weekFile.hiddenUntilUnlocked)
 				{
-					var lock:FlxSprite = new FlxSprite(weekThing.width + 10 + weekThing.x);
-					lock.frames = ui_tex;
-					lock.animation.addByPrefix('lock', 'lock');
-					lock.animation.play('lock');
-					lock.ID = i;
-					lock.antialiasing = ClientPrefs.globalAntialiasing;
-					grpLocks.add(lock);
+					loadedWeeks.push(weekFile);
+					WeekData.setDirectoryFromWeek(weekFile);
+					var weekThing:MenuItem = new MenuItem(0, bgSprite.y + 396, WeekData.weeksList[i]);
+					weekThing.y += ((weekThing.height + 20) * num);
+					weekThing.targetY = num;
+					grpWeekText.add(weekThing);
+	
+					weekThing.screenCenter(X);
+					weekThing.antialiasing = ClientPrefs.globalAntialiasing;
+					// weekThing.updateHitbox();
+	
+					// Needs an offset thingie
+					if (isLocked)
+					{
+						var lock:FlxSprite = new FlxSprite(weekThing.width + 10 + weekThing.x);
+						lock.frames = ui_tex;
+						lock.animation.addByPrefix('lock', 'lock');
+						lock.animation.play('lock');
+						lock.ID = i;
+						lock.antialiasing = ClientPrefs.globalAntialiasing;
+						grpLocks.add(lock);
+					}
+					num++;
 				}
-				num++;
 			}
+	
+			WeekData.setDirectoryFromWeek(loadedWeeks[0]);
+			var charArray:Array<String> = loadedWeeks[0].weekCharacters;
+			for (char in 0...3)
+			{
+				var weekCharacterThing:MenuCharacter = new MenuCharacter((FlxG.width * 0.25) * (1 + char) - 150, charArray[char]);
+				weekCharacterThing.y += 70;
+				grpWeekCharacters.add(weekCharacterThing);
+			}
+	
+			difficultySelectors = new FlxGroup();
+			add(difficultySelectors);
+	
+			leftArrow = new FlxSprite(grpWeekText.members[0].x + grpWeekText.members[0].width + 10, grpWeekText.members[0].y + 10);
+			leftArrow.frames = ui_tex;
+			leftArrow.animation.addByPrefix('idle', "arrow left");
+			leftArrow.animation.addByPrefix('press', "arrow push left");
+			leftArrow.animation.play('idle');
+			leftArrow.antialiasing = ClientPrefs.globalAntialiasing;
+			difficultySelectors.add(leftArrow);
+	
+			CoolUtil.difficulties = CoolUtil.defaultDifficulties.copy();
+			if(lastDifficultyName == '')
+			{
+				lastDifficultyName = CoolUtil.defaultDifficulty;
+			}
+			curDifficulty = Math.round(Math.max(0, CoolUtil.defaultDifficulties.indexOf(lastDifficultyName)));
+			
+			sprDifficulty = new FlxSprite(0, leftArrow.y);
+			sprDifficulty.antialiasing = ClientPrefs.globalAntialiasing;
+			difficultySelectors.add(sprDifficulty);
+	
+			rightArrow = new FlxSprite(leftArrow.x + 376, leftArrow.y);
+			rightArrow.frames = ui_tex;
+			rightArrow.animation.addByPrefix('idle', 'arrow right');
+			rightArrow.animation.addByPrefix('press', "arrow push right", 24, false);
+			rightArrow.animation.play('idle');
+			rightArrow.antialiasing = ClientPrefs.globalAntialiasing;
+			difficultySelectors.add(rightArrow);
+	
+			add(bgYellow);
+			add(bgSprite);
+			add(grpWeekCharacters);
+	
+			var tracksSprite:FlxSprite = new FlxSprite(FlxG.width * 0.07, bgSprite.y + 425).loadGraphic(Paths.image('Menu_Tracks'));
+			tracksSprite.antialiasing = ClientPrefs.globalAntialiasing;
+			add(tracksSprite);
+	
+			txtTracklist = new FlxText(FlxG.width * 0.05, tracksSprite.y + 60, 0, "", 32);
+			txtTracklist.alignment = CENTER;
+			txtTracklist.font = rankText.font;
+			txtTracklist.color = 0xFFe55777;
+			add(txtTracklist);
+			// add(rankText);
+			add(scoreText);
+			add(txtWeekTitle);
+		} else {
+			var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image((ClientPrefs.darkmode ? 'menuDesatDark' : 'menuDesat')));
+			bg.antialiasing = ClientPrefs.globalAntialiasing;
+			CoolUtil.fitBackground(bg);
+			bg.color = 0xffff0000;
+			add(bg);
+			//i know is impossible get empty week unless modified weekList.txt(bundle not external)
+			var noWeek:FlxText = new FlxText(0, 0, 'NO WEEK EVER TO PLAY.', 48);
+			if (FlxG.random.bool(0.1)) {//hehe
+				noWeek.text += "\nMaybe it's time to end this game?";
+			}
+			noWeek.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			add(noWeek);
+			noWeek.scrollFactor.set();
+			noWeek.borderSize = 2;
+			noWeek.screenCenter();
 		}
-
-		WeekData.setDirectoryFromWeek(loadedWeeks[0]);
-		var charArray:Array<String> = loadedWeeks[0].weekCharacters;
-		for (char in 0...3)
-		{
-			var weekCharacterThing:MenuCharacter = new MenuCharacter((FlxG.width * 0.25) * (1 + char) - 150, charArray[char]);
-			weekCharacterThing.y += 70;
-			grpWeekCharacters.add(weekCharacterThing);
-		}
-
-		difficultySelectors = new FlxGroup();
-		add(difficultySelectors);
-
-		leftArrow = new FlxSprite(grpWeekText.members[0].x + grpWeekText.members[0].width + 10, grpWeekText.members[0].y + 10);
-		leftArrow.frames = ui_tex;
-		leftArrow.animation.addByPrefix('idle', "arrow left");
-		leftArrow.animation.addByPrefix('press', "arrow push left");
-		leftArrow.animation.play('idle');
-		leftArrow.antialiasing = ClientPrefs.globalAntialiasing;
-		difficultySelectors.add(leftArrow);
-
-		CoolUtil.difficulties = CoolUtil.defaultDifficulties.copy();
-		if(lastDifficultyName == '')
-		{
-			lastDifficultyName = CoolUtil.defaultDifficulty;
-		}
-		curDifficulty = Math.round(Math.max(0, CoolUtil.defaultDifficulties.indexOf(lastDifficultyName)));
-		
-		sprDifficulty = new FlxSprite(0, leftArrow.y);
-		sprDifficulty.antialiasing = ClientPrefs.globalAntialiasing;
-		difficultySelectors.add(sprDifficulty);
-
-		rightArrow = new FlxSprite(leftArrow.x + 376, leftArrow.y);
-		rightArrow.frames = ui_tex;
-		rightArrow.animation.addByPrefix('idle', 'arrow right');
-		rightArrow.animation.addByPrefix('press', "arrow push right", 24, false);
-		rightArrow.animation.play('idle');
-		rightArrow.antialiasing = ClientPrefs.globalAntialiasing;
-		difficultySelectors.add(rightArrow);
-
-		add(bgYellow);
-		add(bgSprite);
-		add(grpWeekCharacters);
-
-		var tracksSprite:FlxSprite = new FlxSprite(FlxG.width * 0.07, bgSprite.y + 425).loadGraphic(Paths.image('Menu_Tracks'));
-		tracksSprite.antialiasing = ClientPrefs.globalAntialiasing;
-		add(tracksSprite);
-
-		txtTracklist = new FlxText(FlxG.width * 0.05, tracksSprite.y + 60, 0, "", 32);
-		txtTracklist.alignment = CENTER;
-		txtTracklist.font = rankText.font;
-		txtTracklist.color = 0xFFe55777;
-		add(txtTracklist);
-		// add(rankText);
-		add(scoreText);
-		add(txtWeekTitle);
 
 		changeWeek();
 		changeDifficulty();
@@ -217,7 +236,7 @@ class StoryMenuState extends MusicBeatState
 
 		// FlxG.watch.addQuick('font', scoreText.font);
 
-		if (!movedBack && !selectedWeek)
+		if (!movedBack && !selectedWeek && WeekData.weeksList.length > 0)
 		{
 			var upP = controls.UI_UP_P;
 			var downP = controls.UI_DOWN_P;
@@ -248,16 +267,17 @@ class StoryMenuState extends MusicBeatState
 				changeDifficulty();
 			}
 			#end
-
-			if (controls.UI_RIGHT #if mobile || dge.backend.TouchUtil.swipeRight() #end)
-				rightArrow.animation.play('press')
-			else
-				rightArrow.animation.play('idle');
-
-			if (controls.UI_LEFT #if mobile || dge.backend.TouchUtil.swipeLeft() #end)
-				leftArrow.animation.play('press');
-			else
-				leftArrow.animation.play('idle');
+			if (WeekData.weeksList.length > 0) {
+				if (controls.UI_RIGHT #if mobile || dge.backend.TouchUtil.swipeRight() #end)
+					rightArrow.animation.play('press')
+				else
+					rightArrow.animation.play('idle');
+	
+				if (controls.UI_LEFT #if mobile || dge.backend.TouchUtil.swipeLeft() #end)
+					leftArrow.animation.play('press');
+				else
+					leftArrow.animation.play('idle');
+			}
 
 			if (controls.UI_RIGHT_P #if mobile || dge.backend.TouchUtil.swipeRight() #end)
 				changeDifficulty(1);
@@ -273,6 +293,10 @@ class StoryMenuState extends MusicBeatState
 			}
 			else if(controls.RESET #if mobile || resetButton.justPressed #end)
 			{
+				if (WeekData.weeksList.length < 1) {
+					FlxG.resetState();//lol
+					return;
+				}
 				persistentUpdate = false;
 				openSubState(new ResetScoreSubState('', curDifficulty, '', curWeek));
 				//FlxG.sound.play(Paths.sound('scrollMenu'));
@@ -305,6 +329,7 @@ class StoryMenuState extends MusicBeatState
 
 	function selectWeek()
 	{
+		if (WeekData.weeksList.length < 1) return;
 		if (!weekIsLocked(loadedWeeks[curWeek].fileName))
 		{
 			if (stopspamming == false)//i know it useless if missing json but idc
@@ -362,6 +387,7 @@ class StoryMenuState extends MusicBeatState
 	var tweenDifficulty:FlxTween;
 	function changeDifficulty(change:Int = 0):Void
 	{
+		if (WeekData.weeksList.length < 1) return;
 		curDifficulty += change;
 
 		if (curDifficulty < 0)
@@ -401,6 +427,7 @@ class StoryMenuState extends MusicBeatState
 
 	function changeWeek(change:Int = 0):Void
 	{
+		if (WeekData.weeksList.length < 1) return;
 		curWeek += change;
 
 		if (curWeek >= loadedWeeks.length)

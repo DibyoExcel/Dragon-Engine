@@ -1,4 +1,4 @@
-package options;
+package dge.states.options;
 
 import dge.obj.mobile.VirtualButton;
 #if desktop
@@ -39,13 +39,13 @@ class DragonOptionsState extends MusicBeatState
 	function openSelectedSubstate(label:String) {
 		switch(label) {
 			case 'Miscellaneous':
-				openSubState(new options.dge.MiscSubState());
+				openSubState(new dge.states.options.MiscSubState());
 			case 'Visuals & UI':
-				openSubState(new options.dge.VisualUISubState());
+				openSubState(new dge.states.options.VisualUISubState());
 			case 'Mobile Setting':
-				openSubState(new options.dge.MobileSubState());
+				openSubState(new dge.states.options.MobileSubState());
 			case 'Editor Setting':
-				openSubState(new options.dge.EditorSubState());
+				openSubState(new dge.states.options.EditorSubState());
 		}
 	}
 
@@ -54,7 +54,7 @@ class DragonOptionsState extends MusicBeatState
 
 	override function create() {
 		#if desktop
-		DiscordClient.changePresence("Dragon Options Menu", null);
+		DiscordClient.changePresence("DGE Options Menu", null);
 		#end
 
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image((ClientPrefs.darkmode ? 'menuDesatDark' : 'menuDesat')));

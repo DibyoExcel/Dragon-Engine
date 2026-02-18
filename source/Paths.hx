@@ -597,6 +597,6 @@ class Paths
 	
 	public static function externalFilesPath(file:String = '')
 	{
-		return StorageManager.getEngineDir() + file;
+		return dge.backend.StorageManager.getEngineDir() + file;
 	}
 }

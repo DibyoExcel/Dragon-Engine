@@ -1,4 +1,4 @@
-package options.dge;
+package dge.states.options;
 
 import openfl.text.TextFormat;
 #if desktop
@@ -25,6 +25,8 @@ import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
 import Controls;
+import options.BaseOptionsMenu;
+import options.Option;
 
 using StringTools;
 

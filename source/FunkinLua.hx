@@ -855,7 +855,7 @@ class FunkinLua {
 				doPush = true;
 			}
 			else {
-				cervix = StorageManager.getEngineDir() +Paths.getPreloadPath(cervix);
+				cervix = dge.backend.StorageManager.getEngineDir() +Paths.getPreloadPath(cervix);
 				if(FileSystem.exists(cervix)) {
 					doPush = true;
 				}
