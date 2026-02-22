@@ -8,6 +8,7 @@ import Controls;
 
 class ClientPrefs {
 	//dge setting
+	public static var classicAnim:Bool = false;//classic animation note and character
 	public static var modchart:Bool = true;//enable modchart
 	public static var noteMechanic:Bool = true;//enable note mechanic(useful for new players)
 	public static var pauseBGAlpha:Float = 0.6;
@@ -157,6 +158,7 @@ class ClientPrefs {
 	}
 
 	public static function saveSettings() {
+		FlxG.save.data.classicAnim = classicAnim;
 		FlxG.save.data.noteMechanic = noteMechanic;
 		FlxG.save.data.modchart = modchart;
 		FlxG.save.data.pauseBGAlpha = pauseBGAlpha;
@@ -240,6 +242,9 @@ class ClientPrefs {
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.classicAnim != null) {
+			classicAnim = FlxG.save.data.classicAnim;
 		}
 		if(FlxG.save.data.noteMechanic != null) {
 			noteMechanic = FlxG.save.data.noteMechanic;

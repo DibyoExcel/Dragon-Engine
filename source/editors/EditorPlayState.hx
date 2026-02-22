@@ -1181,12 +1181,8 @@ class EditorPlayState extends MusicBeatState
 
 	// For Opponent's notes glow
 	function StrumPlayAnim(isDad:Bool, id:Int, time:Float, ?note:Note) {
-		var spr:StrumNote = null;
-		if(isDad) {
-			spr = (note.gfNote && PlayState.SONG.secOpt ? gfStrums.members[id] : opponentStrums.members[id]);
-		} else {
-			spr = playerStrums.members[id];
-		}
+		if (note == null) return;
+		var spr:StrumNote = note.strumNote;
 
 		if(spr != null) {
 			spr.playAnim((note.animConfirm.length < 1 ? spr.animConfirm : note.animConfirm), true);
@@ -1198,7 +1194,7 @@ class EditorPlayState extends MusicBeatState
 	// Note splash shit, duh
 	function spawnNoteSplashOnNote(note:Note, player:Bool = true) {
 		if(ClientPrefs.noteSplashes && note != null && !ClientPrefs.clsstrum) {
-			var strum:StrumNote = (player ? playerStrums.members[note.noteData] : (note.gfNote && PlayState.SONG.secOpt ? gfStrums.members[note.noteData] : opponentStrums.members[note.noteData]));
+			var strum:StrumNote = note.strumNote;
 			if(strum != null) {
 				spawnNoteSplash(strum.x, strum.y, note.noteData, note);
 			}

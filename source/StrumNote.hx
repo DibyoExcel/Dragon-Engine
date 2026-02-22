@@ -28,6 +28,8 @@ class StrumNote extends FlxSprite
 	public var snapAlpha:Float = 0;
 	public var ignoreTextureChange:Bool = false;
 	public var sustainReducePoint:Float = 0.5;//how height before sustain note cliped(0:top of strum, 1:bottom of strum)
+	public var resetTime:Float = 0.2;//how time to reset to static anim(<=0 is permanent btw)
+	public var classicAnim:Bool = ClientPrefs.classicAnim;//use classic anim behavior
 	
 	private function set_texture(value:String):String {
 		if (value == null) {
@@ -198,7 +200,8 @@ class StrumNote extends FlxSprite
 		super.update(elapsed);
 	}
 
-	public function playAnim(anim:String, ?force:Bool = false) {
+	public function playAnim(anim:String, ?force:Bool = false, sustainNote:Bool = false) {
+		if (animation.curAnim != null && animation.curAnim.name == anim && sustainNote && !classicAnim) return;
 		animation.play(anim, force);
 		centerOrigin();
 		centerOffsets();

@@ -79,6 +79,7 @@ class Character extends FlxSprite
 	public var healthColorArray:Array<Int> = [255, 0, 0];
 
 	public static var DEFAULT_CHARACTER:String = 'bf'; //In case a character is missing, it will use BF on its place
+	public var classicAnim:Bool = ClientPrefs.classicAnim;
 	public function new(x:Float, y:Float, ?character:String = 'bf', ?isPlayer:Bool = false)
 	{
 		super(x, y);
@@ -290,14 +291,9 @@ class Character extends FlxSprite
 					}
 					if(animation.curAnim.finished) playAnim(animation.curAnim.name, false, false, animation.curAnim.frames.length - 3);
 			}
-
-			if (!isPlayer)
+			if (animation.curAnim.name.startsWith('sing'))
 			{
-				if (animation.curAnim.name.startsWith('sing'))
-				{
-					holdTimer += elapsed;
-				}
-
+				holdTimer += elapsed;
 			}
 
 			if(animation.curAnim.finished && animation.getByName(animation.curAnim.name + '-loop') != null)
@@ -332,8 +328,9 @@ class Character extends FlxSprite
 		}
 	}
 
-	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
+	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0, isSustainNote:Bool = false):Void
 	{
+		if (animation.curAnim != null && animation.curAnim.name == AnimName && isSustainNote && !classicAnim) return;
 		specialAnim = false;
 		animation.play(AnimName, Force, Reversed, Frame);
 

@@ -29,7 +29,7 @@ class Note extends FlxSprite
 	public var extraData:Map<String, Dynamic> = [];
 
 	public var strumTime:Float = 0;
-	public var mustPress:Bool = false;
+	public var mustPress(default, set):Bool = false;
 	public var isDad:Bool = false; // For Player play as opponent
 	public var noteData(default, set):Int = 0;//add for adaptive note(not color swap change)
 	public var canBeHit:Bool = false;
@@ -71,7 +71,7 @@ class Note extends FlxSprite
 
 	// Lua shit
 	public var noteSplashDisabled:Bool = false;
-	public var noteSplashTexture:String = null;
+	public var noteSplashTexture(default, set):String = null;
 	public var noteSplashShaderType:String = 'swap';
 	public var noteSplashAngle:Float = 0;
 	public var noteSplashAlpha:Float = ClientPrefs.noteSplashAlpha;
@@ -188,6 +188,7 @@ class Note extends FlxSprite
 	//end snap prop
 	public var mechanicNote:Bool = false;//whether this note is a mechanic note(only for lua or check)(recommend use json for change this)
 	public var secondOpponent:Bool = false;//similar when enable gfNote in 2nd opponent mode but not apply as gf type.(only afffected if 2nd mode active)(idea from:https://youtu.be/QmXwPl3bzwk)
+	public var resetTimeStrumAnim:Float = 0;//override 'resetTime' of strum(0 or under will disable override)
 	//end dge core
 
 	@:noCompletion
@@ -351,11 +352,7 @@ class Note extends FlxSprite
 		if (parent != null) {
 			this.parent = parent;
 		}
-		this.mustPress = mustPress;
 		var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
-		var skin:String = PlayState.SONG.splashSkin;
-		var skinOpt:String = PlayState.SONG.splashSkinOpt;
-		var skinSec:String = PlayState.SONG.splashSkinSec;
 		sustainTail = tail;
 
 		if (prevNote == null)
@@ -433,35 +430,14 @@ class Note extends FlxSprite
 		}
 		camTarget = 'hud';
 		hitsound = 'hitsound';
-		this.gfNote = gfSec;
-		this.noteType = noteType;
-		if (skin == null || skin.length < 1) {
-			skin = "noteSplashes";
-		}
-		if (skinOpt == null || skinOpt.length < 1) {
-			skinOpt = skin;
-		}
-		if (skinSec == null || skinSec.length < 1) {
-			if (skinOpt == null || skinOpt.length < 1) {
-				skinOpt = skin;
-			}
-			skinSec = skinOpt;
-		}
-		if (noteSplashTexture == null || noteSplashTexture.length < 1) {
-			if (mustPress) {
-				noteSplashTexture = skin;
-			} else {
-				if (gfNote) {
-					noteSplashTexture = skinSec;
-				} else {
-					noteSplashTexture = skinOpt;
-				}
-			}
-		}
 		if (PlayState.SONG.secOpt && !(gamemode == "bothside") && !mustPress) {
 			noteScale = 0.75;
 			noteSplashScale = 0.75;
 		}
+		this.mustPress = mustPress;
+		this.gfNote = gfSec;
+		this.noteSplashTexture = '';
+		this.noteType = noteType;
 		//sorry
 		//runConfig(noteType);
 	}
@@ -552,7 +528,11 @@ class Note extends FlxSprite
 			try{
 				frames = Paths.getSparrowAtlas(blahblah);
 			} catch (e:Dynamic) {
-				frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
+				try {
+					frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
+				} catch (e:Dynamic) {
+					frames = Paths.getSparrowAtlas('NOTE_assets');
+				}
 			}
 			loadNoteAnims();
 			setGraphicSize(Std.int(width * ClientPrefs.strumsize));
@@ -652,39 +632,7 @@ class Note extends FlxSprite
 	function set_gfNote(value:Bool):Bool {//BETTER SYSTEM!
 		if (gfNote != value) {
 			gfNote = value;
-			var lastScale = noteScale;
-			noteScale = 1;
-			reloadNote('', texture);
-			noteScale = lastScale;
-			if (PlayState.SONG.secOpt && !mustPress) {//purpose trigger
-				noteScale = 0.75;
-			}
-			if (noteType != 'Hurt Note') {
-				var skin:String = PlayState.SONG.splashSkin;
-				var skinOpt:String = PlayState.SONG.splashSkinOpt;
-				var skinSec:String = PlayState.SONG.splashSkinSec;
-				if (skin == null || skin.length < 1) {
-					skin = "noteSplashes";
-				}
-				if (skinOpt == null || skinOpt.length < 1) {
-					skinOpt = skin;
-				}
-				if (skinSec == null || skinSec.length < 1) {
-					if (skinOpt == null || skinOpt.length < 1) {
-						skinSec = skin;
-					} else {
-						skinSec = skinOpt;
-					}
-					skinSec = skinOpt;
-				}
-				if (noteSplashTexture == null || noteSplashTexture.length < 1) {
-					if (gfNote && !mustPress) {
-						noteSplashTexture = skinSec;
-					} else {
-						noteSplashTexture = skinOpt;
-					}
-				}
-			}
+			reloadNoteSkin();
 		}
 		return value;
 	}
@@ -914,5 +862,59 @@ class Note extends FlxSprite
 			}
 		}
 		return value;
+	}
+
+	private function set_noteSplashTexture(value:String):String {
+		if (noteSplashTexture != value) {
+			noteSplashTexture = value;
+			//auto cache
+			try {
+				if (value == null || value.length < 1) {
+					var skin:String = PlayState.SONG.splashSkin;
+					var skinOpt:String = PlayState.SONG.splashSkinOpt;
+					var skinSec:String = PlayState.SONG.splashSkinSec;
+					if (skin == null || skin.length < 1) {
+						skin = "noteSplashes";
+					}
+					if (skinOpt == null || skinOpt.length < 1) {
+						skinOpt = skin;
+					}
+					if (skinSec == null || skinSec.length < 1) {
+						if (skinOpt == null || skinOpt.length < 1) {
+							skinOpt = skin;
+						}
+						skinSec = skinOpt;
+					}
+					if (mustPress) {
+						Paths.getSparrowAtlas(skin);
+					} else if (gfNote) {
+						Paths.getSparrowAtlas(skinSec);
+					} else {
+						Paths.getSparrowAtlas(skinOpt);
+					}
+				} else {
+					Paths.getSparrowAtlas(value);
+				}
+			} catch (e:Dynamic) {
+				Paths.getSparrowAtlas('noteSplashes');
+			}
+		}
+		return value;
+	}
+	private function set_mustPress(value:Bool):Bool {
+		if (mustPress != value) {
+			mustPress = value;
+			reloadNoteSkin();
+		}
+		return value;
+	}
+	function reloadNoteSkin() {
+		var lastScale = noteScale;
+		noteScale = 1;
+		reloadNote('', texture);
+		noteScale = lastScale;
+		if (PlayState.SONG.secOpt && !mustPress) {//purpose trigger
+			noteScale = 0.75;
+		}
 	}
 }

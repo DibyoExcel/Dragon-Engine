@@ -142,6 +142,13 @@ class VisualUISubState extends BaseOptionsMenu
 		option.decimals = 2;
 		addOption(option);
 
+		var option:Option = new Option('Classic Animation',
+			"Using classic animation Strums and Character. Checked if you not like new animation behavior.",
+			'classicAnim',
+			'bool',
+			false);
+		addOption(option);
+
 		super();
 		changeBGColor(0xffff0000);
 	}

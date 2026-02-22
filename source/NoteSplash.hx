@@ -33,8 +33,32 @@ class NoteSplash extends FlxSprite
 		alpha = ClientPrefs.noteSplashAlpha;//for case
 
 		if(texture == null || texture.length <= 0) {
-			texture = 'noteSplashes';
-			if(PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0) texture = PlayState.SONG.splashSkin;
+			var skin:String = PlayState.SONG.splashSkin;
+			var skinOpt:String = PlayState.SONG.splashSkinOpt;
+			var skinSec:String = PlayState.SONG.splashSkinSec;
+			if (skin == null || skin.length < 1) {
+				skin = "noteSplashes";
+			}
+			if (skinOpt == null || skinOpt.length < 1) {
+				skinOpt = skin;
+			}
+			if (skinSec == null || skinSec.length < 1) {
+				if (skinOpt == null || skinOpt.length < 1) {
+					skinOpt = skin;
+				}
+				skinSec = skinOpt;
+			}
+			if (oriNote != null) {
+				if (oriNote.mustPress) {
+					texture = skin;
+				} else if (oriNote.gfNote) {
+					texture = skinSec;
+				} else {
+					texture = skinOpt;
+				}
+			} else {
+				texture = 'noteSplashes';
+			}
 		}
 		setGraphicSize(Std.int(width*scale), Std.int(height*scale));
 		if (cam != null && cam != '') {

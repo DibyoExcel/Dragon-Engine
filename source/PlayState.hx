@@ -2957,6 +2957,17 @@ class PlayState extends MusicBeatState
 		return 0;
 	}
 
+	function sortByTimeNote(Order:Int, Obj1:Note, Obj2:Note):Int {//function tamplater from FlxSort.byY hehe
+		if (!Obj1.attachStrum && Obj2.attachStrum) {
+			return -1;
+		} else if (Obj1.attachStrum && !Obj2.attachStrum) {
+			return 1;
+		}
+		return FlxSort.byValues(Order, ((Obj1.strumTime + Obj1.offsetStrumTime) - Conductor.songPosition) * Obj1.multSpeed, ((Obj2.strumTime + Obj2.offsetStrumTime) - Conductor.songPosition) * Obj2.multSpeed);
+	}
+	
+	
+
 	function sortByShit(Obj1:Note, Obj2:Note):Int
 	{
 		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.strumTime + Obj1.offsetStrumTime, Obj2.strumTime + Obj2.offsetStrumTime);
@@ -5499,7 +5510,7 @@ class PlayState extends MusicBeatState
 		
 					if(char != null)
 					{
-						char.playAnim(animToPlay, true);
+						char.playAnim(animToPlay, true, false, 0, note.isSustainNote);
 						char.holdTimer = 0;
 					}
 				}
@@ -5507,9 +5518,22 @@ class PlayState extends MusicBeatState
 				if (SONG.needsVoices)
 					vocals.volume = 1;
 		
-				var time:Float = 0.15;
+				var time:Float = 0.2;
+				if (note.strumNote != null) {
+					time = note.strumNote.resetTime;
+				}
+				if (note.resetTimeStrumAnim > 0) {
+					time = note.resetTimeStrumAnim;
+				}
 				if(note.isSustainNote && !note.animation.curAnim.name.endsWith('end')) {
-					time += 0.15;
+					var timeAdd = 0.2;
+					if (note.strumNote != null) {
+						timeAdd = note.strumNote.resetTime;
+					}
+					if (note.resetTimeStrumAnim > 0) {
+						timeAdd = note.resetTimeStrumAnim;
+					}
+					time += timeAdd;
 				}
 				if (note.playStrumAnim && !note.fakeNoHit && !ClientPrefs.clsstrum) {
 					StrumPlayAnim((gamemode == "opponent" || ((gamemode == "bothside v2" || gamemode == "bothside") && note.mustPress) ? false : true), Std.int(Math.abs(note.noteData)), time, note.customField, note.fieldTarget, note);
@@ -5556,21 +5580,21 @@ class PlayState extends MusicBeatState
 							if (!note.isDad) {
 								if (((gamemode == "bothside v2" || gamemode == "bothside") && !note.mustPress) || gamemode == "opponent") {
 									if(dad.animation.getByName('hurt') != null) {
-										dad.playAnim('hurt', true);
+										dad.playAnim('hurt', true, false, 0, note.isSustainNote);
 										dad.specialAnim = true;
 									} else {
 										if(boyfriend.animation.getByName('hurt') != null) {
-											boyfriend.playAnim('hurt', true);
+											boyfriend.playAnim('hurt', true, false, 0, note.isSustainNote);
 											boyfriend.specialAnim = true;
 										}
 									}
 								} else {
 									if(boyfriend.animation.getByName('hurt') != null) {
-										boyfriend.playAnim('hurt', true);
+										boyfriend.playAnim('hurt', true, false, 0, note.isSustainNote);
 										boyfriend.specialAnim = true;
 									} else {
 										if(dad.animation.getByName('hurt') != null) {
-											dad.playAnim('hurt', true);
+											dad.playAnim('hurt', true, false, 0, note.isSustainNote);
 											dad.specialAnim = true;
 										}
 									}
@@ -5621,7 +5645,7 @@ class PlayState extends MusicBeatState
 				{
 					if(gf != null)
 					{
-						gf.playAnim(animToPlay + note.animSuffix, true);
+						gf.playAnim(animToPlay + note.animSuffix, true, false, 0, note.isSustainNote);
 						gf.holdTimer = 0;
 					}
 				}
@@ -5629,14 +5653,14 @@ class PlayState extends MusicBeatState
 				{
 					if (!note.isDad) {
 						if (gamemode == 'opponent' || ((gamemode == "bothside v2" || gamemode == "bothside") && !note.mustPress)) {
-							dad.playAnim(animToPlay + note.animSuffix, true);
+							dad.playAnim(animToPlay + note.animSuffix, true, false, 0, note.isSustainNote);
 							dad.holdTimer = 0;
 						} else {
-							boyfriend.playAnim(animToPlay + note.animSuffix, true);
+							boyfriend.playAnim(animToPlay + note.animSuffix, true, false, 0, note.isSustainNote);
 							boyfriend.holdTimer = 0;
 						}
 					} else {
-						dad.playAnim(animToPlay + note.animSuffix, true);
+						dad.playAnim(animToPlay + note.animSuffix, true, false, 0, note.isSustainNote);
 						dad.holdTimer = 0;
 					}
 				}
@@ -5644,7 +5668,7 @@ class PlayState extends MusicBeatState
 				if(note.noteType == 'Hey!') {
 					if (!note.isDad && !note.mustPress) {
 						if(boyfriend.animOffsets.exists('hey')) {
-							boyfriend.playAnim('hey', true);
+							boyfriend.playAnim('hey', true, false, 0, note.isSustainNote);
 							boyfriend.specialAnim = true;
 							boyfriend.heyTimer = 0.6;
 						}
@@ -5664,28 +5688,51 @@ class PlayState extends MusicBeatState
 				}
 			}
 			if(cpuControlled) {
-				var time:Float = 0.15;
+				var time:Float = 0.2;
+				if (note.strumNote != null) {
+					time = note.strumNote.resetTime;
+				}
+				if (note.resetTimeStrumAnim > 0) {
+					time = note.resetTimeStrumAnim;
+				}
 				if(note.isSustainNote && !note.animation.curAnim.name.endsWith('end')) {
-					time += 0.15;
+					var timeAdd = 0.2;
+					if (note.strumNote != null) {
+						timeAdd = note.strumNote.resetTime;
+					}
+					if (note.resetTimeStrumAnim > 0) {
+						timeAdd = note.resetTimeStrumAnim;
+					}
+					time += timeAdd;
 				}
 				if (note.playStrumAnim && !note.fakeNoHit && !ClientPrefs.clsstrum) {
 					StrumPlayAnim(!note.mustPress ? true : false, Std.int(Math.abs(note.noteData)), time, note.customField, note.fieldTarget, note);
 				}
 			} else {
 				if (note.autoPress || (fieldNameAsPlayer == '' ? note.customField : note.fieldTarget != fieldNameAsPlayer)) {
-					var time:Float = 0.15;
-					if(note.isSustainNote && !note.animation.curAnim.name.endsWith('end')) {
-						time += 0.15;
+					var time:Float = 0.2;
+					if (note.strumNote != null) {
+						time = note.strumNote.resetTime;
 					}
-					if (note.playStrumAnim  && !note.fakeNoHit && !ClientPrefs.clsstrum) {
-						StrumPlayAnim(!note.mustPress ? true : false, Std.int(Math.abs(note.noteData)), time, note.customField, note.fieldTarget, note);
+					if (note.resetTimeStrumAnim > 0) {
+						time = note.resetTimeStrumAnim;
+					}
+					if(note.isSustainNote && !note.animation.curAnim.name.endsWith('end')) {
+						var timeAdd = 0.2;
+						if (note.strumNote != null) {
+							timeAdd = note.strumNote.resetTime;
+						}
+						if (note.resetTimeStrumAnim > 0) {
+							timeAdd = note.resetTimeStrumAnim;
+						}
+						time += timeAdd;
 					}
 				} else {
-					var spr = (!note.customField ? ((gamemode == "opponent" || !note.mustPress) ? ((note.gfNote || note.secondOpponent) && PlayState.SONG.secOpt ? gfStrums.members[note.noteData] : opponentStrums.members[note.noteData]) : playerStrums.members[note.noteData]) : strumGroupMap.get(note.fieldTarget).members[note.noteData]);
+					var spr = note.strumNote;
 					if(spr != null)
 					{
 						if (note.playStrumAnim  && !note.fakeNoHit) {
-							spr.playAnim(note.animConfirm == null || note.animConfirm.length < 1 ? (spr.animConfirm == null || spr.animConfirm.length < 1 ? 'confirm' : spr.animConfirm) : note.animConfirm, true);
+							spr.playAnim(note.animConfirm == null || note.animConfirm.length < 1 ? (spr.animConfirm == null || spr.animConfirm.length < 1 ? 'confirm' : spr.animConfirm) : note.animConfirm, true, note.isSustainNote);
 						}
 					}
 				}
@@ -5709,28 +5756,18 @@ class PlayState extends MusicBeatState
 	}
 
 	public function spawnNoteSplashOnNote(note:Note, player:Bool) {
-		if(note != null && !ClientPrefs.clsstrum) {
-			if (player == true) {
-				if (ClientPrefs.noteSplashes || note.forceNoteSplash) {
-					var strum:StrumNote = (!note.customField ? playerStrums.members[note.noteData] : strumGroupMap.get(note.fieldTarget).members[note.noteData]);
-					if(strum != null) {
-						spawnNoteSplash(strum.x, strum.y, note.noteData, note);
-					}
-				}
-			} else {
-				if (ClientPrefs.noteSplashesOpt || note.forceNoteSplash) {
-					var strum:StrumNote = (!note.customField ? ((note.gfNote || note.secondOpponent) && PlayState.SONG.secOpt ? gfStrums.members[note.noteData] : opponentStrums.members[note.noteData]) : strumGroupMap.get(note.fieldTarget).members[note.noteData]);
-					if(strum != null) {
-						spawnNoteSplashOpt(strum.x, strum.y, note.noteData, note);
-					}
+		if(note != null && !ClientPrefs.clsstrum || note.forceNoteSplash) {
+			if (note.mustPress ? ClientPrefs.noteSplashes : ClientPrefs.noteSplashesOpt) {
+				var strum:StrumNote = note.strumNote;//better because get by attach;
+				if(strum != null) {
+					spawnNoteSplash(strum.x, strum.y, note.noteData, note);
 				}
 			}
 		}
 	}
 
 	public function spawnNoteSplash(x:Float, y:Float, data:Int, ?note:Note = null) {
-		var skin:String = 'noteSplashes';
-		if(PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0) skin = PlayState.SONG.splashSkin;
+		var skin:String = '';//empty because NoteSplash.hx class already handle texture choosing "if" was empty string or null
 
 		var hue:Float = 0;
 		var sat:Float = 0;
@@ -5758,45 +5795,6 @@ class PlayState extends MusicBeatState
 		groupTarget.add(splash);
 		splash.color = 0xFFFFFFFF;
 		var splashIndex = groupTarget.members.indexOf(splash);
-		if (note != null) {
-			var noteIndex = notes.members.indexOf(note);
-			callOnLuas('onSpawnNoteSplashes', [noteIndex, splashIndex, note.noteData, note.noteType]);
-		} else {
-			callOnLuas('onSpawnNoteSplashes', [0, splashIndex, 0, '']);
-		}
-	}
-
-	public function spawnNoteSplashOpt(x:Float, y:Float, data:Int, ?note:Note = null) {
-		var skin:String = 'noteSplashes';
-		if(PlayState.SONG.splashSkinOpt != null && PlayState.SONG.splashSkinOpt.length > 0) skin = PlayState.SONG.splashSkinOpt;
-
-		var hue:Float = 0;
-		var sat:Float = 0;
-		var brt:Float = 0;
-		if (data > -1 && data%4 < ClientPrefs.arrowHSV.length)
-		{
-			hue = ClientPrefs.arrowHSV[data%4][0] / 360;
-			sat = ClientPrefs.arrowHSV[data%4][1] / 100;
-			brt = ClientPrefs.arrowHSV[data%4][2] / 100;
-			if(note != null) {
-				skin = note.noteSplashTexture;
-				hue = note.noteSplashHue;
-				sat = note.noteSplashSat;
-				brt = note.noteSplashBrt;
-			}
-		}
-
-		var groupTarget = grpNoteSplashesOpt;
-		if (note != null && note.customField && noteSplashGroupMap.exists(note.fieldTarget)) {
-			groupTarget = noteSplashGroupMap.get(note.fieldTarget);
-		} else if (note.gfNote || note.secondOpponent) {
-			groupTarget = grpNoteSplashesGf;
-		}
-		var splashOpt:NoteSplash = groupTarget.recycle(NoteSplash);
-		splashOpt.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.noteSplashCam, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1], note);
-		groupTarget.add(splashOpt);
-		splashOpt.color = 0xFFFFFFFF;
-		var splashIndex = groupTarget.members.indexOf(splashOpt);
 		if (note != null) {
 			var noteIndex = notes.members.indexOf(note);
 			callOnLuas('onSpawnNoteSplashes', [noteIndex, splashIndex, note.noteData, note.noteType]);
@@ -6057,11 +6055,11 @@ class PlayState extends MusicBeatState
 		{
 			var groupToSort = [playerNotes, gfNotes, opponentNotes];
 			for (group in groupToSort) {
-				group.sort(FlxSort.byY, ClientPrefs.downScroll ? FlxSort.ASCENDING : FlxSort.DESCENDING);
+				group.sort(sortByTimeNote, FlxSort.DESCENDING);
 			}
 			for (i in notesGroupMap.keys()) {
 				var group = notesGroupMap.get(i);
-				group.sort(FlxSort.byY, ClientPrefs.downScroll ? FlxSort.ASCENDING : FlxSort.DESCENDING);
+				group.sort(sortByTimeNote, FlxSort.DESCENDING);
 			}
 		}
 
@@ -6238,10 +6236,16 @@ class PlayState extends MusicBeatState
 		}
 		#end
 	}
-
+	//lol the param become useless
 	function StrumPlayAnim(isDad:Bool, id:Int, time:Float, custom:Bool = false, ft:String = '', ?note:Note) {
 		var spr:StrumNote = null;
-		if(isDad) {
+		if (note != null) spr = note.strumNote;
+		if(spr != null) {//i just realized i can do make less code by get note attach
+			spr.playAnim(note.animConfirm == null || note.animConfirm.length < 1 ? (spr.animConfirm == null || spr.animConfirm.length < 1 ? 'confirm' : spr.animConfirm) : note.animConfirm, true, note.isSustainNote);
+			spr.resetAnim = time;
+		}
+		//old inefficient code(and bad ig)
+		/*if(isDad) {
 			spr = (custom ? strumGroupMap.get(ft).members[id] : ((note.gfNote || note.secondOpponent) && PlayState.SONG.secOpt ? gfStrums.members[id] : opponentStrums.members[id]));
 			if(spr != null) {
 				spr.playAnim(note.animConfirm == null || note.animConfirm.length < 1 ? (spr.animConfirm == null || spr.animConfirm.length < 1 ? 'confirm' : spr.animConfirm) : note.animConfirm, true);
@@ -6253,7 +6257,7 @@ class PlayState extends MusicBeatState
 				spr.playAnim(note.animConfirm == null || note.animConfirm.length < 1 ? (spr.animConfirm == null || spr.animConfirm.length < 1 ? 'confirm' : spr.animConfirm) : note.animConfirm, true);
 				spr.resetAnim = time;
 			}
-		}
+		}*/
 
 	}
 

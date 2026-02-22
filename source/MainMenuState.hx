@@ -167,6 +167,14 @@ class MainMenuState extends MusicBeatState
 				ClientPrefs.saveSettings();
 			}
 		}
+		if (leDate.getDate() == 21 && leDate.getMonth() == 4) {
+			var achieveID:Int = Achievements.getAchievementIndex('birthday');
+			if(!Achievements.isAchievementUnlocked(Achievements.achievementsStuff[achieveID][2])) { //It's a dev BIRTHDAYYYYYYYYYYYYYYYYYYYY
+				Achievements.achievementsMap.set(Achievements.achievementsStuff[achieveID][2], true);
+				giveAchievementDev();
+				ClientPrefs.saveSettings();
+			}
+		}
 		#end
 		super.create();
 	}
@@ -177,6 +185,11 @@ class MainMenuState extends MusicBeatState
 		add(new AchievementObject('friday_night_play', camAchievement));
 		FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
 		trace('Giving achievement "friday_night_play"');
+	}
+	function giveAchievementDev() {
+		add(new AchievementObject('birthday', camAchievement));
+		FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
+		trace('Giving achievement "birthday"');
 	}
 	#end
 
