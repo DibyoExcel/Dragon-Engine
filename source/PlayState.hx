@@ -352,7 +352,8 @@ class PlayState extends MusicBeatState
 	public var colorOrder:Array<Int> = [ FlxColor.MAGENTA, FlxColor.CYAN, FlxColor.LIME, FlxColor.RED ];
 	public var mergeHealthColor(default, set):Bool = false;
 	public var oldTransitionNotes:Bool = false;
-	public var fieldNameAsPlayer:String = '';//empty as default
+	public var fieldNameAsPlayer(default, set):String = '';//empty as default(deprecate and might not work in the future)(old i auto change the 'playableField' turn into ['value'])
+	public var playableField:Array<String> = [];//empty as default strums/field
 	public var keyCount:Int = 4;
 	//hitbox
 	public var hitboxCam:FlxCamera;
@@ -2957,10 +2958,10 @@ class PlayState extends MusicBeatState
 		return 0;
 	}
 
-	function sortByTimeNote(Order:Int, Obj1:Note, Obj2:Note):Int {//function tamplater from FlxSort.byY hehe
-		if (!Obj1.attachStrum && Obj2.attachStrum) {
+	function sortNoteLayer(Order:Int, Obj1:Note, Obj2:Note):Int {//function tamplater from FlxSort.byY hehe(also low priority move behind)
+		if ((!Obj1.topLayer && Obj2.topLayer) || (!Obj1.attachStrum && Obj2.attachStrum)) {
 			return -1;
-		} else if (Obj1.attachStrum && !Obj2.attachStrum) {
+		} else if ((Obj1.topLayer && !Obj2.topLayer) || (Obj1.attachStrum && !Obj2.attachStrum)) {
 			return 1;
 		}
 		return FlxSort.byValues(Order, ((Obj1.strumTime + Obj1.offsetStrumTime) - Conductor.songPosition) * Obj1.multSpeed, ((Obj2.strumTime + Obj2.offsetStrumTime) - Conductor.songPosition) * Obj2.multSpeed);
@@ -3322,9 +3323,9 @@ class PlayState extends MusicBeatState
 			iconP1.swapOldIcon();
 		}*/
 		callOnLuas('onUpdate', [elapsed]);
-		if (!strumGroupMap.exists(fieldNameAsPlayer)) {
+		/*if (!strumGroupMap.exists(fieldNameAsPlayer)) {
 			fieldNameAsPlayer = '';
-		}
+		}*/
 		if (modcharttype == "wave note") {
 			for (i in notes) {
 				var dy = i.distance;
@@ -3724,7 +3725,17 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-
+		if (generatedMusic)
+		{
+			var groupToSort = [playerNotes, gfNotes, opponentNotes];
+			for (group in groupToSort) {
+				group.sort(sortNoteLayer, FlxSort.DESCENDING);
+			}
+			for (i in notesGroupMap.keys()) {
+				var group = notesGroupMap.get(i);
+				group.sort(sortNoteLayer, FlxSort.DESCENDING);
+			}
+		}
 		if (generatedMusic && !inCutscene)
 		{
 			// why ( ͡° ͜ʖ ͡°)
@@ -3956,11 +3967,11 @@ class PlayState extends MusicBeatState
 						opponentNoteHit(daNote);
 					}
 
-					if((gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && cpuControlled && !(daNote.autoPress || (fieldNameAsPlayer == '' ? daNote.customField : daNote.fieldTarget != fieldNameAsPlayer)) && botCanHit) {
+					if((gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && cpuControlled && !(daNote.autoPress || (playableField.length < 1 ? daNote.customField : playableField.indexOf(daNote.fieldTarget) == -1)) && botCanHit) {
 						goodNoteHit(daNote);
 					}
 					//custom field player(bot)
-					if((gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && (daNote.autoPress || (fieldNameAsPlayer == '' ? daNote.customField : daNote.fieldTarget != fieldNameAsPlayer)) && botCanHit) {
+					if((gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && (daNote.autoPress || (playableField.length < 1 ? daNote.customField : playableField.indexOf(daNote.fieldTarget) == -1)) && botCanHit) {
 						goodNoteHit(daNote);
 					}
 
@@ -3968,7 +3979,7 @@ class PlayState extends MusicBeatState
 					if (Conductor.songPosition > (noteKillOffset / (Math.abs(songSpeed * daNote.multSpeed)))/**GET OUT**/ + (daNote.strumTime + daNote.offsetStrumTime))
 					{
 						//if (daNote.canFreeze) return;
-						if ((gamemode != 'opponent' ? ((gamemode == "bothside" || gamemode == "bothside v2") ? true : daNote.mustPress) : !daNote.mustPress) && !cpuControlled && !daNote.ignoreNote && !endingSong && (daNote.tooLate || !daNote.wasGoodHit) && !(daNote.autoPress || (fieldNameAsPlayer == '' ? daNote.customField : daNote.fieldTarget != fieldNameAsPlayer))) {
+						if ((gamemode != 'opponent' ? ((gamemode == "bothside" || gamemode == "bothside v2") ? true : daNote.mustPress) : !daNote.mustPress) && !cpuControlled && !daNote.ignoreNote && !endingSong && (daNote.tooLate || !daNote.wasGoodHit) && !(daNote.autoPress || (playableField.length < 1 ? daNote.customField : playableField.indexOf(daNote.fieldTarget) == -1))) {
 							noteMiss(daNote);
 						}
 
@@ -5155,11 +5166,29 @@ class PlayState extends MusicBeatState
 		{
 			if(!boyfriend.stunned && generatedMusic && !endingSong)
 			{
-				var spr:StrumNote = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key-playerStrums.length] : (fieldNameAsPlayer == '' ? playerStrums.members[key] : strumGroupMap.get(fieldNameAsPlayer).members[key])) : (fieldNameAsPlayer == '' ? opponentStrums.members[key] : strumGroupMap.get(fieldNameAsPlayer).members[key]));
-				if(spr != null)
-				{
-					spr.playAnim('pressed');
-					spr.resetAnim = 0;
+				if (playableField.length < 1) {
+					var spr = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key-playerStrums.length] : playerStrums.members[key]) : opponentStrums.members[key]);
+					if(spr != null)
+					{
+						spr.playAnim('pressed');
+						spr.resetAnim = 0;
+					}
+				} else {
+					for (field in playableField) {//hope works, if not well, rip
+						var spr:StrumNote = null;
+						if (field == '') {
+							spr = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key-playerStrums.length] : playerStrums.members[key]) : opponentStrums.members[key]);//if field is empty string, it will be treated as the default strum field
+						} else {
+							if (strumGroupMap.exists(field)) {
+								spr = strumGroupMap.get(field).members[key];//if field is not empty string, it will be treated as the custom strum field with the same name as the field
+							}
+						}
+						if(spr != null)
+						{
+							spr.playAnim('pressed');
+							spr.resetAnim = 0;
+						}
+					}
 				}
 				//more accurate hit time for the ratings?
 				var lastTime:Float = Conductor.songPosition;
@@ -5175,7 +5204,7 @@ class PlayState extends MusicBeatState
 				var sortedNotesList:Array<Note> = [];
 				notes.forEachAlive(function(daNote:Note)
 				{
-					if (strumsBlocked[daNote.noteData + ((gamemode == "bothside v2" && !daNote.mustPress ? keyCount : 0)+(!daNote.mustPress && (daNote.gfNote || daNote.secondOpponent) && PlayState.SONG.secOpt ? keyCount : 0))] != true && (daNote.canBeHit && (((gamemode == 'opponent') || (gamemode == "bothside v2" && key >= keyCount)) ? !daNote.mustPress : (gamemode == "bothside" ? true : daNote.mustPress)) && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote && (gamemode == "opponent"  ? (!daNote.ignoreNote && !daNote.canFreeze) : (!daNote.blockHit && !daNote.canFreeze)) && !daNote.autoPress) && !((fieldNameAsPlayer == '' ? daNote.customField : daNote.fieldTarget != fieldNameAsPlayer)))//when player play as opponent the player cant press ignore note(based opponent itself), you cant press autoPress notes
+					if (strumsBlocked[daNote.noteData + ((gamemode == "bothside v2" && !daNote.mustPress ? keyCount : 0)+(!daNote.mustPress && (daNote.gfNote || daNote.secondOpponent) && PlayState.SONG.secOpt ? keyCount : 0))] != true && (daNote.canBeHit && (((gamemode == 'opponent') || (gamemode == "bothside v2" && key >= keyCount)) ? !daNote.mustPress : (gamemode == "bothside" ? true : daNote.mustPress)) && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote && (gamemode == "opponent"  ? (!daNote.ignoreNote && !daNote.canFreeze) : (!daNote.blockHit && !daNote.canFreeze)) && !daNote.autoPress) && !((playableField.length < 1 ? daNote.customField : playableField.indexOf(daNote.fieldTarget) == -1)))//when player play as opponent the player cant press ignore note(based opponent itself), you cant press autoPress notes
 					{
 						if(daNote.noteData == key-((((daNote.gfNote || daNote.secondOpponent) && !daNote.mustPress) && PlayState.SONG.secOpt ? keyCount : 0)+(daNote.mustPress && gamemode=='bothside v2' ? keyCount : 0)))
 						{
@@ -5255,11 +5284,29 @@ class PlayState extends MusicBeatState
 	private function customKeyRelease(key:Int) {
 		if(!cpuControlled && startedCountdown && !paused && key > -1)
 			{
-				var spr:StrumNote = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key-playerStrums.length] : (fieldNameAsPlayer == '' ? playerStrums.members[key] : strumGroupMap.get(fieldNameAsPlayer).members[key])) : (fieldNameAsPlayer == '' ? opponentStrums.members[key] : strumGroupMap.get(fieldNameAsPlayer).members[key]));
-				if(spr != null)
-				{
-					spr.playAnim('static');
-					spr.resetAnim = 0;
+				if (playableField.length < 1) {
+					var spr = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key-playerStrums.length] : playerStrums.members[key]) : opponentStrums.members[key]);
+					if(spr != null)
+					{
+						spr.playAnim('static');
+						spr.resetAnim = 0;
+					}
+				} else {
+					for (field in playableField) {//hope works, if not, well, rip
+						var spr:StrumNote = null;
+						if (field == '') {
+							spr = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key-playerStrums.length] : playerStrums.members[key]) : opponentStrums.members[key]);//if field is empty string, it will be treated as the default strum field
+						} else {
+							if (strumGroupMap.exists(field)) {
+								spr = strumGroupMap.get(field).members[key];//if field is not empty string, it will be treated as the custom strum field with the same name as the field
+							}
+						}
+						if(spr != null)
+						{
+							spr.playAnim('static');
+							spr.resetAnim = 0;
+						}
+					}
 				}
 				callOnLuas('onKeyRelease', [key]);
 				if (ClientPrefs.extUI) {
@@ -5558,7 +5605,7 @@ class PlayState extends MusicBeatState
 	{
 		if (!note.wasGoodHit)
 		{
-			if((cpuControlled || note.autoPress/**forgot autoPress to ignore the deadlist note**/ || (fieldNameAsPlayer == '' ? note.customField : note.fieldTarget != fieldNameAsPlayer)) && ((note.ignoreNote || note.canFreeze) || note.hitCausesMiss)) return;
+			if((cpuControlled || note.autoPress/**forgot autoPress to ignore the deadlist note**/ || (playableField.length < 1 ? note.customField : playableField.indexOf(note.fieldTarget) == -1)) && ((note.ignoreNote || note.canFreeze) || note.hitCausesMiss)) return;
 
 			if ((ClientPrefs.hitsoundVolume > 0 && !note.hitsoundDisabled) || note.forceHitsound)
 			{
@@ -5709,7 +5756,7 @@ class PlayState extends MusicBeatState
 					StrumPlayAnim(!note.mustPress ? true : false, Std.int(Math.abs(note.noteData)), time, note.customField, note.fieldTarget, note);
 				}
 			} else {
-				if (note.autoPress || (fieldNameAsPlayer == '' ? note.customField : note.fieldTarget != fieldNameAsPlayer)) {
+				if (note.autoPress || (playableField.length < 1 ? note.customField : playableField.indexOf(note.fieldTarget) == -1)) {
 					var time:Float = 0.2;
 					if (note.strumNote != null) {
 						time = note.strumNote.resetTime;
@@ -6049,18 +6096,6 @@ class PlayState extends MusicBeatState
 		if(lastBeatHit >= curBeat) {
 			//trace('BEAT HIT: ' + curBeat + ', LAST HIT: ' + lastBeatHit);
 			return;
-		}
-
-		if (generatedMusic)
-		{
-			var groupToSort = [playerNotes, gfNotes, opponentNotes];
-			for (group in groupToSort) {
-				group.sort(sortByTimeNote, FlxSort.DESCENDING);
-			}
-			for (i in notesGroupMap.keys()) {
-				var group = notesGroupMap.get(i);
-				group.sort(sortByTimeNote, FlxSort.DESCENDING);
-			}
 		}
 
 		iconP1.scale.set(1.2, 1.2);
@@ -6621,8 +6656,9 @@ class PlayState extends MusicBeatState
 		callOnLuas('onChangeGamemode', [gamemode, t]);
 	}
 	//or more likely playfield
-	public function createStrum(tag:String= '', data:Int = 4, camera:String = 'hud', sfX:Float = 0, sfY:Float = 0, downScroll:Null<Bool> = null) {
+	public function createStrum(tag:String= '', data:Int = 4, camera:String = 'hud', sfX:Float = 0, sfY:Float = 0, downScroll:Null<Bool> = null, player:Bool = false, gf:Bool = false) {
 		//trace("trigger");
+		//gf param only work for opponent if player it act normal player strums
 		if (tag != '' && !strumGroupMap.exists(tag) && !notesGroupMap.exists(tag) && !noteSplashGroupMap.exists(tag)) {
 			var strumTamp:FlxTypedGroup<StrumNote>;
 			strumTamp =  new FlxTypedGroup<StrumNote>();
@@ -6637,7 +6673,7 @@ class PlayState extends MusicBeatState
 				
 				//trace("create strums:", tag);
 				for (i in 0...data) {
-					var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, strumLine.y, i, 0);
+					var babyArrow:StrumNote = new StrumNote(0+(i*Note.swagWidth), strumLine.y, i, (player ? 1 : 0), gf);
 					babyArrow.scrollFactorCam = [sfX, sfY];
 					babyArrow.camTarget = camera;
 					babyArrow.downScroll = downScroll;
@@ -6963,6 +6999,13 @@ class PlayState extends MusicBeatState
 			notes.remove(note, true);
 		}
 		note.destroy();
+	}
+	private function set_fieldNameAsPlayer(value:String):String {//for compatible purpose
+		if (fieldNameAsPlayer != value) {
+			fieldNameAsPlayer = value;
+			playableField = [value];//compatible mode BECAUSE THIS OLD VERSION OF FUNCTION IS USED IN A LOT OF PLACE IN CODE, and this function is only for change fieldNameAsPlayer so it should be fine(sorry caps lock lol)
+		}
+		return value;
 	}
 }
 

@@ -74,6 +74,9 @@ class Song
 
 	private static function onLoadJson(songJson:Dynamic) // Convert old charts to newest format
 	{
+		if (Reflect.hasField(songJson, 'format') && songJson.format == 'psych_v1') {
+			Reflect.deleteField(songJson, 'format');
+		}
 		if (songJson.secOpt == null)
 		{
 			songJson.secOpt = false;
@@ -82,11 +85,12 @@ class Song
 		{
 			if (songJson.player3 != null) {
 				songJson.gfVersion = songJson.player3;
-				songJson.player3 = null;
+				Reflect.deleteField(songJson, 'player3');
 			} else {
 				songJson.gfVersion = "gf";
 			}
 		}
+		
 
 
 		if(songJson.events == null)
@@ -185,7 +189,11 @@ class Song
 	{
 	//MORE ANTI CRASH
 		try{
-			var swagShit:SwagSong = cast Json.parse(rawJson).song;
+			var jsonParse = Json.parse(rawJson);
+			var swagShit:SwagSong = cast jsonParse.song;
+			if (jsonParse.format != null && jsonParse.format == 'psych_v1') {//convert psych v1 to psych v0.6.3 chart
+				swagShit = cast jsonParse;
+			}
 			swagShit.validScore = true;
 			return swagShit;
 		} catch (e:Dynamic) {

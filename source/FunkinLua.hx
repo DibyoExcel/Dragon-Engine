@@ -3147,9 +3147,9 @@ class FunkinLua {
 				PlayState.instance.changeSecOpt(value, transition, trasitionOpt);
 			}
 		});
-		Lua_helper.add_callback(lua, "createCustomStrum", function(tag:String= '', data:Int = 4, camera:String = 'hud', sfX:Float = 0, sfY:Float = 0, downscroll:Null<Bool> = null) {
+		Lua_helper.add_callback(lua, "createCustomStrum", function(tag:String= '', data:Int = 4, camera:String = 'hud', sfX:Float = 0, sfY:Float = 0, downscroll:Null<Bool> = null, player:Bool = false, gf:Bool = false) {
 			if (tag != null && tag != '') {
-				PlayState.instance.createStrum(tag, data, camera, sfX, sfY, downscroll);
+				PlayState.instance.createStrum(tag, data, camera, sfX, sfY, downscroll, player, gf);
 			}
 		});
 		Lua_helper.add_callback(lua, "removeStrum", function(tag:String= '') {

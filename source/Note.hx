@@ -189,6 +189,7 @@ class Note extends FlxSprite
 	public var mechanicNote:Bool = false;//whether this note is a mechanic note(only for lua or check)(recommend use json for change this)
 	public var secondOpponent:Bool = false;//similar when enable gfNote in 2nd opponent mode but not apply as gf type.(only afffected if 2nd mode active)(idea from:https://youtu.be/QmXwPl3bzwk)
 	public var resetTimeStrumAnim:Float = 0;//override 'resetTime' of strum(0 or under will disable override)
+	public var topLayer:Bool = false;//very top layer notes
 	//end dge core
 
 	@:noCompletion
