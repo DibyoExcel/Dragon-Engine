@@ -266,13 +266,70 @@ class FlxSprite extends FlxObject
 	@:noCompletion
 	var _facingFlip:Map<FlxDirectionFlags, {x:Bool, y:Bool}> = new Map<FlxDirectionFlags, {x:Bool, y:Bool}>();
 
-    public var colorSwap:ColorSwap = new ColorSwap();
-    public var colorInvert:ColorInvert = new ColorInvert();
-    public var colorSingle:ColorSingle = new ColorSingle();
-	public var colorRGBSwap:ColorRGBSwap = new ColorRGBSwap();
-	public var pixelSprite:PixelSprite = new PixelSprite();
-	public var posterize:Posterize = new Posterize();
-	public var rgbShader:RGBPalette = new RGBPalette();
+    public var colorSwap(get, never):ColorSwap;
+    public var colorInvert(get, never):ColorInvert;
+    public var colorSingle(get, never):ColorSingle;
+	public var colorRGBSwap(get, never):ColorRGBSwap;
+	public var pixelSprite(get, never):PixelSprite;
+	public var posterize(get, never):Posterize;
+	public var rgbShader(get, never):RGBPalette;
+	//store object after access
+    private var _colorSwap:ColorSwap;
+    private var _colorInvert:ColorInvert;
+    private var _colorSingle:ColorSingle;
+	private var _colorRGBSwap:ColorRGBSwap;
+	private var _pixelSprite:PixelSprite;
+	private var _posterize:Posterize;
+	private var _rgbShader:RGBPalette;
+
+	private function get_colorSwap():ColorSwap {
+		if (_colorSwap == null) {
+			_colorSwap = new ColorSwap();
+		}
+		return _colorSwap;
+	}
+
+	private function get_colorInvert():ColorInvert {
+		if (_colorInvert == null) {
+			_colorInvert = new ColorInvert();
+		}
+		return _colorInvert;
+	}
+
+	private function get_colorSingle():ColorSingle {
+		if (_colorSingle == null) {
+			_colorSingle = new ColorSingle();
+		}
+		return _colorSingle;
+	}
+
+	private function get_colorRGBSwap():ColorRGBSwap {
+		if (_colorRGBSwap == null) {
+			_colorRGBSwap = new ColorRGBSwap();
+		}
+		return _colorRGBSwap;
+	}
+
+	private function get_pixelSprite():PixelSprite {
+		if (_pixelSprite == null) {
+			_pixelSprite = new PixelSprite();
+		}
+		return _pixelSprite;
+	}
+
+	private function get_posterize():Posterize {
+		if (_posterize == null) {
+			_posterize = new Posterize();
+		}
+		return _posterize;
+	}
+
+	private function get_rgbShader():RGBPalette {
+		if (_rgbShader == null) {
+			_rgbShader = new RGBPalette();
+		}
+		return _rgbShader;
+	}
 
     public var shaderType(default, set):String = null;
 
@@ -385,12 +442,12 @@ class FlxSprite extends FlxObject
 		graphic = null;
 		_frame = FlxDestroyUtil.destroy(_frame);
 		_frameGraphic = FlxDestroyUtil.destroy(_frameGraphic);
-		colorSwap = null;
-		colorInvert = null;
-		colorSingle = null;
-		colorRGBSwap = null;
-		pixelSprite = null;
-		posterize = null;
+		_colorSwap = null;
+		_colorInvert = null;
+		_colorSingle = null;
+		_colorRGBSwap = null;
+		_pixelSprite = null;
+		_posterize = null;
 		shader = null;
 	}
 

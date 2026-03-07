@@ -865,7 +865,7 @@ class EditorPlayState extends MusicBeatState
 			if (!note.isSustainNote)
 			{
 				combo += 1;
-				if(combo > 9999) combo = 9999;
+				if (combo > 2147483646) combo = 2147483646;//i know is impossible to reach this combo but just in case, also prevents overflow
 				popUpScore(note);
 				songHits++;
 			}
@@ -1017,12 +1017,10 @@ class EditorPlayState extends MusicBeatState
 
 		var seperatedScore:Array<Int> = [];
 
-		if(combo >= 1000) {
-			seperatedScore.push(Math.floor(combo / 1000) % 10);
+		var comboNumSplit:Array<String> = StringTools.lpad(Std.string(Math.abs(combo)), '0', 3).split('');//i think this keep 3 digit minimum for combo number, so it won't look weird when combo is less than 10 or 100
+		for (enter in comboNumSplit) {
+			seperatedScore.push(Std.parseInt(enter));
 		}
-		seperatedScore.push(Math.floor(combo / 100) % 10);
-		seperatedScore.push(Math.floor(combo / 10) % 10);
-		seperatedScore.push(combo % 10);
 
 		var daLoop:Int = 0;
 		for (i in seperatedScore)
@@ -1031,9 +1029,10 @@ class EditorPlayState extends MusicBeatState
 			numScore.screenCenter();
 			numScore.x = coolText.x + (43 * daLoop) - 90;
 			numScore.y += 80;
-
+			
 			numScore.x += ClientPrefs.comboOffset[2];
 			numScore.y -= ClientPrefs.comboOffset[3];
+			numScore.x -= (43 * (seperatedScore.length - 3))/2;//align to center
 
 			if (!PlayState.isPixelStage)
 			{
@@ -1213,11 +1212,12 @@ class EditorPlayState extends MusicBeatState
 			hue = note.noteSplashHue;
 			sat = note.noteSplashSat;
 			brt = note.noteSplashBrt;
+			var splash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
+			splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.camTarget, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1]);
+			note.noteSplash = splash;
+			grpNoteSplashes.add(splash);
 		}
 
-		var splash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
-		splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.camTarget, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1]);
-		grpNoteSplashes.add(splash);
 	}
 	
 	override function destroy() {

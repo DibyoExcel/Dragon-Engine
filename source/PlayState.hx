@@ -352,8 +352,10 @@ class PlayState extends MusicBeatState
 	public var colorOrder:Array<Int> = [ FlxColor.MAGENTA, FlxColor.CYAN, FlxColor.LIME, FlxColor.RED ];
 	public var mergeHealthColor(default, set):Bool = false;
 	public var oldTransitionNotes:Bool = false;
-	public var fieldNameAsPlayer(default, set):String = '';//empty as default(deprecate and might not work in the future)(old i auto change the 'playableField' turn into ['value'])
-	public var playableField:Array<String> = [];//empty as default strums/field
+	public var fieldNameAsPlayer(default, set):String = '';//empty as default(auto change the 'playableField' turn into ['value'])
+	public var playableField(default, set):Array<String> = [];//empty as default strums/field
+	public var showHintPlayableField:Bool = true;
+	public var hintColorStrums:FlxColor = FlxColor.RED;
 	public var keyCount:Int = 4;
 	//hitbox
 	public var hitboxCam:FlxCamera;
@@ -5054,13 +5056,10 @@ class PlayState extends MusicBeatState
 		
 
 		var seperatedScore:Array<Int> = [];
-
-		if(combo >= 1000) {
-			seperatedScore.push(Math.floor(combo / 1000) % 10);
+		var comboNumSplit:Array<String> = StringTools.lpad(Std.string(Math.abs(combo)), '0', 3).split('');//i think this keep 3 digit minimum for combo number, so it won't look weird when combo is less than 10 or 100
+		for (enter in comboNumSplit) {
+			seperatedScore.push(Std.parseInt(enter));
 		}
-		seperatedScore.push(Math.floor(combo / 100) % 10);
-		seperatedScore.push(Math.floor(combo / 10) % 10);
-		seperatedScore.push(combo % 10);
 
 		var daLoop:Int = 0;
 		if (!ClientPrefs.comboStacking) {
@@ -5091,6 +5090,8 @@ class PlayState extends MusicBeatState
 	
 				numScore.x += ClientPrefs.comboOffset[2];
 				numScore.y -= ClientPrefs.comboOffset[3];
+
+				numScore.x -= (43 * (seperatedScore.length - 3))/2;//align to center
 				
 				if (!ClientPrefs.comboStacking)
 					lastScore.push(numScore);
@@ -5664,8 +5665,9 @@ class PlayState extends MusicBeatState
 
 			if (!note.isSustainNote)
 			{
+				if (combo < 0) combo = 0;
 				combo += 1;
-				if(combo > 9999) combo = 9999;
+				if (combo > 2147483646) combo = 2147483646;//i know is impossible to reach this combo but just in case, also prevents overflow
 				popUpScore(note);
 			}
 			if (!note.mustPress || (note.mustPress && note.isDad)) {
@@ -5774,6 +5776,9 @@ class PlayState extends MusicBeatState
 						}
 						time += timeAdd;
 					}
+					if (note.playStrumAnim && !note.fakeNoHit && !ClientPrefs.clsstrum) {
+						StrumPlayAnim(!note.mustPress ? true : false, Std.int(Math.abs(note.noteData)), time, note.customField, note.fieldTarget, note);
+					}
 				} else {
 					var spr = note.strumNote;
 					if(spr != null)
@@ -5831,22 +5836,24 @@ class PlayState extends MusicBeatState
 				brt = note.noteSplashBrt;
 			}
 		}
-		var groupTarget = grpNoteSplashes;
-		if (note != null && note.customField && noteSplashGroupMap.exists(note.fieldTarget)) {
-			groupTarget = noteSplashGroupMap.get(note.fieldTarget);
-		} else if (note.gfNote || note.secondOpponent) {
-			groupTarget = grpNoteSplashesGf;
-		}
-		var splash:NoteSplash = groupTarget.recycle(NoteSplash);
-		splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.noteSplashCam, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1], note);
-		groupTarget.add(splash);
-		splash.color = 0xFFFFFFFF;
-		var splashIndex = groupTarget.members.indexOf(splash);
 		if (note != null) {
+			var groupTarget = grpNoteSplashes;
+			if (note.customField && noteSplashGroupMap.exists(note.fieldTarget)) {
+				groupTarget = noteSplashGroupMap.get(note.fieldTarget);
+			} else if (!note.mustPress) {//opps forgot add to notesplash opponent group lmao
+				groupTarget = grpNoteSplashesOpt;
+
+			} else if (note.gfNote || note.secondOpponent) {
+				groupTarget = grpNoteSplashesGf;
+			}
+			var splash:NoteSplash = groupTarget.recycle(NoteSplash);
+			splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.noteSplashCam, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1], note);
+			note.noteSplash = splash;
+			groupTarget.add(splash);
+			splash.color = 0xFFFFFFFF;
+			var splashIndex = groupTarget.members.indexOf(splash);
 			var noteIndex = notes.members.indexOf(note);
 			callOnLuas('onSpawnNoteSplashes', [noteIndex, splashIndex, note.noteData, note.noteType]);
-		} else {
-			callOnLuas('onSpawnNoteSplashes', [0, splashIndex, 0, '']);
 		}
 	}
 
@@ -7004,6 +7011,87 @@ class PlayState extends MusicBeatState
 		if (fieldNameAsPlayer != value) {
 			fieldNameAsPlayer = value;
 			playableField = [value];//compatible mode BECAUSE THIS OLD VERSION OF FUNCTION IS USED IN A LOT OF PLACE IN CODE, and this function is only for change fieldNameAsPlayer so it should be fine(sorry caps lock lol)
+		}
+		return value;
+	}
+	
+	private function set_playableField(value:Array<String>):Array<String> {//inspired from mod that have able adding strums or change playfield
+		//damn
+		//hint strums when change playable field
+		var ret:Dynamic = callOnLuas('onFieldHint', [value], false);//i can say able to modified build in(or disable)
+		if(ret != FunkinLua.Function_Stop) {
+			if (playableField != value) {
+				if (value == null) value = [''];
+				playableField = value;
+				if (showHintPlayableField) {
+					if (playableField.length > 0) {
+						for (field in playableField) {
+							if (field == null) continue;
+							if (field == '') {
+								var strumTarget = playerStrums;
+								if (gamemode == 'opponent') strumTarget = opponentStrums;
+								if (gamemode == 'bothside' || gamemode == 'bothside v2') strumTarget = strumLineNotes;
+								if (strumTarget != null) {
+									for (spr in strumTarget.members) {
+										var oriColor:FlxColor = spr.color;
+										var oriAlpha = spr.alpha;
+										oriColor.alphaFloat = oriAlpha;
+										spr.color = hintColorStrums;
+										FlxTween.color(spr, 1, spr.color, oriColor, {ease: FlxEase.quadOut});
+									}
+								}
+							} else {
+								var strumTarget = null;
+								if (strumGroupMap.exists(field)) {
+									strumTarget = strumGroupMap.get(field);								
+								}
+								if (strumTarget != null) {
+									for (spr in strumTarget.members) {
+										var oriColor:FlxColor = spr.color;
+										var oriAlpha = spr.alpha;
+										oriColor.alphaFloat = oriAlpha;
+										spr.color = hintColorStrums;
+										FlxTween.color(spr, 1, spr.color, oriColor, {ease: FlxEase.quadOut});
+									}
+								}
+							}
+						}
+					} else {
+						var strumTarget = playerStrums;
+						if (gamemode == 'opponent') strumTarget = opponentStrums;
+						if (gamemode == 'bothside' || gamemode == 'bothside v2') strumTarget = strumLineNotes;
+						if (strumTarget != null) {
+							for (spr in strumTarget.members) {
+								var oriColor:FlxColor = spr.color;
+								var oriAlpha = spr.alpha;
+								oriColor.alphaFloat = oriAlpha;
+								spr.color = hintColorStrums;
+								FlxTween.color(spr, 1, spr.color, oriColor, {ease: FlxEase.quadOut});
+							}
+						}
+					}
+				}
+				//reset strum anim when change playable field, because it can cause stuck pressed anim when change while pressing key
+				if (playableField.indexOf('') == -1) {
+					var strumTarget = playerStrums;
+					if (gamemode == 'opponent') strumTarget = opponentStrums;
+					if (gamemode == 'bothside' || gamemode == 'bothside v2') strumTarget = strumLineNotes;
+					if (strumTarget != null) {
+						for (spr in strumTarget.members) {
+							spr.resetAnim = spr.resetTime;
+						}
+					}
+				}
+				for (field in strumGroupMap.keys()) {
+					if (field == '' || field == null) continue;//because '' is for player strum, and already reset above(and is imposuble make strum with '' tag)
+					if (playableField.indexOf(field) == -1) {
+						var strumTarget = strumGroupMap.get(field);
+						for (spr in strumTarget.members) {
+							spr.resetAnim = spr.resetTime;
+						}
+					}
+				}
+			}
 		}
 		return value;
 	}

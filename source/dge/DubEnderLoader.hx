@@ -176,10 +176,10 @@ class DubEnderLoader extends FlxBasePreloader
 			bar.y = stage.stageHeight - (20*ratio);
 		}
 		if (loadingText != null) {
-			loadingText.defaultTextFormat = new TextFormat("_sans", Std.int(#if mobile 40 #else 20*ratio #end), 0xFFFFFF, true);
+			loadingText.defaultTextFormat = new TextFormat("_sans", Std.int(#if mobile 40 #else 20 #end* ratio), 0xFFFFFF, true);
 			loadingText.width = stage.stageWidth;
 			loadingText.x = 10;
-			loadingText.y = stage.stageHeight - ((40*ratio)+loadingText.textHeight);
+			loadingText.y = stage.stageHeight - (Std.int(#if mobile 40 #else 20 #end* ratio)+loadingText.textHeight);
 		}
 	}
 

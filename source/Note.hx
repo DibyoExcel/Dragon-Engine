@@ -190,6 +190,7 @@ class Note extends FlxSprite
 	public var secondOpponent:Bool = false;//similar when enable gfNote in 2nd opponent mode but not apply as gf type.(only afffected if 2nd mode active)(idea from:https://youtu.be/QmXwPl3bzwk)
 	public var resetTimeStrumAnim:Float = 0;//override 'resetTime' of strum(0 or under will disable override)
 	public var topLayer:Bool = false;//very top layer notes
+	public var noteSplash:NoteSplash = null;//it only for after spawn note splash when hit.(more likely get note splash for change the note splash properties after spawn it)
 	//end dge core
 
 	@:noCompletion
@@ -832,13 +833,11 @@ class Note extends FlxSprite
 
 	function set_hitsound(value:String):String {
 		if (hitsound != value) {
-			if (value.length < 1) {
+			if (value.length < 1 || value == null) {
 				value = 'hitsound';
 			}
 			hitsound = value;
-			if (!CacheTools.cacheSound.exists(hitsound)) {
-				CacheTools.cacheSound.set(hitsound, Paths.sound(hitsound));
-			}
+			Paths.sound(hitsound);//is already optimized in Paths.hx
 		}
 		return value;
 	}

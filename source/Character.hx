@@ -291,9 +291,13 @@ class Character extends FlxSprite
 					}
 					if(animation.curAnim.finished) playAnim(animation.curAnim.name, false, false, animation.curAnim.frames.length - 3);
 			}
-			if (animation.curAnim.name.startsWith('sing'))
+			if (!isPlayer)
 			{
-				holdTimer += elapsed;
+				if (animation.curAnim.name.startsWith('sing'))
+				{
+					holdTimer += elapsed;
+				}
+
 			}
 
 			if(animation.curAnim.finished && animation.getByName(animation.curAnim.name + '-loop') != null)
