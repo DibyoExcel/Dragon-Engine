@@ -320,6 +320,16 @@ class Paths
 			var imageLoaded:FlxGraphic = returnGraphic(key);
 			var xmlExists:Bool = false;
 			var pathXml:String = modsXml(key);
+			if (ClientPrefs.darkmode) {
+				var darkPathXml:String = modsXml(key + 'Dark');
+				if(FileSystem.exists(darkPathXml)) {
+					pathXml = darkPathXml;
+				} else {
+					if(FileSystem.exists(externalPreloadPath('images/${key}Dark.xml'))) {
+						pathXml = externalPreloadPath('images/${key}Dark.xml');
+					}
+				}
+			}
 			if (FileSystem.exists(pathXml)) {
 				xmlExists = true;
 			} else {
@@ -348,6 +358,16 @@ class Paths
 			var imageLoaded:FlxGraphic = returnGraphic(key);
 			var txtExists:Bool = false;
 			var pathTxt:String = modsTxt(key);
+			if (ClientPrefs.darkmode) {
+				var darkPathTxt:String = modsTxt(key + 'Dark');
+				if(FileSystem.exists(darkPathTxt)) {
+					pathTxt = darkPathTxt;
+				} else {
+					if(FileSystem.exists(externalPreloadPath('images/${key}Dark.txt'))) {
+						pathTxt = externalPreloadPath('images/${key}Dark.txt');
+					}
+				}
+			}
 			if(FileSystem.exists(pathTxt)) {
 				txtExists = true;
 			} else {
@@ -382,6 +402,46 @@ class Paths
 	public static function returnGraphic(key:String, ?library:String) {
 		if (!CacheTools.cacheImage.exists(key)) {
 			#if MODS_ALLOWED
+			//darkmode integrated
+			if (ClientPrefs.darkmode) {
+				var modKey:String = modsImages(key + 'Dark');
+				if(FileSystem.exists(modKey)) {
+					if(!currentTrackedAssets.exists(modKey)) {
+						var newBitmap:BitmapData = BitmapData.fromFile(modKey);
+						var newGraphic:FlxGraphic = FlxGraphic.fromBitmapData(newBitmap, false, modKey);
+						newGraphic.persist = true;
+						currentTrackedAssets.set(modKey, newGraphic);
+					}
+					localTrackedAssets.push(modKey);
+					CacheTools.cacheImage.set(key, currentTrackedAssets.get(modKey));
+					return currentTrackedAssets.get(modKey);
+				}
+				var preloadPath:String = externalPreloadPath('images/${key}Dark.png');
+				if(FileSystem.exists(preloadPath)) {
+					if(!currentTrackedAssets.exists(preloadPath)) {
+						var newBitmap:BitmapData = BitmapData.fromFile(preloadPath);
+						var newGraphic:FlxGraphic = FlxGraphic.fromBitmapData(newBitmap, false, preloadPath);
+						newGraphic.persist = true;
+						currentTrackedAssets.set(preloadPath, newGraphic);
+					}
+					localTrackedAssets.push(preloadPath);
+					CacheTools.cacheImage.set(key, currentTrackedAssets.get(preloadPath));
+					return currentTrackedAssets.get(preloadPath);
+				}
+				var path = getPath('images/${key}Dark.png', IMAGE, library);
+				//trace(path);
+				if (OpenFlAssets.exists(path, IMAGE)) {
+					if(!currentTrackedAssets.exists(path)) {
+						var newGraphic:FlxGraphic = FlxG.bitmap.add(path, false, path);
+						newGraphic.persist = true;
+						currentTrackedAssets.set(path, newGraphic);
+					}
+					localTrackedAssets.push(path);
+					CacheTools.cacheImage.set(key, currentTrackedAssets.get(path));
+					return currentTrackedAssets.get(path);
+				}
+			}
+			//lightmode/default
 			var modKey:String = modsImages(key);
 			if(FileSystem.exists(modKey)) {
 				if(!currentTrackedAssets.exists(modKey)) {

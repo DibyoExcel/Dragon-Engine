@@ -55,7 +55,7 @@ class DialogueEditorState extends MusicBeatState
 
 	override function create() {
 		persistentUpdate = persistentDraw = true;
-		FlxG.camera.bgColor = FlxColor.fromHSL(0, 0, 0.5);
+		FlxG.camera.bgColor = FlxColor.fromHSL(0, 0, (ClientPrefs.darkmode ? 0.25 : 0.5));
 
 		defaultLine = {
 			portrait: DialogueCharacter.DEFAULT_CHARACTER,

@@ -39,7 +39,6 @@ class Alphabet extends FlxSpriteGroup
 	public var distancePerItem:FlxPoint = new FlxPoint(20, 120);
 	public var startPosition:FlxPoint = new FlxPoint(0, 0); //for the calculations
 
-	public var darkMode:Bool = false;
 
 	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = true, ?darkMode:Null<Bool> = null)
 	{
@@ -48,11 +47,6 @@ class Alphabet extends FlxSpriteGroup
 		this.startPosition.x = x;
 		this.startPosition.y = y;
 		this.bold = bold;
-		if (darkMode != null) {
-			this.darkMode = darkMode;
-		} else {
-			this.darkMode = ClientPrefs.darkmode;
-		}
 		this.text = text;
 	}
 
@@ -334,7 +328,7 @@ class AlphaCharacter extends FlxSprite
 	{
 		super(x, y);
 		this.parent = parent;
-		image = (parent.darkMode ? 'alphabetDark' : 'alphabet');
+		image = 'alphabet';
 		antialiasing = ClientPrefs.globalAntialiasing;
 
 		var curLetter:Letter = allLetters.get('?');

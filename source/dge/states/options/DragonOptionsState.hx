@@ -57,7 +57,7 @@ class DragonOptionsState extends MusicBeatState
 		DiscordClient.changePresence("DGE Options Menu", null);
 		#end
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image((ClientPrefs.darkmode ? 'menuDesatDark' : 'menuDesat')));
+		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.color = 0xffff0000;
 		CoolUtil.fitBackground(bg);
 		bg.antialiasing = ClientPrefs.globalAntialiasing;

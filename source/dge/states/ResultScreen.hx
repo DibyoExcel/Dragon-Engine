@@ -14,7 +14,7 @@ class ResultScreen extends MusicBeatState
     private var enterButton:VirtualButton;
     public function new(score:Int, miss:Int, rating:Null<String>, percent:Null<Float>) {
         super();
-        var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image((ClientPrefs.darkmode ? 'menuDesatDark' : 'menuDesat')));
+        var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
         add(bg);
         var aaaa:Alphabet = new Alphabet(0, (FlxG.height/2)-125, (ClientPrefs.dragonW ? 'Coins: ' : 'Score: ') + score, false);
         add(aaaa);

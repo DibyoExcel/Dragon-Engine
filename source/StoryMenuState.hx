@@ -189,7 +189,7 @@ class StoryMenuState extends MusicBeatState
 			add(scoreText);
 			add(txtWeekTitle);
 		} else {
-			var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image((ClientPrefs.darkmode ? 'menuDesatDark' : 'menuDesat')));
+			var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 			bg.antialiasing = ClientPrefs.globalAntialiasing;
 			CoolUtil.fitBackground(bg);
 			bg.color = 0xffff0000;
