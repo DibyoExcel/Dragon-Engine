@@ -191,6 +191,10 @@ class Note extends FlxSprite
 	public var resetTimeStrumAnim:Float = 0;//override 'resetTime' of strum(0 or under will disable override)
 	public var topLayer:Bool = false;//very top layer notes
 	public var noteSplash:NoteSplash = null;//it only for after spawn note splash when hit.(more likely get note splash for change the note splash properties after spawn it)
+	public var noteSplashOffsetX:Float = 0;//note splash x offset
+	public var noteSplashOffsetY:Float = 0;//note splash y offset
+	public var noteSplashOffsetOriginX:Float = 0;//note splash x origin offset
+	public var noteSplashOffsetOriginY:Float = 0;//note splash y origin offset
 	//end dge core
 
 	@:noCompletion

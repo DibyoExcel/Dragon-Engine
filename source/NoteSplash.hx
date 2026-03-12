@@ -29,7 +29,6 @@ class NoteSplash extends FlxSprite
 	}
 
 	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0, cam:String = '', scale:Float = 1, sfX:Float = 1.0, sfY:Float = 1.0, ?oriNote:Note) {
-		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
 		alpha = ClientPrefs.noteSplashAlpha;//for case
 
 		if(texture == null || texture.length <= 0) {
@@ -74,6 +73,12 @@ class NoteSplash extends FlxSprite
 		if(textureLoaded != texture) {
 			loadAnims(texture);
 		}
+		var noteWidth = Note.swagWidth;
+		var noteHeight = Note.swagWidth;
+		var noteSplashOffsetX = 0.0;
+		var noteSplashOffsetY = 0.0;
+		var noteSplashOffsetOriginX = 0.0;
+		var noteSplashOffsetOriginY = 0.0;
 		if (oriNote != null) {
 			shaderType = oriNote.noteSplashShaderType;
 			//swap
@@ -104,13 +109,24 @@ class NoteSplash extends FlxSprite
 			angle = oriNote.noteSplashAngle;
 			//alpha
 			alpha = oriNote.noteSplashAlpha;
+			if (oriNote.strumNote != null) {
+				noteWidth = oriNote.strumNote.width;
+				noteHeight = oriNote.strumNote.height;
+			}
+			noteSplashOffsetX = oriNote.noteSplashOffsetX;
+			noteSplashOffsetY = oriNote.noteSplashOffsetY;
+			noteSplashOffsetOriginX = oriNote.noteSplashOffsetOriginX;
+			noteSplashOffsetOriginY = oriNote.noteSplashOffsetOriginY;
 		}
-		offset.set(10, 10);
-
+		setPosition((x + (noteWidth/2)-(width/2))+noteSplashOffsetX, (y + (noteHeight/2))-(height/2)+noteSplashOffsetY);
+		//offset.set(10, 10);//what is this?!?
+		
 		var animNum:Int = FlxG.random.int(1, 2);
 		animation.play('note' + (note % 4) + '-' + animNum, true);
 		if(animation.curAnim != null)animation.curAnim.frameRate = ClientPrefs.fpsStrumAnim + FlxG.random.int(-2, 2);
 		centerOrigin();
+		origin.x += noteSplashOffsetOriginX;
+		origin.y += noteSplashOffsetOriginY;
 	}
 
 	function loadAnims(skin:String) {
