@@ -2028,8 +2028,13 @@ class FunkinLua {
 				PlayState.instance.getLuaObject(obj).scrollFactor.set(scrollX, scrollY);
 				return;
 			}
-
+			var killMe:Array<String> = obj.split('.');
 			var object:FlxObject = Reflect.getProperty(getInstance(), obj);
+			if(killMe.length > 1) {
+				object = getVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1]);
+			} else {
+				object = getVarInArray(getInstance(), obj);
+			}
 			if(object != null) {
 				object.scrollFactor.set(scrollX, scrollY);
 			}
@@ -2222,9 +2227,11 @@ class FunkinLua {
 			}
 
 			var killMe:Array<String> = obj.split('.');
-			var object:FlxSprite = getObjectDirectly(killMe[0]);
+			var object:FlxSprite = null;
 			if(killMe.length > 1) {
 				object = getVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1]);
+			} else {
+				object = getVarInArray(getInstance(), obj);
 			}
 
 			if(object != null) {

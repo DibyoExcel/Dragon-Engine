@@ -35,9 +35,9 @@ class ResultScreen extends MusicBeatState
         ForceFreePlay = new Timer(60000);//60 Second In This Substate Will Force To Free Play
         ForceFreePlay.run = function() {
             if (toStoryMode) {
-                MusicBeatState.switchState(new StoryMenuState());
+                MusicBeatState.switchState(new StoryMenuState(), true);
             } else {
-                MusicBeatState.switchState(new FreeplayState());
+                MusicBeatState.switchState(new FreeplayState(), true);
             }
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
             if (ForceFreePlay != null) {
@@ -48,9 +48,9 @@ class ResultScreen extends MusicBeatState
     override public function update(elapsed:Float) {
         if (controls.ACCEPT #if mobile || enterButton.justPressed #end) {
             if (toStoryMode) {
-                MusicBeatState.switchState(new StoryMenuState());
+                MusicBeatState.switchState(new StoryMenuState(), true);
             } else {
-                MusicBeatState.switchState(new FreeplayState());
+                MusicBeatState.switchState(new FreeplayState(), true);
             }
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
             if (ForceFreePlay != null) {

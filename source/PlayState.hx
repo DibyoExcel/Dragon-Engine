@@ -4804,7 +4804,7 @@ class PlayState extends MusicBeatState
 						if(FlxTransitionableState.skipNextTransIn) {
 							CustomFadeTransition.nextCamera = null;
 						}
-						MusicBeatState.switchState(new StoryMenuState());
+						MusicBeatState.switchState(new StoryMenuState(), true);
 						FlxG.sound.playMusic(Paths.music('freakyMenu'));
 					}
 				}
@@ -4821,7 +4821,7 @@ class PlayState extends MusicBeatState
 					MusicBeatState.switchState(new dge.states.ResultScreen(songScore, songMisses, ratingName, ratingPercent));
 				} else {
 					FlxG.sound.playMusic(Paths.music('freakyMenu'));
-					MusicBeatState.switchState(new FreeplayState());
+					MusicBeatState.switchState(new FreeplayState(), true);
 				}
 				changedDifficulty = false;
 			}

@@ -144,8 +144,8 @@ class ChartingState extends MusicBeatState
 
 	var highlight:FlxSprite;
 
-	public static var GRID_SIZE:Int = 40;
-	var CAM_OFFSET:Int = 360+(GRID_SIZE*4);
+	public static var GRID_SIZE:Int = #if mobile 60 #else 40 #end;//slightly bigger grid size for mobile for better visibility and easier note placement, also it would be too hard to place notes with 40px grid on mobile, so yeah.
+	var CAM_OFFSET:Float = 360+(GRID_SIZE*4);
 
 	var dummyArrow:FlxSprite;
 	
@@ -181,6 +181,7 @@ class ChartingState extends MusicBeatState
 	var leftIcon:HealthIcon;
 	var rightIcon:HealthIcon;
 	var gfIcon:HealthIcon;
+	var eventIcon:FlxSprite;
 
 	var value1InputText:FlxUIInputText;
 	var value2InputText:FlxUIInputText;
@@ -387,7 +388,36 @@ class ChartingState extends MusicBeatState
 
 		dummyArrow = new FlxSprite().makeGraphic(GRID_SIZE, GRID_SIZE);
 		add(dummyArrow);
+		eventIcon = new FlxSprite(0, 0).loadGraphic(Paths.image('eventArrow'));
+		leftIcon = new HealthIcon('bf');
+		rightIcon = new HealthIcon('dad');
+		gfIcon = new HealthIcon('gf');
+		eventIcon.scrollFactor.set(1, 0);
+		leftIcon.scrollFactor.set(1, 0);
+		gfIcon.scrollFactor.set(1, 0);
+		rightIcon.scrollFactor.set(1, 0);
 
+		eventIcon.setGraphicSize(0, 30);
+		leftIcon.setGraphicSize(0, 45);
+		gfIcon.setGraphicSize(0, 45);
+		rightIcon.setGraphicSize(0, 45);
+		add(prevRenderedNotes);
+		add(prevRenderedSustains);
+		add(curRenderedSustains);
+		add(curRenderedNotes);
+		add(curRenderedNoteType);
+		add(nextRenderedSustains);
+		add(nextRenderedNotes);
+
+		add(eventIcon);
+		add(leftIcon);
+		add(gfIcon);
+		add(rightIcon);
+
+		eventIcon.setPosition((-GRID_SIZE - 5), 7.5);
+		leftIcon.setPosition((GRID_SIZE + 10), 0);
+		rightIcon.setPosition((GRID_SIZE * 5.2), 0);
+		gfIcon.setPosition((GRID_SIZE * 5.2)+(GRID_SIZE*4), 0);
 		var tabs = [
 			{name: "Song", label: 'Song'},
 			{name: "Section", label: 'Section'},
@@ -418,7 +448,8 @@ class ChartingState extends MusicBeatState
 		Enter - Play your chart
 		Q/E - Decrease/Increase Note Sustain Length
 		Space - Stop/Resume song
-		 Control+ ALT - Multiplace Notes";
+		Ctrl + ALT - Multiplace Notes
+		" +  #if mobile "Swipe Left Or Right" #else "SHIFT + Mouse Wheel" #end + " - Scroll Horizontal Chart Grid";
 
 		var tipText:FlxText = new FlxText((UI_box.x+UI_box.width)+10, UI_box.y, Std.int(300*(FlxG.width/1280)), text, 15);
 		tipText.setFormat(Paths.font('vcr.ttf'), 15, FlxColor.WHITE, LEFT/*, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK*/);
@@ -427,37 +458,7 @@ class ChartingState extends MusicBeatState
 		add(tipText);
 		add(UI_box);
 
-		add(prevRenderedNotes);
-		add(prevRenderedSustains);
-		add(curRenderedSustains);
-		add(curRenderedNotes);
-		add(curRenderedNoteType);
-		add(nextRenderedSustains);
-		add(nextRenderedNotes);
 
-		var eventIcon:FlxSprite = new FlxSprite(0, 0).loadGraphic(Paths.image('eventArrow'));
-		leftIcon = new HealthIcon('bf');
-		rightIcon = new HealthIcon('dad');
-		gfIcon = new HealthIcon('gf');
-		eventIcon.scrollFactor.set(1, 0);
-		leftIcon.scrollFactor.set(1, 0);
-		gfIcon.scrollFactor.set(1, 0);
-		rightIcon.scrollFactor.set(1, 0);
-
-		eventIcon.setGraphicSize(0, 30);
-		leftIcon.setGraphicSize(0, 45);
-		gfIcon.setGraphicSize(0, 45);
-		rightIcon.setGraphicSize(0, 45);
-
-		add(eventIcon);
-		add(leftIcon);
-		add(gfIcon);
-		add(rightIcon);
-
-		eventIcon.setPosition((-GRID_SIZE - 5), 7.5);
-		leftIcon.setPosition((GRID_SIZE + 10), 0);
-		rightIcon.setPosition((GRID_SIZE * 5.2), 0);
-		gfIcon.setPosition((GRID_SIZE * 5.2)+(GRID_SIZE*4), 0);
 
 		addSongUI();
 		addSectionUI();
@@ -489,8 +490,8 @@ class ChartingState extends MusicBeatState
 		optChar.animation.play("idle");
 		optChar.scale.set(0.1, 0.1);
 		optChar.updateHitbox();
-		optChar.x = GRID_SIZE*13;
-		//optChar.scrollFactor.set(0, 0);
+		optChar.x = (FlxG.width / 2) + GRID_SIZE / 2;
+		optChar.scrollFactor.set(0, 0);
 		add(optChar);
 		plyChar = new FlxSprite(0, 0);
 		plyChar.frames = Paths.getSparrowAtlas("characters/DubEnderDragon");
@@ -503,8 +504,10 @@ class ChartingState extends MusicBeatState
 		plyChar.updateHitbox();
 		plyChar.flipX = true;
 		plyChar.x = optChar.x+200;
-		//plyChar.scrollFactor.set(0, 0);
+		plyChar.scrollFactor.set(0, 0);
 		add(plyChar);
+		optChar.y = (FlxG.height)-(optChar.height);
+		plyChar.y = (FlxG.height)-(plyChar.height);
 		#if mobile
 		//left ui
 		handButton = new ToggleButton(0, FlxG.height-125, 'hand');
@@ -1940,32 +1943,43 @@ class ChartingState extends MusicBeatState
 			if (FlxG.mouse.wheel != 0)
 			{
 				FlxG.sound.music.pause();
-				if (!mouseQuant)
-					FlxG.sound.music.time -= (FlxG.mouse.wheel * Conductor.stepCrochet*0.8);
-				else
-					{
-						var time:Float = FlxG.sound.music.time;
-						var beat:Float = curDecBeat;
-						var snap:Float = quantization / 4;
-						var increase:Float = 1 / snap;
-						if (FlxG.mouse.wheel > 0)
+				if (FlxG.keys.pressed.SHIFT) {
+					CAM_OFFSET -= FlxG.mouse.wheel * 10;
+					camPos.setPosition(strumLine.x + CAM_OFFSET, strumLine.y);
+				} else {
+					if (!mouseQuant)
+						FlxG.sound.music.time -= (FlxG.mouse.wheel * Conductor.stepCrochet*0.8);
+					else
 						{
-							var fuck:Float = CoolUtil.quantize(beat, snap) - increase;
-							FlxG.sound.music.time = Conductor.beatToSeconds(fuck);
-						}else{
-							var fuck:Float = CoolUtil.quantize(beat, snap) + increase;
-							FlxG.sound.music.time = Conductor.beatToSeconds(fuck);
+							var time:Float = FlxG.sound.music.time;
+							var beat:Float = curDecBeat;
+							var snap:Float = quantization / 4;
+							var increase:Float = 1 / snap;
+							if (FlxG.mouse.wheel > 0)
+							{
+								var fuck:Float = CoolUtil.quantize(beat, snap) - increase;
+								FlxG.sound.music.time = Conductor.beatToSeconds(fuck);
+							}else{
+								var fuck:Float = CoolUtil.quantize(beat, snap) + increase;
+								FlxG.sound.music.time = Conductor.beatToSeconds(fuck);
+							}
 						}
 					}
-				if(vocals != null) {
-					vocals.pause();
-					vocals.time = FlxG.sound.music.time;
-				}
+					if(vocals != null) {
+						vocals.pause();
+						vocals.time = FlxG.sound.music.time;
+					}
 			}
 			#if mobile
 			if (handButton.enable) {
 				var wheelRange = dge.backend.TouchUtil.scrollSwipe(0.5);
-				if (wheelRange != 0)
+				var wheelRangeH = dge.backend.TouchUtil.scrollSwipeSmoothX();
+				if (wheelRangeH != 0 #if mobile && handButton.enable #end) {//in mobile only hand mode can do scroll
+					FlxG.sound.music.pause();
+					CAM_OFFSET -= wheelRangeH;
+					camPos.setPosition(strumLine.x + CAM_OFFSET, strumLine.y);
+				}
+				if (wheelRange != 0 #if mobile && handButton.enable #end)//in mobile only hand mode can do scroll
 				{
 					FlxG.sound.music.pause();
 					if (!mouseQuant)
@@ -2437,8 +2451,7 @@ class ChartingState extends MusicBeatState
 				//trace('Ticked');
 			}
 		}
-		optChar.y = strumLine.y+(FlxG.height/2)-(optChar.height);
-		plyChar.y = strumLine.y+(FlxG.height/2)-(plyChar.height);
+		
 		if (plyChar.animation.finished && plyChar.animation.curAnim.name != 'idle') {
 			plyChar.animation.play('idle');
 		}
@@ -2525,6 +2538,10 @@ class ChartingState extends MusicBeatState
 		gridLayer.add(prevGridBG);
 		gridLayer.add(nextGridBG);
 		gridLayer.add(gridBG);
+		if (eventIcon != null) eventIcon.x = (gridBG.x+(GRID_SIZE/2))-(eventIcon.width/2);
+		if (leftIcon != null) leftIcon.x = ((gridBG.x) + GRID_SIZE) +((GRID_SIZE*2)-(leftIcon.width/2));
+		if (rightIcon != null) rightIcon.x = ((gridBG.x) + GRID_SIZE) +((GRID_SIZE*6)-(leftIcon.width/2));
+		if (gfIcon != null) gfIcon.x = ((gridBG.x) + GRID_SIZE) +((GRID_SIZE*10)-(gfIcon.width/2));
 
 		if(foundNextSec)
 		{

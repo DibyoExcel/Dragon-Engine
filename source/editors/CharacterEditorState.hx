@@ -1,6 +1,7 @@
 package editors;
 
 import dge.obj.mobile.VirtualButton;
+import dge.obj.mobile.ToggleButton;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -80,6 +81,7 @@ class CharacterEditorState extends MusicBeatState
 	var cameraFollowPointer:FlxSprite;
 	var healthBarBG:FlxSprite;
 	//mobile
+	private var handButton:ToggleButton;
 	private var leftButton:VirtualButton;
 	private var downButton:VirtualButton;
 	private var upButton:VirtualButton;
@@ -88,8 +90,6 @@ class CharacterEditorState extends MusicBeatState
 	private var shiftButton:VirtualButton;
 	private var rButton:VirtualButton;
 	private var tButton:VirtualButton;
-	private var qButton:VirtualButton;
-	private var eButton:VirtualButton;
 	private var wButton:VirtualButton;
 	private var sButton:VirtualButton;
 
@@ -167,7 +167,7 @@ class CharacterEditorState extends MusicBeatState
 		\nT - Reset Current Offset
 		\nHold Shift to Move 10x faster\n".split('\n');
 		#else
-		var tipTextArray:Array<String> = "E/Q - Camera Zoom In/Out
+		var tipTextArray:Array<String> = "Pitch Finger - Camera Zoom In/Out
 		\nR - Reset Camera Zoom
 		\nSwipe - Move Camera
 		\nW/S - Previous/Next Animation
@@ -228,6 +228,9 @@ class CharacterEditorState extends MusicBeatState
 		reloadCharacterOptions();
 		//add controls
 		#if mobile
+		handButton = new ToggleButton(0, FlxG.height-250, 'hand');
+		add(handButton);
+		handButton.cameras = [camHUD];
 		leftButton = new VirtualButton(0, FlxG.height-125, 'left');
 		leftButton.cameras = [camHUD];
 		add(leftButton);
@@ -253,16 +256,10 @@ class CharacterEditorState extends MusicBeatState
 		tButton = new VirtualButton(FlxG.width-250, FlxG.height-125, 't');
 		tButton.cameras = [camHUD];
 		add(tButton);
-		qButton = new VirtualButton(FlxG.width-375, FlxG.height-250, 'q');
-		qButton.cameras = [camHUD];
-		add(qButton);
-		eButton = new VirtualButton(FlxG.width-375, FlxG.height-125, 'e');
-		eButton.cameras = [camHUD];
-		add(eButton);
-		wButton = new VirtualButton(FlxG.width-500, FlxG.height-250, 'w');
+		wButton = new VirtualButton(FlxG.width-375, FlxG.height-250, 'w');
 		wButton.cameras = [camHUD];
 		add(wButton);
-		sButton = new VirtualButton(FlxG.width-500, FlxG.height-125, 's');
+		sButton = new VirtualButton(FlxG.width-375, FlxG.height-125, 's');
 		sButton.cameras = [camHUD];
 		add(sButton);
 		#end
@@ -1205,14 +1202,24 @@ class CharacterEditorState extends MusicBeatState
 				FlxG.camera.zoom = 1;
 			}
 
-			if ((FlxG.keys.pressed.E #if mobile || eButton.pressed #end) && FlxG.camera.zoom < 3) {
+			if ((FlxG.keys.pressed.E) && FlxG.camera.zoom < 3) {
 				FlxG.camera.zoom += elapsed * FlxG.camera.zoom;
 				if(FlxG.camera.zoom > 3) FlxG.camera.zoom = 3;
 			}
-			if ((FlxG.keys.pressed.Q #if mobile || qButton.pressed #end) && FlxG.camera.zoom > 0.1) {
+			if ((FlxG.keys.pressed.Q) && FlxG.camera.zoom > 0.1) {
 				FlxG.camera.zoom -= elapsed * FlxG.camera.zoom;
 				if(FlxG.camera.zoom < 0.1) FlxG.camera.zoom = 0.1;
 			}
+			#if mobile
+			if (!shiftButton.pressed) {//prevent zooming while hold shift to move camera faster
+				var zoomPitch = dge.backend.TouchUtil.pinchZoom();
+				if (zoomPitch != 1 && handButton.enable) {
+					FlxG.camera.zoom += (zoomPitch-1) * FlxG.camera.zoom;
+					if(FlxG.camera.zoom > 3) FlxG.camera.zoom = 3;
+					if(FlxG.camera.zoom < 0.1) FlxG.camera.zoom = 0.1;
+				}
+			}
+			#end
 
 			if (FlxG.keys.pressed.I || FlxG.keys.pressed.J || FlxG.keys.pressed.K || FlxG.keys.pressed.L)
 			{
@@ -1231,23 +1238,16 @@ class CharacterEditorState extends MusicBeatState
 					camFollow.x += addToCam;
 			}
 			#if mobile
-			if (dge.backend.TouchUtil.swipeUp() || dge.backend.TouchUtil.swipeDown() || dge.backend.TouchUtil.swipeLeft() || dge.backend.TouchUtil.swipeRight()) {
-				var addToCam:Float = 250;
+			var wheelRange = dge.backend.TouchUtil.scrollSwipeSmooth();
+			var wheelRangeX = dge.backend.TouchUtil.scrollSwipeSmoothX();
+			if ((wheelRange != 0 || wheelRangeX != 0) && handButton.enable) {
+				var addToCam:Float = 1;
 				//add shift later
 				if (shiftButton.pressed) {
 					addToCam *= 4;
 				}
-				if (dge.backend.TouchUtil.swipeUp()) {
-					camFollow.y -= addToCam;
-				} else if (dge.backend.TouchUtil.swipeDown()) {
-					camFollow.y += addToCam;
-				}
-
-				if (dge.backend.TouchUtil.swipeLeft()) {
-					camFollow.x -= addToCam;
-				} else if (dge.backend.TouchUtil.swipeRight()) {
-					camFollow.x += addToCam;
-				}
+				camFollow.y -= wheelRange * addToCam;
+				camFollow.x -= wheelRangeX * addToCam;
 			}
 			#end
 
