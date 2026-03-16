@@ -1722,9 +1722,9 @@ class FunkinLua {
 				CustomFadeTransition.nextCamera = null;
 
 			if(PlayState.isStoryMode)
-				MusicBeatState.switchState(new StoryMenuState());
+				MusicBeatState.switchState(new StoryMenuState(), true);
 			else
-				MusicBeatState.switchState(new FreeplayState());
+				MusicBeatState.switchState(new FreeplayState(), true);
 
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			PlayState.changedDifficulty = false;

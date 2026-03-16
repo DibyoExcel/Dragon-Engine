@@ -18,6 +18,7 @@ class Hitbox extends FlxButton {
         alpha = ClientPrefs.hitboxAlpha;
         shaderType = 'swap';
         blend = FunkinLua.blendModeFromString(ClientPrefs.hitboxBlend);
+        antialiasing = ClientPrefs.globalAntialiasing;
     }
 
     override public function update(elapsed:Float){

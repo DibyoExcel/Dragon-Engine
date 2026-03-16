@@ -52,6 +52,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 	private var bgPublic:FlxSprite;
 	private var arrayTE:Array<FlxTween> = [];
 	private var arrayTE_c:Array<FlxTween> = [];
+	private var keyBroker:Bool = false;
 
 	//mobile
 	private var leftButton:VirtualButton;
@@ -230,16 +231,16 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			spriteNote[3].centerOrigin();
 			spriteNote[3].centerOffsets();
 		}
-		if (controls.UI_UP_P #if mobile || dge.backend.TouchUtil.swipeUp() #end)
+		if ((controls.UI_UP_P #if mobile || dge.backend.TouchUtil.swipeUp() #end) && !keyBroker)
 		{
 			changeSelection(-1);
 		}
-		if (controls.UI_DOWN_P #if mobile || dge.backend.TouchUtil.swipeDown() #end)
+		if ((controls.UI_DOWN_P #if mobile || dge.backend.TouchUtil.swipeDown() #end) && !keyBroker)
 		{
 			changeSelection(1);
 		}
 
-		if (controls.BACK #if android || FlxG.android.justPressed.BACK #end) {
+		if ((controls.BACK #if android || FlxG.android.justPressed.BACK #end) && !keyBroker) {
 			close();
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 		}
@@ -254,7 +255,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 
 			if(usesCheckbox)
 			{
-				if(controls.ACCEPT #if mobile || enterButton.justPressed #end)
+				if((controls.ACCEPT #if mobile || enterButton.justPressed #end) && !keyBroker)
 				{
 					FlxG.sound.play(Paths.sound('scrollMenu'));
 					curOption.setValue((curOption.getValue() == true) ? false : true);
@@ -262,7 +263,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 					reloadCheckboxes();
 				}
 			} else {
-				if((controls.UI_LEFT #if mobile || leftButton.pressed #end) || (controls.UI_RIGHT #if mobile || rightButton.pressed #end)) {
+				if(((controls.UI_LEFT #if mobile || leftButton.pressed #end) || (controls.UI_RIGHT #if mobile || rightButton.pressed #end)) && !keyBroker) {
 					var pressed = ((controls.UI_LEFT_P #if mobile || leftButton.justPressed #end) || (controls.UI_RIGHT_P #if mobile || rightButton.justPressed #end));
 					if(holdTime > 0.5 || pressed) {
 						if(pressed) {
@@ -328,12 +329,12 @@ class BaseOptionsMenu extends MusicBeatSubstate
 					if(curOption.type != 'string') {
 						holdTime += elapsed;
 					}
-				} else if((controls.UI_LEFT_R #if mobile || leftButton.justReleased #end) || (controls.UI_RIGHT_R #if mobile || rightButton.justReleased #end)) {
+				} else if(((controls.UI_LEFT_R #if mobile || leftButton.justReleased #end) || (controls.UI_RIGHT_R #if mobile || rightButton.justReleased #end)) && !keyBroker) {
 					clearHold();
 				}
 			}
 
-			if(controls.RESET #if mobile || resetButton.justPressed #end)
+			if((controls.RESET #if mobile || resetButton.justPressed #end) && !keyBroker)
 			{
 				for (i in 0...optionsArray.length)
 				{

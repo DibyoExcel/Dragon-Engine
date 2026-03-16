@@ -15,6 +15,7 @@ class Button extends FlxButton
         this.texture = image;
         sizeWidth = width;
         sizeHeight = height;
+        antialiasing = ClientPrefs.globalAntialiasing;
     }
     override public function update(elapsed:Float):Void
     {

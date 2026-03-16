@@ -21,6 +21,7 @@ class Keypress extends FlxSprite
         this.color = color;
         shaderType = 'swap';
         alpha = alphaKey;
+        antialiasing = ClientPrefs.globalAntialiasing;
     }
     
     public function onKey(press:Bool = false) {

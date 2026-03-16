@@ -4744,7 +4744,7 @@ class PlayState extends MusicBeatState
 						actualState.toStoryMode = true;
 						MusicBeatState.switchState(actualState);
 					} else {
-						MusicBeatState.switchState(new StoryMenuState());
+						MusicBeatState.switchState(new StoryMenuState(), true);
 						FlxG.sound.playMusic(Paths.music('freakyMenu'));
 					}
 

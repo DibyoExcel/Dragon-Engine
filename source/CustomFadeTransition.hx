@@ -51,6 +51,8 @@ class CustomFadeTransition extends MusicBeatSubstate {
 			#if !NO_PRELOAD_ALL } else {
 			splashLoad1 = new FlxSprite(0, 0).loadGraphic(Paths.image('ui/splashLoad_1'));
 			splashLoad2 = new FlxSprite(0, 0).loadGraphic(Paths.image('ui/splashLoad_2'));
+			splashLoad1.antialiasing = ClientPrefs.globalAntialiasing;
+			splashLoad2.antialiasing = ClientPrefs.globalAntialiasing;
 			add(splashLoad2);
 			add(splashLoad1);//because ...
 			//warnign change resolution beyond 16 is gonna make the loading screen look really bad

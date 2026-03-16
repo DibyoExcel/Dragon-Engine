@@ -31,7 +31,6 @@ using StringTools;
 
 class VisualUISubState extends BaseOptionsMenu
 {
-	private var isRestart:Bool = false;//prevent spammy restart button
 	public function new()
 	{
 
@@ -88,7 +87,7 @@ class VisualUISubState extends BaseOptionsMenu
 			'bool',
 			false);
 		option.onChange = function() {
-			if (isRestart) return;
+			keyBroker = true;
 			ClientPrefs.saveSettings();
 			//reset
 			TitleState.initialized = false;
@@ -100,7 +99,6 @@ class VisualUISubState extends BaseOptionsMenu
 				FreeplayState.vocals = null;
 			}
 			FlxG.camera.fade(FlxColor.BLACK, 0.5, false, FlxG.resetGame, false);
-			isRestart = true;
 		}
 		addOption(option);
 

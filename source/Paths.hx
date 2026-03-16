@@ -245,19 +245,19 @@ class Paths
 	{
 		//info forceFromDisk will override cache existed text
 		var keyName:String = key + (ignoreMods ? '_ignoreMods' : '');
-		if (!CacheTools.cacheText.exists(keyName) || forceFromDisk) {
+		if (!CacheTools.cacheText.exists(currentModDirectory + keyName) || forceFromDisk) {
 			#if sys
 			#if MODS_ALLOWED
 			if (!ignoreMods && FileSystem.exists(modFolders(key))) {
 				var content = File.getContent(modFolders(key));
-				CacheTools.cacheText.set(keyName, content);
+				CacheTools.cacheText.set(currentModDirectory + keyName, content);
 				return content;
 			}
 			#end
 	
 			if (FileSystem.exists(externalPreloadPath(key))) {
 				var content = File.getContent(externalPreloadPath(key));
-				CacheTools.cacheText.set(keyName, content);
+				CacheTools.cacheText.set(currentModDirectory + keyName, content);
 				return content;
 			}
 	
@@ -268,7 +268,7 @@ class Paths
 					levelPath = getLibraryPathForce(key, currentLevel);
 					if (FileSystem.exists(levelPath)) {
 						var content = File.getContent(levelPath);
-						CacheTools.cacheText.set(keyName, content);
+						CacheTools.cacheText.set(currentModDirectory + keyName, content);
 						return content;
 					}
 				}
@@ -276,16 +276,16 @@ class Paths
 				levelPath = getLibraryPathForce(key, 'shared');
 				if (FileSystem.exists(levelPath)) {
 					var content = File.getContent(levelPath);
-					CacheTools.cacheText.set(keyName, content);
+					CacheTools.cacheText.set(currentModDirectory + keyName, content);
 					return content;
 				}
 			}
 			#end
 			var content = Assets.getText(getPath(key, TEXT));
-			CacheTools.cacheText.set(keyName, content);
+			CacheTools.cacheText.set(currentModDirectory + keyName, content);
 			return content;
 		}
-		return CacheTools.cacheText.get(keyName);
+		return CacheTools.cacheText.get(currentModDirectory + keyName);
 	}
 
 	inline static public function font(key:String)
@@ -315,7 +315,7 @@ class Paths
 
 	inline static public function getSparrowAtlas(key:String, ?library:String):FlxAtlasFrames
 	{
-		if (!CacheTools.cacheAtlas.exists(key)) {
+		if (!CacheTools.cacheAtlas.exists(currentModDirectory + key)) {
 			#if MODS_ALLOWED
 			var imageLoaded:FlxGraphic = returnGraphic(key);
 			var xmlExists:Bool = false;
@@ -339,21 +339,21 @@ class Paths
 				}
 			}
 			var atlas = FlxAtlasFrames.fromSparrow((imageLoaded != null ? imageLoaded : image(key, library)), (xmlExists ? File.getContent(pathXml) : file('images/$key.xml', library)));
-			CacheTools.cacheAtlas.set(key, atlas);
+			CacheTools.cacheAtlas.set(currentModDirectory + key, atlas);
 			return atlas;
 			#else
 			var atlas =  FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
-			CacheTools.cacheAtlas.set(key, atlas);
+			CacheTools.cacheAtlas.set(currentModDirectory + key, atlas);
 			return atlas;
 			#end
 		}
-		return CacheTools.cacheAtlas.get(key);
+		return CacheTools.cacheAtlas.get(currentModDirectory + key);
 	}
 
 
 	inline static public function getPackerAtlas(key:String, ?library:String)
 	{
-		if (!CacheTools.cachePackerAtlas.exists(key)) {
+		if (!CacheTools.cachePackerAtlas.exists(currentModDirectory + key)) {
 			#if MODS_ALLOWED
 			var imageLoaded:FlxGraphic = returnGraphic(key);
 			var txtExists:Bool = false;
@@ -378,15 +378,15 @@ class Paths
 			}
 	
 			var atlas = FlxAtlasFrames.fromSpriteSheetPacker((imageLoaded != null ? imageLoaded : image(key, library)), (txtExists ? File.getContent(modsTxt(key)) : file('images/$key.txt', library)));
-			CacheTools.cachePackerAtlas.set(key, atlas);
+			CacheTools.cachePackerAtlas.set(currentModDirectory + key, atlas);
 			return atlas;
 			#else
 			var atlas = FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
-			CacheTools.cachePackerAtlas.set(key, atlas);
+			CacheTools.cachePackerAtlas.set(currentModDirectory + key, atlas);
 			return atlas;
 			#end
 		}
-		return CacheTools.cachePackerAtlas.get(key);
+		return CacheTools.cachePackerAtlas.get(currentModDirectory + key);
 	}
 
 	inline static public function formatToSongPath(path:String) {
@@ -400,7 +400,7 @@ class Paths
 	// completely rewritten asset loading? fuck!
 	public static var currentTrackedAssets:Map<String, FlxGraphic> = [];
 	public static function returnGraphic(key:String, ?library:String) {
-		if (!CacheTools.cacheImage.exists(key)) {
+		if (!CacheTools.cacheImage.exists(currentModDirectory + key)) {
 			#if MODS_ALLOWED
 			//darkmode integrated
 			if (ClientPrefs.darkmode) {
@@ -413,7 +413,7 @@ class Paths
 						currentTrackedAssets.set(modKey, newGraphic);
 					}
 					localTrackedAssets.push(modKey);
-					CacheTools.cacheImage.set(key, currentTrackedAssets.get(modKey));
+					CacheTools.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(modKey));
 					return currentTrackedAssets.get(modKey);
 				}
 				var preloadPath:String = externalPreloadPath('images/${key}Dark.png');
@@ -425,7 +425,7 @@ class Paths
 						currentTrackedAssets.set(preloadPath, newGraphic);
 					}
 					localTrackedAssets.push(preloadPath);
-					CacheTools.cacheImage.set(key, currentTrackedAssets.get(preloadPath));
+					CacheTools.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(preloadPath));
 					return currentTrackedAssets.get(preloadPath);
 				}
 				var path = getPath('images/${key}Dark.png', IMAGE, library);
@@ -437,7 +437,7 @@ class Paths
 						currentTrackedAssets.set(path, newGraphic);
 					}
 					localTrackedAssets.push(path);
-					CacheTools.cacheImage.set(key, currentTrackedAssets.get(path));
+					CacheTools.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(path));
 					return currentTrackedAssets.get(path);
 				}
 			}
@@ -451,7 +451,7 @@ class Paths
 					currentTrackedAssets.set(modKey, newGraphic);
 				}
 				localTrackedAssets.push(modKey);
-				CacheTools.cacheImage.set(key, currentTrackedAssets.get(modKey));
+				CacheTools.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(modKey));
 				return currentTrackedAssets.get(modKey);
 			}
 
@@ -464,7 +464,7 @@ class Paths
 					currentTrackedAssets.set(preloadPath, newGraphic);
 				}
 				localTrackedAssets.push(preloadPath);
-				CacheTools.cacheImage.set(key, currentTrackedAssets.get(preloadPath));
+				CacheTools.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(preloadPath));
 				return currentTrackedAssets.get(preloadPath);
 			}
 			#end
@@ -478,21 +478,21 @@ class Paths
 					currentTrackedAssets.set(path, newGraphic);
 				}
 				localTrackedAssets.push(path);
-				CacheTools.cacheImage.set(key, currentTrackedAssets.get(path));
+				CacheTools.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(path));
 				return currentTrackedAssets.get(path);
 			}
 			trace('Missing image asset: ' + key + '. Using Checkerboard placeholder.');
 			var checkBoard = CoolUtil.makeCheckerboardGraphic();
 			checkBoard.persist = true;
-			CacheTools.cacheImage.set(key, checkBoard);
+			CacheTools.cacheImage.set(currentModDirectory + key, checkBoard);
 			return checkBoard;
 		}
-		return CacheTools.cacheImage.get(key);
+		return CacheTools.cacheImage.get(currentModDirectory + key);
 	}
 
 	public static var currentTrackedSounds:Map<String, Sound> = [];
 	public static function returnSound(path:String, key:String, ?library:String) {
-		if (!CacheTools.cacheSound.exists('$path/$key')) {
+		if (!CacheTools.cacheSound.exists('$currentModDirectory$path/$key')) {
 			#if MODS_ALLOWED
 			var file:String = modsSounds(path, key);
 			if(FileSystem.exists(file)) {
@@ -500,7 +500,7 @@ class Paths
 					currentTrackedSounds.set(file, Sound.fromFile(file));
 				}
 				localTrackedAssets.push(key);
-				CacheTools.cacheSound.set('$path/$key', currentTrackedSounds.get(file));
+				CacheTools.cacheSound.set('$currentModDirectory$path/$key', currentTrackedSounds.get(file));
 				return currentTrackedSounds.get(file);
 			}
 			var external_file:String = externalPreloadPath('images/$key$SOUND_EXT');
@@ -509,7 +509,7 @@ class Paths
 					currentTrackedSounds.set(external_file, Sound.fromFile(external_file));
 				}
 				localTrackedAssets.push(key);
-				CacheTools.cacheSound.set('$path/$key', currentTrackedSounds.get(external_file));
+				CacheTools.cacheSound.set('$currentModDirectory$path/$key', currentTrackedSounds.get(external_file));
 				return currentTrackedSounds.get(external_file);
 			}
 			#end
@@ -529,10 +529,10 @@ class Paths
 			}
 			#end
 			localTrackedAssets.push(gottenPath);
-			CacheTools.cacheSound.set('$path/$key', currentTrackedSounds.get(gottenPath));
+			CacheTools.cacheSound.set('$currentModDirectory$path/$key', currentTrackedSounds.get(gottenPath));
 			return currentTrackedSounds.get(gottenPath);
 		}
-		return CacheTools.cacheSound.get('$path/$key');
+		return CacheTools.cacheSound.get('$currentModDirectory$path/$key');
 	}
 
 	#if MODS_ALLOWED

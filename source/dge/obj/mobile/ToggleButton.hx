@@ -8,6 +8,7 @@ class ToggleButton extends VirtualButton//it should could nested?
         super(x, y, image);
         enable = startEnable;
         updateGraphic();
+        antialiasing = ClientPrefs.globalAntialiasing;
     }
     override public function update(e:Float) {
         super.update(e);

@@ -11,6 +11,7 @@ class Toggle extends Button
         sizeWidth = width;
         sizeHeight = height;
         updateGraphic();        
+        antialiasing = ClientPrefs.globalAntialiasing;
     }
     override public function update(elapsed:Float):Void
     {

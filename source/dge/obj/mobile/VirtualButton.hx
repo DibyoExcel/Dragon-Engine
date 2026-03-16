@@ -8,6 +8,7 @@ class VirtualButton extends FlxButton {
         super(x, y, '', function(){});
         this.texture = image;
         alpha = ClientPrefs.virtualButtonAlpha;
+        antialiasing = ClientPrefs.globalAntialiasing;
     }
     override public function update(elapsed:Float):Void {
         super.update(elapsed);
