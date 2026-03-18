@@ -1,4 +1,4 @@
-package options;
+package dge.states.options.custom;
 
 import dge.obj.mobile.VirtualButton;
 #if desktop
@@ -44,8 +44,8 @@ class BaseOptionsMenu extends MusicBeatSubstate
 
 	public var title:String;
 	public var rpcTitle:String;
-	public var spriteNote:Array<FlxSprite> = [];
-	public var spriteNote_c:Array<FlxSprite> = [];
+	public var spriteNote:Array<FlxSprite>;
+	public var spriteNote_c:Array<FlxSprite>;
 	private var arrowDir:Array<String> = [ 'left', 'down', 'up', 'right' ];
 	public var noteColor:Array<String> = [ 'purple', 'blue', 'green', 'red' ];
 	private var isShowNote:Bool = false;
@@ -110,7 +110,11 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		spriteNote_c = new Array<FlxSprite>();
 		for (i in 0...4) {
 			var note = new FlxSprite(750+(i*112), 0);
-			note.frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
+            try{
+                note.frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
+            } catch (e:Dynamic) {
+                note.frames = Paths.getSparrowAtlas('NOTE_assets');
+            }
 			note.scale.set(0.7, 0.7);
 			add(note);
 			note.visible = false;
@@ -121,7 +125,11 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		}
 		for (i in 0...4) {
 			var note_c = new FlxSprite(750+(i*112), 0);
-			note_c.frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
+			try{
+                note_c.frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
+            } catch (e:Dynamic) {
+                note_c.frames = Paths.getSparrowAtlas('NOTE_assets');
+            }
 			note_c.scale.set(0.7, 0.7);
 			add(note_c);
 			note_c.visible = false;
@@ -130,7 +138,6 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			//FlxTween.tween(note+c, {y : 112}, 1, { ease: FlxEase.quadOut });
 			spriteNote_c.push(note_c);
 		}
-
 		for (i in 0...optionsArray.length)
 		{
 			var optionText:Alphabet = new Alphabet(290, 260, optionsArray[i].name, false);
@@ -196,7 +203,6 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		var downNR = controls.NOTE_DOWN_R;
 		var upNR = controls.NOTE_UP_R;
 		var rightNR = controls.NOTE_RIGHT_R;
-
 		if (spriteNote != null && spriteNote.length < 3) {
 			if (spriteNote[0] != null) {
 				if (leftN) {
@@ -388,7 +394,8 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		holdTime = 0;
 	}
 	
-	function changeSelection(change:Int = 0) {
+	function changeSelection(change:Int = 0)
+	{
 		if (optionsArray != null && optionsArray.length > 0) {
 			curSelected += change;
 			if (curSelected < 0)

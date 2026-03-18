@@ -26,6 +26,7 @@ import flash.geom.Rectangle;
 import flixel.ui.FlxButton;
 import flixel.FlxBasic;
 import sys.io.File;
+import dge.backend.ModSetting;
 /*import haxe.zip.Reader;
 import haxe.zip.Entry;
 import haxe.zip.Uncompress;
@@ -53,6 +54,7 @@ class ModsMenuState extends MusicBeatState
 	var buttonDisableAll:FlxButton;
 	var buttonEnableAll:FlxButton;
 	var buttonUp:FlxButton;
+	var buttonSetting:FlxButton;
 	var buttonToggle:FlxButton;
 	var buttonsArray:Array<FlxButton> = [];
 
@@ -250,6 +252,35 @@ class ModsMenuState extends MusicBeatState
 		add(buttonEnableAll);
 		buttonsArray.push(buttonEnableAll);
 		visibleWhenHasMods.push(buttonEnableAll);
+		startX -= 190;
+
+		buttonSetting = new FlxButton(startX, 0, "SETTINGS", function() {
+			if (FileSystem.exists(Paths.mods(mods[curSelected].folder + '/settings.json'))) {
+				var directory:String = 'shared';
+				var weekDir:String = StageData.forceNextDirectory;
+				StageData.forceNextDirectory = null;
+
+				if(weekDir != null && weekDir.length > 0 && weekDir != '') directory = weekDir;
+
+				Paths.setCurrentLevel(directory);
+				//TO DO: make state;
+				var contentFile = File.getContent(Paths.mods(mods[curSelected].folder + '/settings.json'));
+				var getStorageKey = haxe.Json.parse(contentFile).storageKey;
+				ModSetting.init(((getStorageKey != null && getStorageKey.length > 0) ? getStorageKey : mods[curSelected].folder));//storage key is optional if not use it use mod name instead
+				openSubState(new dge.states.options.custom.ModSubState(contentFile, mods[curSelected].name + ' Settings'));
+			} else {
+				lime.app.Application.current.window.alert('This mod not have settings.', 'Settings.json not found');
+			}
+			FlxG.sound.play(Paths.sound('scrollMenu'), 0.6);
+		});
+		buttonSetting.setGraphicSize(170, 50);
+		buttonSetting.updateHitbox();
+		buttonSetting.label.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.BLACK, CENTER);
+		buttonSetting.label.fieldWidth = 170;
+		setAllLabelsOffset(buttonSetting, 0, 10);
+		add(buttonSetting);
+		buttonsArray.push(buttonSetting);
+		visibleWhenHasMods.push(buttonSetting);
 
 		// more buttons
 		var startX:Int = 1100;

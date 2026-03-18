@@ -123,7 +123,7 @@ class MobileSubState extends BaseOptionsMenu
 			false);
 		addOption(option);
 		#else
-		lime.app.Application.current.window.alert('what ur doing here lol? you\'re even not in mobile.');
+		lime.app.Application.current.window.alert('what ur doing here lol? you\'re even not in mobile.', 'DubEnderDragon');
 		close();
 		#end
 		super();

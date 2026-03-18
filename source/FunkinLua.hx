@@ -276,6 +276,80 @@ class FunkinLua {
 		#end
 		set('modchart', ClientPrefs.modchart);
 		set('noteMechanic', ClientPrefs.noteMechanic);
+		for (mod in Paths.getGlobalMods()) {
+			var getSettingString = File.getContent(Paths.mods(mod + '/settings.json'));
+			var jsonParse = haxe.Json.parse(getSettingString);
+			mod = mod.replace(' ', "_");
+			mod = ~/[^A-Za-z0-9_]/g.replace(mod, "");
+			if (jsonParse.optionsList != null) {
+				var forceArray:Array<Dynamic> = cast jsonParse.optionsList;
+				for (opt in forceArray) {
+					if (opt.name == null || opt.name.length < 1 || opt.variable == null || opt.variable.length < 1) continue;
+					var save = new FlxSave();
+					var modSave = mod;
+					var luaVar = 'setting_';
+					if (jsonParse.storageKey != null) {
+						modSave = jsonParse.storageKey;
+						luaVar = jsonParse.storageKey + '_';
+					}
+					modSave = modSave.replace(' ', "_");
+					modSave = ~/[^A-Za-z0-9_]/g.replace(modSave, "");
+					luaVar = luaVar.replace(' ', "_");
+					luaVar = ~/[^A-Za-z0-9_]/g.replace(luaVar, "");
+					save.bind('setting', modSave);
+					var result = Reflect.field(save.data, opt.variable);
+					set(luaVar + opt.variable, (result != null ? result : (opt.defaultValue != null ? opt.defaultValue : false)));
+				}
+			}
+		}
+		if (FileSystem.exists(Paths.mods('settings.json'))) {
+			var path = Paths.mods('settings.json');
+			var jsonParse = haxe.Json.parse(File.getContent(path));
+			if (jsonParse.optionsList != null) {
+				var forceArray:Array<Dynamic> = cast jsonParse.optionsList;
+				for (opt in forceArray) {
+					if (opt.name == null || opt.name.length < 1 || opt.variable == null || opt.variable.length < 1) continue;
+					var save = new FlxSave();
+					var modSave = "_globaSetting";
+					var luaVar = 'globalSetting_';
+					if (jsonParse.storageKey != null) {
+						modSave = jsonParse.storageKey;
+						luaVar = jsonParse.storageKey + "_";
+					}
+					modSave = modSave.replace(' ', "_");
+					modSave = ~/[^A-Za-z0-9_]/g.replace(modSave, "");
+					luaVar = luaVar.replace(' ', "_");
+					luaVar = ~/[^A-Za-z0-9_]/g.replace(luaVar, "");
+					save.bind('setting', modSave);
+					var result = Reflect.field(save.data, opt.variable);
+					set(luaVar + opt.variable, (result != null ? result : (opt.defaultValue != null ? opt.defaultValue : false)));
+				}
+			}
+		}
+		if (FileSystem.exists(Paths.mods(Paths.currentModDirectory + '/settings.json'))) {
+			var path = Paths.mods(Paths.currentModDirectory + '/settings.json');
+			var jsonParse = haxe.Json.parse(File.getContent(path));
+			if (jsonParse != null) {
+				var forceArray:Array<Dynamic> = cast jsonParse.optionsList;
+				for (opt in forceArray) {
+					if (opt.name == null || opt.name.length < 1 || opt.variable == null || opt.variable.length < 1) continue;
+					var save = new FlxSave();
+					var modSave = Paths.currentModDirectory;
+					var luaVar = 'setting_';
+					if (jsonParse.storageKey != null) {
+						modSave = jsonParse.storageKey;
+						luaVar = jsonParse.storageKey + "_";
+					}
+					modSave = modSave.replace(' ', "_");
+					modSave = ~/[^A-Za-z0-9_]/g.replace(modSave, "");
+					luaVar = luaVar.replace(' ', "_");
+					luaVar = ~/[^A-Za-z0-9_]/g.replace(luaVar, "");
+					save.bind('setting', modSave);
+					var result = Reflect.field(save.data, opt.variable);
+					set(luaVar + opt.variable, (result != null ? result : (opt.defaultValue != null ? opt.defaultValue : false)));
+				}
+			}
+		}
 
 		// custom substate
 		Lua_helper.add_callback(lua, "openCustomSubstate", function(name:String, pauseGame:Bool = false) {
@@ -1730,7 +1804,7 @@ class FunkinLua {
 			PlayState.changedDifficulty = false;
 			PlayState.chartingMode = false;
 			PlayState.instance.transitioning = true;
-			WeekData.loadTheFirstEnabledMod();
+			//WeekData.loadTheFirstEnabledMod();
 			return true;
 		});
 		Lua_helper.add_callback(lua, "getSongPosition", function() {

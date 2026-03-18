@@ -25,6 +25,11 @@ import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
 import Controls;
+#if MODS_ALLOWED
+import sys.io.File;
+import sys.FileSystem;
+import dge.backend.ModSetting;
+#end
 
 using StringTools;
 
@@ -35,6 +40,7 @@ class MainOptionsState extends MusicBeatState
 	private static var curSelected:Int = 0;
 	public static var menuBG:FlxSprite;
 	private var enterButton:VirtualButton;
+	private var settingName:String = 'Global Setting';
 
 	function openSelectedSubstate(label:String) {
 		switch(label) {
@@ -42,6 +48,19 @@ class MainOptionsState extends MusicBeatState
 				LoadingState.loadAndSwitchState(new dge.states.options.DragonOptionsState());
 			case 'Psych Settings':
 				LoadingState.loadAndSwitchState(new options.PsychOptionsState());
+			#if MODS_ALLOWED
+			case settingName:
+				var path = Paths.mods('settings.json');
+				if (FileSystem.exists(path)) {//nah ah
+					var storageKey = '_global';
+					var getName = haxe.Json.parse(File.getContent(path)).storageKey;
+					if (getName != null) {
+						storageKey = getName;
+					}
+					ModSetting.init(storageKey);
+					openSubState(new dge.states.options.custom.ModSubState(File.getContent(path), settingName));
+				}
+			#end
 		}
 	}
 
@@ -62,7 +81,14 @@ class MainOptionsState extends MusicBeatState
 
 		grpOptions = new FlxTypedGroup<Alphabet>();
 		add(grpOptions);
-
+		#if MODS_ALLOWED
+		var path = Paths.mods('settings.json');
+		if (FileSystem.exists(path)) {
+			var getName = haxe.Json.parse(File.getContent(path)).settingName;
+			if (settingName != null && settingName.length > 0) settingName = getName;
+			options.push(settingName);
+		}
+		#end
 		for (i in 0...options.length)
 		{
 			var optionText:Alphabet = new Alphabet(0, 0, options[i], true);

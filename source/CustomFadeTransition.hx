@@ -22,7 +22,7 @@ class CustomFadeTransition extends MusicBeatSubstate {
 	var transBlack:FlxSprite;
 	var transGradient:FlxSprite;
 	public static var useGraphics:Bool = false;
-	//transition idea inspired codename engine
+	//transition idea inspired nf engine(sorry codename)
 	//bruh so ugly compile condition due html5
 	#if !NO_PRELOAD_ALL
 	public static var splashLoad1:FlxSprite;

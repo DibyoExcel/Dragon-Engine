@@ -413,11 +413,10 @@ class ChartingState extends MusicBeatState
 		add(leftIcon);
 		add(gfIcon);
 		add(rightIcon);
-
-		eventIcon.setPosition((-GRID_SIZE - 5), 7.5);
-		leftIcon.setPosition((GRID_SIZE + 10), 0);
-		rightIcon.setPosition((GRID_SIZE * 5.2), 0);
-		gfIcon.setPosition((GRID_SIZE * 5.2)+(GRID_SIZE*4), 0);
+		eventIcon.setPosition((GRID_SIZE/2)-(eventIcon.width/2), 7.5);
+		leftIcon.setPosition(GRID_SIZE +((GRID_SIZE*2)-(leftIcon.width/2)), 0);
+		rightIcon.setPosition(GRID_SIZE +((GRID_SIZE*6)-(leftIcon.width/2)), 0);
+		gfIcon.setPosition(GRID_SIZE +((GRID_SIZE*10)-(gfIcon.width/2)), 0);
 		var tabs = [
 			{name: "Song", label: 'Song'},
 			{name: "Section", label: 'Section'},
@@ -2538,10 +2537,6 @@ class ChartingState extends MusicBeatState
 		gridLayer.add(prevGridBG);
 		gridLayer.add(nextGridBG);
 		gridLayer.add(gridBG);
-		if (eventIcon != null) eventIcon.x = (gridBG.x+(GRID_SIZE/2))-(eventIcon.width/2);
-		if (leftIcon != null) leftIcon.x = ((gridBG.x) + GRID_SIZE) +((GRID_SIZE*2)-(leftIcon.width/2));
-		if (rightIcon != null) rightIcon.x = ((gridBG.x) + GRID_SIZE) +((GRID_SIZE*6)-(leftIcon.width/2));
-		if (gfIcon != null) gfIcon.x = ((gridBG.x) + GRID_SIZE) +((GRID_SIZE*10)-(gfIcon.width/2));
 
 		if(foundNextSec)
 		{
