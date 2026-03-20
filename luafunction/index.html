@@ -191,7 +191,7 @@
                 </div>
                 <div class="dialogue_group">
                     <h3>getColorFromRGB(R:Int, G:Int, B:Int, A:Int = 255)(1.6.3.11+)</h3>
-                    <h4>return <code>Int</code> or <code>Color ID</code> of from RGB.</h4>
+                    <h4>return <code>Int</code> or <code>Color Decimal</code> of from RGB.<br>R: red color channel.<br>G: green color channel.<br>B: blue color channel.<br>A: alpha color channel.</h4>
                 </div>
                 <div class="dialogue_group">
                     <h3>customCameraExists(tag:String = '')(1.6.3.11+)</h3>
@@ -216,6 +216,10 @@
                 <div class="dialogue_group">
                     <h3>formatTimeFromSecond(second:Float = 0, showMS:Bool = false)(26.1.1+)</h3>
                     <h4>return <code>String</code> of formatted time from second example:<code>63</code> second to <code>1:03</code>.<br>second: number of second to format.<br>showMS: should show millisecond?</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>colorToGrayscale(color:Int)(26.5.0+)</h3>
+                    <h4>return <code>Int</code> or <code>Color Decimal</code> of from color to grayscale(luminance).<br>color: the color decimal to grayscale(use <code>getColorFromHex()</code> or <code>getColorFromRGB()</code> to get int or color decimal).</h4>
                 </div>
             </div>
         </div>
