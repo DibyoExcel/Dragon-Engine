@@ -68,16 +68,6 @@ class MiscSubState extends BaseOptionsMenu
 			false);
 		addOption(option);
 
-		var option:Option = new Option('Default Note Skin',
-			"Change Default Noteskin.",
-			'dflnoteskin',
-			'string',
-			'NOTE_assets',
-			['NOTE_assets', 'NOTE_minecraft_assets']);
-		option.showNote = true;
-		option.onChange = onChangeNoteSkin;
-		addOption(option);
-
 		#if CHECK_FOR_UPDATES
 		var option:Option = new Option('Check for Updates',
 			'Turn this on to check for updates when you start the game.',
@@ -162,22 +152,5 @@ class MiscSubState extends BaseOptionsMenu
 	}
 	function changeAutoPause() {
 		FlxG.autoPause = ClientPrefs.autopause;
-	}
-	function onChangeNoteSkin() {
-		trace("'" + ClientPrefs.dflnoteskin + "'");
-		for (i in 0...spriteNote.length) {
-			spriteNote[i].frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
-			spriteNote[i].animation.addByPrefix('idle', 'arrow' + arrowDir[i].toUpperCase(), ClientPrefs.fpsStrumAnim, true);
-			spriteNote[i].animation.addByPrefix('confirm', arrowDir[i].toLowerCase() + ' confirm', ClientPrefs.fpsStrumAnim, true);
-			spriteNote[i].animation.play('idle');
-			spriteNote[i].centerOrigin();
-			spriteNote[i].centerOffsets();
-		}
-		for (i in 0...spriteNote_c.length) {
-			spriteNote_c[i].frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
-			spriteNote_c[i].animation.addByPrefix('idle', noteColor[i].toLowerCase() + "0", ClientPrefs.fpsStrumAnim, true);
-			//spriteNote_c[i].animation.addByPrefix('confirm', arrowDir[i].toLowerCase() + ' confirm', ClientPrefs.fpsStrumAnim, false);
-			spriteNote_c[i].animation.play('idle');
-		}
 	}
 }

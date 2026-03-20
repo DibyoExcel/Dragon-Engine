@@ -25,6 +25,7 @@ import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
 import Controls;
+import dge.states.options.custom.TypedValueSubState;
 
 using StringTools;
 
@@ -203,7 +204,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		var downNR = controls.NOTE_DOWN_R;
 		var upNR = controls.NOTE_UP_R;
 		var rightNR = controls.NOTE_RIGHT_R;
-		if (spriteNote != null && spriteNote.length < 3) {
+		if (spriteNote != null && spriteNote.length > 3) {
 			if (spriteNote[0] != null) {
 				if (leftN) {
 					spriteNote[0].animation.play("confirm");
@@ -260,9 +261,15 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			if (curOption != null) {
 
 				var usesCheckbox = true;
+				var canUseTyping = false;
+				var noNav = false;
 				if(curOption.type != 'bool')
 				{
 					usesCheckbox = false;
+				}
+				if (curOption.type != 'bool' && curOption.type != 'string') {//use 'stringfree' for able type
+					canUseTyping = true;
+					if (curOption.type == 'stringfree' || curOption.type == 'hex') noNav = true;
 				}
 	
 				if(usesCheckbox)
@@ -275,7 +282,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 						reloadCheckboxes();
 					}
 				} else {
-					if(((controls.UI_LEFT #if mobile || leftButton.pressed #end) || (controls.UI_RIGHT #if mobile || rightButton.pressed #end)) && !keyBroker) {
+					if(((controls.UI_LEFT #if mobile || leftButton.pressed #end) || (controls.UI_RIGHT #if mobile || rightButton.pressed #end)) && !keyBroker && !noNav) {
 						var pressed = ((controls.UI_LEFT_P #if mobile || leftButton.justPressed #end) || (controls.UI_RIGHT_P #if mobile || rightButton.justPressed #end));
 						if(holdTime > 0.5 || pressed) {
 							if(pressed) {
@@ -343,7 +350,9 @@ class BaseOptionsMenu extends MusicBeatSubstate
 						}
 					} else if(((controls.UI_LEFT_R #if mobile || leftButton.justReleased #end) || (controls.UI_RIGHT_R #if mobile || rightButton.justReleased #end)) && !keyBroker) {
 						clearHold();
-					}
+					} else if ((controls.ACCEPT #if mobile || enterButton.justPressed #end) && canUseTyping && !keyBroker) {
+						openSubState(new TypedValueSubState(this, curOption));
+					} 
 				}
 	
 				if((controls.RESET #if mobile || resetButton.justPressed #end) && !keyBroker)
@@ -378,7 +387,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		super.update(elapsed);
 	}
 
-	function updateTextFrom(option:Option) {
+	public function updateTextFrom(option:Option) {
 		var text:String = option.displayFormat;
 		var val:Dynamic = option.getValue();
 		if(option.type == 'percent') val *= 100;

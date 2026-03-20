@@ -76,6 +76,10 @@ class Option
 					if(options.length > 0) {
 						defaultValue = options[0];
 					}
+				case 'stringFree':
+					defaultValue = 'text tamplate';
+				case 'hex':
+					defaultValue = 'FFFFFF';
 			}
 		}
 
@@ -143,10 +147,12 @@ class Option
 		var newValue:String = 'bool';
 		switch(type.toLowerCase().trim())
 		{
-			case 'int' | 'float' | 'percent' | 'string': newValue = type;
+			case 'int' | 'float' | 'percent' | 'string' | 'stringfree' | 'hex' : newValue = type;
 			case 'integer': newValue = 'int';
 			case 'str': newValue = 'string';
 			case 'fl': newValue = 'float';
+			case 'strf': newValue = 'stringFree';
+			case 'hexadeciaml': newValue = 'hex';
 		}
 		type = newValue;
 		return type;

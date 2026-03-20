@@ -349,7 +349,7 @@ class PlayState extends MusicBeatState
 	//DGE stuff
 	public var keyPressUI:FlxTypedGroup<Keypress>;
 	//public var keyPressUIF:FlxTypedGroup<FlxSprite>;
-	public var colorOrder:Array<Int> = [ FlxColor.MAGENTA, FlxColor.CYAN, FlxColor.LIME, FlxColor.RED ];
+	public var colorOrder:Array<Int> = [  ];
 	public var mergeHealthColor(default, set):Bool = false;
 	public var oldTransitionNotes:Bool = false;
 	public var fieldNameAsPlayer(default, set):String = '';//empty as default(auto change the 'playableField' turn into ['value'])
@@ -422,6 +422,10 @@ class PlayState extends MusicBeatState
 
 		// for lua
 		instance = this;
+		var colorString:Array<String> = [ ClientPrefs.keyPressColor1, ClientPrefs.keyPressColor2, ClientPrefs.keyPressColor3, ClientPrefs.keyPressColor4 ];
+		for (i in 0...colorString.length) {
+			colorOrder[i] = CoolUtil.hexStringToColor(colorString[i]);
+		}
 
 		debugKeysChart = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_1'));
 		debugKeysCharacter = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_2'));
@@ -1295,7 +1299,7 @@ class PlayState extends MusicBeatState
 		add(comboGroup);
 		add(numRatingGroup);
 		
-		botplayTxt = new FlxText(400, timeBarBG.y + 55, FlxG.width - 800, (ClientPrefs.dragonW ? "AUTO FLIGHT" : "BOTPLAY"), 32);
+		botplayTxt = new FlxText(400, timeBarBG.y + 55, FlxG.width - 800, (ClientPrefs.dragonW ? "AUTO FLIGHT" : (ClientPrefs.botplayText.trim().length > 0 ? ClientPrefs.botplayText : 'BOTPLAY')), 32);
 		botplayTxt.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		botplayTxt.scrollFactor.set();
 		botplayTxt.screenCenter(X);

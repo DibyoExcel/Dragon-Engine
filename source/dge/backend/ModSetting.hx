@@ -14,12 +14,18 @@ class ModSetting {
     }
 
     public static function set(setting:String, value:Dynamic) {
-        Reflect.setField(save.data, setting, value);
+        if (save != null) {
+            Reflect.setField(save.data, setting, value);
+        }
     }
     public static function get(setting:String):Dynamic {
-        return Reflect.field(save.data, setting);
+        if (save != null) {
+            return Reflect.field(save.data, setting);
+        }
+        return null;
     }
     public static function saveSettings() {
         save.flush();
+        save = null;//just to clean
     }
 }

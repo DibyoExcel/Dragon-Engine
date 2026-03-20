@@ -197,16 +197,35 @@ class CoolUtil
 	}
 	
 	public static function makeCheckerboardGraphic(width:Int = 64, height:Int = 64, size:Int = 32, color1:Int = 0x000000, color2:Int = 0xff0000):FlxGraphic
+	{
+		var bitmapData:BitmapData = new BitmapData(width, height, false);
+		for (y in 0...height)
 		{
-			var bitmapData:BitmapData = new BitmapData(width, height, false);
-			for (y in 0...height)
+			for (x in 0...width)
 			{
-				for (x in 0...width)
-				{
-					var isColor1:Bool = (Std.int(x / size) + Std.int(y / size)) % 2 == 0;
-					bitmapData.setPixel(x, y, if (isColor1) color1 else color2);
-				}
+				var isColor1:Bool = (Std.int(x / size) + Std.int(y / size)) % 2 == 0;
+				bitmapData.setPixel(x, y, if (isColor1) color1 else color2);
 			}
-			return FlxGraphic.fromBitmapData(bitmapData);
 		}
+		return FlxGraphic.fromBitmapData(bitmapData);
+	}
+
+	public static function hexStringToColor(hex:String = 'FFFFFF'):Int {
+		if (hex.startsWith('#')) {
+			hex = hex.substr(1);
+		}
+		var regex = ~/^[0-9A-Fa-f]{6}$/;
+		if (!regex.match(hex)) {
+			hex = 'FFFFFF';
+		}
+		return Std.parseInt('0xFF' + hex);
+	}
+
+	public static function colorToGrayscale(color:Int):Int {
+		var r:Int = (color >> 16) & 0xFF;
+		var g:Int = (color >> 8) & 0xFF;
+		var b:Int = color & 0xFF;
+		var gray:Int = Std.int(0.3 * r + 0.59 * g + 0.11 * b);
+		return (gray << 16) | (gray << 8) | gray;
+	}
 }

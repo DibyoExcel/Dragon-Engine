@@ -86,8 +86,6 @@ class Song
 			if (songJson.player3 != null) {
 				songJson.gfVersion = songJson.player3;
 				Reflect.deleteField(songJson, 'player3');
-			} else {
-				songJson.gfVersion = "gf";
 			}
 		}
 		

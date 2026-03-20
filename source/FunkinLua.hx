@@ -3652,6 +3652,10 @@ class FunkinLua {
 			}
 		});
 
+		Lua_helper.add_callback(lua, 'colorToGrayscale', function(color:Int) {//use 'getColorFromHex()' or 'getColorFromRGB()' to get decimal value 
+			return CoolUtil.colorToGrayscale(color);
+		});
+
 		call('onCreate', []);
 		#end
 	}

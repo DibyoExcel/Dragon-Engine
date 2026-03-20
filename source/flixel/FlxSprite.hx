@@ -34,6 +34,7 @@ import dge.shaders.ColorRGBSwap;
 import dge.shaders.PixelSprite;
 import dge.shaders.Posterize;
 import dge.shaders.RGBPalette;
+import dge.shaders.GrayScale;
 
 // TODO: add updateSizeFromFrame bool which will tell sprite whether to update it's size to frame's size (when frame setter is called) or not (useful for sprites with adjusted hitbox)
 // And don't forget about sprites with clipped frames: what i should do with their size in this case?
@@ -273,6 +274,7 @@ class FlxSprite extends FlxObject
 	public var pixelSprite(get, never):PixelSprite;
 	public var posterize(get, never):Posterize;
 	public var rgbShader(get, never):RGBPalette;
+	public var grayScale(get, never):GrayScale;
 	//store object after access
     private var _colorSwap:ColorSwap;
     private var _colorInvert:ColorInvert;
@@ -281,6 +283,7 @@ class FlxSprite extends FlxObject
 	private var _pixelSprite:PixelSprite;
 	private var _posterize:Posterize;
 	private var _rgbShader:RGBPalette;
+	private var _grayScale:GrayScale;
 
 	private function get_colorSwap():ColorSwap {
 		if (_colorSwap == null) {
@@ -331,11 +334,18 @@ class FlxSprite extends FlxObject
 		return _rgbShader;
 	}
 
+	private function get_grayScale():GrayScale {
+		if (_grayScale == null) {
+			_grayScale = new GrayScale();
+		}
+		return _grayScale;
+	}
+
     public var shaderType(default, set):String = null;
 
     private function set_shaderType(value:String):String {
         if (shaderType != value) {
-            var shouldUse:Array<String> = [ 'none', 'swap', 'invert', 'single', 'rgbswap', 'pixel', 'posterize', 'rgbpalette' ];
+            var shouldUse:Array<String> = [ 'none', 'swap', 'invert', 'single', 'rgbswap', 'pixel', 'posterize', 'rgbpalette', 'grayscale' ];
 			for (i in 0...shouldUse.length) {
 				shouldUse[i] = shouldUse[i].toLowerCase();
 			}
@@ -362,6 +372,8 @@ class FlxSprite extends FlxObject
 					shader = posterize.shader;
 				case 'rgbpalette':
 					shader = rgbShader.shader;
+				case 'grayscale':
+					shader = grayScale.shader;
                 default: 
                     shader = null;
             }

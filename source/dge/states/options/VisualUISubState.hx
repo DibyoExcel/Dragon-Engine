@@ -26,11 +26,14 @@ import flixel.graphics.FlxGraphic;
 import Controls;
 import options.BaseOptionsMenu;
 import options.Option;
+import flixel.util.FlxColor;
 
 using StringTools;
 
 class VisualUISubState extends BaseOptionsMenu
 {
+
+	var colorKeyPress:Array<String> = ['FF00FF', '00FFFF', '00FF00', '0000FF'];
 	public function new()
 	{
 
@@ -123,6 +126,15 @@ class VisualUISubState extends BaseOptionsMenu
 			true);
 		addOption(option);
 
+		var option:Option = new Option('Default Note Skin',
+			"Change Default Noteskin.",
+			'dflnoteskin',
+			'stringfree',
+			'NOTE_assets');
+		option.showNote = true;
+		option.onChange = onChangeNoteSkin;
+		addOption(option);
+
 		var EUoption:Option = new Option('Extra UI',
 			"Extra UI By DubEnderDragon.",
 			'extUI',
@@ -142,6 +154,14 @@ class VisualUISubState extends BaseOptionsMenu
 			option.changeValue = 0.01;
 			option.decimals = 2;
 			addOption(option);
+			for (i in 0...colorKeyPress.length) {
+				var option:Option = new Option('Key Stroke Color ' +  (i+1),
+				"Color For Keystroke " + (i+1),
+				'keyPressColor' + (i+1),
+				'hex',
+				colorKeyPress[i]);
+				addOption(option);
+			}
 		}
 		var option:Option = new Option('Pause BG Transparency',
 		'How much transparent should the Pause Background.',
@@ -162,6 +182,13 @@ class VisualUISubState extends BaseOptionsMenu
 			false);
 		addOption(option);
 
+		var option:Option = new Option('Botplay Text',
+			"Botplay Text",
+			'botplayText',
+			'stringfree',
+			'BOTPLAY');
+		addOption(option);
+
 		super();
 		changeBGColor(0xffff0000);
 	}
@@ -173,5 +200,29 @@ class VisualUISubState extends BaseOptionsMenu
 	function reloadSubstate() {
 		ClientPrefs.saveSettings();
 		FlxG.resetState();
+	}
+	function onChangeNoteSkin() {
+		for (i in 0...spriteNote.length) {
+			try{
+				spriteNote[i].frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
+			} catch (e:Dynamic) {
+				spriteNote[i].frames = Paths.getSparrowAtlas("NOTE_assets");
+			}
+			spriteNote[i].animation.addByPrefix('idle', 'arrow' + arrowDir[i].toUpperCase(), ClientPrefs.fpsStrumAnim, true);
+			spriteNote[i].animation.addByPrefix('confirm', arrowDir[i].toLowerCase() + ' confirm', ClientPrefs.fpsStrumAnim, true);
+			spriteNote[i].animation.play('idle');
+			spriteNote[i].centerOrigin();
+			spriteNote[i].centerOffsets();
+		}
+		for (i in 0...spriteNote_c.length) {
+			try{
+				spriteNote_c[i].frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
+			} catch (e:Dynamic) {
+				spriteNote_c[i].frames = Paths.getSparrowAtlas("NOTE_assets");
+			}
+			spriteNote_c[i].animation.addByPrefix('idle', noteColor[i].toLowerCase() + "0", ClientPrefs.fpsStrumAnim, true);
+			//spriteNote_c[i].animation.addByPrefix('confirm', arrowDir[i].toLowerCase() + ' confirm', ClientPrefs.fpsStrumAnim, false);
+			spriteNote_c[i].animation.play('idle');
+		}
 	}
 }

@@ -8,6 +8,11 @@ import Controls;
 
 class ClientPrefs {
 	//dge setting
+	public static var keyPressColor1:String = 'FF00FF';
+	public static var keyPressColor2:String = '00FFFF';
+	public static var keyPressColor3:String = '00FF00';
+	public static var keyPressColor4:String = '0000FF';
+	public static var botplayText:String = 'BOTPLAY';
 	public static var classicAnim:Bool = false;//classic animation note and character
 	public static var modchart:Bool = true;//enable modchart
 	public static var noteMechanic:Bool = true;//enable note mechanic(useful for new players)
@@ -158,6 +163,11 @@ class ClientPrefs {
 	}
 
 	public static function saveSettings() {
+		FlxG.save.data.keyPressColor4 = keyPressColor4;
+		FlxG.save.data.keyPressColor3 = keyPressColor3;
+		FlxG.save.data.keyPressColor2 = keyPressColor2;
+		FlxG.save.data.keyPressColor1 = keyPressColor1;
+		FlxG.save.data.botplayText = botplayText;
 		FlxG.save.data.classicAnim = classicAnim;
 		FlxG.save.data.noteMechanic = noteMechanic;
 		FlxG.save.data.modchart = modchart;
@@ -242,6 +252,21 @@ class ClientPrefs {
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.keyPressColor4 != null) {
+			keyPressColor4 = FlxG.save.data.keyPressColor4;
+		}
+		if(FlxG.save.data.keyPressColor3 != null) {
+			keyPressColor3 = FlxG.save.data.keyPressColor3;
+		}
+		if(FlxG.save.data.keyPressColor2 != null) {
+			keyPressColor2 = FlxG.save.data.keyPressColor2;
+		}
+		if(FlxG.save.data.keyPressColor1 != null) {
+			keyPressColor1 = FlxG.save.data.keyPressColor1;
+		}
+		if(FlxG.save.data.botplayText != null) {
+			botplayText = FlxG.save.data.botplayText;
 		}
 		if(FlxG.save.data.classicAnim != null) {
 			classicAnim = FlxG.save.data.classicAnim;
