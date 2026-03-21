@@ -11,7 +11,7 @@ jobs:
   buildWindows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2.3.0
       - uses: krdlab/setup-haxe@master
         with:
           haxe-version: 4.2.5
@@ -48,7 +48,7 @@ jobs:
       - name: Compile Windows
         run: haxelib run lime build windows --app-version=${{ github.run_id }}
       - name: Publish Windows Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: windows-build
           path: export/windows/bin
@@ -56,7 +56,7 @@ jobs:
   buildAndroid:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2.3.0
       - uses: krdlab/setup-haxe@master
         with:
           haxe-version: 4.2.5
@@ -98,7 +98,7 @@ jobs:
       - name: Compile Android
         run: haxelib run lime build android --app-version=${{ github.run_id }}
       - name: Publish Android Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: android-build
           path: export/android/bin/app/build/outputs/apk/debug/
