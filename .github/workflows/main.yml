@@ -136,7 +136,8 @@ jobs:
       - name: Install C++ Toolchain
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential clang libstdc++-11-dev
+          sudo apt-get install -y build-essential clang libc++-dev libc++abi-dev
+          sudo apt-get install -y g++ libstdc++-12-dev
 
       - name: Compile Android
         run: haxelib run lime build android --app-version=${{ github.run_id }}
