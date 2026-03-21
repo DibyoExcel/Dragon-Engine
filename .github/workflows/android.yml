@@ -86,11 +86,11 @@ jobs:
           haxelib run lime setup android
 
 
-      - name: Compile Android
+      - name: Compile
         run: haxelib run lime build android --app-version=${{ github.run_id }}
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: android-apk
-          path: export/release/android/bin/app/build/outputs/apk/debug/
+          name: androidBuild
+          path: export/release/android/bin/app/build/outputs/apk/debug/*.apk
