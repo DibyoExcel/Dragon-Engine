@@ -81,15 +81,15 @@ jobs:
           haxe-version: 4.2.5
       - name: Install Haxelib
         run: |
-          mkdir -p !/haxelib
+          mkdir -p ./haxelib
           haxelib setup ~/haxelib
           haxelib install lime 8.0.1
           haxelib install openfl 9.2.1
           haxelib install flixel 4.11.0
-          haxelib run lime setup flixel
-          haxelib run lime setup
+          yes | haxelib run lime setup flixel
+          yes | haxelib run lime setup
           haxelib install flixel-tools 1.5.1
-          haxelib run flixel-tools setup
+          yes | haxelib run flixel-tools setup
           haxelib install flixel-ui 2.5.0
           haxelib install flixel-addons 3.0.2
           haxelib install hscript 2.5.0
