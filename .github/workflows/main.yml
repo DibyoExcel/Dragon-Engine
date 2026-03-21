@@ -100,7 +100,7 @@ jobs:
           haxelib install flxanimate 3.0.4 --quiet
           haxelib install hxcpp 4.2.1 --quiet
           haxelib install hxWindowColorMode 0.2.0 --quiet
-          haxelib install android6permission 0.2.1 --quiet
+          haxelib install android6permissions 0.2.1 --quiet
           haxelib set flixel-addons 3.0.2
           haxelib set flixel-demos 2.9.0
           haxelib set flixel-templates 2.6.6
