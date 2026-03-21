@@ -23,13 +23,21 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2.3.0
 
+      - name: Cache haxelib
+        uses: actions/cache@v3
+        with:
+          path: C:\haxelib
+          key: haxelib-${{ runner.os }}-${{ hashFiles('haxelib.json', 'Project.xml') }}
+          restore-keys: |
+            haxelib-${{ runner.os }}-
+
       - uses: krdlab/setup-haxe@master
         with:
           haxe-version: 4.2.5
       # Runs a set of commands using the runners shell
       - name: Install Haxelib
         run: |
-          haxelib setup C:/haxelib
+          haxelib setup C:\haxelib
           haxelib install lime 8.0.1 --quiet
           haxelib install openfl 9.2.1 --quiet
           haxelib install flixel 4.11.0 --quiet

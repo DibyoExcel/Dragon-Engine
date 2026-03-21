@@ -14,6 +14,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Cache haxelib
+        uses: actions/cache@v3
+        with:
+          path: C:\haxelib
+          key: haxelib-${{ runner.os }}-${{ hashFiles('haxelib.json', 'Project.xml') }}
+          restore-keys: |
+            haxelib-${{ runner.os }}-
+
       - name: Setup Haxe
         uses: krdlab/setup-haxe@master
         with:
@@ -21,7 +29,7 @@ jobs:
 
       - name: Install Haxelib
         run: |
-          haxelib setup C:/haxelib
+          haxelib setup C:\haxelib
           haxelib install lime 8.0.1 --quiet
           haxelib install openfl 9.2.1 --quiet
           haxelib install flixel 4.11.0 --quiet
@@ -85,4 +93,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
-          path: export/android/bin/app/build/outputs/apk/debug/
+          path: export/release/android/bin/app/build/outputs/apk/debug/
