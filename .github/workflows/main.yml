@@ -121,6 +121,12 @@ jobs:
           cmake: 3.10.2.4988404
       - name: Create Version Tag
         run: echo "${{ github.run_id }}" > VERSION
+      - name: Lime Setup Android
+        run: |
+          haxelib run lime config ANDROID_SDK $ANDROID_SDK_ROOT
+          haxelib run lime config ANDROID_NDK_ROOT ${{ steps.setup-ndk.outputs.ndk.path }}
+          haxelib run lime config ANDROID_SETUP true
+          haxelib run lime config
       - name: Compile Android
         run: haxelib run lime build android --app-version=${{ github.run_id }}
       - name: Publish Android Artifact
