@@ -116,16 +116,17 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
         with:
-          api-level: 29
-          ndk: 21.4.7075529
-          cmake: 3.10.2.4988404
+          api-level: '29'
+          ndk: '21.4.7075529'
+          cmake: '3.10.2.4988404'
       - name: Create Version Tag
         run: echo "${{ github.run_id }}" > VERSION
       - name: Set Android Environment
         run: |
           echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> $GITHUB_ENV
           echo "ANDROID_NDK_ROOT=$ANDROID_NDK_HOME" >> $GITHUB_ENV
-          echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV | haxelib run lime setup android
+          echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
+          echo -e ANDROID_HOME\n$ANDROID_NDK_HOME\nJAVA_HOME | haxelib run lime setup android
       
       - name: Compile Android
         run: haxelib run lime build android --app-version=${{ github.run_id }}
