@@ -113,9 +113,10 @@ jobs:
           haxelib set lime 8.0.1
           haxelib set openfl 9.2.1
           haxelib list
-          - name: Setup Android SDK
-          uses: android-actions/setup-android@v2
-    
+          
+          
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
       - name: Install Android packages
         run: |
           sdkmanager "platform-tools" \
