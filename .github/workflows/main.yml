@@ -11,7 +11,7 @@ jobs:
   buildWindows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2.3.0
+      - uses: actions/checkout@v4
       - uses: krdlab/setup-haxe@master
         with:
           haxe-version: 4.2.5
@@ -56,7 +56,7 @@ jobs:
   buildAndroid:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.3.0
+      - uses: actions/checkout@v4
       - uses: krdlab/setup-haxe@master
         with:
           haxe-version: 4.2.5
