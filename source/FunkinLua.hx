@@ -43,7 +43,7 @@ import flixel.system.FlxAssets.FlxShader;
 import hxwindowmode.WindowColorMode;
 #end
 
-#if (!flash && sys)
+#if (!flash && sys && !android)
 import flixel.addons.display.FlxRuntimeShader;
 #end
 
@@ -277,28 +277,31 @@ class FunkinLua {
 		set('modchart', ClientPrefs.modchart);
 		set('noteMechanic', ClientPrefs.noteMechanic);
 		for (mod in Paths.getGlobalMods()) {
-			var getSettingString = File.getContent(Paths.mods(mod + '/settings.json'));
-			var jsonParse = haxe.Json.parse(getSettingString);
-			mod = mod.replace(' ', "_");
-			mod = ~/[^A-Za-z0-9_]/g.replace(mod, "");
-			if (jsonParse.optionsList != null) {
-				var forceArray:Array<Dynamic> = cast jsonParse.optionsList;
-				for (opt in forceArray) {
-					if (opt.name == null || opt.name.length < 1 || opt.variable == null || opt.variable.length < 1) continue;
-					var save = new FlxSave();
-					var modSave = mod;
-					var luaVar = 'setting_';
-					if (jsonParse.storageKey != null) {
-						modSave = jsonParse.storageKey;
-						luaVar = jsonParse.storageKey + '_';
+			if (FileSystem.exists(Paths.mods(mod + '/settings.json'))) {
+
+				var getSettingString = File.getContent(Paths.mods(mod + '/settings.json'));
+				var jsonParse = haxe.Json.parse(getSettingString);
+				mod = mod.replace(' ', "_");
+				mod = ~/[^A-Za-z0-9_]/g.replace(mod, "");
+				if (jsonParse.optionsList != null) {
+					var forceArray:Array<Dynamic> = cast jsonParse.optionsList;
+					for (opt in forceArray) {
+						if (opt.name == null || opt.name.length < 1 || opt.variable == null || opt.variable.length < 1) continue;
+						var save = new FlxSave();
+						var modSave = mod;
+						var luaVar = 'setting_';
+						if (jsonParse.storageKey != null) {
+							modSave = jsonParse.storageKey;
+							luaVar = jsonParse.storageKey + '_';
+						}
+						modSave = modSave.replace(' ', "_");
+						modSave = ~/[^A-Za-z0-9_]/g.replace(modSave, "");
+						luaVar = luaVar.replace(' ', "_");
+						luaVar = ~/[^A-Za-z0-9_]/g.replace(luaVar, "");
+						save.bind('setting', modSave);
+						var result = Reflect.field(save.data, opt.variable);
+						set(luaVar + opt.variable, (result != null ? result : (opt.defaultValue != null ? opt.defaultValue : false)));
 					}
-					modSave = modSave.replace(' ', "_");
-					modSave = ~/[^A-Za-z0-9_]/g.replace(modSave, "");
-					luaVar = luaVar.replace(' ', "_");
-					luaVar = ~/[^A-Za-z0-9_]/g.replace(luaVar, "");
-					save.bind('setting', modSave);
-					var result = Reflect.field(save.data, opt.variable);
-					set(luaVar + opt.variable, (result != null ? result : (opt.defaultValue != null ? opt.defaultValue : false)));
 				}
 			}
 		}
@@ -391,7 +394,7 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "setSpriteShader", function(obj:String, shader:String) {
 			if(!ClientPrefs.shaders) return false;
 
-			#if (!flash && MODS_ALLOWED && sys)
+			#if (!flash && MODS_ALLOWED && sys && !android)
 			if(!PlayState.instance.runtimeShaders.exists(shader) && !initLuaShader(shader))
 			{
 				luaTrace('setSpriteShader: Shader $shader is missing!', false, false, FlxColor.RED);
@@ -430,7 +433,7 @@ class FunkinLua {
 
 
 		Lua_helper.add_callback(lua, "getShaderBool", function(obj:String, prop:String) {
-			#if (!flash && MODS_ALLOWED && sys)
+			#if (!flash && MODS_ALLOWED && sys && !android)
 			var shader:FlxRuntimeShader = getShader(obj);
 			if (shader == null)
 			{
@@ -445,7 +448,7 @@ class FunkinLua {
 			#end
 		});
 		Lua_helper.add_callback(lua, "getShaderBoolArray", function(obj:String, prop:String) {
-			#if (!flash && MODS_ALLOWED && sys)
+			#if (!flash && MODS_ALLOWED && sys && !android)
 			var shader:FlxRuntimeShader = getShader(obj);
 			if (shader == null)
 			{
@@ -460,7 +463,7 @@ class FunkinLua {
 			#end
 		});
 		Lua_helper.add_callback(lua, "getShaderInt", function(obj:String, prop:String) {
-			#if (!flash && MODS_ALLOWED && sys)
+			#if (!flash && MODS_ALLOWED && sys && !android)
 			var shader:FlxRuntimeShader = getShader(obj);
 			if (shader == null)
 			{
@@ -475,7 +478,7 @@ class FunkinLua {
 			#end
 		});
 		Lua_helper.add_callback(lua, "getShaderIntArray", function(obj:String, prop:String) {
-			#if (!flash && MODS_ALLOWED && sys)
+			#if (!flash && MODS_ALLOWED && sys && !android)
 			var shader:FlxRuntimeShader = getShader(obj);
 			if (shader == null)
 			{
@@ -490,7 +493,7 @@ class FunkinLua {
 			#end
 		});
 		Lua_helper.add_callback(lua, "getShaderFloat", function(obj:String, prop:String) {
-			#if (!flash && MODS_ALLOWED && sys)
+			#if (!flash && MODS_ALLOWED && sys && !android)
 			var shader:FlxRuntimeShader = getShader(obj);
 			if (shader == null)
 			{
@@ -505,7 +508,7 @@ class FunkinLua {
 			#end
 		});
 		Lua_helper.add_callback(lua, "getShaderFloatArray", function(obj:String, prop:String) {
-			#if (!flash && MODS_ALLOWED && sys)
+			#if (!flash && MODS_ALLOWED && sys && !android)
 			var shader:FlxRuntimeShader = getShader(obj);
 			if (shader == null)
 			{
@@ -522,7 +525,7 @@ class FunkinLua {
 
 
 		Lua_helper.add_callback(lua, "setShaderBool", function(obj:String, prop:String, value:Bool) {
-			#if (!flash && MODS_ALLOWED && sys)
+			#if (!flash && MODS_ALLOWED && sys && !android)
 			var shader:FlxRuntimeShader = getShader(obj);
 			if(shader == null) return;
 
@@ -532,7 +535,7 @@ class FunkinLua {
 			#end
 		});
 		Lua_helper.add_callback(lua, "setShaderBoolArray", function(obj:String, prop:String, values:Dynamic) {
-			#if (!flash && MODS_ALLOWED && sys)
+			#if (!flash && MODS_ALLOWED && sys && !android)
 			var shader:FlxRuntimeShader = getShader(obj);
 			if(shader == null) return;
 
@@ -542,7 +545,7 @@ class FunkinLua {
 			#end
 		});
 		Lua_helper.add_callback(lua, "setShaderInt", function(obj:String, prop:String, value:Int) {
-			#if (!flash && MODS_ALLOWED && sys)
+			#if (!flash && MODS_ALLOWED && sys && !android)
 			var shader:FlxRuntimeShader = getShader(obj);
 			if(shader == null) return;
 
@@ -552,7 +555,7 @@ class FunkinLua {
 			#end
 		});
 		Lua_helper.add_callback(lua, "setShaderIntArray", function(obj:String, prop:String, values:Dynamic) {
-			#if (!flash && MODS_ALLOWED && sys)
+			#if (!flash && MODS_ALLOWED && sys && !android)
 			var shader:FlxRuntimeShader = getShader(obj);
 			if(shader == null) return;
 
@@ -562,7 +565,7 @@ class FunkinLua {
 			#end
 		});
 		Lua_helper.add_callback(lua, "setShaderFloat", function(obj:String, prop:String, value:Float) {
-			#if (!flash && MODS_ALLOWED && sys)
+			#if (!flash && MODS_ALLOWED && sys && !android)
 			var shader:FlxRuntimeShader = getShader(obj);
 			if(shader == null) return;
 
@@ -572,7 +575,7 @@ class FunkinLua {
 			#end
 		});
 		Lua_helper.add_callback(lua, "setShaderFloatArray", function(obj:String, prop:String, values:Dynamic) {
-			#if (!flash && MODS_ALLOWED && sys)
+			#if (!flash && MODS_ALLOWED && sys && !android)
 			var shader:FlxRuntimeShader = getShader(obj);
 			if(shader == null) return;
 
@@ -583,7 +586,7 @@ class FunkinLua {
 		});
 
 		Lua_helper.add_callback(lua, "setShaderSampler2D", function(obj:String, prop:String, bitmapdataPath:String) {
-			#if (!flash && MODS_ALLOWED && sys)
+			#if (!flash && MODS_ALLOWED && sys && !android)
 			var shader:FlxRuntimeShader = getShader(obj);
 			if(shader == null) return;
 
@@ -3656,6 +3659,19 @@ class FunkinLua {
 			return CoolUtil.colorToGrayscale(color);
 		});
 
+		Lua_helper.add_callback(lua, "changeNotesHoldCover", function(player:Bool = false, gf:Bool = false, texture:String = '') {
+			for (i in PlayState.instance.notes) {
+				if (!i.ignoreTextureChange && i.mustPress == player && i.gfNote == gf) {
+					i.holdCoverTexture = texture;
+				}
+			}
+			for (i in PlayState.instance.unspawnNotes) {
+				if (!i.ignoreTextureChange && i.mustPress == player && i.gfNote == gf) {
+					i.holdCoverTexture = texture;
+				}
+			}
+		});
+
 		call('onCreate', []);
 		#end
 	}
@@ -3976,7 +3992,7 @@ class FunkinLua {
 		return PlayState.instance.modchartTexts.exists(name) ? PlayState.instance.modchartTexts.get(name) : Reflect.getProperty(PlayState.instance, name);
 	}
 
-	#if (!flash && sys)
+	#if (!flash && sys && !android)
 	public function getShader(obj:String):FlxRuntimeShader
 	{
 		var killMe:Array<String> = obj.split('.');
@@ -3998,7 +4014,7 @@ class FunkinLua {
 	{
 		if(!ClientPrefs.shaders) return false;
 
-		#if (!flash && sys)
+		#if (!flash && sys && !android)
 		if(PlayState.instance.runtimeShaders.exists(name))
 		{
 			luaTrace('Shader $name was already initialized!');
@@ -4548,7 +4564,7 @@ class HScript
 		interp.variables.set('Character', Character);
 		interp.variables.set('Alphabet', Alphabet);
 		interp.variables.set('CustomSubstate', CustomSubstate);
-		#if (!flash && sys)
+		#if (!flash && sys && !android)
 		interp.variables.set('FlxRuntimeShader', FlxRuntimeShader);
 		#end
 		interp.variables.set('ShaderFilter', openfl.filters.ShaderFilter);

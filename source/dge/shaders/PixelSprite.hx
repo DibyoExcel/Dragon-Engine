@@ -3,7 +3,7 @@ import flixel.system.FlxAssets.FlxShader;
 
 class PixelSprite {
     public var shader:PixelSpriteShader = new PixelSpriteShader();
-    public var pixelSize(default, set):Float = 0;
+    public var pixelSize(default, set):Float = 0.01;
     public function new() {
         
     }

@@ -35,6 +35,7 @@ import dge.shaders.PixelSprite;
 import dge.shaders.Posterize;
 import dge.shaders.RGBPalette;
 import dge.shaders.GrayScale;
+import dge.shaders.BlackAndWhite;
 
 // TODO: add updateSizeFromFrame bool which will tell sprite whether to update it's size to frame's size (when frame setter is called) or not (useful for sprites with adjusted hitbox)
 // And don't forget about sprites with clipped frames: what i should do with their size in this case?
@@ -275,6 +276,7 @@ class FlxSprite extends FlxObject
 	public var posterize(get, never):Posterize;
 	public var rgbShader(get, never):RGBPalette;
 	public var grayScale(get, never):GrayScale;
+	public var blackAndWhite(get, never):BlackAndWhite;
 	//store object after access
     private var _colorSwap:ColorSwap;
     private var _colorInvert:ColorInvert;
@@ -284,6 +286,7 @@ class FlxSprite extends FlxObject
 	private var _posterize:Posterize;
 	private var _rgbShader:RGBPalette;
 	private var _grayScale:GrayScale;
+	private var _blackAndWhite:BlackAndWhite;
 
 	private function get_colorSwap():ColorSwap {
 		if (_colorSwap == null) {
@@ -341,11 +344,18 @@ class FlxSprite extends FlxObject
 		return _grayScale;
 	}
 
+	private function get_blackAndWhite():BlackAndWhite {
+		if (_blackAndWhite == null) {
+			_blackAndWhite = new BlackAndWhite();
+		}
+		return _blackAndWhite;
+	}
+
     public var shaderType(default, set):String = null;
 
     private function set_shaderType(value:String):String {
         if (shaderType != value) {
-            var shouldUse:Array<String> = [ 'none', 'swap', 'invert', 'single', 'rgbswap', 'pixel', 'posterize', 'rgbpalette', 'grayscale' ];
+            var shouldUse:Array<String> = [ 'none', 'swap', 'invert', 'single', 'rgbswap', 'pixel', 'posterize', 'rgbpalette', 'grayscale', 'b&w' ];
 			for (i in 0...shouldUse.length) {
 				shouldUse[i] = shouldUse[i].toLowerCase();
 			}
@@ -374,6 +384,8 @@ class FlxSprite extends FlxObject
 					shader = rgbShader.shader;
 				case 'grayscale':
 					shader = grayScale.shader;
+				case 'b&w':
+					shader = blackAndWhite.shader;
                 default: 
                     shader = null;
             }

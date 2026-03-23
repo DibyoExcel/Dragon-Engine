@@ -36,6 +36,10 @@ typedef SwagSong =
 	var splashSkinSec:String;
 	var validScore:Bool;
 	var secOpt:Bool;
+	//hold cover
+	var holdCoverSkin:String;
+	var holdCoverSkinOpt:String;
+	var holdCoverSkinSec:String;
 }
 
 class Song

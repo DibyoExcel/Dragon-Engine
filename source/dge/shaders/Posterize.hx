@@ -4,7 +4,7 @@ import flixel.system.FlxAssets.FlxShader;
 
 class Posterize {
     public var shader:PosterizeShader = new PosterizeShader();
-    public var posterizeRange(default, set):Float = 0;
+    public var posterizeRange(default, set):Float = 5;
     public function new() {
         
     }
@@ -28,9 +28,9 @@ class PosterizeShader extends FlxShader {
         void main() {
             vec4 color = flixel_texture2D(bitmap, openfl_TextureCoordv);
             if (posterizeRange > 0.0) {
-                float r = floor(color.r * posterizeRange) / posterizeRange;
-                float g = floor(color.g * posterizeRange) / posterizeRange;
-                float b = floor(color.b * posterizeRange) / posterizeRange;
+                float r = round(color.r * posterizeRange) / posterizeRange;
+                float g = round(color.g * posterizeRange) / posterizeRange;
+                float b = round(color.b * posterizeRange) / posterizeRange;
                 gl_FragColor = vec4(r, g, b, color.a);
             } else {
                 //nothing change

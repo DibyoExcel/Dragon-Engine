@@ -8,6 +8,9 @@ import Controls;
 
 class ClientPrefs {
 	//dge setting
+	public static var holdCoverAlpha:Float = 1;//hold cover alpha
+	public static var holdCover:Bool = true;//hold cover
+	public static var holdCoverOpt:Bool = true;//hold cover(Opponent)
 	public static var keyPressColor1:String = 'FF00FF';
 	public static var keyPressColor2:String = '00FFFF';
 	public static var keyPressColor3:String = '00FF00';
@@ -163,6 +166,9 @@ class ClientPrefs {
 	}
 
 	public static function saveSettings() {
+		FlxG.save.data.holdCoverAlpha = holdCoverAlpha;
+		FlxG.save.data.holdCover = holdCover;
+		FlxG.save.data.holdCoverOpt = holdCoverOpt;
 		FlxG.save.data.keyPressColor4 = keyPressColor4;
 		FlxG.save.data.keyPressColor3 = keyPressColor3;
 		FlxG.save.data.keyPressColor2 = keyPressColor2;
@@ -252,6 +258,15 @@ class ClientPrefs {
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.holdCoverAlpha != null) {
+			holdCoverAlpha = FlxG.save.data.holdCoverAlpha;
+		}
+		if(FlxG.save.data.holdCover != null) {
+			holdCover = FlxG.save.data.holdCover;
+		}
+		if(FlxG.save.data.holdCoverOpt != null) {
+			holdCoverOpt = FlxG.save.data.holdCoverOpt;
 		}
 		if(FlxG.save.data.keyPressColor4 != null) {
 			keyPressColor4 = FlxG.save.data.keyPressColor4;

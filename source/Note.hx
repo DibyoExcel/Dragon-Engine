@@ -13,6 +13,7 @@ import sys.FileSystem;
 import sys.io.File;
 #end
 import dge.backend.CacheTools;
+import dge.obj.game.HoldCover;
 
 using StringTools;
 
@@ -99,6 +100,11 @@ class Note extends FlxSprite
 	public var noteSplashR:Int = 0xFFFF0000;
 	public var noteSplashG:Int = 0xFF00FF00;
 	public var noteSplashB:Int = 0xFF0000FF;
+	//grayscale
+	public var noteSplashGrayscaleMult:Float = 1;
+	//black and white
+	public var noteSplashBAndWMult:Float = 1;
+	public var noteSplashBAndWThreshold:Float = 0.5;
 
 	public var offsetX:Float = 0;
 	public var offsetY:Float = 0;
@@ -195,6 +201,50 @@ class Note extends FlxSprite
 	public var noteSplashOffsetY:Float = 0;//note splash y offset
 	public var noteSplashOffsetOriginX:Float = 0;//note splash x origin offset
 	public var noteSplashOffsetOriginY:Float = 0;//note splash y origin offset
+	public var noteSplashCopyAlpha:Bool = true;
+	//hold cover implement(hope this work)
+	public var holdCover(default, set):HoldCover = null;//this only for get current hold cover after hold cover spr spawn
+	public var holdCoverDisabled:Bool = false;
+	public var holdCoverTexture(default, set):String = null;
+	public var holdCoverAlpha:Float = ClientPrefs.holdCoverAlpha;
+	public var holdCoverCopyAlpha:Bool = true;
+	public var holdCoverCam:String = 'hud';
+	public var holdCoverScrollFactor:Array<Float> = [1, 1];
+	public var holdCoverScale:Float = 1;
+	public var holdCoverOffsetX:Float = 0;
+	public var holdCoverOffsetY:Float = 0;
+	public var holdCoverDelaySplash:Float = 0.0;
+	//other shader thing
+	public var holdCoverShaderType:String = 'swap';
+	//swap
+	public var holdCoverHue:Float = 0;
+	public var holdCoverBrt:Float = 0;
+	public var holdCoverSat:Float = 0;
+	//single
+	public var holdCoverSingleR:Float = 1;
+	public var holdCoverSingleG:Float = 1;
+	public var holdCoverSingleB:Float = 1;
+	//invert
+	public var holdCoverInvertR:Bool = true;
+	public var holdCoverInvertG:Bool = true;
+	public var holdCoverInvertB:Bool = true;
+	//colorRGBSwap
+	public var holdCoverRGBSwapR:Int = 0;
+	public var holdCoverRGBSwapG:Int = 1;
+	public var holdCoverRGBSwapB:Int = 2;
+	//pixel
+	public var holdCoverPixelSize:Float = 0;
+	//posterize
+	public var holdCoverPosterizeRange:Float = 0;
+	//rgb palette
+	public var holdCoverR:Int = 0xFFFF0000;
+	public var holdCoverG:Int = 0xFF00FF00;
+	public var holdCoverB:Int = 0xFF0000FF;
+	//grayscale
+	public var holdCoverGrayscaleMult:Float = 1;
+	//black and white
+	public var holdCoverBAndWMult:Float = 1;
+	public var holdCoverBAndWThreshold:Float = 1;
 	//end dge core
 
 	@:noCompletion
@@ -348,6 +398,9 @@ class Note extends FlxSprite
 		noteSplashHue = colorSwap.hue;
 		noteSplashSat = colorSwap.saturation;
 		noteSplashBrt = colorSwap.brightness;
+		holdCoverHue = colorSwap.hue;
+		holdCoverSat = colorSwap.saturation;
+		holdCoverBrt = colorSwap.brightness;
 		runConfig(value);
 		return value;
 	}
@@ -439,6 +492,7 @@ class Note extends FlxSprite
 		if (PlayState.SONG.secOpt && !(gamemode == "bothside") && !mustPress) {
 			noteScale = 0.75;
 			noteSplashScale = 0.75;
+			holdCoverScale = 0.75;
 		}
 		this.mustPress = mustPress;
 		this.gfNote = gfSec;
@@ -649,11 +703,13 @@ class Note extends FlxSprite
 				if (!(gamemode == "bothside")) {
 					noteScale = 0.75;
 					noteSplashScale = 0.75;
+					holdCoverScale = 0.75;
 				}
 			} else {
 				if (!(gamemode == "bothside")) {
 					noteScale = 1.0;
 					noteSplashScale = 1.0;
+					holdCoverScale = 1.0;
 				}
 			}
 		}
@@ -905,6 +961,42 @@ class Note extends FlxSprite
 		}
 		return value;
 	}
+	private function set_holdCoverTexture(value:String):String {
+		if (holdCoverTexture != value) {
+			holdCoverTexture = value;
+			try {
+				if (value == null || value.length < 1) {
+					var skin:String = PlayState.SONG.holdCoverSkin;
+					var skinOpt:String = PlayState.SONG.holdCoverSkinOpt;
+					var skinSec:String = PlayState.SONG.holdCoverSkinSec;
+					if (skin == null || skin.length < 1) {
+						skin = "holdCover";
+					}
+					if (skinOpt == null || skinOpt.length < 1) {
+						skinOpt = skin;
+					}
+					if (skinSec == null || skinSec.length < 1) {
+						if (skinOpt == null || skinOpt.length < 1) {
+							skinOpt = skin;
+						}
+						skinSec = skinOpt;
+					}
+					if (mustPress) {
+						Paths.getSparrowAtlas(skin);
+					} else if (gfNote) {
+						Paths.getSparrowAtlas(skinSec);
+					} else {
+						Paths.getSparrowAtlas(skinOpt);
+					}
+				} else {
+					Paths.getSparrowAtlas(value);
+				}
+			} catch (e:Dynamic) {
+				Paths.getSparrowAtlas('holdCover');
+			}
+		}
+		return value;
+	}
 	private function set_mustPress(value:Bool):Bool {
 		if (mustPress != value) {
 			mustPress = value;
@@ -920,5 +1012,14 @@ class Note extends FlxSprite
 		if (PlayState.SONG.secOpt && !mustPress) {//purpose trigger
 			noteScale = 0.75;
 		}
+	}
+	function set_holdCover(value:HoldCover):HoldCover{
+		if (holdCover != value) {
+			if (holdCover != null) {
+				holdCover.kill();
+			}
+			holdCover = value;
+		}
+		return value;
 	}
 }

@@ -281,6 +281,9 @@ class ChartingState extends MusicBeatState
 				splashSkinOpt: 'noteSplashes',
 				arrowSkinSec: '',
 				splashSkinSec: 'noteSplashes',
+				holdCoverSkin: 'holdCover',
+				holdCoverSkinOpt: 'holdCover',
+				holdCoverSkinSec: 'holdCover',
 				player1: 'bf',
 				player2: 'dad',
 				gfVersion: 'gf',
@@ -427,7 +430,7 @@ class ChartingState extends MusicBeatState
 
 		UI_box = new FlxUITabMenu(null, tabs, true);
 
-		UI_box.resize(300, 550);
+		UI_box.resize(325, 550);
 		UI_box.x = (FlxG.width / 2) + GRID_SIZE / 2;
 		UI_box.y = 25;
 		UI_box.scrollFactor.set();
@@ -552,10 +555,13 @@ class ChartingState extends MusicBeatState
 	var UI_songTitle:FlxUIInputText;
 	var noteSkinInputText:FlxUIInputText;
 	var noteSplashesInputText:FlxUIInputText;
+	var holdCoverInputText:FlxUIInputText;
 	var noteSkinInputTextOpt:FlxUIInputText;
 	var noteSplashesInputTextOpt:FlxUIInputText;
+	var holdCoverInputTextOpt:FlxUIInputText;
 	var noteSkinInputTextSec:FlxUIInputText;
 	var noteSplashesInputTextSec:FlxUIInputText;
+	var holdCoverInputTextSec:FlxUIInputText;
 	var stageDropDown:FlxUIDropDownMenuCustom;
 	var sliderRate:FlxUISlider;
 	function addSongUI():Void
@@ -755,9 +761,15 @@ class ChartingState extends MusicBeatState
 		var skin = PlayState.SONG.arrowSkin;
 		var skinOpt = PlayState.SONG.arrowSkinOpt;
 		var skinSec = PlayState.SONG.arrowSkinSec;
+		var holdCoverSkin = PlayState.SONG.holdCoverSkin;
+		var holdCoverSkinOpt = PlayState.SONG.holdCoverSkinOpt;
+		var holdCoverSkinSec = PlayState.SONG.holdCoverSkinSec;
 		if(skin == null) skin = '';
 		if(skinOpt == null) skinOpt = '';
 		if(skinSec == null) skinSec = '';
+		if(holdCoverSkin == null) holdCoverSkin = '';
+		if(holdCoverSkinOpt == null) holdCoverSkinOpt = '';
+		if(holdCoverSkinSec == null) holdCoverSkinSec = '';
 		noteSkinInputText = new FlxUIInputText(player2DropDown.x, player2DropDown.y + 50, 150, skin, 8);
 		blockPressWhileTypingOn.push(noteSkinInputText);
 
@@ -775,6 +787,15 @@ class ChartingState extends MusicBeatState
 
 		noteSplashesInputTextSec = new FlxUIInputText(noteSkinInputTextSec.x, noteSkinInputTextSec.y + 35, 150, _song.splashSkinSec, 8);
 		blockPressWhileTypingOn.push(noteSplashesInputTextSec);
+
+		holdCoverInputText = new FlxUIInputText((noteSkinInputText.x+noteSkinInputText.width)+5, noteSkinInputText.y, 150, holdCoverSkin, 8);
+		blockPressWhileTypingOn.push(holdCoverInputText);
+		
+		holdCoverInputTextOpt = new FlxUIInputText(holdCoverInputText.x, holdCoverInputText.y + 35, 150, holdCoverSkinOpt, 8);
+		blockPressWhileTypingOn.push(holdCoverInputTextOpt);
+
+		holdCoverInputTextSec = new FlxUIInputText(holdCoverInputText.x, holdCoverInputTextOpt.y + 35, 150, holdCoverSkinSec, 8);
+		blockPressWhileTypingOn.push(holdCoverInputTextSec);
 
 		var reloadNotesButton:FlxButton = new FlxButton(noteSplashesInputTextSec.x + 5, noteSplashesInputTextSec.y + (20+5), 'Change Notes', function() {
 			_song.arrowSkin = noteSkinInputText.text;
@@ -802,10 +823,13 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(reloadNotesButton);
 		tab_group_song.add(noteSkinInputText);
 		tab_group_song.add(noteSplashesInputText);
+		tab_group_song.add(holdCoverInputText);
 		tab_group_song.add(noteSkinInputTextOpt);
 		tab_group_song.add(noteSplashesInputTextOpt);
+		tab_group_song.add(holdCoverInputTextOpt);
 		tab_group_song.add(noteSkinInputTextSec);
 		tab_group_song.add(noteSplashesInputTextSec);
+		tab_group_song.add(holdCoverInputTextSec);
 		tab_group_song.add(new FlxText(stepperBPM.x, stepperBPM.y - 15, 0, 'Song BPM:'));
 		tab_group_song.add(new FlxText(stepperBPM.x + 100, stepperBPM.y - 15, 0, 'Song Offset:'));
 		tab_group_song.add(new FlxText(stepperSpeed.x, stepperSpeed.y - 15, 0, 'Song Speed:'));
@@ -815,10 +839,13 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(new FlxText(stageDropDown.x, stageDropDown.y - 15, 0, 'Stage:'));
 		tab_group_song.add(new FlxText(noteSkinInputText.x, noteSkinInputText.y - 15, 0, 'Note Texture(Player):'));
 		tab_group_song.add(new FlxText(noteSplashesInputText.x, noteSplashesInputText.y - 15, 0, 'Note Splashes Texture(Player):'));
+		tab_group_song.add(new FlxText(holdCoverInputText.x, holdCoverInputText.y - 15, 0, 'Hold Cover Texture(Player):'));
 		tab_group_song.add(new FlxText(noteSkinInputTextOpt.x, noteSkinInputTextOpt.y - 15, 0, 'Note Texture(Opponent):'));
 		tab_group_song.add(new FlxText(noteSplashesInputTextOpt.x, noteSplashesInputTextOpt.y - 15, 0, 'Note Splashes Texture(Opponent):'));
+		tab_group_song.add(new FlxText(holdCoverInputTextOpt.x, holdCoverInputTextOpt.y - 15, 0, 'Hold Cover Texture(Opponent):'));
 		tab_group_song.add(new FlxText(noteSkinInputTextSec.x, noteSkinInputTextSec.y - 15, 0, 'Note Texture(Second Opponent):'));
 		tab_group_song.add(new FlxText(noteSplashesInputTextSec.x, noteSplashesInputTextSec.y - 15, 0, 'Note Splashes Texture(Second Opponent):'));
+		tab_group_song.add(new FlxText(holdCoverInputTextSec.x, holdCoverInputTextSec.y - 15, 0, 'Hold Cover Texture(Second Opponent):'));
 		tab_group_song.add(player2DropDown);
 		tab_group_song.add(gfVersionDropDown);
 		tab_group_song.add(player1DropDown);
@@ -1580,6 +1607,15 @@ class ChartingState extends MusicBeatState
 		else if(id == FlxUIInputText.CHANGE_EVENT && (sender is FlxUIInputText)) {
 			if(sender == noteSplashesInputText) {
 				_song.splashSkin = noteSplashesInputText.text;
+			}
+			if(sender == holdCoverInputText) {
+				_song.holdCoverSkin = holdCoverInputText.text;
+			}
+			if(sender == holdCoverInputTextOpt) {
+				_song.holdCoverSkinOpt = holdCoverInputTextOpt.text;
+			}
+			if(sender == holdCoverInputTextSec) {
+				_song.holdCoverSkinSec = holdCoverInputTextSec.text;
 			}
 			if(sender == noteSplashesInputTextOpt) {
 				_song.splashSkinOpt = noteSplashesInputTextOpt.text;

@@ -51,7 +51,6 @@ class StrumNote extends FlxSprite
 		texture = '';
 		shaderType = 'swap';
 		camTarget = 'hud';
-
 		scrollFactor.set(scrollFactorCam[0], scrollFactorCam[1]);
 	}
 
@@ -130,7 +129,11 @@ class StrumNote extends FlxSprite
 			try{
 				frames = Paths.getSparrowAtlas(image);
 			} catch(e:Dynamic) {
-				frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
+				try{
+					frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
+				} catch (e:Dynamic) {
+					frames = Paths.getSparrowAtlas('NOTE_assets');
+				}
 			}
 			animation.addByPrefix('green', 'arrowUP');
 			animation.addByPrefix('blue', 'arrowDOWN');
@@ -191,17 +194,17 @@ class StrumNote extends FlxSprite
 				resetAnim = 0;
 			}
 		}
-		//if(animation.curAnim != null){ //my bad i was upset
-		if(animation.curAnim.name == animConfirm && !PlayState.isPixelStage) {
-			centerOrigin();
-		//}
+		if(animation != null && animation.curAnim != null){ //my bad i was upset
+			if(animation.curAnim.name == animConfirm && !PlayState.isPixelStage) {
+				centerOrigin();
+			}
 		}
 
 		super.update(elapsed);
 	}
 
 	public function playAnim(anim:String, ?force:Bool = false, sustainNote:Bool = false) {
-		if (animation.curAnim != null && animation.curAnim.name == anim && sustainNote && !classicAnim) return;
+		if (animation != null && animation.curAnim != null && animation.curAnim.name == anim && sustainNote && !classicAnim) return;
 		animation.play(anim, force);
 		centerOrigin();
 		centerOffsets();
@@ -211,7 +214,7 @@ class StrumNote extends FlxSprite
 			colorSwap.brightness = 0;
 
 		} else {
-			if (noteData > -1 && noteData % 4 < ClientPrefs.arrowHSV.length)
+			if (noteData > -1)
 			{
 				colorSwap.hue = ClientPrefs.arrowHSV[noteData % 4][0] / 360;
 				colorSwap.saturation = ClientPrefs.arrowHSV[noteData % 4][1] / 100;

@@ -225,7 +225,7 @@ class CoolUtil
 		var r:Int = (color >> 16) & 0xFF;
 		var g:Int = (color >> 8) & 0xFF;
 		var b:Int = color & 0xFF;
-		var gray:Int = Std.int(0.3 * r + 0.59 * g + 0.11 * b);
+		var gray:Int = Std.int(0.2126 * r + 0.7152 * g + 0.0722 * b);
 		return (gray << 16) | (gray << 8) | gray;
 	}
 }

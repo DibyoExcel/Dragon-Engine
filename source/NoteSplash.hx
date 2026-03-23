@@ -7,7 +7,8 @@ using StringTools;
 class NoteSplash extends FlxSprite
 {
 	private var idleAnim:String;
-	private var textureLoaded:String = null;
+	private var strum:StrumNote = null;
+	private var note:Note = null;
 
 	public function new(x:Float = 0, y:Float = 0, ?note:Int = 0, ?type:String = 'bf') {
 		super(x, y);
@@ -59,7 +60,6 @@ class NoteSplash extends FlxSprite
 				texture = 'noteSplashes';
 			}
 		}
-		setGraphicSize(Std.int(width*scale), Std.int(height*scale));
 		if (cam != null && cam != '') {
 			var camArray:Array<String> = cam.split(',');
 			var realCam:Array<String> = [];
@@ -69,10 +69,8 @@ class NoteSplash extends FlxSprite
 			cameras = FunkinLua.cameraArrayFromString(realCam);
 		}
 		scrollFactor.set(sfX, sfY);
-
-		if(textureLoaded != texture) {
-			loadAnims(texture);
-		}
+		loadAnims(texture);
+		setGraphicSize(Std.int(width*scale), Std.int(height*scale));
 		var noteWidth = Note.swagWidth;
 		var noteHeight = Note.swagWidth;
 		var noteSplashOffsetX = 0.0;
@@ -80,35 +78,64 @@ class NoteSplash extends FlxSprite
 		var noteSplashOffsetOriginX = 0.0;
 		var noteSplashOffsetOriginY = 0.0;
 		if (oriNote != null) {
+			this.note = oriNote;
+			if (oriNote.strumNote != null) this.strum = oriNote.strumNote;
 			shaderType = oriNote.noteSplashShaderType;
-			//swap
-			colorSwap.hue = hueColor;
-			colorSwap.saturation = satColor;
-			colorSwap.brightness = brtColor;
-			//single
-			colorSingle.r = oriNote.noteSplashSingleR;
-			colorSingle.g = oriNote.noteSplashSingleG;
-			colorSingle.b = oriNote.noteSplashSingleB;
-			//invert
-			colorInvert.invertR = oriNote.noteSplashInvertR;
-			colorInvert.invertG = oriNote.noteSplashInvertG;
-			colorInvert.invertB = oriNote.noteSplashInvertB;
-			//rgbSwap
-			colorRGBSwap.swapR = oriNote.noteSplashRGBSwapR;
-			colorRGBSwap.swapG = oriNote.noteSplashRGBSwapG;
-			colorRGBSwap.swapB = oriNote.noteSplashRGBSwapB;
-			//pixel
-			pixelSprite.pixelSize = oriNote.noteSplashPixelSize;
-			//posterize
-			posterize.posterizeRange = oriNote.noteSplashPosterizeRange;
-			//rgb palette
-			rgbShader.r = oriNote.noteSplashR;
-			rgbShader.g = oriNote.noteSplashG;
-			rgbShader.b = oriNote.noteSplashB;
+            if (shaderType == 'swap') {
+				//swap
+                colorSwap.hue = oriNote.noteSplashHue;
+                colorSwap.saturation = oriNote.noteSplashSat;
+                colorSwap.brightness = oriNote.noteSplashBrt;
+            }
+            if (shaderType == 'single') {
+                //single
+                colorSingle.r = oriNote.noteSplashSingleR;
+                colorSingle.g = oriNote.noteSplashSingleG;
+                colorSingle.b = oriNote.noteSplashSingleB;
+            }
+            if (shaderType == 'invert') {
+                //invert
+                colorInvert.invertR = oriNote.noteSplashInvertR;
+                colorInvert.invertG = oriNote.noteSplashInvertG;
+                colorInvert.invertB = oriNote.noteSplashInvertB;
+            }
+            if (shaderType == 'rgbswap') {
+                //rgbSwap
+                colorRGBSwap.swapR = oriNote.noteSplashRGBSwapR;
+                colorRGBSwap.swapG = oriNote.noteSplashRGBSwapG;
+                colorRGBSwap.swapB = oriNote.noteSplashRGBSwapB;
+            }
+            if (shaderType == 'pixel') {
+                //pixel
+                pixelSprite.pixelSize = oriNote.noteSplashPixelSize;
+            }
+            if (shaderType == 'posterize') {
+                //posterize
+                posterize.posterizeRange = oriNote.noteSplashPosterizeRange;
+            }
+            if (shaderType == 'rgbpalette') {
+                //rgb palette
+                rgbShader.r = oriNote.noteSplashR;
+                rgbShader.g = oriNote.noteSplashG;
+                rgbShader.b = oriNote.noteSplashB;
+            }
+            if (shaderType == 'grayscale') {
+                //grayscale
+                grayScale.mult = oriNote.noteSplashGrayscaleMult;
+            }
+            if (shaderType == 'b&w') {
+                //black and white
+                blackAndWhite.mult = oriNote.noteSplashBAndWMult;
+                blackAndWhite.threshold = oriNote.noteSplashBAndWThreshold;
+            }
 			//angle
 			angle = oriNote.noteSplashAngle;
 			//alpha
-			alpha = oriNote.noteSplashAlpha;
+			if (oriNote.noteSplashCopyAlpha && oriNote.strumNote != null) {
+				alpha = oriNote.strumNote.alpha * oriNote.noteSplashAlpha;
+			} else {
+				alpha = oriNote.noteSplashAlpha;
+			}
 			if (oriNote.strumNote != null) {
 				noteWidth = oriNote.strumNote.width;
 				noteHeight = oriNote.strumNote.height;
@@ -136,15 +163,20 @@ class NoteSplash extends FlxSprite
 		catch(e:Dynamic) {
 			frames = Paths.getSparrowAtlas('noteSplashes');
 		}
-		for (i in 1...3) {
-			animation.addByPrefix("note1-" + i, "note splash blue " + i, ClientPrefs.fpsStrumAnim, false);
-			animation.addByPrefix("note2-" + i, "note splash green " + i, ClientPrefs.fpsStrumAnim, false);
-			animation.addByPrefix("note0-" + i, "note splash purple " + i, ClientPrefs.fpsStrumAnim, false);
-			animation.addByPrefix("note3-" + i, "note splash red " + i, ClientPrefs.fpsStrumAnim, false);
+		var col = [ 'purple', 'blue', 'green', 'red' ];
+		for (color in 0...col.length) {
+			for (i in 1...3) {
+				animation.addByPrefix("note" + color + "-" + i, "note splash " + col[color] + ' ' + i, ClientPrefs.fpsStrumAnim, false);
+			}
 		}
 	}
 
 	override function update(elapsed:Float) {
+		if (strum != null && note != null) {
+			if (note.noteSplashCopyAlpha) {
+				alpha = strum.alpha * note.noteSplashAlpha;
+			} 
+		}
 		if(animation.curAnim != null)if(animation.curAnim.finished) kill();
 
 		super.update(elapsed);

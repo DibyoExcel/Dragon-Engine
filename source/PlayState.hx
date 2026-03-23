@@ -65,9 +65,12 @@ import StageData;
 import FunkinLua;
 import DialogueBoxPsych;
 import Conductor.Rating;
+import dge.obj.game.HoldCover;
 
 #if !flash 
+#if !android
 import flixel.addons.display.FlxRuntimeShader;
+#end
 import openfl.filters.ShaderFilter;
 #end
 
@@ -141,6 +144,7 @@ class PlayState extends MusicBeatState
 	public var strumGroupMap:Map<String, FlxTypedGroup<StrumNote>> = new Map();
 	public var notesGroupMap:Map<String, FlxTypedGroup<Note>> = new Map();
 	public var noteSplashGroupMap:Map<String, FlxTypedGroup<NoteSplash>> = new Map();
+	public var holdCoverGroupMap:Map<String, FlxTypedGroup<HoldCover>> = new Map();
 	public var customCameraMap:Map<String, FlxCamera> = new Map();
 	public var customCameraZoomMap:Map<String, Float> = new Map();//zoomdefault
 	public var ratingGroup:FlxTypedGroup<FlxSprite>;
@@ -208,6 +212,9 @@ class PlayState extends MusicBeatState
 	public var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
 	public var grpNoteSplashesOpt:FlxTypedGroup<NoteSplash>;
 	public var grpNoteSplashesGf:FlxTypedGroup<NoteSplash>;
+	public var grpHoldCover:FlxTypedGroup<HoldCover>;
+	public var grpHoldCoverOpt:FlxTypedGroup<HoldCover>;
+	public var grpHoldCoverGf:FlxTypedGroup<HoldCover>;
 	//notes in different lane
 	public var playerNotes:FlxTypedGroup<Note>;
 	public var opponentNotes:FlxTypedGroup<Note>;
@@ -495,6 +502,9 @@ class PlayState extends MusicBeatState
 		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
 		grpNoteSplashesOpt = new FlxTypedGroup<NoteSplash>();
 		grpNoteSplashesGf = new FlxTypedGroup<NoteSplash>();
+		grpHoldCover = new FlxTypedGroup<HoldCover>();
+		grpHoldCoverOpt = new FlxTypedGroup<HoldCover>();
+		grpHoldCoverGf = new FlxTypedGroup<HoldCover>();
 
 		FlxG.cameras.setDefaultDrawTarget(camGame, true);
 		CustomFadeTransition.nextCamera = camOther;
@@ -1275,6 +1285,11 @@ class PlayState extends MusicBeatState
 		add(grpNoteSplashesOpt);
 		add(grpNoteSplashesGf);
 		add(grpNoteSplashes);
+		var holdCover:HoldCover = new HoldCover(100, 100);
+		holdCover.alpha = 0;
+		grpHoldCover.add(holdCover);
+		grpHoldCoverOpt.add(holdCover);
+		grpHoldCoverGf.add(holdCover);
 		var splash:NoteSplash = new NoteSplash(100, 100, 0);
 		grpNoteSplashes.add(splash);
 		var splashOpt:NoteSplash = new NoteSplash(100, 100, 0, 'opt');//precache note splash?
@@ -1291,6 +1306,9 @@ class PlayState extends MusicBeatState
 		add(opponentNotes);
 		add(playerNotes);
 		add(gfNotes);
+		add(grpHoldCoverOpt);
+		add(grpHoldCoverGf);
+		add(grpHoldCover);
 
 		ratingGroup = new FlxTypedGroup<FlxSprite>();
 		comboGroup = new FlxTypedGroup<FlxSprite>();
@@ -1596,7 +1614,7 @@ class PlayState extends MusicBeatState
 		CustomFadeTransition.nextCamera = camOther;
 	}
 
-	#if (!flash && sys)
+	#if (!flash && sys && !android)
 	public var runtimeShaders:Map<String, Array<String>> = new Map<String, Array<String>>();
 	public function createRuntimeShader(name:String):FlxRuntimeShader
 	{
@@ -1640,6 +1658,7 @@ class PlayState extends MusicBeatState
 			{
 				var frag:String = folder + name + '.frag';
 				var vert:String = folder + name + '.vert';
+				//trace(frag + '_' + vert);
 				var found:Bool = false;
 				if(FileSystem.exists(frag))
 				{
@@ -3832,10 +3851,12 @@ class PlayState extends MusicBeatState
 						if (daNote.copyScrollFactor) {
 							daNote.scrollFactorCam = strumSC;
 							daNote.noteSplashScrollFactor = strumSC;
+							daNote.holdCoverScrollFactor = strumSC;
 						}
 						if (daNote.copyCam) {
 							daNote.camTarget = strumCam;
 							daNote.noteSplashCam = strumCam;
+							daNote.holdCoverCam = strumCam;
 						}
 						if (strumScroll) //Downscroll
 						{
@@ -3988,7 +4009,6 @@ class PlayState extends MusicBeatState
 						if ((gamemode != 'opponent' ? ((gamemode == "bothside" || gamemode == "bothside v2") ? true : daNote.mustPress) : !daNote.mustPress) && !cpuControlled && !daNote.ignoreNote && !endingSong && (daNote.tooLate || !daNote.wasGoodHit) && !(daNote.autoPress || (playableField.length < 1 ? daNote.customField : playableField.indexOf(daNote.fieldTarget) == -1))) {
 							noteMiss(daNote);
 						}
-
 						destroyNote(daNote);
 						if ((!daNote.hitByOpponent && !daNote.mustPress) || (!daNote.wasGoodHit && daNote.mustPress && daNote.isDad)) {//if opponent lag
 							camZooming = true;
@@ -5466,6 +5486,10 @@ class PlayState extends MusicBeatState
 				char.playAnim(animToPlay, true);
 			}
 		callOnLuas((gamemode == 'opponent' || ((gamemode == "bothside" || gamemode == "bothside v2" && !daNote.mustPress))  ? 'opponentNoteMiss' : 'noteMiss'), [notes.members.indexOf(daNote), daNote.noteData, daNote.noteType, daNote.isSustainNote]);
+		if (daNote.isSustainNote && daNote.parent != null && daNote.parent.holdCover != null) {
+			daNote.parent.holdCover.kill();
+			daNote.parent.holdCover = null;
+		}
 	}
 
 	function noteMissPress(direction:Int = 1):Void //You pressed a key when there was no notes to press for this key
@@ -5592,6 +5616,9 @@ class PlayState extends MusicBeatState
 				}
 				
 				callOnLuas((note.mustPress ? 'goodNoteHit' : 'opponentNoteHit'), [notes.members.indexOf(note), Math.abs(note.noteData), note.noteType, note.isSustainNote]);
+				if (!note.holdCoverDisabled && ClientPrefs.holdCoverOpt &&  !note.fakeNoHit && note.playStrumAnim) {
+					spawnHoldCover(note);
+				}
 				if (note.multiPress <= 0) {
 					note.hitByOpponent = true;
 					note.wasGoodHit = true;
@@ -5605,6 +5632,38 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
+	
+	function spawnHoldCover(note:Note):Void {//complicate warning lol
+		if (note != null) {
+			if (!note.isSustainNote && ((note.sustainLength+((note.strumTime+note.offsetStrumTime)-Conductor.songPosition))/1000)+note.holdCoverDelaySplash > 0 && (note.tail != null && note.tail.length > 0)) {
+				var groupTarget = grpHoldCover;
+				if (note.customField && holdCoverGroupMap.exists(note.fieldTarget)) {
+					groupTarget = holdCoverGroupMap.get(note.fieldTarget);
+				} else if (!note.mustPress) {
+					groupTarget = grpHoldCoverOpt;
+	
+				} else if (note.gfNote || note.secondOpponent) {
+					groupTarget = grpHoldCoverGf;
+				}
+				var holdCover:HoldCover = groupTarget.recycle(HoldCover);
+				if (note.strumNote != null) {
+					holdCover.setupThis(note.strumNote.x, note.strumNote.y, note.noteData, note.strumNote, note);
+				}
+				note.holdCover = holdCover;
+				groupTarget.add(holdCover);
+			} else if (note.isSustainNote) {
+				var noteP = note.parent;
+				if (noteP != null) {
+					if (noteP.tail != null && noteP.tail.length > 0 && noteP.holdCover != null) {
+						var holdCover = noteP.holdCover;
+						holdCover.strum = note.strumNote;
+						holdCover.note = note;
+						holdCover.playAnim("hold" + (note.noteData%4));
+					}
+				}
+			}
+		}
+	}
 
 	function goodNoteHit(note:Note):Void
 	{
@@ -5797,6 +5856,9 @@ class PlayState extends MusicBeatState
 			var leData:Int = Math.round(Math.abs(note.noteData));
 			var leType:String = note.noteType;
 			callOnLuas((!note.mustPress || note.isDad ? 'opponentNoteHit' : 'goodNoteHit'), [notes.members.indexOf(note), leData, leType, isSus]);
+			if (!note.holdCoverDisabled && ClientPrefs.holdCover && !note.fakeNoHit && note.playStrumAnim) {
+				spawnHoldCover(note);
+			}
 			if (note.multiPress <= 0) {
 				note.wasGoodHit = true;
 				if (!note.isSustainNote  && !note.fakeNoHit)
@@ -6670,13 +6732,15 @@ class PlayState extends MusicBeatState
 	public function createStrum(tag:String= '', data:Int = 4, camera:String = 'hud', sfX:Float = 0, sfY:Float = 0, downScroll:Null<Bool> = null, player:Bool = false, gf:Bool = false) {
 		//trace("trigger");
 		//gf param only work for opponent if player it act normal player strums
-		if (tag != '' && !strumGroupMap.exists(tag) && !notesGroupMap.exists(tag) && !noteSplashGroupMap.exists(tag)) {
+		if (tag != '' && !strumGroupMap.exists(tag) && !notesGroupMap.exists(tag) && !noteSplashGroupMap.exists(tag) && !holdCoverGroupMap.exists(tag)) {
 			var strumTamp:FlxTypedGroup<StrumNote>;
 			strumTamp =  new FlxTypedGroup<StrumNote>();
 			var notesTamp:FlxTypedGroup<Note>;
 			notesTamp =  new FlxTypedGroup<Note>();
 			var noteSplashTamp:FlxTypedGroup<NoteSplash>;
 			noteSplashTamp =  new FlxTypedGroup<NoteSplash>();
+			var holdCoverTamp:FlxTypedGroup<HoldCover>;
+			holdCoverTamp =  new FlxTypedGroup<HoldCover>();
 			if (downScroll == null) {
 				downScroll = ClientPrefs.downScroll;
 			}
@@ -6698,13 +6762,71 @@ class PlayState extends MusicBeatState
 			strumGroupMap.set(tag, strumTamp);
 			notesGroupMap.set(tag, notesTamp);
 			noteSplashGroupMap.set(tag, noteSplashTamp);
-			add(strumGroupMap.get(tag));//now can be set layer with setObjectOrder('strumGroupMap@youfieldname', 'camName)
-			add(notesGroupMap.get(tag));//now can be set layer with setObjectOrder('strumGroupMap@youfieldname', 'camName)
-			add(noteSplashGroupMap.get(tag));//now can be set layer with setObjectOrder('strumGroupMap@youfieldname', 'camName)
+			holdCoverGroupMap.set(tag, holdCoverTamp);
+			var orderStrums:Int = -1;//if -1 use add()
+			var orderNotes:Int = -1;//if -1 use add()
+			var orderSplash:Int = -1;//if -1 use add()
+			var orderHoldCover:Int = -1;//if -1 use add()
+			var strumtarget:FlxTypedGroup<StrumNote>;
+			var notestarget:FlxTypedGroup<Note>;
+			var splashtarget:FlxTypedGroup<NoteSplash>;
+			var holdcovertarget:FlxTypedGroup<HoldCover>;
+			if (player) {
+				//plyaer
+				strumtarget = playerStrums;
+				notestarget = playerNotes;
+				splashtarget = grpNoteSplashes;
+				holdcovertarget = grpHoldCover;
+			} else if (gf) {
+				//gf opponent
+				strumtarget = gfStrums;
+				notestarget = gfNotes;
+				splashtarget = grpNoteSplashesGf;
+				holdcovertarget = grpHoldCoverGf;
+			} else {
+				//opponent
+				strumtarget = opponentStrums;
+				notestarget = opponentNotes;
+				splashtarget = grpNoteSplashesOpt;
+				holdcovertarget = grpHoldCoverOpt;
+			}
+			if (strumtarget != null) {
+				orderStrums = members.indexOf(strumtarget)+1;
+			}
+			if (notestarget != null) {
+				orderNotes = members.indexOf(notestarget)+1;
+			}
+			if (splashtarget != null) {
+				orderSplash = members.indexOf(splashtarget)+1;
+			}
+			if (holdcovertarget != null) {
+				orderHoldCover = members.indexOf(holdcovertarget)+1;
+			}
+			//now can be set layer with setObjectOrder('mapname@youfieldname', index)
+			if (orderStrums != -1) {
+				insert(orderStrums, strumGroupMap.get(tag));
+			} else {
+				add(strumGroupMap.get(tag));
+			}
+			if (orderNotes != -1) {
+				insert(orderNotes, notesGroupMap.get(tag));
+			} else {
+				add(notesGroupMap.get(tag));
+			}
+			if (orderHoldCover != -1) {
+				insert(orderHoldCover, holdCoverGroupMap.get(tag));
+			} else {
+				add(holdCoverGroupMap.get(tag));
+			}
+			if (orderSplash != -1) {
+				insert(orderSplash, noteSplashGroupMap.get(tag));
+			} else {
+				add(noteSplashGroupMap.get(tag));
+			}
 		}
 	}
 	public function removeStrum(tag:String = '') {
-		if (tag != '' || strumGroupMap.exists(tag) && notesGroupMap.exists(tag) && noteSplashGroupMap.exists(tag)) {
+		if (tag != '' || strumGroupMap.exists(tag) && notesGroupMap.exists(tag) && noteSplashGroupMap.exists(tag) && holdCoverGroupMap.exists(tag)) {
 			while (strumGroupMap.get(tag).length > 0) {
 				var obj = strumGroupMap.get(tag).members[0];
 				obj.kill();
@@ -6728,6 +6850,13 @@ class PlayState extends MusicBeatState
 				obj.destroy();
 			}
 			noteSplashGroupMap.remove(tag);
+			var getVS = holdCoverGroupMap.get(tag);
+			while (getVS.length > 0) {
+				 var obj = getVS.members[0];
+				getVS.remove(obj, true);
+				obj.destroy();
+			}
+			holdCoverGroupMap.remove(tag);
 		}
 	}
 	private function setKey() {

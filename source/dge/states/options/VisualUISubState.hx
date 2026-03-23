@@ -189,6 +189,32 @@ class VisualUISubState extends BaseOptionsMenu
 			'BOTPLAY');
 		addOption(option);
 
+		var option:Option = new Option('Hold Cover',
+			"Show Player Hold Cover.",
+			'holdCover',
+			'bool',
+			true);
+		addOption(option);
+
+		var option:Option = new Option('Opponent Hold Cover',
+			"Show Opponent Hold Cover.",
+			'holdCoverOpt',
+			'bool',
+			true);
+		addOption(option);
+
+		var option:Option = new Option('Hold Cover Transparency',
+			'How much transparent should the Hold Cover be.',
+			'holdCoverAlpha',
+			'percent',
+			1);
+		option.scrollSpeed = 1.6;
+		option.minValue = 0.25;
+		option.maxValue = 1;
+		option.changeValue = 0.01;
+		option.decimals = 2;
+		addOption(option);
+
 		super();
 		changeBGColor(0xffff0000);
 	}
