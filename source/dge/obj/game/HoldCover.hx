@@ -8,8 +8,33 @@ class HoldCover extends FlxSprite
     public var strum:StrumNote;
     public var note:Note;
     private var timer:Float = 0;
-    public function new(x:Float, y:Float) {
+    public function new(x:Float, y:Float, type:String) {
         super(x, y);
+        var texture:String = '';
+        var skin:String = PlayState.SONG.holdCoverSkin;
+        var skinOpt:String = PlayState.SONG.holdCoverSkinOpt;
+        var skinSec:String = PlayState.SONG.holdCoverSkinSec;
+        if (skin == null || skin.length < 1) {
+            skin = "holdCover";
+        }
+        if (skinOpt == null || skinOpt.length < 1) {
+            skinOpt = skin;
+        }
+        if (skinSec == null || skinSec.length < 1) {
+            if (skinOpt == null || skinOpt.length < 1) {
+                skinOpt = skin;
+            }
+            skinSec = skinOpt;
+        }
+        if (type == 'bg') {
+            texture = skin;
+        } else if (type == 'gf') {
+            texture = skinSec;
+        } else {
+            texture = skinOpt;
+        }
+
+		loadAnims(texture);
         shaderType = 'swap';
 
         setupThis(x, y, 0);

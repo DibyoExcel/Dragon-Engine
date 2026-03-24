@@ -13,16 +13,31 @@ class NoteSplash extends FlxSprite
 	public function new(x:Float = 0, y:Float = 0, ?note:Int = 0, ?type:String = 'bf') {
 		super(x, y);
 
-		var skin:String = 'noteSplashes';
-		if (type == 'bf') {
-			if(PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0) skin = PlayState.SONG.splashSkin;
-		} else if (type == 'opt') {
-			if(PlayState.SONG.splashSkinOpt != null && PlayState.SONG.splashSkinOpt.length > 0) skin = PlayState.SONG.splashSkinOpt;
-		} else if (type == 'gf') {
-			if(PlayState.SONG.splashSkinSec != null && PlayState.SONG.splashSkinSec.length > 0) skin = PlayState.SONG.splashSkinSec;
-		}
+		var texture:String = '';
+        var skin:String = PlayState.SONG.splashSkin;
+        var skinOpt:String = PlayState.SONG.splashSkinOpt;
+        var skinSec:String = PlayState.SONG.splashSkinSec;
+        if (skin == null || skin.length < 1) {
+            skin = "noteSplashes";
+        }
+        if (skinOpt == null || skinOpt.length < 1) {
+            skinOpt = skin;
+        }
+        if (skinSec == null || skinSec.length < 1) {
+            if (skinOpt == null || skinOpt.length < 1) {
+                skinOpt = skin;
+            }
+            skinSec = skinOpt;
+        }
+        if (type == 'bg') {
+            texture = skin;
+        } else if (type == 'gf') {
+            texture = skinSec;
+        } else {
+            texture = skinOpt;
+        }
 
-		loadAnims(skin);
+		loadAnims(texture);
 		shaderType = 'swap';
 
 		setupNoteSplash(x, y, note);

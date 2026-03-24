@@ -1285,11 +1285,15 @@ class PlayState extends MusicBeatState
 		add(grpNoteSplashesOpt);
 		add(grpNoteSplashesGf);
 		add(grpNoteSplashes);
-		var holdCover:HoldCover = new HoldCover(100, 100);
+		var holdCover:HoldCover = new HoldCover(100, 100, 'bf');
 		holdCover.alpha = 0;
 		grpHoldCover.add(holdCover);
-		grpHoldCoverOpt.add(holdCover);
-		grpHoldCoverGf.add(holdCover);
+		var holdCoverOpt:HoldCover = new HoldCover(100, 100, 'opt');
+		holdCoverOpt.alpha = 0;
+		grpHoldCoverOpt.add(holdCoverOpt);
+		var holdCoverGf:HoldCover = new HoldCover(100, 100, 'gf');
+		holdCoverGf.alpha = 0;
+		grpHoldCoverGf.add(holdCoverGf);
 		var splash:NoteSplash = new NoteSplash(100, 100, 0);
 		grpNoteSplashes.add(splash);
 		var splashOpt:NoteSplash = new NoteSplash(100, 100, 0, 'opt');//precache note splash?

@@ -2,7 +2,7 @@
 <!--
 Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
 -->
-<TextureAtlas imagePath="holdCover.png" width="1657" height="1463">
+<TextureAtlas imagePath="holdCoverDark.png" width="1657" height="1463">
 	<SubTexture name="hold cover blue end0000" x="1416" y="271" width="206" height="206" frameX="-77" frameY="-77" frameWidth="360" frameHeight="360"/>
 	<SubTexture name="hold cover blue end0001" x="599" y="1197" width="226" height="241" frameX="-67" frameY="-62" frameWidth="360" frameHeight="360"/>
 	<SubTexture name="hold cover blue end0002" x="322" y="921" width="277" height="246" rotated="true" frameX="-57" frameY="-46" frameWidth="360" frameHeight="360"/>
