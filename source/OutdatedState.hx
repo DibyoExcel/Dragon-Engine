@@ -1,6 +1,8 @@
 package;
 
+#if mobile
 import dge.obj.mobile.VirtualButton;
+#end
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
@@ -19,8 +21,10 @@ class OutdatedState extends MusicBeatState
 
 	var warnText:FlxText;
 
+	#if mobile
 	private var backButton:VirtualButton;
 	private var enterButton:VirtualButton;
+	#end
 	override function create()
 	{
 		super.create();

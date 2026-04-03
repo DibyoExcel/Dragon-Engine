@@ -1,6 +1,8 @@
 package options;
 
+#if mobile
 import dge.obj.mobile.VirtualButton;
+#end
 import flixel.util.FlxStringUtil;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -41,10 +43,12 @@ class NoteOffsetState extends MusicBeatState
 	var beatTween:FlxTween;
 
 	var changeModeText:FlxText;
+	#if mobile
 	private var enterButton:VirtualButton;
 	private var resetButton:VirtualButton;
 	private var leftButton:VirtualButton;
 	private var rightButton:VirtualButton;
+	#end
 
 	override public function create()
 	{

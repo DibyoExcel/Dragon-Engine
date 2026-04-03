@@ -1,6 +1,8 @@
 package;
 
+#if mobile
 import dge.obj.mobile.VirtualButton;
+#end
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
@@ -15,8 +17,10 @@ import flixel.util.FlxTimer;
 class FlashingState extends MusicBeatState
 {
 	public static var leftState:Bool = false;
+	#if mobile
 	private var backButton:VirtualButton;
 	private var enterButton:VirtualButton;
+	#end
 
 	var warnText:FlxText;
 	override function create()

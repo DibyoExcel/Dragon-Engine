@@ -38,6 +38,8 @@ import dge.shaders.RGBPalette;
 import dge.shaders.GrayScale;
 import dge.shaders.BlackAndWhite;
 
+using StringTools;
+
 private typedef FlxDrawItem = #if FLX_DRAW_QUADS flixel.graphics.tile.FlxDrawQuadsItem; #else flixel.graphics.tile.FlxDrawTilesItem; #end
 
 /**
@@ -1025,7 +1027,7 @@ class FlxCamera extends FlxBasic
             if (value == null || value.length < 1) {
                 value = shouldUse[0];
             }
-            value = value.toLowerCase();
+            value = value.toLowerCase().trim();
             if (shouldUse.indexOf(value) == -1) {
                 value = shouldUse[0];
             }

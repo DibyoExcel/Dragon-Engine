@@ -1,5 +1,7 @@
 package dge.states;
+#if mobile
 import dge.obj.mobile.VirtualButton;
+#end
 import flixel.FlxG;
 import flixel.FlxSubState;
 import flixel.FlxSprite;
@@ -11,7 +13,9 @@ class ResultScreen extends MusicBeatState
 {
     public var toStoryMode:Bool = false;
     private var ForceFreePlay:Timer;
+    #if mobile
     private var enterButton:VirtualButton;
+    #end
     public function new(score:Int, miss:Int, rating:Null<String>, percent:Null<Float>) {
         super();
         var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));

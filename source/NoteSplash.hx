@@ -84,8 +84,6 @@ class NoteSplash extends FlxSprite
 			cameras = FunkinLua.cameraArrayFromString(realCam);
 		}
 		scrollFactor.set(sfX, sfY);
-		loadAnims(texture);
-		setGraphicSize(Std.int(width*scale), Std.int(height*scale));
 		var noteWidth = Note.swagWidth;
 		var noteHeight = Note.swagWidth;
 		var noteSplashOffsetX = 0.0;
@@ -160,6 +158,8 @@ class NoteSplash extends FlxSprite
 			noteSplashOffsetOriginX = oriNote.noteSplashOffsetOriginX;
 			noteSplashOffsetOriginY = oriNote.noteSplashOffsetOriginY;
 		}
+		loadAnims(texture);
+		setGraphicSize(Std.int(width*scale), Std.int(height*scale));
 		setPosition((x + (noteWidth/2)-(width/2))+noteSplashOffsetX, (y + (noteHeight/2))-(height/2)+noteSplashOffsetY);
 		//offset.set(10, 10);//what is this?!?
 		
@@ -181,7 +181,11 @@ class NoteSplash extends FlxSprite
 		var col = [ 'purple', 'blue', 'green', 'red' ];
 		for (color in 0...col.length) {
 			for (i in 1...3) {
-				animation.addByPrefix("note" + color + "-" + i, "note splash " + col[color] + ' ' + i, ClientPrefs.fpsStrumAnim, false);
+				if (note != null && note.getActualDownscroll()) {
+					CoolUtil.addSpecialAnimation(this, "note" + color + '-' + i, 'note splash '+ col[color] + ' ' + i + '_DownScroll', 'note splash '+ col[color] + ' ' + i, false, ClientPrefs.fpsStrumAnim);
+				} else {
+					animation.addByPrefix("note" + color + "-" + i, "note splash " + col[color] + ' ' + i, ClientPrefs.fpsStrumAnim, false);
+				}
 			}
 		}
 	}

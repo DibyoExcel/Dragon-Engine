@@ -1,6 +1,8 @@
 package options;
 
+#if mobile
 import dge.obj.mobile.VirtualButton;
+#end
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -34,7 +36,9 @@ class PsychOptionsState extends MusicBeatState
 	private var grpOptions:FlxTypedGroup<Alphabet>;
 	private static var curSelected:Int = 0;
 	public static var menuBG:FlxSprite;
+	#if mobile
 	private var enterButton:VirtualButton;
+	#end
 
 	function openSelectedSubstate(label:String) {
 		switch(label) {

@@ -3,7 +3,9 @@ package;
 import dge.obj.lua.*;
 import dge.backend.PrivateData;
 import dge.obj.Keypress;
+#if mobile
 import dge.obj.mobile.Hitbox;
+#end
 import dge.backend.CacheTools;
 import flixel.graphics.FlxGraphic;
 #if desktop
@@ -365,9 +367,11 @@ class PlayState extends MusicBeatState
 	public var hintColorStrums:FlxColor = FlxColor.RED;
 	public var keyCount:Int = 4;
 	//hitbox
+	#if mobile
 	public var hitboxCam:FlxCamera;
 	public var hitbox:FlxTypedGroup<Hitbox>;
 	public var hitboxSpace:Hitbox;
+	#end
 	//precache
 	public var cacheRating:Map<String, FlxGraphic> = new Map();//cache rating(slighty better performance)
 	//zoom mullt
@@ -1565,12 +1569,12 @@ class PlayState extends MusicBeatState
 				keyPressUI.add(notePressUISpr);
 			}
 		}
+		#if mobile
 		hitbox = new FlxTypedGroup<Hitbox>();
 		add(hitbox);
 		hitboxCam = new FlxCamera();
 		hitboxCam.bgColor.alpha = 0;
 		FlxG.cameras.add(hitboxCam, false);
-		#if mobile
 		//hitbox.cameras = [hitboxCam];
 		for (i in 0...keysArray.length) {
 			var bruh = new Hitbox(i*Std.int(FlxG.width/keysArray.length), (ClientPrefs.spaceKeyPosition == 'top' ? 150 : 0));
@@ -1699,6 +1703,11 @@ class PlayState extends MusicBeatState
 			var ratio:Float = value / songSpeed; //funny word huh
 			for (note in notes) note.resizeByRatio(Math.abs(ratio));
 			for (note in unspawnNotes) note.resizeByRatio(Math.abs(ratio));
+			if ((songSpeed < 0 && value >= 0) || (songSpeed >= 0 && value < 0)) {
+				//swap anim in invert scroll
+				for (note in notes) if (note.downScroll == null) note.reloadNoteSkin();
+				for (note in unspawnNotes) if (note.downScroll == null) note.reloadNoteSkin();
+			}
 		}
 		songSpeed = value;
 		return value;
@@ -3796,13 +3805,14 @@ class PlayState extends MusicBeatState
 				{
 					var strumGroup:FlxTypedGroup<StrumNote> = playerStrums;
 					var actualStrum:StrumNote;
-					if (daNote.customField) {
+					if (daNote.fieldTarget != null && daNote.fieldTarget.length > 0) {
 						if (strumGroupMap.exists(daNote.fieldTarget) && notesGroupMap.exists(daNote.fieldTarget)) {
 							strumGroup = strumGroupMap.get(daNote.fieldTarget);//Geometry Dash Group ID reference?!?
 						} else {
-							daNote.customField = false;//auto false if not fieldTarget not created
+							daNote.fieldTarget = '';//reset if not found
 						}
 					} else {
+						if (daNote.fieldTarget == null) daNote.fieldTarget == '';
 						if(!daNote.mustPress) {
 							if ((daNote.gfNote || daNote.secondOpponent) && PlayState.SONG.secOpt) {
 								strumGroup = gfStrums;
@@ -3947,7 +3957,7 @@ class PlayState extends MusicBeatState
 					}
 					//OH HELL NAH
 					if (daNote != null) {//auto move to group in specific variable
-						if (daNote.customField && notesGroupMap.exists(daNote.fieldTarget)) {
+						if (daNote.fieldTarget != null && daNote.fieldTarget.length > 0 && notesGroupMap.exists(daNote.fieldTarget)) {
 							var specialGroup = [opponentNotes, playerNotes, gfNotes];
 							for (group in specialGroup) {
 								if (group.members.contains(daNote)) {
@@ -3988,21 +3998,21 @@ class PlayState extends MusicBeatState
 						}
 					}
 					var botCanHit = (daNote.isSustainNote && (daNote.strumTime + daNote.offsetStrumTime) < Conductor.songPosition + (Conductor.safeZoneOffset * daNote.earlyHitMult)) || (!daNote.isSustainNote && ((daNote.strumTime + daNote.offsetStrumTime) <= Conductor.songPosition));//just be sure bot only hit in perfect time :) and also cant miss when lagging like hell.
-					if ((gamemode == 'opponent' ? (!daNote.blockHit && !daNote.canFreeze) && daNote.mustPress : !daNote.mustPress) && (!daNote.ignoreNote && !daNote.canFreeze) && !daNote.customField && !(gamemode == "bothside v2" || gamemode == "bothside") && botCanHit)
+					if (((daNote.strumNote != null && !daNote.strumNote.isLocked) || daNote.strumNote == null) && (gamemode == 'opponent' ? (!daNote.blockHit && !daNote.canFreeze) && daNote.mustPress : !daNote.mustPress) && (!daNote.ignoreNote && !daNote.canFreeze) && daNote.fieldTarget.length < 1 && !(gamemode == "bothside v2" || gamemode == "bothside") && botCanHit)
 					{
 						opponentNoteHit(daNote);
 					}
-					//custom field use opponent(bot 2)
-					if ((gamemode == 'opponent' ? (!daNote.blockHit && !daNote.canFreeze) && daNote.mustPress : !daNote.mustPress) && (!daNote.ignoreNote && !daNote.canFreeze) && daNote.customField && botCanHit)
+					//custom field use opponent(FD BOT)
+					if (((daNote.strumNote != null && !daNote.strumNote.isLocked) || daNote.strumNote == null) && (gamemode == 'opponent' ? (!daNote.blockHit && !daNote.canFreeze) && daNote.mustPress : !daNote.mustPress) && (!daNote.ignoreNote && !daNote.canFreeze) && daNote.fieldTarget.length > 0 && botCanHit)
 					{
 						opponentNoteHit(daNote);
 					}
 
-					if((gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && cpuControlled && !(daNote.autoPress || (playableField.length < 1 ? daNote.customField : playableField.indexOf(daNote.fieldTarget) == -1)) && botCanHit) {
+					if(((daNote.strumNote != null && !daNote.strumNote.isLocked) || daNote.strumNote == null) && (gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && cpuControlled && !(daNote.autoPress || (playableField.length < 1 ? daNote.fieldTarget.length > 0 : playableField.indexOf(daNote.fieldTarget) == -1)) && botCanHit) {
 						goodNoteHit(daNote);
 					}
-					//custom field player(bot)
-					if((gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && (daNote.autoPress || (playableField.length < 1 ? daNote.customField : playableField.indexOf(daNote.fieldTarget) == -1)) && botCanHit) {
+					//custom field player(FD BOT)
+					if((daNote.strumNote != null && !daNote.strumNote.isLocked) && (gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && (daNote.autoPress || (playableField.length < 1 ? daNote.fieldTarget.length > 0 : playableField.indexOf(daNote.fieldTarget) == -1)) && botCanHit) {
 						goodNoteHit(daNote);
 					}
 
@@ -4010,7 +4020,7 @@ class PlayState extends MusicBeatState
 					if (Conductor.songPosition > (noteKillOffset / (Math.abs(songSpeed * daNote.multSpeed)))/**GET OUT**/ + (daNote.strumTime + daNote.offsetStrumTime))
 					{
 						//if (daNote.canFreeze) return;
-						if ((gamemode != 'opponent' ? ((gamemode == "bothside" || gamemode == "bothside v2") ? true : daNote.mustPress) : !daNote.mustPress) && !cpuControlled && !daNote.ignoreNote && !endingSong && (daNote.tooLate || !daNote.wasGoodHit) && !(daNote.autoPress || (playableField.length < 1 ? daNote.customField : playableField.indexOf(daNote.fieldTarget) == -1))) {
+						if ((gamemode != 'opponent' ? ((gamemode == "bothside" || gamemode == "bothside v2") ? true : daNote.mustPress) : !daNote.mustPress) && !cpuControlled && !daNote.ignoreNote && !endingSong && (daNote.tooLate || !daNote.wasGoodHit) && !(daNote.autoPress || (playableField.length < 1 ? daNote.fieldTarget.length > 0 : playableField.indexOf(daNote.fieldTarget) == -1))) {
 							noteMiss(daNote);
 						}
 						destroyNote(daNote);
@@ -4912,261 +4922,268 @@ class PlayState extends MusicBeatState
 	var ratingTween:FlxTween = null;
 	var comboTween:FlxTween = null;
 	var numRatingTween:Array<FlxTween> = [];
+
+	private function spawnRatingSprite(note:Note, image:String = 'shit') {
+		if (note != null) {
+			var noteIdx = notes.members.indexOf(note);
+			var coolTextX = FlxG.width * 0.35;
+			if (!ClientPrefs.comboStacking) {
+				for (i in ratingGroup.members) {
+					if (i != null) {
+						i.kill();
+					}
+				}
+				if (ratingTween != null) {
+					ratingTween.cancel();
+				}
+			}
+			var rating:FlxSprite = ratingGroup.recycle(FlxSprite);
+			rating.reset(0, 0);
+			rating.alpha = 1;
+			var pixelShitPart1:String = "";
+			var pixelShitPart2:String = '';
+	
+			if (PlayState.isPixelStage)
+			{
+				pixelShitPart1 = 'pixelUI/';
+				pixelShitPart2 = '-pixel';
+			}
+			// nah i not want implement to EditorPlayState.hx
+			rating.loadGraphic(cacheRating.get(image));
+			rating.cameras = [camHUD];
+			rating.screenCenter();
+			rating.x = coolTextX - 40;
+			rating.y -= 60;
+			rating.velocity.x = 0;
+			rating.velocity.y = 0;
+			rating.acceleration.y = 550 * playbackRate * playbackRate;
+			rating.velocity.y -= FlxG.random.int(140, 175) * playbackRate;
+			rating.velocity.x -= FlxG.random.int(0, 10) * playbackRate;
+			rating.visible = (!ClientPrefs.hideHud && showRating);
+			rating.x += ClientPrefs.comboOffset[0];
+			rating.y -= ClientPrefs.comboOffset[1];
+			ratingGroup.remove(rating, true);
+			ratingGroup.add(rating);
+			if (!PlayState.isPixelStage)
+			{
+				rating.setGraphicSize(Std.int(rating.width * 0.7));
+				rating.antialiasing = ClientPrefs.globalAntialiasing;
+			}
+			else
+			{
+				rating.setGraphicSize(Std.int(rating.width * daPixelZoom * 0.85));
+			}
+			
+			rating.updateHitbox();
+			if (!ClientPrefs.comboStacking) {
+				ratingTween = FlxTween.tween(rating, {alpha: 0}, 0.2 / playbackRate, {
+					onComplete: function(tween:FlxTween)
+					{
+						rating.kill();
+					},
+					startDelay: Conductor.crochet * 0.001/ playbackRate
+				});
+			} else {
+				FlxTween.tween(rating, {alpha: 0}, 0.2 / playbackRate, {
+					onComplete: function(tween:FlxTween)
+					{
+						rating.kill();
+					},
+					startDelay: Conductor.crochet * 0.001/ playbackRate
+				});
+			}
+			var ratingSprOrder = ratingGroup.members.indexOf(rating);
+			callOnLuas('onRatingPopUp', [noteIdx, ratingSprOrder, note.noteData, note.noteType]);
+	
+			var xThing:Float = 0;
+			if (showCombo)
+			{
+				if (!ClientPrefs.comboStacking) {
+					for (i in comboGroup.members) {
+						if (i != null) {
+							i.kill();
+						}
+					}
+					if (comboTween != null) {
+						comboTween.cancel();
+					}
+				}
+				var comboSpr:FlxSprite = comboGroup.recycle(FlxSprite);
+				comboSpr.reset(0, 0);
+				comboSpr.alpha = 1;
+				comboSpr.loadGraphic(cacheRating.get('combo'));
+				comboSpr.cameras = [camHUD];
+				comboSpr.screenCenter();
+				comboSpr.x = coolTextX;
+				comboSpr.acceleration.y = FlxG.random.int(200, 300) * playbackRate * playbackRate;
+				comboSpr.velocity.y -= FlxG.random.int(140, 160) * playbackRate;
+				if (!PlayState.isPixelStage)
+				{
+					comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
+					comboSpr.antialiasing = ClientPrefs.globalAntialiasing;
+				}
+				else
+				{
+					comboSpr.setGraphicSize(Std.int(comboSpr.width * daPixelZoom * 0.85));
+				}	
+				comboSpr.visible = (!ClientPrefs.hideHud && showCombo);
+				comboSpr.x += ClientPrefs.comboOffset[0];
+				comboSpr.y -= ClientPrefs.comboOffset[1];
+				comboSpr.y += 60;
+				comboSpr.velocity.x += FlxG.random.int(1, 10) * playbackRate;
+				comboGroup.remove(comboSpr, true);
+				comboGroup.add(comboSpr);
+				comboSpr.updateHitbox();
+				comboSpr.x = xThing + 50;
+				if (!ClientPrefs.comboStacking) {
+					comboTween = FlxTween.tween(comboSpr, {alpha: 0}, 0.2 / playbackRate, {
+						onComplete: function(tween:FlxTween)
+						{
+							comboSpr.kill();
+			
+						},
+						startDelay: Conductor.crochet * 0.002 / playbackRate
+					});
+				} else {
+					FlxTween.tween(comboSpr, {alpha: 0}, 0.2 / playbackRate, {
+						onComplete: function(tween:FlxTween)
+						{
+							comboSpr.kill();
+			
+						},
+						startDelay: Conductor.crochet * 0.002 / playbackRate
+					});
+				}
+				var comboSprOrder = comboGroup.members.indexOf(comboSpr);
+				callOnLuas('onComboPopUp', [noteIdx, comboSprOrder, note.noteData, note.noteType]);
+			}
+			
+	
+			var seperatedScore:Array<Int> = [];
+			var comboNumSplit:Array<String> = StringTools.lpad(Std.string(Math.abs(combo)), '0', 3).split('');//i think this keep 3 digit minimum for combo number, so it won't look weird when combo is less than 10 or 100
+			for (enter in comboNumSplit) {
+				seperatedScore.push(Std.parseInt(enter));
+			}
+	
+			var daLoop:Int = 0;
+			if (!ClientPrefs.comboStacking) {
+				for (i in numRatingGroup.members) {
+					if (i != null) {
+						i.kill();
+					}
+				}
+				while (numRatingTween.length > 0) {
+					var tween = numRatingTween[0];
+					if (tween != null) {
+						tween.cancel();
+						numRatingTween.remove(tween);
+					}
+				}
+			}
+			if(showComboNum) {
+				for (i in seperatedScore)
+				{
+					var numScore:FlxSprite = numRatingGroup.recycle(FlxSprite);
+					numScore.reset(0, 0);
+					numScore.alpha = 1;
+					numScore.loadGraphic(cacheRating.get(Std.string(i)));
+					numScore.cameras = [camHUD];
+					numScore.screenCenter();
+					numScore.x = coolTextX + (43 * daLoop) - 90;
+					numScore.y += 80;
+		
+					numScore.x += ClientPrefs.comboOffset[2];
+					numScore.y -= ClientPrefs.comboOffset[3];
+	
+					numScore.x -= (43 * (seperatedScore.length - 3))/2;//align to center
+					
+					if (!ClientPrefs.comboStacking)
+						lastScore.push(numScore);
+		
+					if (!PlayState.isPixelStage)
+					{
+						numScore.antialiasing = ClientPrefs.globalAntialiasing;
+						numScore.setGraphicSize(Std.int(numScore.width * 0.5));
+					}
+					else
+					{
+						numScore.setGraphicSize(Std.int(numScore.width * daPixelZoom));
+					}
+					numScore.updateHitbox();
+		
+					numScore.acceleration.y = FlxG.random.int(200, 300) * playbackRate * playbackRate;
+					numScore.velocity.y -= FlxG.random.int(140, 160) * playbackRate;
+					numScore.velocity.x = FlxG.random.float(-5, 5) * playbackRate;
+					numScore.visible = !ClientPrefs.hideHud;
+		
+					//if (combo >= 10 || combo == 0)
+					
+					numRatingGroup.remove(numScore, true);
+					numRatingGroup.add(numScore);
+		
+					if (!ClientPrefs.comboStacking) {
+						numRatingTween.push(FlxTween.tween(numScore, {alpha: 0}, 0.2 / playbackRate, {
+							onComplete: function(tween:FlxTween)
+							{
+								numScore.kill();
+							},
+							startDelay: Conductor.crochet * 0.002 / playbackRate
+						}));
+					} else {
+						FlxTween.tween(numScore, {alpha: 0}, 0.2 / playbackRate, {
+							onComplete: function(tween:FlxTween)
+							{
+								numScore.kill();
+							},
+							startDelay: Conductor.crochet * 0.002 / playbackRate
+						});
+					}
+		
+					daLoop++;
+					if(numScore.x > xThing) xThing = numScore.x;
+					var numSprOrder = numRatingGroup.members.indexOf(numScore);
+					callOnLuas('onNumPopUp', [noteIdx, numSprOrder, note.noteData, note.noteType]);
+				}
+			}
+		}
+	}
+
 	private function popUpScore(note:Note = null):Void
 	{
 		var noteDiff:Float = Math.abs((note.strumTime + note.offsetStrumTime) - Conductor.songPosition + ClientPrefs.ratingOffset);
 		//trace(noteDiff, ' ' + Math.abs(note.strumTime - Conductor.songPosition));
 
-		var noteIdx = notes.members.indexOf(note);
-		// boyfriend.playAnim('hey');
 		vocals.volume = 1;
-
-		var placement:String = Std.string(combo);
-		var coolTextX = FlxG.width * 0.35;
-		if (!ClientPrefs.comboStacking) {
-			for (i in ratingGroup.members) {
-				if (i != null) {
-					i.kill();
-				}
-			}
-			if (ratingTween != null) {
-				ratingTween.cancel();
-			}
-		}
-		var rating:FlxSprite = ratingGroup.recycle(FlxSprite);
-		rating.reset(0, 0);
-		rating.alpha = 1;
+		// boyfriend.playAnim('hey');
 		var score:Int = 350;
-
+		
 		//tryna do MS based judgment due to popular demand
 		var daRating:Rating = Conductor.judgeNote(note, noteDiff / playbackRate);
-
-		if ((!practiceMode && !cpuControlled && !note.autoPress && !note.customField)) {
-			totalNotesHit += daRating.ratingMod;
-		}
+		var isPlayer = (!note.autoPress && !(playableField.length > 0 ? playableField.indexOf(note.fieldTarget) == -1 : note.fieldTarget.length > 0));//just add this for managing what should do
 		note.ratingMod = daRating.ratingMod;
-		if(!note.ratingDisabled) daRating.increase();
+		if(!note.ratingDisabled && isPlayer && !cpuControlled) daRating.increase();
 		note.rating = daRating.name;
 		score = daRating.score;
+		if (isPlayer) {
+			if (combo < 0) combo = 0;
+			combo += 1;
+			if (combo > 2147483646) combo = 2147483646;//i know is impossible to reach this combo but just in case, also prevents overflow
+			spawnRatingSprite(note, daRating.image);
+			if (!note.ratingDisabled) totalNotesHit += daRating.ratingMod;
+		}
 
 		if((daRating.noteSplash && !note.noteSplashDisabled && !note.fakeNoHit) || note.forceNoteSplash)
 		{
 			spawnNoteSplashOnNote(note, note.mustPress);
 		}
 
-		if(!practiceMode && !cpuControlled && !note.autoPress && !note.customField) {
+		if(isPlayer && !cpuControlled) {
 			songScore += score;
 			if(!note.ratingDisabled)
 			{
 				songHits++;
 				totalPlayed++;
 				RecalculateRating(false);
-			}
-		}
-
-		var pixelShitPart1:String = "";
-		var pixelShitPart2:String = '';
-
-		if (PlayState.isPixelStage)
-		{
-			pixelShitPart1 = 'pixelUI/';
-			pixelShitPart2 = '-pixel';
-		}
-		// nah i not want implement to EditorPlayState.hx
-		rating.loadGraphic(cacheRating.get(daRating.image));
-		rating.cameras = [camHUD];
-		rating.screenCenter();
-		rating.x = coolTextX - 40;
-		rating.y -= 60;
-		rating.velocity.x = 0;
-		rating.velocity.y = 0;
-		rating.acceleration.y = 550 * playbackRate * playbackRate;
-		rating.velocity.y -= FlxG.random.int(140, 175) * playbackRate;
-		rating.velocity.x -= FlxG.random.int(0, 10) * playbackRate;
-		rating.visible = (!ClientPrefs.hideHud && showRating);
-		rating.x += ClientPrefs.comboOffset[0];
-		rating.y -= ClientPrefs.comboOffset[1];
-		ratingGroup.remove(rating, true);
-		ratingGroup.add(rating);
-		if (!PlayState.isPixelStage)
-		{
-			rating.setGraphicSize(Std.int(rating.width * 0.7));
-			rating.antialiasing = ClientPrefs.globalAntialiasing;
-		}
-		else
-		{
-			rating.setGraphicSize(Std.int(rating.width * daPixelZoom * 0.85));
-		}
-		
-		rating.updateHitbox();
-		if (!ClientPrefs.comboStacking) {
-			ratingTween = FlxTween.tween(rating, {alpha: 0}, 0.2 / playbackRate, {
-				onComplete: function(tween:FlxTween)
-				{
-					rating.kill();
-				},
-				startDelay: Conductor.crochet * 0.001/ playbackRate
-			});
-		} else {
-			FlxTween.tween(rating, {alpha: 0}, 0.2 / playbackRate, {
-				onComplete: function(tween:FlxTween)
-				{
-					rating.kill();
-				},
-				startDelay: Conductor.crochet * 0.001/ playbackRate
-			});
-		}
-		var ratingSprOrder = ratingGroup.members.indexOf(rating);
-		callOnLuas('onRatingPopUp', [noteIdx, ratingSprOrder, note.noteData, note.noteType]);
-
-		var xThing:Float = 0;
-		if (showCombo)
-		{
-			if (!ClientPrefs.comboStacking) {
-				for (i in comboGroup.members) {
-					if (i != null) {
-						i.kill();
-					}
-				}
-				if (comboTween != null) {
-					comboTween.cancel();
-				}
-			}
-			var comboSpr:FlxSprite = comboGroup.recycle(FlxSprite);
-			comboSpr.reset(0, 0);
-			comboSpr.alpha = 1;
-			comboSpr.loadGraphic(cacheRating.get('combo'));
-			comboSpr.cameras = [camHUD];
-			comboSpr.screenCenter();
-			comboSpr.x = coolTextX;
-			comboSpr.acceleration.y = FlxG.random.int(200, 300) * playbackRate * playbackRate;
-			comboSpr.velocity.y -= FlxG.random.int(140, 160) * playbackRate;
-			if (!PlayState.isPixelStage)
-			{
-				comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
-				comboSpr.antialiasing = ClientPrefs.globalAntialiasing;
-			}
-			else
-			{
-				comboSpr.setGraphicSize(Std.int(comboSpr.width * daPixelZoom * 0.85));
-			}	
-			comboSpr.visible = (!ClientPrefs.hideHud && showCombo);
-			comboSpr.x += ClientPrefs.comboOffset[0];
-			comboSpr.y -= ClientPrefs.comboOffset[1];
-			comboSpr.y += 60;
-			comboSpr.velocity.x += FlxG.random.int(1, 10) * playbackRate;
-			comboGroup.remove(comboSpr, true);
-			comboGroup.add(comboSpr);
-			comboSpr.updateHitbox();
-			comboSpr.x = xThing + 50;
-			if (!ClientPrefs.comboStacking) {
-				comboTween = FlxTween.tween(comboSpr, {alpha: 0}, 0.2 / playbackRate, {
-					onComplete: function(tween:FlxTween)
-					{
-						comboSpr.kill();
-		
-					},
-					startDelay: Conductor.crochet * 0.002 / playbackRate
-				});
-			} else {
-				FlxTween.tween(comboSpr, {alpha: 0}, 0.2 / playbackRate, {
-					onComplete: function(tween:FlxTween)
-					{
-						comboSpr.kill();
-		
-					},
-					startDelay: Conductor.crochet * 0.002 / playbackRate
-				});
-			}
-			var comboSprOrder = comboGroup.members.indexOf(comboSpr);
-			callOnLuas('onComboPopUp', [noteIdx, comboSprOrder, note.noteData, note.noteType]);
-		}
-		
-
-		var seperatedScore:Array<Int> = [];
-		var comboNumSplit:Array<String> = StringTools.lpad(Std.string(Math.abs(combo)), '0', 3).split('');//i think this keep 3 digit minimum for combo number, so it won't look weird when combo is less than 10 or 100
-		for (enter in comboNumSplit) {
-			seperatedScore.push(Std.parseInt(enter));
-		}
-
-		var daLoop:Int = 0;
-		if (!ClientPrefs.comboStacking) {
-			for (i in numRatingGroup.members) {
-				if (i != null) {
-					i.kill();
-				}
-			}
-			while (numRatingTween.length > 0) {
-				var tween = numRatingTween[0];
-				if (tween != null) {
-					tween.cancel();
-					numRatingTween.remove(tween);
-				}
-			}
-		}
-		if(showComboNum) {
-			for (i in seperatedScore)
-			{
-				var numScore:FlxSprite = numRatingGroup.recycle(FlxSprite);
-				numScore.reset(0, 0);
-				numScore.alpha = 1;
-				numScore.loadGraphic(cacheRating.get(Std.string(i)));
-				numScore.cameras = [camHUD];
-				numScore.screenCenter();
-				numScore.x = coolTextX + (43 * daLoop) - 90;
-				numScore.y += 80;
-	
-				numScore.x += ClientPrefs.comboOffset[2];
-				numScore.y -= ClientPrefs.comboOffset[3];
-
-				numScore.x -= (43 * (seperatedScore.length - 3))/2;//align to center
-				
-				if (!ClientPrefs.comboStacking)
-					lastScore.push(numScore);
-	
-				if (!PlayState.isPixelStage)
-				{
-					numScore.antialiasing = ClientPrefs.globalAntialiasing;
-					numScore.setGraphicSize(Std.int(numScore.width * 0.5));
-				}
-				else
-				{
-					numScore.setGraphicSize(Std.int(numScore.width * daPixelZoom));
-				}
-				numScore.updateHitbox();
-	
-				numScore.acceleration.y = FlxG.random.int(200, 300) * playbackRate * playbackRate;
-				numScore.velocity.y -= FlxG.random.int(140, 160) * playbackRate;
-				numScore.velocity.x = FlxG.random.float(-5, 5) * playbackRate;
-				numScore.visible = !ClientPrefs.hideHud;
-	
-				//if (combo >= 10 || combo == 0)
-				
-				numRatingGroup.remove(numScore, true);
-				numRatingGroup.add(numScore);
-	
-				if (!ClientPrefs.comboStacking) {
-					numRatingTween.push(FlxTween.tween(numScore, {alpha: 0}, 0.2 / playbackRate, {
-						onComplete: function(tween:FlxTween)
-						{
-							numScore.kill();
-						},
-						startDelay: Conductor.crochet * 0.002 / playbackRate
-					}));
-				} else {
-					FlxTween.tween(numScore, {alpha: 0}, 0.2 / playbackRate, {
-						onComplete: function(tween:FlxTween)
-						{
-							numScore.kill();
-						},
-						startDelay: Conductor.crochet * 0.002 / playbackRate
-					});
-				}
-	
-				daLoop++;
-				if(numScore.x > xThing) xThing = numScore.x;
-				var numSprOrder = numRatingGroup.members.indexOf(numScore);
-				callOnLuas('onNumPopUp', [noteIdx, numSprOrder, note.noteData, note.noteType]);
 			}
 		}
 		/*
@@ -5197,7 +5214,7 @@ class PlayState extends MusicBeatState
 			{
 				if (playableField.length < 1) {
 					var spr = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key-playerStrums.length] : playerStrums.members[key]) : opponentStrums.members[key]);
-					if(spr != null)
+					if(spr != null && !spr.isLocked)
 					{
 						spr.playAnim('pressed');
 						spr.resetAnim = 0;
@@ -5212,7 +5229,7 @@ class PlayState extends MusicBeatState
 								spr = strumGroupMap.get(field).members[key];//if field is not empty string, it will be treated as the custom strum field with the same name as the field
 							}
 						}
-						if(spr != null)
+						if(spr != null && !spr.isLocked)
 						{
 							spr.playAnim('pressed');
 							spr.resetAnim = 0;
@@ -5233,7 +5250,7 @@ class PlayState extends MusicBeatState
 				var sortedNotesList:Array<Note> = [];
 				notes.forEachAlive(function(daNote:Note)
 				{
-					if (strumsBlocked[daNote.noteData + ((gamemode == "bothside v2" && !daNote.mustPress ? keyCount : 0)+(!daNote.mustPress && (daNote.gfNote || daNote.secondOpponent) && PlayState.SONG.secOpt ? keyCount : 0))] != true && (daNote.canBeHit && (((gamemode == 'opponent') || (gamemode == "bothside v2" && key >= keyCount)) ? !daNote.mustPress : (gamemode == "bothside" ? true : daNote.mustPress)) && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote && (gamemode == "opponent"  ? (!daNote.ignoreNote && !daNote.canFreeze) : (!daNote.blockHit && !daNote.canFreeze)) && !daNote.autoPress) && !((playableField.length < 1 ? daNote.customField : playableField.indexOf(daNote.fieldTarget) == -1)))//when player play as opponent the player cant press ignore note(based opponent itself), you cant press autoPress notes
+					if (strumsBlocked[daNote.noteData + ((gamemode == "bothside v2" && !daNote.mustPress ? keyCount : 0)+(!daNote.mustPress && (daNote.gfNote || daNote.secondOpponent) && PlayState.SONG.secOpt ? keyCount : 0))] != true && (daNote.canBeHit && (((gamemode == 'opponent') || (gamemode == "bothside v2" && key >= keyCount)) ? !daNote.mustPress : (gamemode == "bothside" ? true : daNote.mustPress)) && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote && (gamemode == "opponent"  ? (!daNote.ignoreNote && !daNote.canFreeze) : (!daNote.blockHit && !daNote.canFreeze)) && !daNote.autoPress) && !((playableField.length < 1 ? daNote.fieldTarget.length > 0 : playableField.indexOf(daNote.fieldTarget) == -1)) && ((daNote.strumNote != null && !daNote.strumNote.isLocked) || daNote.strumNote == null))//when player play as opponent the player cant press ignore note(based opponent itself), you cant press autoPress notes,notes only can hit if attach strums and not has been locked
 					{
 						if(daNote.noteData == key-((((daNote.gfNote || daNote.secondOpponent) && !daNote.mustPress) && PlayState.SONG.secOpt ? keyCount : 0)+(daNote.mustPress && gamemode=='bothside v2' ? keyCount : 0)))
 						{
@@ -5315,7 +5332,7 @@ class PlayState extends MusicBeatState
 			{
 				if (playableField.length < 1) {
 					var spr = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key-playerStrums.length] : playerStrums.members[key]) : opponentStrums.members[key]);
-					if(spr != null)
+					if(spr != null && !spr.isLocked)
 					{
 						spr.playAnim('static');
 						spr.resetAnim = 0;
@@ -5330,7 +5347,7 @@ class PlayState extends MusicBeatState
 								spr = strumGroupMap.get(field).members[key];//if field is not empty string, it will be treated as the custom strum field with the same name as the field
 							}
 						}
-						if(spr != null)
+						if(spr != null && !spr.isLocked)
 						{
 							spr.playAnim('static');
 							spr.resetAnim = 0;
@@ -5393,7 +5410,9 @@ class PlayState extends MusicBeatState
 				// hold note functions
 				if (strumsBlocked[daNote.noteData+(((gamemode == "bothside v2" && !daNote.mustPress) ? keyCount : 0)+(!daNote.mustPress && (daNote.gfNote || daNote.secondOpponent) && PlayState.SONG.secOpt ? keyCount : 0))] != true && daNote.isSustainNote && parsedHoldArray[daNote.noteData+(((gamemode == "bothside v2" && !daNote.mustPress) ? keyCount : 0)+(!daNote.mustPress && (daNote.gfNote || daNote.secondOpponent) && PlayState.SONG.secOpt ? keyCount : 0))] && daNote.canBeHit
 				&& (gamemode != 'opponent' ? (gamemode == "bothside v2" || gamemode == "bothside" ? true : daNote.mustPress) : !daNote.mustPress) && !daNote.tooLate && !daNote.wasGoodHit && (gamemode == 'opponent' || ((gamemode == "bothside v2" || gamemode == "bothside") && !daNote.mustPress) ? (!daNote.ignoreNote && !daNote.canFreeze) : (!daNote.blockHit && !daNote.canFreeze))) {
-					goodNoteHit(daNote);
+					if ((daNote.strumNote != null && !daNote.strumNote.isLocked) || daNote.strumNote == null) {
+						goodNoteHit(daNote);
+					}
 				}
 			});
 
@@ -5616,10 +5635,13 @@ class PlayState extends MusicBeatState
 					time += timeAdd;
 				}
 				if (note.playStrumAnim && !note.fakeNoHit && !ClientPrefs.clsstrum) {
-					StrumPlayAnim((gamemode == "opponent" || ((gamemode == "bothside v2" || gamemode == "bothside") && note.mustPress) ? false : true), Std.int(Math.abs(note.noteData)), time, note.customField, note.fieldTarget, note);
+					StrumPlayAnim((gamemode == "opponent" || ((gamemode == "bothside v2" || gamemode == "bothside") && note.mustPress) ? false : true), Std.int(Math.abs(note.noteData)), time, true, note.fieldTarget, note);
 				}
-				
-				callOnLuas((note.mustPress ? 'goodNoteHit' : 'opponentNoteHit'), [notes.members.indexOf(note), Math.abs(note.noteData), note.noteType, note.isSustainNote]);
+				if (note.fieldTarget.length > 0) {
+					callOnLuas('fieldNoteHit', [note.fieldTarget, notes.members.indexOf(note), Math.abs(note.noteData), note.noteType, note.isSustainNote]);
+				} else {
+					callOnLuas((note.mustPress ? 'goodNoteHit' : 'opponentNoteHit'), [notes.members.indexOf(note), Math.abs(note.noteData), note.noteType, note.isSustainNote]);
+				}
 				if (!note.holdCoverDisabled && ClientPrefs.holdCoverOpt &&  !note.fakeNoHit && note.playStrumAnim) {
 					spawnHoldCover(note);
 				}
@@ -5641,7 +5663,7 @@ class PlayState extends MusicBeatState
 		if (note != null) {
 			if (!note.isSustainNote && ((note.sustainLength+((note.strumTime+note.offsetStrumTime)-Conductor.songPosition))/1000)+note.holdCoverDelaySplash > 0 && (note.tail != null && note.tail.length > 0)) {
 				var groupTarget = grpHoldCover;
-				if (note.customField && holdCoverGroupMap.exists(note.fieldTarget)) {
+				if (note.fieldTarget != null && note.fieldTarget.length > 0 && holdCoverGroupMap.exists(note.fieldTarget)) {
 					groupTarget = holdCoverGroupMap.get(note.fieldTarget);
 				} else if (!note.mustPress) {
 					groupTarget = grpHoldCoverOpt;
@@ -5673,7 +5695,7 @@ class PlayState extends MusicBeatState
 	{
 		if (!note.wasGoodHit)
 		{
-			if((cpuControlled || note.autoPress/**forgot autoPress to ignore the deadlist note**/ || (playableField.length < 1 ? note.customField : playableField.indexOf(note.fieldTarget) == -1)) && ((note.ignoreNote || note.canFreeze) || note.hitCausesMiss)) return;
+			if((cpuControlled || note.autoPress/**forgot autoPress to ignore the deadlist note**/ || (playableField.length < 1 ? note.fieldTarget.length > 0 : playableField.indexOf(note.fieldTarget) == -1)) && ((note.ignoreNote || note.canFreeze) || note.hitCausesMiss)) return;
 
 			if ((ClientPrefs.hitsoundVolume > 0 && !note.hitsoundDisabled) || note.forceHitsound)
 			{
@@ -5730,11 +5752,9 @@ class PlayState extends MusicBeatState
 				return;
 			}
 
-			if (!note.isSustainNote)
+			if (!note.isSustainNote && !note.ratingDisabled)
 			{
-				if (combo < 0) combo = 0;
-				combo += 1;
-				if (combo > 2147483646) combo = 2147483646;//i know is impossible to reach this combo but just in case, also prevents overflow
+				
 				popUpScore(note);
 			}
 			if (!note.mustPress || (note.mustPress && note.isDad)) {
@@ -5822,10 +5842,10 @@ class PlayState extends MusicBeatState
 					time += timeAdd;
 				}
 				if (note.playStrumAnim && !note.fakeNoHit && !ClientPrefs.clsstrum) {
-					StrumPlayAnim(!note.mustPress ? true : false, Std.int(Math.abs(note.noteData)), time, note.customField, note.fieldTarget, note);
+					StrumPlayAnim(!note.mustPress ? true : false, Std.int(Math.abs(note.noteData)), time, true, note.fieldTarget, note);
 				}
 			} else {
-				if (note.autoPress || (playableField.length < 1 ? note.customField : playableField.indexOf(note.fieldTarget) == -1)) {
+				if (note.autoPress || (playableField.length < 1 ? note.fieldTarget.length > 0 : playableField.indexOf(note.fieldTarget) == -1)) {
 					var time:Float = 0.2;
 					if (note.strumNote != null) {
 						time = note.strumNote.resetTime;
@@ -5844,14 +5864,14 @@ class PlayState extends MusicBeatState
 						time += timeAdd;
 					}
 					if (note.playStrumAnim && !note.fakeNoHit && !ClientPrefs.clsstrum) {
-						StrumPlayAnim(!note.mustPress ? true : false, Std.int(Math.abs(note.noteData)), time, note.customField, note.fieldTarget, note);
+						StrumPlayAnim(!note.mustPress ? true : false, Std.int(Math.abs(note.noteData)), time, true, note.fieldTarget, note);
 					}
 				} else {
 					var spr = note.strumNote;
 					if(spr != null)
 					{
 						if (note.playStrumAnim  && !note.fakeNoHit) {
-							spr.playAnim(note.animConfirm == null || note.animConfirm.length < 1 ? (spr.animConfirm == null || spr.animConfirm.length < 1 ? 'confirm' : spr.animConfirm) : note.animConfirm, true, note.isSustainNote);
+							spr.playAnim(note.animConfirm == null || note.animConfirm.length < 1 ? (spr.animConfirm == null || spr.animConfirm.length < 1 ? 'confirm' : spr.animConfirm) : note.animConfirm, true, note.isSustainNote, note, true);
 						}
 					}
 				}
@@ -5859,7 +5879,11 @@ class PlayState extends MusicBeatState
 			var isSus:Bool = note.isSustainNote; //GET OUT OF MY HEAD, GET OUT OF MY HEAD, GET OUT OF MY HEAD
 			var leData:Int = Math.round(Math.abs(note.noteData));
 			var leType:String = note.noteType;
-			callOnLuas((!note.mustPress || note.isDad ? 'opponentNoteHit' : 'goodNoteHit'), [notes.members.indexOf(note), leData, leType, isSus]);
+			if (note.fieldTarget.length > 0) {
+				callOnLuas('fieldNoteHit', [note.fieldTarget, notes.members.indexOf(note), leData, leType, isSus]);
+			} else {
+				callOnLuas((!note.mustPress || note.isDad ? 'opponentNoteHit' : 'goodNoteHit'), [notes.members.indexOf(note), leData, leType, isSus]);
+			}
 			if (!note.holdCoverDisabled && ClientPrefs.holdCover && !note.fakeNoHit && note.playStrumAnim) {
 				spawnHoldCover(note);
 			}
@@ -5908,7 +5932,7 @@ class PlayState extends MusicBeatState
 		}
 		if (note != null) {
 			var groupTarget = grpNoteSplashes;
-			if (note.customField && noteSplashGroupMap.exists(note.fieldTarget)) {
+			if (note.fieldTarget != null && note.fieldTarget.length > 0 && noteSplashGroupMap.exists(note.fieldTarget)) {
 				groupTarget = noteSplashGroupMap.get(note.fieldTarget);
 			} else if (!note.mustPress) {//opps forgot add to notesplash opponent group lmao
 				groupTarget = grpNoteSplashesOpt;
@@ -6353,7 +6377,7 @@ class PlayState extends MusicBeatState
 		var spr:StrumNote = null;
 		if (note != null) spr = note.strumNote;
 		if(spr != null) {//i just realized i can do make less code by get note attach
-			spr.playAnim(note.animConfirm == null || note.animConfirm.length < 1 ? (spr.animConfirm == null || spr.animConfirm.length < 1 ? 'confirm' : spr.animConfirm) : note.animConfirm, true, note.isSustainNote);
+			spr.playAnim(note.animConfirm == null || note.animConfirm.length < 1 ? (spr.animConfirm == null || spr.animConfirm.length < 1 ? 'confirm' : spr.animConfirm) : note.animConfirm, true, note.isSustainNote, note, true);
 			spr.resetAnim = time;
 		}
 		//old inefficient code(and bad ig)

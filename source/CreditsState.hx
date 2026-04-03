@@ -1,6 +1,8 @@
 package;
 
+#if mobile
 import dge.obj.mobile.VirtualButton;
+#end
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -37,11 +39,12 @@ class CreditsState extends MusicBeatState
 	var descBox:AttachedSprite;
 
 	var offsetThing:Float = -75;
-
+	#if mobile
 	private var upButton:VirtualButton;
 	private var downButton:VirtualButton;
 	private var enterButton:VirtualButton;
 	private var shiftButton:VirtualButton;
+	#end
 
 	override function create()
 	{

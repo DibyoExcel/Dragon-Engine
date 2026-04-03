@@ -30,6 +30,8 @@ class StrumNote extends FlxSprite
 	public var sustainReducePoint:Float = 0.5;//how height before sustain note cliped(0:top of strum, 1:bottom of strum)
 	public var resetTime:Float = 0.2;//how time to reset to static anim(<=0 is permanent btw)
 	public var classicAnim:Bool = ClientPrefs.classicAnim;//use classic anim behavior
+	public var isLocked:Bool = false;//strums become unpresseable(affected dpending gamemode)(inspired retrospcter p2 chain notes)
+	public var reloadAnimation:Bool = true;//if false it will not reload anim when playAnim called
 	
 	private function set_texture(value:String):String {
 		if (value == null) {
@@ -56,124 +58,10 @@ class StrumNote extends FlxSprite
 
 	public function reloadNote(image:String = '')
 	{
-		var skin:String = PlayState.SONG.arrowSkin;
-		var skinOpt:String = PlayState.SONG.arrowSkinOpt;
-		var skinSec:String = PlayState.SONG.arrowSkinSec;
-		if (skin == null || skin.length < 1) {
-			skin = ClientPrefs.dflnoteskin;
-		}
-		//if opponent notes didt iput it ill use player skin/default. if sec opt not set texture it ill use opponent texture. bruh idk how to explain this
-		if(skinOpt == null || skinOpt.length < 1) {
-			skinOpt = skin;
-		}
-		if(skinSec == null || skinSec.length < 1) {
-			if(skinOpt == null || skinOpt.length < 1) {
-				skinOpt = skin;
-			}
-			skinSec = skinOpt;
-		}
-		if (image == '' || image.length < 1) {
-			if (player == 1) {
-				image = skin;
-			} else {
-				if (gfType) {
-					image = skinSec;
-				} else {
-					image = skinOpt;
-				}
-			}
-		}
 		var lastAnim:String = null;
 		if(animation.curAnim != null) lastAnim = animation.curAnim.name;
 
-		if(PlayState.isPixelStage)
-		{
-			loadGraphic(Paths.image('pixelUI/' + image));
-			width = width / 4;
-			height = height / 5;
-			loadGraphic(Paths.image('pixelUI/' + image), true, Math.floor(width), Math.floor(height));
-
-			antialiasing = false;
-			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
-
-			animation.add('green', [6]);
-			animation.add('red', [7]);
-			animation.add('blue', [5]);
-			animation.add('purple', [4]);
-			switch (Math.abs(noteData) % 4)
-			{
-				case 0:
-					animation.add('static', [0]);
-					animation.add('pressed', [4, 8], (ClientPrefs.fpsStrumAnim)/2, false);
-					animation.add('notes', [4]);
-					animation.add('confirm', [12, 16], ClientPrefs.fpsStrumAnim, false);
-				case 1:
-					animation.add('static', [1]);
-					animation.add('pressed', [5, 9], (ClientPrefs.fpsStrumAnim)/2, false);
-					animation.add('notes', [5]);
-					animation.add('confirm', [13, 17], ClientPrefs.fpsStrumAnim, false);
-				case 2:
-					animation.add('static', [2]);
-					animation.add('pressed', [6, 10], (ClientPrefs.fpsStrumAnim)/2, false);
-					animation.add('notes', [6]);
-					animation.add('confirm', [14, 18], (ClientPrefs.fpsStrumAnim)/2, false);
-				case 3:
-					animation.add('static', [3]);
-					animation.add('pressed', [7, 11], (ClientPrefs.fpsStrumAnim)/2, false);
-					animation.add('notes', [7]);
-					animation.add('confirm', [15, 19], ClientPrefs.fpsStrumAnim, false);
-			}
-		}
-		else
-		{
-			try{
-				frames = Paths.getSparrowAtlas(image);
-			} catch(e:Dynamic) {
-				try{
-					frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
-				} catch (e:Dynamic) {
-					frames = Paths.getSparrowAtlas('NOTE_assets');
-				}
-			}
-			animation.addByPrefix('green', 'arrowUP');
-			animation.addByPrefix('blue', 'arrowDOWN');
-			animation.addByPrefix('purple', 'arrowLEFT');
-			animation.addByPrefix('red', 'arrowRIGHT');
-			
-			
-			setGraphicSize(Std.int(width * ClientPrefs.strumsize));
-			antialiasing = ClientPrefs.globalAntialiasing;
-			
-
-			switch (Math.abs(noteData) % 4)
-			{
-				case 0:
-					animation.addByPrefix('static', 'arrowLEFT');
-					animation.addByPrefix('pressed', 'left press', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm', 'left confirm', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes', 'purple0', ClientPrefs.fpsStrumAnim, false);
-					case 1:
-					animation.addByPrefix('static', 'arrowDOWN');
-					animation.addByPrefix('pressed', 'down press', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm', 'down confirm', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes', 'blue0', ClientPrefs.fpsStrumAnim, false);
-				case 2:
-					animation.addByPrefix('static', 'arrowUP');
-					animation.addByPrefix('pressed', 'up press', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm', 'up confirm', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes', 'green0', ClientPrefs.fpsStrumAnim, false);
-				case 3:
-					animation.addByPrefix('static', 'arrowRIGHT');
-					animation.addByPrefix('pressed', 'right press', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm', 'right confirm', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes', 'red0', ClientPrefs.fpsStrumAnim, false);
-			}
-		}
-		updateHitbox();
-		if (player == 0 && PlayState.SONG.secOpt) {
-			scale.x *= 0.75;
-			scale.y *= 0.75;
-		}
+		reloadAnims(image);
 
 		if(lastAnim != null)
 		{
@@ -203,8 +91,11 @@ class StrumNote extends FlxSprite
 		super.update(elapsed);
 	}
 
-	public function playAnim(anim:String, ?force:Bool = false, sustainNote:Bool = false) {
+	public function playAnim(anim:String, ?force:Bool = false, sustainNote:Bool = false, ?note:Note = null, reloadAnim:Bool = false) {
 		if (animation != null && animation.curAnim != null && animation.curAnim.name == anim && sustainNote && !classicAnim) return;
+		if (reloadAnim && reloadAnimation) {
+			reloadAnims(texture, note);
+		}
 		animation.play(anim, force);
 		centerOrigin();
 		centerOffsets();
@@ -286,5 +177,153 @@ class StrumNote extends FlxSprite
 			return super.set_alpha(alpha+snapped);
 		}
 		return super.set_alpha(value);
+	}
+
+	function reloadAnims(image:String, ?note:Note) {
+		var skin:String = PlayState.SONG.arrowSkin;
+		var skinOpt:String = PlayState.SONG.arrowSkinOpt;
+		var skinSec:String = PlayState.SONG.arrowSkinSec;
+		if (skin == null || skin.length < 1) {
+			skin = ClientPrefs.dflnoteskin;
+		}
+		//if opponent notes didt iput it ill use player skin/default. if sec opt not set texture it ill use opponent texture. bruh idk how to explain this
+		if(skinOpt == null || skinOpt.length < 1) {
+			skinOpt = skin;
+		}
+		if(skinSec == null || skinSec.length < 1) {
+			if(skinOpt == null || skinOpt.length < 1) {
+				skinOpt = skin;
+			}
+			skinSec = skinOpt;
+		}
+		if (image == '' || image.length < 1) {
+			if (player == 1) {
+				image = skin;
+			} else {
+				if (gfType) {
+					image = skinSec;
+				} else {
+					image = skinOpt;
+				}
+			}
+		}
+		if(PlayState.isPixelStage)
+		{
+			loadGraphic(Paths.image('pixelUI/' + image));
+			width = width / 4;
+			height = height / 5;
+			loadGraphic(Paths.image('pixelUI/' + image), true, Math.floor(width), Math.floor(height));
+
+			antialiasing = false;
+			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+
+			animation.add('green', [6]);
+			animation.add('red', [7]);
+			animation.add('blue', [5]);
+			animation.add('purple', [4]);
+			switch (Math.abs(noteData) % 4)
+			{
+				case 0:
+					animation.add('static', [0]);
+					animation.add('pressed', [4, 8], (ClientPrefs.fpsStrumAnim)/2, false);
+					animation.add('notes', [4]);
+					animation.add('confirm', [12, 16], ClientPrefs.fpsStrumAnim, false);
+				case 1:
+					animation.add('static', [1]);
+					animation.add('pressed', [5, 9], (ClientPrefs.fpsStrumAnim)/2, false);
+					animation.add('notes', [5]);
+					animation.add('confirm', [13, 17], ClientPrefs.fpsStrumAnim, false);
+				case 2:
+					animation.add('static', [2]);
+					animation.add('pressed', [6, 10], (ClientPrefs.fpsStrumAnim)/2, false);
+					animation.add('notes', [6]);
+					animation.add('confirm', [14, 18], (ClientPrefs.fpsStrumAnim)/2, false);
+				case 3:
+					animation.add('static', [3]);
+					animation.add('pressed', [7, 11], (ClientPrefs.fpsStrumAnim)/2, false);
+					animation.add('notes', [7]);
+					animation.add('confirm', [15, 19], ClientPrefs.fpsStrumAnim, false);
+			}
+		}
+		else
+		{
+			try{
+				frames = Paths.getSparrowAtlas(image);
+			} catch(e:Dynamic) {
+				try{
+					frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
+				} catch (e:Dynamic) {
+					frames = Paths.getSparrowAtlas('NOTE_assets');
+				}
+			}
+			animation.addByPrefix('green', 'arrowUP');
+			animation.addByPrefix('blue', 'arrowDOWN');
+			animation.addByPrefix('purple', 'arrowLEFT');
+			animation.addByPrefix('red', 'arrowRIGHT');
+			
+			
+			setGraphicSize(Std.int(width * ClientPrefs.strumsize));
+			antialiasing = ClientPrefs.globalAntialiasing;
+			
+
+			var addAnimThingy = CoolUtil.addSpecialAnimation;
+			switch (Math.abs(noteData) % 4)
+			{	
+				
+				case 0:
+					if (note != null && note.getActualDownscroll()) {
+						addAnimThingy(this, 'static', 'arrowLEFT_DownScroll', 'arrowLEFT', true, ClientPrefs.fpsStrumAnim);
+						addAnimThingy(this, 'pressed', 'left press_DownScroll', 'left press', false, ClientPrefs.fpsStrumAnim);
+						addAnimThingy(this, 'confirm', 'left confirm_DownScroll', 'left confirm', false, ClientPrefs.fpsStrumAnim);
+						addAnimThingy(this, 'notes', 'purple Downscroll0', 'purple0', false, ClientPrefs.fpsStrumAnim);
+					} else {
+						animation.addByPrefix('static', 'arrowLEFT');
+						animation.addByPrefix('pressed', 'left press', ClientPrefs.fpsStrumAnim, false);
+						animation.addByPrefix('confirm', 'left confirm', ClientPrefs.fpsStrumAnim, false);
+						animation.addByPrefix('notes', 'purple0', ClientPrefs.fpsStrumAnim, false);
+					}
+				case 1:
+					if (note != null && note.getActualDownscroll()) {
+						addAnimThingy(this, 'static', 'arrowDOWN_DownScroll', 'arrowDOWN', true, ClientPrefs.fpsStrumAnim);
+						addAnimThingy(this, 'pressed', 'down press_DownScroll', 'down press', false, ClientPrefs.fpsStrumAnim);
+						addAnimThingy(this, 'confirm', 'down confirm_DownScroll', 'down confirm', false, ClientPrefs.fpsStrumAnim);
+						addAnimThingy(this, 'notes', 'blue Downscroll0', 'blue0', false, ClientPrefs.fpsStrumAnim);
+					} else {
+						animation.addByPrefix('static', 'arrowDOWN');
+						animation.addByPrefix('pressed', 'down press', ClientPrefs.fpsStrumAnim, false);
+						animation.addByPrefix('confirm', 'down confirm', ClientPrefs.fpsStrumAnim, false);
+						animation.addByPrefix('notes', 'blue0', ClientPrefs.fpsStrumAnim, false);
+					}
+				case 2:
+					if (note != null && note.getActualDownscroll()) {
+						addAnimThingy(this, 'static', 'arrowUP_DownScroll', 'arrowUP', true, ClientPrefs.fpsStrumAnim);
+						addAnimThingy(this, 'pressed', 'up press_DownScroll', 'up press', false, ClientPrefs.fpsStrumAnim);
+						addAnimThingy(this, 'confirm', 'up confirm_DownScroll', 'up confirm', false, ClientPrefs.fpsStrumAnim);
+						addAnimThingy(this, 'notes', 'green Downscroll0', 'green0', false, ClientPrefs.fpsStrumAnim);
+					} else {
+						animation.addByPrefix('static', 'arrowUP');
+						animation.addByPrefix('pressed', 'up press', ClientPrefs.fpsStrumAnim, false);
+						animation.addByPrefix('confirm', 'up confirm', ClientPrefs.fpsStrumAnim, false);
+						animation.addByPrefix('notes', 'green0', ClientPrefs.fpsStrumAnim, false);
+					}
+				case 3:
+					if (note != null && note.getActualDownscroll()) {
+						addAnimThingy(this, 'static', 'arrowRIGHT_DownScroll', 'arrowRIGHT', true, ClientPrefs.fpsStrumAnim);
+						addAnimThingy(this, 'pressed', 'right press_DownScroll', 'right press', false, ClientPrefs.fpsStrumAnim);
+						addAnimThingy(this, 'confirm', 'right confirm_DownScroll', 'right confirm', false, ClientPrefs.fpsStrumAnim);
+						addAnimThingy(this, 'notes', 'red Downscroll0', 'red0', false, ClientPrefs.fpsStrumAnim);
+					} else {
+						animation.addByPrefix('static', 'arrowRIGHT');
+						animation.addByPrefix('pressed', 'right press', ClientPrefs.fpsStrumAnim, false);
+						animation.addByPrefix('confirm', 'right confirm', ClientPrefs.fpsStrumAnim, false);
+						animation.addByPrefix('notes', 'red0', ClientPrefs.fpsStrumAnim, false);
+					}
+			}
+		}
+		updateHitbox();
+		if (player == 0 && PlayState.SONG.secOpt) {
+			scale.x *= 0.75;
+			scale.y *= 0.75;
+		}
 	}
 }

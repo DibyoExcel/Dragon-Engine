@@ -1,6 +1,8 @@
 package options;
 
+#if mobile
 import dge.obj.mobile.VirtualButton;
+#end
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -45,10 +47,12 @@ class NotesSubState extends MusicBeatSubstate
 	var hsbText:Alphabet;
 
 	var posX = 230 + (CoolUtil.getXFrom1280P());
+	#if mobile
 	private var leftButton:VirtualButton;
 	private var rightButton:VirtualButton;
 	private var enterButton:VirtualButton;
 	private var resetButton:VirtualButton;
+	#end
 	public function new() {
 		super();
 		

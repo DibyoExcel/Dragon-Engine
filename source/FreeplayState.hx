@@ -1,6 +1,8 @@
 package;
 
+#if mobile
 import dge.obj.mobile.VirtualButton;
+#end
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -52,11 +54,13 @@ class FreeplayState extends MusicBeatState
 	var colorTween:FlxTween;
 	//buttton
 	//space, ctrl, shift, reset
+	#if mobile
 	private var spaceButton:VirtualButton;
 	private var ctrlButton:VirtualButton;
 	private var shiftButton:VirtualButton;
 	private var resetButton:VirtualButton;
 	private var enterButton:VirtualButton;//use this cuz prevent accident press while press another button
+	#end
 
 	override function create()
 	{

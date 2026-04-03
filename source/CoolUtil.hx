@@ -228,4 +228,26 @@ class CoolUtil
 		var gray:Int = Std.int(0.2126 * r + 0.7152 * g + 0.0722 * b);
 		return (gray << 16) | (gray << 8) | gray;
 	}
+
+	public static function addSpecialAnimation(sprite:FlxSprite, anim:String, xmlName:String, defaultXmlName:String, loop:Bool = true, framerate:Int = 24) {
+		if (sprite != null && anim.length > 0 && xmlName.length > 0 && defaultXmlName.length > 0) {
+			var hasFound = false;
+			if (sprite.frames.frames != null) {//get this from addByPrefix() lololol
+				for (frame in sprite.frames.frames) {
+					if (frame.name != null && frame.name.startsWith(xmlName)) {
+						hasFound = true;
+						break;
+					}
+				}
+				/*sprite.animation.addByPrefix(anim, xmlName, framerate, loop);
+				if (sprite.animation.getByName(anim) == null) {
+					}*/
+			}
+			if (hasFound) {
+				sprite.animation.addByPrefix(anim, xmlName, framerate, loop);
+			} else {
+				sprite.animation.addByPrefix(anim, defaultXmlName, framerate, loop);
+			}
+		}
+	}
 }

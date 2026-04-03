@@ -115,7 +115,7 @@ class TouchUtil {
         return number;
     }
     //smooth version(smooth scroll mosly for scrolling without snap)
-    public static function scrollSwipeSmooth():Float {
+    public static function scrollSwipeSmooth(mult:Float = 1.0):Float {
         //hope it doesn't cause any performance issues lol
         var number:Float = 0;
         for (touch in FlxG.touches.list) {
@@ -134,9 +134,9 @@ class TouchUtil {
                 touchMapY.remove(touch.touchPointID);
             }
         }
-        return number;
+        return number * mult;
     }
-    public static function scrollSwipeSmoothX():Float {
+    public static function scrollSwipeSmoothX(mult:Float = 1.0):Float {
         var number:Float = 0;
         for (touch in FlxG.touches.list) {
             if (touch != null && touch.pressed) {
@@ -154,7 +154,7 @@ class TouchUtil {
                 touchMapX.remove(touch.touchPointID);
             }
         }
-        return number;
+        return number * mult;
     }
     //imagine play fnf but with zoom mechanics, that would be... interesting ngl
     public static function pinchZoom():Float {

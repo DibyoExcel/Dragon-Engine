@@ -1,6 +1,8 @@
 package;
 
+#if mobile
 import dge.obj.mobile.VirtualButton;
+#end
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -45,11 +47,13 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 	private var grpTexts:FlxTypedGroup<AttachedText>;
 	private var gamemodeMap:Map<String, Int> = [];
 	private var gamemodeArray:Array<String> = [ 'none', 'bothside', 'bothside v2', 'opponent' ];//default
+	#if mobile
 	//mobile
 	private var leftButton:VirtualButton;
 	private var rightButton:VirtualButton;
 	private var enterButton:VirtualButton;
 	private var resetButton:VirtualButton;
+	#end
 
 	function getOptions()
 	{

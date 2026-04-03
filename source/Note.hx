@@ -8,6 +8,8 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import flixel.math.FlxRect;
+import flixel.FlxCamera;
+import flixel.graphics.frames.FlxFrame;
 #if sys
 import sys.FileSystem;
 import sys.io.File;
@@ -290,6 +292,7 @@ class Note extends FlxSprite
 	private function set_multSpeed(value:Float):Float
 	{
 		resizeByRatio(value / multSpeed);
+		if (((multSpeed < 0 && value >= 0) || (multSpeed >= 0 || value < 0)) && downScroll == null) reloadNoteSkin();
 		multSpeed = value;
 		// trace('fuck cock');
 		return value;
@@ -618,9 +621,15 @@ class Note extends FlxSprite
 	function loadNoteAnims()
 	{
 		for (i in 0...colArray.length) {//i just want it adaptive to when change noteData
-			animation.addByPrefix(colArray[i] + 'Scroll', colArray[i] + '0');
-			if (isSustainNote)
-			{
+			if (getActualDownscroll()) {
+				//downscroll anim type inspired from Retrospecter Mods(Retro's Poison notes)
+				var addAnimThingy = CoolUtil.addSpecialAnimation;
+				addAnimThingy(this, colArray[i] + 'Scroll', colArray[i] + '_DownScroll0', colArray[i] + '0', true, ClientPrefs.fpsStrumAnim);
+				addAnimThingy(this, 'purpleholdend', 'pruple end hold_DownScroll', 'pruple end hold', true, ClientPrefs.fpsStrumAnim);//i know is new but idk why i follow the typos one
+				addAnimThingy(this, colArray[i] + 'holdend', colArray[i] + ' hold end_DownScroll', colArray[i] + ' hold end', true, ClientPrefs.fpsStrumAnim);
+				addAnimThingy(this, colArray[i] + 'hold', colArray[i] + ' hold piece_DownScroll', colArray[i] + ' hold piece', true, ClientPrefs.fpsStrumAnim);
+			} else {
+				animation.addByPrefix(colArray[i] + 'Scroll', colArray[i] + '0');
 				animation.addByPrefix('purpleholdend', 'pruple end hold'); // ?????
 				animation.addByPrefix(colArray[i] + 'holdend', colArray[i] + ' hold end');
 				animation.addByPrefix(colArray[i] + 'hold', colArray[i] + ' hold piece');
@@ -632,13 +641,9 @@ class Note extends FlxSprite
 	function loadPixelNoteAnims()
 	{
 		for (i in 0...colArray.length) {//i just want it adaptive to when change noteData
-			if (isSustainNote)
-			{
-				animation.add(colArray[i % colArray.length] + 'holdend', [pixelInt[i % pixelInt.length] + 4]);
-				animation.add(colArray[i % colArray.length] + 'hold', [pixelInt[i % pixelInt.length]]);
-			} else {
-				animation.add(colArray[i % colArray.length] + 'Scroll', [pixelInt[i % pixelInt.length] + 4]);
-			}
+			animation.add(colArray[i % colArray.length] + 'Scroll', [pixelInt[i % pixelInt.length] + 4]);
+			animation.add(colArray[i % colArray.length] + 'holdend', [pixelInt[i % pixelInt.length] + 4]);
+			animation.add(colArray[i % colArray.length] + 'hold', [pixelInt[i % pixelInt.length]]);
 		}
 	}
 
@@ -684,6 +689,7 @@ class Note extends FlxSprite
 			if (isSustainNote) {
 				flipY = !flipY;
 			}
+			if (downScroll == null) reloadNoteSkin();
 		}
 		flipScroll = value;
 		return value;
@@ -903,9 +909,12 @@ class Note extends FlxSprite
 	}
 
 	function set_downScroll(value:Null<Bool>):Null<Bool> {
-		if (value != null && downScroll != value) {
+		if (downScroll != value) {
 			downScroll = value;
-			flipY = value;
+			if (value != null) {
+				flipY = value;
+			}
+			reloadNoteSkin();
 		}
 		return value;
 	}
@@ -1004,7 +1013,7 @@ class Note extends FlxSprite
 		}
 		return value;
 	}
-	function reloadNoteSkin() {
+	public function reloadNoteSkin() {
 		var lastScale = noteScale;
 		noteScale = 1;
 		reloadNote('', texture);
@@ -1021,5 +1030,17 @@ class Note extends FlxSprite
 			holdCover = value;
 		}
 		return value;
+	}
+	public function getActualDownscroll():Bool {
+		//dont mind it. it just handle for existed feature hehe
+		if (downScroll != null) {
+			return downScroll;
+		} else {
+			var down = ClientPrefs.downScroll;
+			if (flipScroll) down = !down;
+			if (PlayState.instance != null && PlayState.instance.songSpeed < 0) down = !down;
+			if (multSpeed < 0) down = !down;
+			return down;
+		}
 	}
 }

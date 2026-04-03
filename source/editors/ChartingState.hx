@@ -1,7 +1,9 @@
 package editors;
 
+#if mobile
 import dge.obj.mobile.VirtualButton;
 import dge.obj.mobile.ToggleButton;
+#end
 import dge.backend.CacheTools;
 #if desktop
 import Discord.DiscordClient;
@@ -243,7 +245,7 @@ class ChartingState extends MusicBeatState
 	var text:String = "";
 	public static var vortex:Bool = false;
 	public var mouseQuant:Bool = false;
-
+	#if mobile
 	//mobile
 	private var handButton:ToggleButton;
 	private var enterButton:VirtualButton;
@@ -260,6 +262,7 @@ class ChartingState extends MusicBeatState
 	private var rightBracketButton:VirtualButton;
 	private var altButton:VirtualButton;
 	private var ctrlButton:VirtualButton;
+	#end
 	override function create()
 	{
 		if (PlayState.SONG != null)

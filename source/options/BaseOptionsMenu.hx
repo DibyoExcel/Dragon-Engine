@@ -1,6 +1,8 @@
 package options;
 
+#if mobile
 import dge.obj.mobile.VirtualButton;
+#end
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -55,11 +57,13 @@ class BaseOptionsMenu extends MusicBeatSubstate
 	private var arrayTE_c:Array<FlxTween> = [];
 	private var keyBroker:Bool = false;
 
+	#if mobile
 	//mobile
 	private var leftButton:VirtualButton;
 	private var rightButton:VirtualButton;
 	private var enterButton:VirtualButton;
 	private var resetButton:VirtualButton;
+	#end
 
 	public function new()
 	{

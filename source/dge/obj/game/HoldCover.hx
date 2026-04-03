@@ -49,8 +49,14 @@ class HoldCover extends FlxSprite
         var colors = [ 'purple', 'blue', 'green', 'red' ];
         for (i in 0...colors.length) {
             var nameColor = colors[i];
-            animation.addByPrefix("hold" + i, "hold cover " + nameColor + '0', ClientPrefs.fpsStrumAnim, false);
-            animation.addByPrefix("end" + i, "hold cover " + nameColor + ' end0', ClientPrefs.fpsStrumAnim, false);
+            if (note != null && note.getActualDownscroll()) {
+                var specialAnim = CoolUtil.addSpecialAnimation;
+                specialAnim(this, "hold" + i, "hold cover " + nameColor + '_DownScroll0', "hold cover " + nameColor + '0', false, ClientPrefs.fpsStrumAnim);
+                specialAnim(this, "end" + i, "hold cover " + nameColor + ' end_DownScroll0', "hold cover " + nameColor + ' end0', false, ClientPrefs.fpsStrumAnim);
+            } else {
+                animation.addByPrefix("hold" + i, "hold cover " + nameColor + '0', ClientPrefs.fpsStrumAnim, false);
+                animation.addByPrefix("end" + i, "hold cover " + nameColor + ' end0', ClientPrefs.fpsStrumAnim, false);
+            }
         }
     }
     public function setupThis(x:Float, y:Float, noteData:Int = 0, ?strum:StrumNote, ?note:Note) {//joke name lol
@@ -92,7 +98,6 @@ class HoldCover extends FlxSprite
                 texture = 'holdCover';
             }
         }
-        loadAnims(texture);
         if (note != null) {
             timer = ((note.sustainLength+((note.strumTime+note.offsetStrumTime)-Conductor.songPosition))/1000)+note.holdCoverDelaySplash;
             if (note.holdCoverCopyAlpha && strum != null) {
@@ -106,6 +111,7 @@ class HoldCover extends FlxSprite
             setPosition((x+strum.width/2)-(width/2), (y+strum.height/2)-(height/2));
             //trace('test');
         }
+        loadAnims(texture);
         playAnim("hold" + (noteData % 4));
     }
     public function playAnim(anim:String) {

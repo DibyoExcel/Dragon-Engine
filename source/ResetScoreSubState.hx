@@ -1,4 +1,6 @@
+#if mobile
 import dge.obj.mobile.VirtualButton;
+#end
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
@@ -18,7 +20,9 @@ class ResetScoreSubState extends MusicBeatSubstate
 	var song:String;
 	var difficulty:Int;
 	var week:Int;
+	#if mobile
 	private var enterButton:VirtualButton;
+	#end
 
 	// Week -1 = Freeplay
 	public function new(song:String, difficulty:Int, character:String, week:Int = -1)

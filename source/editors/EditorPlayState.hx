@@ -1,5 +1,7 @@
 package editors;
+#if mobile
 import dge.obj.mobile.Hitbox;
+#end
 import dge.backend.CacheTools;
 
 import flixel.graphics.FlxGraphic;
@@ -51,8 +53,10 @@ class EditorPlayState extends MusicBeatState
 
 	var startOffset:Float = 0;
 	var startPos:Float = 0;
+	#if mobile
 	private var hitbox:FlxTypedGroup<Hitbox>;
 	private var hitboxCam:FlxCamera;
+	#end
 	private var cacheRating:Map<String, FlxGraphic> = new Map();//cache rating(slighty better performance)
 
 	public function new(startPos:Float) {
@@ -184,12 +188,12 @@ class EditorPlayState extends MusicBeatState
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 		}
+		#if mobile
 		hitbox = new FlxTypedGroup<Hitbox>();
 		add(hitbox);
 		hitboxCam = new FlxCamera();
 		hitboxCam.bgColor.alpha = 0;
 		FlxG.cameras.add(hitboxCam, false);
-		#if mobile
 		//hitbox.cameras = [hitboxCam];
 		for (i in 0...keysArray.length) {
 			var bruh = new Hitbox(i*Std.int(FlxG.width/keysArray.length), 0);
@@ -874,7 +878,7 @@ class EditorPlayState extends MusicBeatState
 			{
 				if (Math.abs(note.noteData) == spr.ID)
 				{
-					spr.playAnim((note.animConfirm.length < 1 ? spr.animConfirm : note.animConfirm), true);
+					spr.playAnim((note.animConfirm.length < 1 ? spr.animConfirm : note.animConfirm), true, note.isSustainNote, note, true);
 				}
 			});
 
@@ -1184,7 +1188,7 @@ class EditorPlayState extends MusicBeatState
 		var spr:StrumNote = note.strumNote;
 
 		if(spr != null) {
-			spr.playAnim((note.animConfirm.length < 1 ? spr.animConfirm : note.animConfirm), true);
+			spr.playAnim((note.animConfirm.length < 1 ? spr.animConfirm : note.animConfirm), true,note.isSustainNote, note);
 			spr.resetAnim = time;
 		}
 	}

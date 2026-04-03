@@ -1,6 +1,8 @@
 package editors;
 
+#if mobile
 import dge.obj.mobile.VirtualButton;
+#end
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -40,8 +42,10 @@ class MenuCharacterEditorState extends MusicBeatState
 	var characterFile:MenuCharacterFile = null;
 	var txtOffsets:FlxText;
 	var defaultCharacters:Array<String> = ['dad', 'bf', 'gf'];
+	#if mobile
 	private var shiftButton:VirtualButton;
 	private var spaceButton:VirtualButton;
+	#end
 	private static var loadFileName:FlxUIInputText;
 
 	override function create() {

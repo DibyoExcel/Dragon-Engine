@@ -1,7 +1,9 @@
 package editors;
 
+#if mobile
 import dge.obj.mobile.VirtualButton;
 import dge.obj.mobile.ToggleButton;
+#end
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -80,6 +82,7 @@ class CharacterEditorState extends MusicBeatState
 
 	var cameraFollowPointer:FlxSprite;
 	var healthBarBG:FlxSprite;
+	#if mobile
 	//mobile
 	private var handButton:ToggleButton;
 	private var leftButton:VirtualButton;
@@ -92,6 +95,7 @@ class CharacterEditorState extends MusicBeatState
 	private var tButton:VirtualButton;
 	private var wButton:VirtualButton;
 	private var sButton:VirtualButton;
+	#end
 
 	override function create()
 	{

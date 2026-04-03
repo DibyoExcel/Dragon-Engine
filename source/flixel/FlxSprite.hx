@@ -362,7 +362,7 @@ class FlxSprite extends FlxObject
             if (value == null || value.length < 1) {
                 value = shouldUse[0];
             }
-            value = value.toLowerCase();
+            value = value.toLowerCase().trim();
             if (shouldUse.indexOf(value) == -1) {
                 value = shouldUse[0];
             }

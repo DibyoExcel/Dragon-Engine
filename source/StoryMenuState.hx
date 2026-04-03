@@ -1,6 +1,8 @@
 package;
 
+#if mobile
 import dge.obj.mobile.VirtualButton;
+#end
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -49,9 +51,11 @@ class StoryMenuState extends MusicBeatState
 	var rightArrow:FlxSprite;
 
 	var loadedWeeks:Array<WeekData> = [];
+	#if mobile
 	private var ctrlButton:VirtualButton;
 	private var resetButton:VirtualButton;
 	private var enterButton:VirtualButton;
+	#end
 	public static var songListLength:Int = 0;
 
 	override function create()

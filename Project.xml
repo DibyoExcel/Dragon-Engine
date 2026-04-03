@@ -5,7 +5,7 @@
 	<app title="FNF: Dragon Engine" if="mobile"/> <!--Shorter title for mobile because too long titles get cut off. idk why so fucking long comments lol-->
 	<!--YY.MJ.MN-->
 	<!--app version-->
-	<app version="26.6.1"/>
+	<app version="26.7.0"/>
 	<!--compile msg-->
 	<echo value="Make your idea creativity become true."/>
 	<echo value="Dragon Engine - DubEnderDragon" />
@@ -240,11 +240,13 @@
 
 	<!--Mobile Setup-->
 	<section if="mobile">
-		<icon path="draconisteam/icon16_android.png" size="16"/>
-		<icon path="draconisteam/icon32_android.png" size="32"/>
-		<icon path="draconisteam/icon64_android.png" size="64"/>
-		<icon path="draconisteam/icon128_android.png" size="128"/>
-		<icon path="draconisteam/icon256_android.png" size="256"/>
+		<!--damn i dont know android must specific resolution-->
+		<icon path="draconisteam/icon36_android.png" size="36"/>
+		<icon path="draconisteam/icon48_android.png" size="48"/>
+		<icon path="draconisteam/icon72_android.png" size="72"/>
+		<icon path="draconisteam/icon96_android.png" size="96"/>
+		<icon path="draconisteam/icon144_android.png" size="144"/>
+		<icon path="draconisteam/icon192_android.png" size="192"/>
 		<icon path="draconisteam/iconOG_android.png"/>
 	</section>
 

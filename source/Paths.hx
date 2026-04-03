@@ -299,6 +299,17 @@ class Paths
 		return 'assets/fonts/$key';
 	}
 
+	inline static public function textFormatFont(key:String)
+	{
+		#if MODS_ALLOWED
+		var file:String = modsFont(key);
+		if(FileSystem.exists(file)) {
+			return file;
+		}
+		#end
+		return '_sans';
+	}
+
 	inline static public function fileExists(key:String, type:AssetType, ?ignoreMods:Bool = false, ?library:String)
 	{
 		#if MODS_ALLOWED

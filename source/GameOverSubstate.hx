@@ -1,7 +1,9 @@
 package;
 
 import flixel.FlxCamera;
+#if mobile
 import dge.obj.mobile.VirtualButton;
+#end
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSubState;
@@ -30,7 +32,9 @@ class GameOverSubstate extends MusicBeatSubstate
 	public static var instance:GameOverSubstate;
 
 	private var camC:FlxCamera;
+	#if mobile
 	private var enterButton:VirtualButton;
+	#end
 
 	public static function resetVariables() {
 		characterName = 'bf-dead';

@@ -143,7 +143,7 @@ class ErrorState extends FlxState
                 scrollText(1);
             }
             #if mobile
-            scrollText(dge.backend.TouchUtil.scrollSwipe());
+            scrollTextTouch(dge.backend.TouchUtil.scrollSwipeSmooth());
             #end
             if (text.y > 0)
             {
@@ -198,14 +198,17 @@ class ErrorState extends FlxState
         }
         return defaultJson;
     }
-    function scrollText(value:Float) {
-        if (value < 0 && text.y + text.height > FlxG.height)
-            {
-                text.y -= 20;
-            }
-            else if (value > 0 && text.y < 0)
-            {
-                text.y += 20;
-            }
+    function scrollText(value:Int) {
+        if (value < 0)
+        {
+            text.y -= 20 * value;
+        }
+        else if (value > 0)
+        {
+            text.y += 20 * value;
+        }
+    }
+    function scrollTextTouch(value:Float) {
+        text.y += value;
     }
 }
