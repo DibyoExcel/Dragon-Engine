@@ -396,3 +396,28 @@ div.codeHandle{
 video{
     aspect-ratio: 16/9;
 }
+
+td, th{
+    border: 2px solid var(--accent-color);
+    font-size: 1.25rem;
+    padding: 5px;
+}
+
+th{
+    background-color: var(--accent-color);
+    color: var(--background-color);
+}
+
+td.check{
+    color: lime;
+    font-weight: bold;
+}
+
+td.cross{
+    color: red;
+    font-weight: bold;
+}
+
+table{
+    border-collapse: collapse;
+}

@@ -64,29 +64,235 @@
         <div class="dialogue">
             <div class="dialogue_title">
                 <h3>
+                    Json Fields
+                </h3>
+            </div>
+            <div class="dialogue_content" id="listfield">
+                <div style="overflow: auto; max-width:100%">
+                    <table>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Default</th>
+                            <th>Mod Setting</th>
+                            <th>Global Setting</th>
+                            <th>Required</th>
+                        </tr>
+                        <tr>
+                            <td>bgColor</td>
+                            <td>String</td>
+                            <td>custom setting background color.</td>
+                            <td><span style="display: inline-block; background-color: #ea71fd; width: 1rem; height : 1rem; border: 1px solid white;"></span>#ea71fd</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="cross">&#10007;</td>
+                        </tr>
+                        <tr>
+                            <td>storageKey</td>
+                            <td>String</td>
+                            <td>storage key for setting. And also can use for lua variable prefix.</td>
+                            <td>%modfoldername%</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="cross">&#10007;</td>
+                        </tr>
+                        <tr>
+                            <td>settingName</td>
+                            <td>String</td>
+                            <td>setting name for title and options name.</td>
+                            <td>Global Setting</td>
+                            <td class="cross">&#10007;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="cross">&#10007;</td>
+                        </tr>
+                        <tr>
+                            <td>optionsList</td>
+                            <td><h3><a href="#optionsList">Options Array</a></h3></td>
+                            <td>storage key for setting. And also can use for lua variable prefix.</td>
+                            <td>-</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="dialogue" id ="optionsList">
+            <div class="dialogue_title">
+                <h3>
+                    Options Array Fields
+                </h3>
+            </div>
+            <div class="dialogue_content">
+                <div style="overflow: auto; max-width:100%">
+                    <table>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Default</th>
+                            <th>Required</th>
+                            <th>Bool</th>
+                            <th>Float</th>
+                            <th>Int</th>
+                            <th>Percent</th>
+                            <th>String</th>
+                            <th>String(Free)</th>
+                            <th>HEX</th>
+                            <th>Allowed Value</th>
+                        </tr>
+                        <tr>
+                            <td>name</td>
+                            <td>String</td>
+                            <td>Options Label Name.</td>
+                            <td>No Name</td>
+                            <td class="cross">&#10007;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>description</td>
+                            <td>String</td>
+                            <td>Options Description.</td>
+                            <td>No Description.</td>
+                            <td class="cross">&#10007;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>type</td>
+                            <td>String</td>
+                            <td>Options Types.</td>
+                            <td>bool</td>
+                            <td class="cross">&#10007;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td>int, float, percent, bool, string, stringfree(26.5.0+), hex(26.5.0+). <h3><a href="#typesvalue">Option Types</a></h3>.</td>
+                        </tr>
+                        <tr>
+                            <td>variable</td>
+                            <td>String</td>
+                            <td>Options Variable(must be unique). And also can use for lua variable.</td>
+                            <td>unknown</td>
+                            <td class="cross">&#10007;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>defaultValue</td>
+                            <td>Dynamic</td>
+                            <td>Default Value Settings.</td>
+                            <td>false</td>
+                            <td class="cross">&#10007;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="check">&#10003;</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>options</td>
+                            <td>Array</td>
+                            <td>Array list for selected text.</td>
+                            <td>-</td>
+                            <td class="check">&#10003;</td>
+                            <td class="cross">&#10007;</td>
+                            <td class="cross">&#10007;</td>
+                            <td class="cross">&#10007;</td>
+                            <td class="cross">&#10007;</td>
+                            <td class="check">&#10003;</td>
+                            <td class="cross">&#10007;</td>
+                            <td class="cross">&#10007;</td>
+                            <td>-</td>
+                        </tr>
+                    </table>
+                </div>
+                <br>
+                <h3>for more Options List Field Check in <a href="https://github.com/DibyoExcel/Dragon-Engine/tree/main/source/dge/states/options/custom/Option.hx">Option.hx</a>.</h3>
+            </div>
+        </div>
+        <div class="dialogue" id ="typesvalue">
+            <div class="dialogue_title">
+                <h3>
+                    Option Types
+                </h3>
+            </div>
+            <div class="dialogue_content">
+                <div style="overflow: auto; max-width:100%">
+                    <table>
+                        <tr>
+                            <th>Type</th>
+                            <th>Allowed Value</th>
+                        </tr>
+                        <tr>
+                            <td>Bool</td>
+                            <td>true, false</td>
+                        </tr>
+                        <tr>
+                            <td>Float</td>
+                            <td>X.X</td>
+                        </tr>
+                        <tr>
+                            <td>Int</td>
+                            <td>X</td>
+                        </tr>
+                        <tr>
+                            <td>Percent</td>
+                            <td>X.X(Same Like Float)</td>
+                        </tr>
+                        <tr>
+                            <td>String</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>String(Free)</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>HEX</td>
+                            <td>RRGGBB</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="dialogue">
+            <div class="dialogue_title">
+                <h3>
                     Mod Settings
                 </h3>
             </div>
             <div class="dialogue_content">
                 <h3>Open in Mods Menu.</h3>
                 <h3>file location: <code>mods/%modfoldername%/settings.json</code>.</h3>
-                <br>
-                <h3>Json Field:</h3>
-                <ul>
-                    <li><code>storageKey</code>: storage key for setting. also can use for lua variable prefix.(default: <code>%modfoldername%</code>).</li>
-                    <li><code>bgColor</code>: custom setting background color.(default: <code>#ea71fd</code>)</li>
-                    <li><code>optionsList</code>: array list options to make</li>
-                </ul>
-                <br>
-                <h3>Options Field:</h3>
-                <ul>
-                    <li><code>name</code>: Options Label Name.</li>
-                    <li><code>variable</code>: Options Variable(must be unique). also can use for lua variable.</li>
-                    <li><code>type</code>: Options Type.(allowed value: <code>int</code>, <code>float</code>, <code>percent</code>, <code>bool</code>, <code>string</code>, <code>stringfree</code>(26.5.0+) and <code>hex</code>(26.5.0+)).</li>
-                    <li><code>defaultValue</code>: Default Value Settings.</li>
-                    <li><code>options</code>(<code>string</code> type only): Array list for selected text.</li>
-                </ul>
-                <h3>for more Options List Field Check in <a href="https://github.com/DibyoExcel/Dragon-Engine/tree/main/source/dge/states/options/custom/Option.hx">source</a>.</h3>
                 <br>
                 <h3>example json settings.json:</h3>
                 <div class="codeHandle">
@@ -115,24 +321,6 @@
             <div class="dialogue_content">
                 <h3>Open in Main Options Menu.</h3>
                 <h3>file location: <code>mods/settings.json</code>.</h3>
-                <br>
-                <h3>Json Field:</h3>
-                <ul>
-                    <li><code>storageKey</code>: storage key for setting. also can use for lua variable prefix.(default: <code>_global</code>).</li>
-                    <li><code>settingName</code>: setting name for title and options name. also can use for lua variable prefix.(default: <code>Global Setting</code>).</li>
-                    <li><code>bgColor</code>: custom setting background color.(default: <code>#ea71fd</code>)</li>
-                    <li><code>optionsList</code>: array list options to make</li>
-                </ul>
-                <br>
-                <h3>Options Field:</h3>
-                <ul>
-                    <li><code>name</code>: Options Label Name.</li>
-                    <li><code>variable</code>: Options Variable(must be unique). also can use for lua variable.</li>
-                    <li><code>type</code>: Options Type.(allowed value: <code>int</code>, <code>float</code>, <code>percent</code>, <code>bool</code>, <code>string</code> and <code>stringfree</code>(26.5.0+) and <code>hex</code>(26.5.0+)).</li>
-                    <li><code>defaultValue</code>: Default Value Settings.</li>
-                    <li><code>options</code>(<code>string</code> type only): Array list for selected text.</li>
-                </ul>
-                <h3>for more Options List Field Check in <a href="https://github.com/DibyoExcel/Dragon-Engine/tree/main/source/dge/states/options/custom/Option.hx">source</a>.</h3>
                 <br>
                 <h3>example json settings.json:</h3>
                 <div class="codeHandle">
