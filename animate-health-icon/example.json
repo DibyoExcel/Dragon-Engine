@@ -1,0 +1,34 @@
+{
+    "netral": {
+        "xmlName": "netral",
+        "loop": true,
+        "offset": [0, 0],
+        "fps": 24,
+        "flipX": false,
+        "flipY": false
+    },
+    "lose": {
+        "xmlName": "lose",
+        "loop": true,
+        "offset": [0, 0],
+        "fps": 24,
+        "flipX": false,
+        "flipY": false
+    },
+    "win": {
+        "xmlName": "win",
+        "loop": true,
+        "offset": [0, 0],
+        "fps": 24,
+        "flipX": false,
+        "flipY": false
+    },
+    "full": {
+        "xmlName": "full",
+        "loop": true,
+        "offset": [0, 0],
+        "fps": 24,
+        "flipX": false,
+        "flipY": false
+    }
+}
