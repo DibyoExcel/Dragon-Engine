@@ -5,6 +5,25 @@ import openfl.utils.Assets as OpenFlAssets;
 
 using StringTools;
 
+typedef IconConfig = {
+	//cool icon animation config lols
+	//using Null<> because haxe didt like check if this value is null or not:/
+	netral:Null<StateObject>,
+	lose:Null<StateObject>,//optional, if not set, it will be the same as netral
+	win:Null<StateObject>,//optional, if not set, it will nothing to do(aka netral icon)
+	full:Null<StateObject>//optional, if not set, it will be the same as netral
+};
+
+typedef StateObject = {
+	xmlName:String,
+	offset:Null<Array<Float>>,
+	fps:Null<Int>,
+	loop:Null<Bool>,
+	flipX:Null<Bool>,
+	flipY:Null<Bool>
+}
+
+
 class HealthIcon extends FlxSprite
 {
 	public var sprTracker:FlxSprite;
@@ -14,6 +33,8 @@ class HealthIcon extends FlxSprite
 	public var winIcon:Bool = false;
 	public var isCustom:Bool = false;//enable this if you want custom change icon system to your own
 	public var fullIcon(default, set):Bool = false;
+	public var spriteSheet:Bool = false;
+	private var offsetMap:Map<String, Array<Float>> = new Map<String, Array<Float>>();
 
 
 
@@ -42,33 +63,50 @@ class HealthIcon extends FlxSprite
 	private var iconOffsets:Array<Float> = [0, 0];
 	public function changeIcon(char:String, full:Bool = false) {
 		if(this.char != char) {
+			//reset
+			offsetMap = new Map<String, Array<Float>>();
 			var name:String = 'icons/' + char;
 			if(!Paths.fileExists('images/' + name + '.png', IMAGE)) name = 'icons/icon-' + char; //Older versions of psych engine's support
 			if(!Paths.fileExists('images/' + name + '.png', IMAGE)) name = 'icons/icon-face'; //Prevents crash from missing icon
-			var file:Dynamic = Paths.image(name);
-
-			loadGraphic(file); //Load stupidly first for getting the file size
-			if (!full) {
-
-				var frameArray:Array<Int> = [];
-				var flipbook:Int = Math.round(width/height);//basicly flipbook from minecraft texture pack
-				loadGraphic(file, true, Math.floor(width / flipbook), Math.floor(height)); //Then load it fr
-				for (i in 0...flipbook) {
-					frameArray.push(i);
+			if (Paths.fileExists('images/' + name + '.json', TEXT)) spriteSheet = true; else spriteSheet = false;
+			if (!spriteSheet) {
+				var file:Dynamic = Paths.image(name);
+	
+				loadGraphic(file); //Load stupidly first for getting the file size
+				if (!full) {
+	
+					var frameArray:Array<Int> = [];
+					var flipbook:Int = Math.round(width/height);//basicly flipbook from minecraft texture pack
+					loadGraphic(file, true, Math.floor(width / flipbook), Math.floor(height)); //Then load it fr
+					for (i in 0...flipbook) {
+						frameArray.push(i);
+					}
+					iconOffsets[0] = (width - 150) / flipbook;
+					iconOffsets[1] = (width - 150) / flipbook;
+					updateHitbox();
+					animation.add(char, frameArray, 0, false, isPlayer);
+					animation.play(char);
+					if (flipbook >= 3) {//for win icon //and when more than 3 you might can make weird stuff...but required lua
+						this.winIcon = true;
+					} else {
+						this.winIcon = false;
+					}
 				}
-				iconOffsets[0] = (width - 150) / flipbook;
-				iconOffsets[1] = (width - 150) / flipbook;
-				updateHitbox();
-				animation.add(char, frameArray, 0, false, isPlayer);
-				animation.play(char);
-				if (flipbook >= 3) {//for win icon //and when more than 3 you might can make weird stuff...but required lua
-					this.winIcon = true;
-				} else {
-					this.winIcon = false;
-				}
+				
+			} else {
+				var json:String = Paths.getTextFromFile('images/' + name + '.json');
+				var data:IconConfig = initJsonLoad(json);
+				frames = Paths.getSparrowAtlas(name);
+				initFrames(data);
+				if (!full) animation.play('netral');/*default animation(please dont judge me for this)*/ else animation.play('full');
+				iconOffsets[0] = (width - 150) + data.netral.offset[0];
+				iconOffsets[1] = (height -150) + data.netral.offset[1];
+				offsetMap.set('netral', data.netral.offset);
+				offsetMap.set('lose', data.lose.offset);
+				if (data.win != null) offsetMap.set('win', data.win.offset);
+				updateHitbox();//again to set offset
 			}
 			this.char = char;
-
 			antialiasing = ClientPrefs.globalAntialiasing;
 			if(char.endsWith('-pixel')) {
 				antialiasing = false;
@@ -79,8 +117,7 @@ class HealthIcon extends FlxSprite
 	override function updateHitbox()
 	{
 		super.updateHitbox();
-		offset.x = iconOffsets[0];
-		offset.y = iconOffsets[1];
+		changeOffsets();
 	}
 
 	public function getCharacter():String {
@@ -93,5 +130,103 @@ class HealthIcon extends FlxSprite
 			changeIcon(char, value);
 		}
 		return value;
+	}
+	function initJsonLoad(jsonRaw:String):IconConfig {
+		var jsonDataRaw:Dynamic = haxe.Json.parse(jsonRaw);
+		var jsonData:IconConfig = cast jsonDataRaw;
+		//too much
+		if (jsonData.netral == null) {
+			//dude why ever create an icon json without netral animation? its required for backup and stuff
+			jsonData.netral = {
+				xmlName: 'netral',
+				offset: [0, 0],
+				fps: 24,
+				loop: true,
+				flipX: false,
+				flipY: false
+			};
+		} else {
+			if (jsonData.netral.xmlName == null) jsonData.netral.xmlName = 'netral';
+			if (jsonData.netral.offset == null || jsonData.netral.offset.length < 2) jsonData.netral.offset = [0, 0];
+			if (jsonData.netral.fps == null) jsonData.netral.fps = 24;
+			if (jsonData.netral.loop == null) jsonData.netral.loop = true;
+			if (jsonData.netral.flipX == null) jsonData.netral.flipX = false;
+			if (jsonData.netral.flipY == null) jsonData.netral.flipY = false;
+		}
+		if (jsonData.lose == null) {
+			jsonData.lose = jsonData.netral;
+		} else {
+			if (jsonData.lose.xmlName == null) jsonData.lose.xmlName = 'lose';
+			if (jsonData.lose.offset == null || jsonData.lose.offset.length < 2) jsonData.lose.offset = [0, 0];
+			if (jsonData.lose.fps == null) jsonData.lose.fps = 24;
+			if (jsonData.lose.loop == null) jsonData.lose.loop = true;
+			if (jsonData.lose.flipX == null) jsonData.lose.flipX = false;
+			if (jsonData.lose.flipY == null) jsonData.lose.flipY = false;
+		}
+		if (jsonData.full == null) {
+			jsonData.full = jsonData.netral;
+		} else {
+			if (jsonData.full.xmlName == null) jsonData.full.xmlName = 'full';
+			if (jsonData.full.offset == null || jsonData.lose.offset.length < 2) jsonData.full.offset = [0, 0];
+			if (jsonData.full.fps == null) jsonData.full.fps = 24;
+			if (jsonData.full.loop == null) jsonData.full.loop = true;
+			if (jsonData.full.flipX == null) jsonData.full.flipX = false;
+			if (jsonData.full.flipY == null) jsonData.full.flipY = false;
+		}
+		return jsonData;
+	}
+	function initFrames(Data:IconConfig):Void {
+		var isFlip = isPlayer;
+		if (Data.netral.flipX) {
+			isFlip = !isFlip;
+		}
+		animation.addByPrefix('netral', Data.netral.xmlName, Data.netral.fps, Data.netral.loop, isFlip, Data.netral.flipY);
+		var isFlip = isPlayer;
+		if (Data.lose.flipX) {
+			isFlip = !isFlip;
+		}
+		animation.addByPrefix('lose', Data.lose.xmlName, Data.lose.fps, Data.lose.loop, isFlip, Data.lose.flipY);
+		if (Data.win != null) {
+			var isFlip = isPlayer;
+			if (Data.win.flipX) {
+				isFlip = !isFlip;
+			}
+			winIcon = true;
+			animation.addByPrefix('win', Data.win.xmlName, Data.win.fps, Data.win.loop, isFlip, Data.win.flipY);
+		}
+		if (Data.full != null) {
+			var isFlip = isPlayer;
+			if (Data.full.flipX) {
+				isFlip = !isFlip;
+			}
+			animation.addByPrefix('full', Data.full.xmlName, Data.full.fps, Data.full.loop, isFlip, Data.full.flipY);
+		} else {
+			var isFlip = isPlayer;
+			if (Data.netral.flipX) {
+				isFlip = !isFlip;
+			}
+			animation.addByPrefix('full', Data.netral.xmlName, Data.netral.fps, Data.netral.loop, isFlip, Data.netral.flipY);
+		}
+		updateHitbox();
+	}
+	public function playAnim(name:String, force:Bool = false) {
+		if (animation != null && animation.curAnim != null && animation.curAnim.name != name || force) {
+			animation.play(name);
+			if (offsetMap.exists(name)) {
+				iconOffsets[0] = (width - 150) + offsetMap.get(name)[0];
+				iconOffsets[1] = (height -150) + offsetMap.get(name)[1];
+			} else if (offsetMap.exists('netral')) {//backup
+				iconOffsets[0] = (width - 150) + offsetMap.get('netral')[0];
+				iconOffsets[1] = (height -150) + offsetMap.get('netral')[1];
+			} else {
+				iconOffsets[0] = (width - 150);
+				iconOffsets[1] = (height -150);
+			}
+			changeOffsets();
+		}
+	}
+	private function changeOffsets() {
+		offset.x = iconOffsets[0];
+		offset.y = iconOffsets[1];
 	}
 }

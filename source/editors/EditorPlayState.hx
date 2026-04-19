@@ -873,14 +873,9 @@ class EditorPlayState extends MusicBeatState
 				popUpScore(note);
 				songHits++;
 			}
-
-			playerStrums.forEach(function(spr:StrumNote)
-			{
-				if (Math.abs(note.noteData) == spr.ID)
-				{
-					spr.playAnim((note.animConfirm.length < 1 ? spr.animConfirm : note.animConfirm), true, note.isSustainNote, note, true);
-				}
-			});
+			if (note.strumNote != null) {
+				note.strumNote.playAnim((note.animConfirm.length < 1 ? note.strumNote.animConfirm : note.animConfirm), true, note.isSustainNote, note, true);
+			}
 
 			if (note.multiPress <= 0) {
 				note.wasGoodHit = true;

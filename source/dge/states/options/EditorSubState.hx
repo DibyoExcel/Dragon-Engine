@@ -34,8 +34,8 @@ class EditorSubState extends BaseOptionsMenu
 	public function new()
 	{
 
-		title = 'Editor Settings';
-		rpcTitle = 'Editor Settings Menu'; //for Discord Rich Presence
+		title = 'DGE Editor Settings';
+		rpcTitle = 'DGE Editor Settings Menu'; //for Discord Rich Presence
 
 		var option:Option = new Option('Minified Json',
 			"Save Editor Json without Newlines and Spaces",

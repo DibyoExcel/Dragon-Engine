@@ -33,7 +33,27 @@ class OutdatedState extends MusicBeatState
 		bg.color = 0xff800080;
 		CoolUtil.fitBackground(bg);
 		add(bg);
-		var splitVersion = Application.current.meta.get('version').split('.');
+		var currentVersion = Application.current.meta.get('version');
+		var intCurVer = Std.parseInt(currentVersion.split('.').join(''));
+		var warnTxt = "Sup bro, i think you currently running a\n
+		outdated version of Dragon Engine (" + currentVersion + "),\n
+		please update to " + TitleState.updateVersion + "!";
+		if (TitleState.confusedLOL) {//LMAO
+			warnTxt = "Sup bro, i think you currently running a\n
+			version of Dragon Engine (" + currentVersion + ") this version did't even exists yet lmao\n
+			please be sure this version ever exists!(unless you're dev lol)";
+		}
+		if (ClientPrefs.dragonW) {
+			warnTxt = "Greetings, noble warrior! it appears that you are currently utilizing an\n
+			outdated version of Dragon Engine (" + currentVersion + ").\n
+			For a more powerful and enhanced experience, please update to " + TitleState.updateVersion + "!";
+			if (TitleState.confusedLOL) {//LMAO
+				warnTxt = "Greetings, noble warrior! it appears that you are currently utilizing a\n
+				version of Dragon Engine (" + currentVersion + ") this not even exists yet..\n
+				please be sure this version ever exists!(unless you're dev lol)";
+			}
+		}
+		/*var splitVersion = Application.current.meta.get('version').split('.');
 		var getMinotAndMajor = splitVersion[0] + "." + splitVersion[1] + '.X';
 		var warnTxt = "Sup bro, i think you currently running a\n
 			outdated version of Dragon Engine (" + getMinotAndMajor + "),\n
@@ -52,7 +72,7 @@ class OutdatedState extends MusicBeatState
 				version of Dragon Engine (" + getMinotAndMajor + ") this not even exists yet..\n
 				please be sure this version ever exists!(unless you're dev lol)";
 			}
-		}
+		}*/
 		warnText = new FlxText(0, 0, FlxG.width,
 			warnTxt + "\n\n
 			Press ESCAPE to proceed anyway.\n

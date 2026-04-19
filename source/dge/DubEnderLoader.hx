@@ -10,6 +10,9 @@ import flash.display.Shape;
 import flixel.system.FlxBasePreloader;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
+#if desktop
+import dge.backend.ALSoftConfig; // Just to make sure DCE doesn't remove this, since it's not directly referenced anywhere else.
+#end
 
 
 

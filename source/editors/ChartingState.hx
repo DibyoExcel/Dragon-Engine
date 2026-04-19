@@ -407,6 +407,10 @@ class ChartingState extends MusicBeatState
 		leftIcon.setGraphicSize(0, 45);
 		gfIcon.setGraphicSize(0, 45);
 		rightIcon.setGraphicSize(0, 45);
+		eventIcon.updateHitbox();
+		rightIcon.updateHitbox();
+		gfIcon.updateHitbox();
+		leftIcon.updateHitbox();
 		add(prevRenderedNotes);
 		add(prevRenderedSustains);
 		add(curRenderedSustains);
@@ -419,10 +423,17 @@ class ChartingState extends MusicBeatState
 		add(leftIcon);
 		add(gfIcon);
 		add(rightIcon);
-		eventIcon.setPosition((GRID_SIZE/2)-(eventIcon.width/2), 7.5);
-		leftIcon.setPosition(GRID_SIZE +((GRID_SIZE*2)-(leftIcon.width/2)), 0);
-		rightIcon.setPosition(GRID_SIZE +((GRID_SIZE*6)-(leftIcon.width/2)), 0);
-		gfIcon.setPosition(GRID_SIZE +((GRID_SIZE*10)-(gfIcon.width/2)), 0);
+		eventIcon.setPosition(((GRID_SIZE/2)-(eventIcon.width/2))-(GRID_SIZE*1), 25);
+		eventIcon.offset.set(0, 0);
+		leftIcon.offset.set(0, 0);
+		rightIcon.offset.set(0, 0);
+		gfIcon.offset.set(0, 0);
+		leftIcon.x = eventIcon.x + (GRID_SIZE*2);
+		rightIcon.x = eventIcon.x + (GRID_SIZE*6);
+		gfIcon.x = eventIcon.x + (GRID_SIZE*10);
+		leftIcon.y = eventIcon.y;
+		rightIcon.y = eventIcon.y;
+		gfIcon.y = eventIcon.y;
 		var tabs = [
 			{name: "Song", label: 'Song'},
 			{name: "Section", label: 'Section'},
@@ -2961,6 +2972,9 @@ class ChartingState extends MusicBeatState
 				gfIcon.changeIcon(healthIconP3);
 			}
 		}
+		leftIcon.offset.set(0, 0);
+		rightIcon.offset.set(0, 0);
+		gfIcon.offset.set(0, 0);
 	}
 
 	function loadHealthIconFromCharacter(char:String) {

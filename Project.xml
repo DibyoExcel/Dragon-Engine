@@ -5,7 +5,7 @@
 	<app title="FNF: Dragon Engine" if="mobile"/> <!--Shorter title for mobile because too long titles get cut off. idk why so fucking long comments lol-->
 	<!--YY.MJ.MN-->
 	<!--app version-->
-	<app version="26.7.0"/>
+	<app version="26.8.0"/>
 	<!--compile msg-->
 	<echo value="Make your idea creativity become true."/>
 	<echo value="Dragon Engine - DubEnderDragon" />
@@ -257,5 +257,11 @@
 		<icon path="draconisteam/icon128.png" size="128"/>
 		<icon path="draconisteam/icon256.png" size="256"/>
 		<icon path="draconisteam/iconOG.png"/>
+	</section>
+	
+	<!-- OpenAL config -->
+	<section if="desktop">
+		<assets path="alsoft.txt" rename="plugins/alsoft.ini" type="text" if="windows"/>
+		<assets path="alsoft.txt" rename="plugins/alsoft.conf" type="text" unless="windows"/>
 	</section>
 </project>

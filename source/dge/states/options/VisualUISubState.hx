@@ -27,6 +27,7 @@ import Controls;
 import options.BaseOptionsMenu;
 import options.Option;
 import flixel.util.FlxColor;
+import openfl.text.TextFormat;
 
 using StringTools;
 
@@ -37,8 +38,8 @@ class VisualUISubState extends BaseOptionsMenu
 	public function new()
 	{
 
-		title = 'Visual & UI Settings';
-		rpcTitle = 'Visual & UI Settings Menu'; //for Discord Rich Presence
+		title = 'DGE Visual & UI Settings';
+		rpcTitle = 'DGE Visual & UI Settings Menu'; //for Discord Rich Presence
 
 		var option:Option = new Option('Long Note Transparency',
 			'How much transparent should the Long Notes be.',
@@ -113,17 +114,10 @@ class VisualUISubState extends BaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('Classic Strums',
-			"The FNF Classic Strum(Note Splash Will Disable).",
+			"The FNF Classic Strum(Note Splash & Hold Cover Will Disable).",
 			'clsstrum',
 			'bool',
 			false);
-		addOption(option);
-
-		var option:Option = new Option('Overfill Health Bar',
-			"Messed Up Health Bar With Spammy.",
-			'ofhb',
-			'bool',
-			true);
 		addOption(option);
 
 		var option:Option = new Option('Default Note Skin',
@@ -213,6 +207,27 @@ class VisualUISubState extends BaseOptionsMenu
 		option.maxValue = 1;
 		option.changeValue = 0.01;
 		option.decimals = 2;
+		addOption(option);
+
+		var option:Option = new Option('FPS Font Size',
+			"FPS Counter Font Size.",
+			'fpsFontSize',
+			'int',
+			#if mobile 18 #else 14 #end);
+		option.minValue = 5;
+		option.scrollSpeed = 15;
+		option.onChange = function() {
+			if (Main.fpsVar != null) {
+				Main.fpsVar.defaultTextFormat = new TextFormat("_sans", ClientPrefs.fpsFontSize);
+			}
+		}
+		addOption(option);
+
+		var option:Option = new Option('Legacy Note Layer',
+			"Use legacy Note Layer.",
+			'legacyNoteLayer',
+			'bool',
+			false);
 		addOption(option);
 
 		super();

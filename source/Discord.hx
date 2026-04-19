@@ -122,7 +122,7 @@ class DiscordClient
 
         Discord.UpdatePresence(cpp.RawPointer.addressOf(presence));
 
-        Sys.println('Discord RPC Updated. Arguments: $details, $state, $smallImageKey, $hasStartTimestamp, $endTimestamp');
+        //Sys.println('Discord RPC Updated. Arguments: $details, $state, $smallImageKey, $hasStartTimestamp, $endTimestamp');
     }
 	#end
 	public static function addLuaCallbacks(lua:State):Void {

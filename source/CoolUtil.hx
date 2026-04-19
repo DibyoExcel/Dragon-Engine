@@ -229,13 +229,15 @@ class CoolUtil
 		return (gray << 16) | (gray << 8) | gray;
 	}
 
-	public static function addSpecialAnimation(sprite:FlxSprite, anim:String, xmlName:String, defaultXmlName:String, loop:Bool = true, framerate:Int = 24) {
+	public static function addSpecialAnimation(sprite:FlxSprite, anim:String, xmlName:String, defaultXmlName:String, loop:Bool = true, framerate:Int = 24):Bool {
+		var hasAnim = false;
 		if (sprite != null && anim.length > 0 && xmlName.length > 0 && defaultXmlName.length > 0) {
 			var hasFound = false;
 			if (sprite.frames.frames != null) {//get this from addByPrefix() lololol
 				for (frame in sprite.frames.frames) {
 					if (frame.name != null && frame.name.startsWith(xmlName)) {
 						hasFound = true;
+						hasAnim = true;
 						break;
 					}
 				}
@@ -249,5 +251,6 @@ class CoolUtil
 				sprite.animation.addByPrefix(anim, defaultXmlName, framerate, loop);
 			}
 		}
+		return hasAnim;
 	}
 }

@@ -427,9 +427,10 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
-		//trace('Playback Rate: ' + playbackRate);
+		if (SONG == null) SONG = Song.loadFromJson('tutorial');
 		CacheTools.clearCache();
 		Paths.clearStoredMemory();
+		//trace('Playback Rate: ' + playbackRate);
 
 		// for lua
 		instance = this;
@@ -516,8 +517,6 @@ class PlayState extends MusicBeatState
 		persistentUpdate = true;
 		persistentDraw = true;
 
-		if (SONG == null)
-			SONG = Song.loadFromJson('tutorial');
 
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
@@ -2996,13 +2995,24 @@ class PlayState extends MusicBeatState
 		return 0;
 	}
 
-	function sortNoteLayer(Order:Int, Obj1:Note, Obj2:Note):Int {//function tamplater from FlxSort.byY hehe(also low priority move behind)
+	function sortNoteLayer(Order:Int, Obj1:Note, Obj2:Note):Int {
+		//i know will broken if multSpeed different but normally most just 1 unless is modchart
+		if (Obj1 == null || Obj2 == null) return 0;//nah GET OUT
 		if ((!Obj1.topLayer && Obj2.topLayer) || (!Obj1.attachStrum && Obj2.attachStrum)) {
 			return -1;
 		} else if ((Obj1.topLayer && !Obj2.topLayer) || (Obj1.attachStrum && !Obj2.attachStrum)) {
 			return 1;
 		}
-		return FlxSort.byValues(Order, ((Obj1.strumTime + Obj1.offsetStrumTime) - Conductor.songPosition) * Obj1.multSpeed, ((Obj2.strumTime + Obj2.offsetStrumTime) - Conductor.songPosition) * Obj2.multSpeed);
+		//over engineer go brrrrr
+		var time1:Float = (Obj1.isSustainNote && Obj1.parent != null && Obj1.parent.multSpeed == Obj1.multSpeed && !ClientPrefs.legacyNoteLayer ? Obj1.parent.strumTime + ((Obj1.strumTime - Obj1.parent.strumTime)*0.001 /**Who ever play 0.001 scroll speed to see break long notes**/) : Obj1.strumTime) + Obj1.offsetStrumTime;
+		var time2:Float = (Obj2.isSustainNote && Obj2.parent != null && Obj2.parent.multSpeed == Obj2.multSpeed && !ClientPrefs.legacyNoteLayer ? Obj2.parent.strumTime + ((Obj2.strumTime - Obj2.parent.strumTime)*0.001 /**Who ever play 0.001 scroll speed to see break long notes**/) : Obj2.strumTime) + Obj2.offsetStrumTime;
+	
+		return FlxSort.byValues(Order, time1 * Obj1.multSpeed, time2 * Obj2.multSpeed);
+	}
+	
+
+	function sortNoteTime(Order:Int, Obj1:Note, Obj2:Note):Int {
+		return FlxSort.byValues(Order, Obj1.strumTime + Obj1.offsetStrumTime, Obj2.strumTime + Obj2.offsetStrumTime);
 	}
 	
 	
@@ -3568,64 +3578,87 @@ class PlayState extends MusicBeatState
 		}
 
 		var iconOffset:Int = 26;
-		if (ClientPrefs.ofhb) {
-			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(health*50, 0, 100, 100, 0) * 0.01)) + (150 * iconP1.scale.x - 150) / 2 - iconOffset;
-			iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(health*50, 0, 100, 100, 0) * 0.01)) - (150 * iconP2.scale.x) / 2 - iconOffset * 2;
-		if (iconP3 != null) {
-			iconP3.x = (healthBar.x + (healthBar.width * (FlxMath.remapToRange(health*50, 0, 100, 100, 0) * 0.01)) - (150 * iconP3.scale.x) / 2 - iconOffset * 2) - 50;
-		}
-		} else {
-			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) + (150 * iconP1.scale.x - 150) / 2 - iconOffset;
-			iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (150 * iconP2.scale.x) / 2 - iconOffset * 2;
+		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) + (150 * iconP1.scale.x - 150) / 2 - iconOffset;
+		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (150 * iconP2.scale.x) / 2 - iconOffset * 2;
 		if (iconP3 != null) {
 			iconP3.x = (healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (150 * iconP3.scale.x) / 2 - iconOffset * 2) -50;
 		}
-		}
-
+		//welcome to legacy code
 		if (health > 2) {
-			health -= (health-2)*0.25;
+			health = 2;
 		}
 
 		if (healthBar.percent < 20) {
 			if (!iconP1.isCustom) {
-
-				iconP1.animation.curAnim.curFrame = 1;
+				if (!iconP1.spriteSheet) {
+					iconP1.animation.curAnim.curFrame = 1;
+				} else {
+					iconP1.playAnim('lose');
+				}
 			}
 			if (iconP2.winIcon == true && !iconP2.isCustom) {
-				iconP2.animation.curAnim.curFrame = 2;
+				if (!iconP2.spriteSheet) {
+					iconP2.animation.curAnim.curFrame = 2;
+				} else {
+					iconP2.playAnim('win');
+				}
 			}
 			if (iconP3 != null) {
 				if (iconP3.winIcon == true && !iconP3.isCustom) {
-					iconP3.animation.curAnim.curFrame = 2;
+					if (!iconP3.spriteSheet) {
+						iconP3.animation.curAnim.curFrame = 2;
+					} else {
+						iconP3.playAnim('win');
+					}
 				}
 			}
 		} else if (healthBar.percent > 80) {
 			if (!iconP2.isCustom) {
-
-				iconP2.animation.curAnim.curFrame = 1;
+				if (!iconP2.spriteSheet) {
+					iconP2.animation.curAnim.curFrame = 1;
+				} else {
+					iconP2.playAnim('lose');
+				}
 			}
 			if (iconP3 != null) {
 				if (!iconP3.isCustom) {
-
-					iconP3.animation.curAnim.curFrame = 1;
+					if (!iconP3.spriteSheet) {
+						iconP3.animation.curAnim.curFrame = 1;
+					} else {
+						iconP3.playAnim('lose');
+					}
 				}
 			}
 			if (iconP1.winIcon == true && !iconP1.isCustom) {
-			iconP1.animation.curAnim.curFrame = 2;
+				if (!iconP1.spriteSheet) {
+					iconP1.animation.curAnim.curFrame = 2;
+				} else {
+					iconP1.playAnim('win');
+				}
 			}
 		} else {//bruh rewrite
 			if (!iconP2.isCustom) {
-
-				iconP2.animation.curAnim.curFrame = 0;
+				if (!iconP2.spriteSheet) {
+					iconP2.animation.curAnim.curFrame = 0;
+				} else {
+					iconP2.playAnim('netral');
+				}
 			}
 			if (iconP3 != null) {
 				if (!iconP3.isCustom) {
-
-					iconP3.animation.curAnim.curFrame = 0;
+					if (!iconP3.spriteSheet) {
+						iconP3.animation.curAnim.curFrame = 0;
+					} else {
+						iconP3.playAnim('netral');
+					}
 				}
 			}
 			if (!iconP1.isCustom) {
-				iconP1.animation.curAnim.curFrame = 0;
+				if (!iconP1.spriteSheet) {
+					iconP1.animation.curAnim.curFrame = 0;
+				} else {
+					iconP1.playAnim('netral');
+				}
 			}
 		}
 
@@ -3765,13 +3798,16 @@ class PlayState extends MusicBeatState
 
 		if (generatedMusic)
 		{
+			//input sort(i guess)
+			if (notes.length > 0) notes.sort(sortNoteTime, FlxSort.ASCENDING);
+			//visual sort
 			var groupToSort = [playerNotes, gfNotes, opponentNotes];
 			for (group in groupToSort) {
-				group.sort(sortNoteLayer, FlxSort.DESCENDING);
+				if (group.length > 0) group.sort(sortNoteLayer, FlxSort.DESCENDING);
 			}
 			for (i in notesGroupMap.keys()) {
 				var group = notesGroupMap.get(i);
-				group.sort(sortNoteLayer, FlxSort.DESCENDING);
+				if (group.length > 0) group.sort(sortNoteLayer, FlxSort.DESCENDING);
 			}
 		}
 		if (generatedMusic && !inCutscene)
@@ -3812,7 +3848,7 @@ class PlayState extends MusicBeatState
 							daNote.fieldTarget = '';//reset if not found
 						}
 					} else {
-						if (daNote.fieldTarget == null) daNote.fieldTarget == '';
+						daNote.fieldTarget == '';
 						if(!daNote.mustPress) {
 							if ((daNote.gfNote || daNote.secondOpponent) && PlayState.SONG.secOpt) {
 								strumGroup = gfStrums;
@@ -3823,7 +3859,7 @@ class PlayState extends MusicBeatState
 					} 
 					if (strumGroup != null && (daNote.noteData < strumGroup.length) && daNote.noteData >= 0 && daNote.attachStrum) {//try prevent crash when change gamemode throught script or out ranged noteData:D
 						actualStrum = strumGroup.members[daNote.noteData];
-						daNote.strumNote = actualStrum;//fuck
+						daNote.strumNote = actualStrum;//fuck strum assign
 						var strumX:Float = actualStrum.x;
 						var strumSC:Array<Float> = actualStrum.scrollFactorCam;
 						var strumCam:String = actualStrum.camTarget;
@@ -5410,7 +5446,7 @@ class PlayState extends MusicBeatState
 				// hold note functions
 				if (strumsBlocked[daNote.noteData+(((gamemode == "bothside v2" && !daNote.mustPress) ? keyCount : 0)+(!daNote.mustPress && (daNote.gfNote || daNote.secondOpponent) && PlayState.SONG.secOpt ? keyCount : 0))] != true && daNote.isSustainNote && parsedHoldArray[daNote.noteData+(((gamemode == "bothside v2" && !daNote.mustPress) ? keyCount : 0)+(!daNote.mustPress && (daNote.gfNote || daNote.secondOpponent) && PlayState.SONG.secOpt ? keyCount : 0))] && daNote.canBeHit
 				&& (gamemode != 'opponent' ? (gamemode == "bothside v2" || gamemode == "bothside" ? true : daNote.mustPress) : !daNote.mustPress) && !daNote.tooLate && !daNote.wasGoodHit && (gamemode == 'opponent' || ((gamemode == "bothside v2" || gamemode == "bothside") && !daNote.mustPress) ? (!daNote.ignoreNote && !daNote.canFreeze) : (!daNote.blockHit && !daNote.canFreeze))) {
-					if ((daNote.strumNote != null && !daNote.strumNote.isLocked) || daNote.strumNote == null) {
+					if (((daNote.strumNote != null && !daNote.strumNote.isLocked) || daNote.strumNote == null)) {
 						goodNoteHit(daNote);
 					}
 				}
@@ -5660,7 +5696,7 @@ class PlayState extends MusicBeatState
 		}
 	
 	function spawnHoldCover(note:Note):Void {//complicate warning lol
-		if (note != null) {
+		if (note != null && !ClientPrefs.clsstrum) {
 			if (!note.isSustainNote && ((note.sustainLength+((note.strumTime+note.offsetStrumTime)-Conductor.songPosition))/1000)+note.holdCoverDelaySplash > 0 && (note.tail != null && note.tail.length > 0)) {
 				var groupTarget = grpHoldCover;
 				if (note.fieldTarget != null && note.fieldTarget.length > 0 && holdCoverGroupMap.exists(note.fieldTarget)) {
@@ -5684,6 +5720,7 @@ class PlayState extends MusicBeatState
 						var holdCover = noteP.holdCover;
 						holdCover.strum = note.strumNote;
 						holdCover.note = note;
+						note.holdCover = holdCover;
 						holdCover.playAnim("hold" + (note.noteData%4));
 					}
 				}
@@ -6374,13 +6411,14 @@ class PlayState extends MusicBeatState
 	}
 	//lol the param become useless
 	function StrumPlayAnim(isDad:Bool, id:Int, time:Float, custom:Bool = false, ft:String = '', ?note:Note) {
+		//please ignore the unused param because is used from old code and i cant remove without refactoring:/
 		var spr:StrumNote = null;
 		if (note != null) spr = note.strumNote;
 		if(spr != null) {//i just realized i can do make less code by get note attach
 			spr.playAnim(note.animConfirm == null || note.animConfirm.length < 1 ? (spr.animConfirm == null || spr.animConfirm.length < 1 ? 'confirm' : spr.animConfirm) : note.animConfirm, true, note.isSustainNote, note, true);
 			spr.resetAnim = time;
 		}
-		//old inefficient code(and bad ig)
+		//old inefficient code(and bad ngl)
 		/*if(isDad) {
 			spr = (custom ? strumGroupMap.get(ft).members[id] : ((note.gfNote || note.secondOpponent) && PlayState.SONG.secOpt ? gfStrums.members[id] : opponentStrums.members[id]));
 			if(spr != null) {
@@ -7144,26 +7182,27 @@ class PlayState extends MusicBeatState
 		}) );
 	}
 	function destroyNote(note:Note) {//better optmized code ig
+		if (note == null) return;
 		note.visible = false;
 		note.active = false;
 		note.kill();
 		var specialGroup = [opponentNotes, gfNotes, playerNotes];
 		for (group in specialGroup) {
-			if (group.members.contains(note)) {
+			if (group.length > 0) if (group.members.contains(note)) {
 				group.remove(note, true);
 			}
 		}
 		for (group in notesGroupMap.keys()) {
 			var obj = notesGroupMap.get(group);
-			if (obj.members.contains(note)) {
+			if (obj.length > 0) if (obj.members.contains(note)) {
 				obj.remove(note, true);
 			}
 		}
-		if (unspawnNotes.contains(note)) {
+		if (unspawnNotes.length > 0) if (unspawnNotes.contains(note)) {
 			unspawnNotes.remove(note);
 		}
 
-		if (notes.members.contains(note)) {
+		if (notes.length > 0) if (notes.members.contains(note)) {
 			notes.remove(note, true);
 		}
 		note.destroy();

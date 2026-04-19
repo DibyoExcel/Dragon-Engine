@@ -144,8 +144,19 @@ class TitleState extends MusicBeatState
 			http.onData = function (data:String)
 			{
 				updateVersion = data.split('\n')[0].trim();
-				var getMJMNGit = updateVersion.split('.');
-				updateVersion = getMJMNGit[0] + "." + getMJMNGit[1] + ".X";
+				var versionInt = updateVersion.split('.').join("");
+				var curVer = Application.current.meta.get('version').split('.').join("");
+				trace('version online: ' + updateVersion + ', your version: ' + Application.current.meta.get('version'));
+				var intVersionInt = Std.parseInt(versionInt);
+				var intCurVer = Std.parseInt(curVer);
+				if (intCurVer < intVersionInt) {
+					trace('version aret matching');
+					mustUpdate = true;
+				} else if (intCurVer > intVersionInt) {//when dev joke even though impossible to happen
+					trace('i wonder where you get this unrelease version come from... or... are you Dev?');//joke when people get unexisted or too new that official not even release version yet, lol
+					confusedLOL = true;
+				}
+				/*updateVersion = getMJMNGit[0] + "." + getMJMNGit[1] + ".X";
 				var splitVersion = Application.current.meta.get('version').split('.');
 				var getMinotAndMajor = splitVersion[0] + "." + splitVersion[1] + '.X';
 				var curVersion:String = getMinotAndMajor;
@@ -160,7 +171,7 @@ class TitleState extends MusicBeatState
 				} else if (localMajor > onlineMajor || (localMajor == onlineMajor && localMinor > onlineMinor) ) {//when dev joke even though impossible to happen
 					trace('i wonder where you get this unrelease version come from... or... are you Dev?');//joke when people get unexisted or too new that official not even release version yet, lol
 					confusedLOL = true;
-				}
+				}*/
 			}
 
 			http.onError = function (error) {

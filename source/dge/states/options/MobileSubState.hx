@@ -34,8 +34,8 @@ class MobileSubState extends BaseOptionsMenu
 	public function new()
 	{
 
-		title = 'Mobile Settings';
-		rpcTitle = 'Mobile Settings Menu'; //for Discord Rich Presence
+		title = 'DGE Mobile Settings';
+		rpcTitle = 'DGE Mobile Settings Menu'; //for Discord Rich Presence
 
 
 		#if mobile

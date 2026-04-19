@@ -175,7 +175,7 @@ class Note extends FlxSprite
 	//end jack note gimmick lol
 	//strum attach
 	public var attachStrum:Bool = true;
-	public var strumNote:StrumNote;//current notes being attach to strum note(will null if not attach)
+	public var strumNote:StrumNote = null;//current notes being attach to strum note(will null if not attach)
 	//end strum attach
 	//opponent rating
 	public var opponentRating:Bool = false;//whether this note give rating to opponent when hit
@@ -408,7 +408,7 @@ class Note extends FlxSprite
 		return value;
 	}
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inEditor:Bool = false, mustPress:Bool = false, gfSec:Bool = false, noteType:String = '', tail:Bool = false, parent:Note = null)
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inEditor:Bool = false, mustPress:Bool = false, gfSec:Bool = false, noteType:String = '', tail:Bool = false, ?parent:Note = null)
 	{
 		super();
 		if (parent != null) {
@@ -625,14 +625,14 @@ class Note extends FlxSprite
 				//downscroll anim type inspired from Retrospecter Mods(Retro's Poison notes)
 				var addAnimThingy = CoolUtil.addSpecialAnimation;
 				addAnimThingy(this, colArray[i] + 'Scroll', colArray[i] + '_DownScroll0', colArray[i] + '0', true, ClientPrefs.fpsStrumAnim);
-				addAnimThingy(this, 'purpleholdend', 'pruple end hold_DownScroll', 'pruple end hold', true, ClientPrefs.fpsStrumAnim);//i know is new but idk why i follow the typos one
-				addAnimThingy(this, colArray[i] + 'holdend', colArray[i] + ' hold end_DownScroll', colArray[i] + ' hold end', true, ClientPrefs.fpsStrumAnim);
-				addAnimThingy(this, colArray[i] + 'hold', colArray[i] + ' hold piece_DownScroll', colArray[i] + ' hold piece', true, ClientPrefs.fpsStrumAnim);
+				addAnimThingy(this, 'purpleholdend', 'pruple end hold_DownScroll0', 'pruple end hold0', true, ClientPrefs.fpsStrumAnim);//i know is new but idk why i follow the typos one
+				addAnimThingy(this, colArray[i] + 'holdend', colArray[i] + ' hold end_DownScroll0', colArray[i] + ' hold end0', true, ClientPrefs.fpsStrumAnim);
+				addAnimThingy(this, colArray[i] + 'hold', colArray[i] + ' hold piece_DownScroll0', colArray[i] + ' hold piece0', true, ClientPrefs.fpsStrumAnim);
 			} else {
 				animation.addByPrefix(colArray[i] + 'Scroll', colArray[i] + '0');
-				animation.addByPrefix('purpleholdend', 'pruple end hold'); // ?????
-				animation.addByPrefix(colArray[i] + 'holdend', colArray[i] + ' hold end');
-				animation.addByPrefix(colArray[i] + 'hold', colArray[i] + ' hold piece');
+				animation.addByPrefix('purpleholdend', 'pruple end hold0'); // ?????
+				animation.addByPrefix(colArray[i] + 'holdend', colArray[i] + ' hold end0');
+				animation.addByPrefix(colArray[i] + 'hold', colArray[i] + ' hold piece0');
 			}
 		}
 
@@ -1025,7 +1025,8 @@ class Note extends FlxSprite
 	function set_holdCover(value:HoldCover):HoldCover{
 		if (holdCover != value) {
 			if (holdCover != null) {
-				holdCover.kill();
+				holdCover.kill();//this not even funny when lua scripter messed up
+				value = null;//nah ragebait
 			}
 			holdCover = value;
 		}

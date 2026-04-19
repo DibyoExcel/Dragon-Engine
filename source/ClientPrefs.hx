@@ -8,6 +8,7 @@ import Controls;
 
 class ClientPrefs {
 	//dge setting
+	public static var legacyNoteLayer:Bool = false;//classic note layer
 	public static var holdCoverAlpha:Float = 1;//hold cover alpha
 	public static var holdCover:Bool = true;//hold cover
 	public static var holdCoverOpt:Bool = true;//hold cover(Opponent)
@@ -34,7 +35,6 @@ class ClientPrefs {
 	public static var autopause:Bool = true;
 	public static var dragonW:Bool = false;
 	public static var darkmode:Bool = false;
-	public static var ofhb:Bool = false;
 	public static var dflnoteskin:String = 'NOTE_assets';
 	public static var longNoteAlpha:Float = 0.6;
 	public static var strumsize:Float = 0.7;
@@ -166,6 +166,7 @@ class ClientPrefs {
 	}
 
 	public static function saveSettings() {
+		FlxG.save.data.legacyNoteLayer = legacyNoteLayer;
 		FlxG.save.data.holdCoverAlpha = holdCoverAlpha;
 		FlxG.save.data.holdCover = holdCover;
 		FlxG.save.data.holdCoverOpt = holdCoverOpt;
@@ -201,7 +202,6 @@ class ClientPrefs {
 		FlxG.save.data.extUI = extUI;
 		FlxG.save.data.darkmode = darkmode;
 		FlxG.save.data.dragonW = dragonW;
-		FlxG.save.data.ofhb = ofhb;
 		FlxG.save.data.strumsize = strumsize;
 		FlxG.save.data.dflnoteskin = dflnoteskin;
 		FlxG.save.data.clsstrum = clsstrum;
@@ -258,6 +258,9 @@ class ClientPrefs {
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.legacyNoteLayer != null) {
+			legacyNoteLayer = FlxG.save.data.legacyNoteLayer;
 		}
 		if(FlxG.save.data.holdCoverAlpha != null) {
 			holdCoverAlpha = FlxG.save.data.holdCoverAlpha;
@@ -357,9 +360,6 @@ class ClientPrefs {
 		}
 		if(FlxG.save.data.dragonW != null) {
 			dragonW = FlxG.save.data.dragonW;
-		}
-		if(FlxG.save.data.ofhb != null) {
-			ofhb = FlxG.save.data.ofhb;
 		}
 		if(FlxG.save.data.dflnoteskin != null) {
 			dflnoteskin = FlxG.save.data.dflnoteskin;
