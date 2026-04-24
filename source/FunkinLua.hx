@@ -71,6 +71,10 @@ import Discord;
 import wallpaper.Wallpaper;
 #end
 
+#if android
+import extension.eightsines.EsOrientation;
+#end
+
 using StringTools;
 
 class FunkinLua {
@@ -3670,6 +3674,21 @@ class FunkinLua {
 					i.holdCoverTexture = texture;
 				}
 			}
+		});
+
+		Lua_helper.add_callback(lua, "changeOrientation", function(orientation:String = 'landscape') {
+			#if android
+			switch(orientation) {
+				case 'unspecific':
+					EsOrientation.setScreenOrientation(EsOrientation.ORIENTATION_UNSPECIFIED);
+				case 'portrait':
+					EsOrientation.setScreenOrientation(EsOrientation.ORIENTATION_PORTRAIT);
+				default:
+					EsOrientation.setScreenOrientation(EsOrientation.ORIENTATION_LANDSCAPE);
+			}
+			return true;//is working lol
+			#end
+			return false;
 		});
 
 		call('onCreate', []);

@@ -5,7 +5,7 @@
 	<app title="FNF: Dragon Engine" if="mobile"/> <!--Shorter title for mobile because too long titles get cut off. idk why so fucking long comments lol-->
 	<!--YY.MJ.MN-->
 	<!--app version-->
-	<app version="26.8.0"/>
+	<app version="26.8.1"/>
 	<!--compile msg-->
 	<echo value="Make your idea creativity become true."/>
 	<echo value="Dragon Engine - DubEnderDragon" />
@@ -174,7 +174,6 @@
 	<!--<haxelib name="discord_rpc" if="desktop"/>-->
 	<haxelib name="hxdiscord_rpc" if="desktop"/>
 	<!--Custom haxelib required-->
-	<haxelib name="android6permissions" if="android" />
 	<haxelib name="hxWindowColorMode" if="windows"/>
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 
@@ -235,6 +234,8 @@
 		<android permission="android.permission.READ_EXTERNAL_STORAGE"/>
 		<android permission="android.permission.WRITE_EXTERNAL_STORAGE"/>
 		<android permission="android.permission.INTERNET"/>
+		<haxelib name="android6permissions" />
+		<haxelib name="extension-orientation" />
 	</section>
 	<template path="tamplates/"/>
 

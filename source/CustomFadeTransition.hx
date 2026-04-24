@@ -62,14 +62,20 @@ class CustomFadeTransition extends MusicBeatSubstate {
 			splashLoad2.setGraphicSize(Std.int(splashLoad2.width / scale2), Std.int(splashLoad2.height / scale2));
 			splashLoad1.updateHitbox();
 			splashLoad2.updateHitbox();
-			var scale = FlxG.width/1280;//well this original mean for 1280
-			splashLoad1.scale.set(scale, scale);
-			splashLoad2.scale.set(scale, scale);
-			splashLoad1.updateHitbox();
-			splashLoad2.updateHitbox();
+			var scale = FlxG.width/(FlxG.height*16/9);//well this original mean for 16:9 but reabjust ratio when different ratio and idk why complicated than i expected
+			if (FlxG.width > (FlxG.height*16/9)) {
+				splashLoad1.scale.set(scale, scale);
+				splashLoad2.scale.set(scale, scale);
+				splashLoad1.updateHitbox();
+				splashLoad2.updateHitbox();
+			}
 			splashLoad1.screenCenter(Y);
 			splashLoad2.screenCenter(Y);
 		}#end
+		var offsetScreenX = -((FlxG.height*16/9)-FlxG.width)/2;
+		if (FlxG.width >= (FlxG.height*16/9)) {//bruh this ratio so special
+			offsetScreenX = 0;
+		}
 
 		if(isTransIn) {
 			#if !NO_PRELOAD_ALL if (!grp) {#end
@@ -80,8 +86,8 @@ class CustomFadeTransition extends MusicBeatSubstate {
 					},
 				ease: FlxEase.linear});
 				#if !NO_PRELOAD_ALL } else {
-				splashLoad1.x = 0;
-				splashLoad2.x = FlxG.width - splashLoad2.width;
+				splashLoad1.x = offsetScreenX;
+				splashLoad2.x = (FlxG.width - splashLoad2.width)-offsetScreenX;
 				FlxTween.tween(splashLoad1, {x: -splashLoad1.width}, duration, { ease: FlxEase.circInOut });
 				FlxTween.tween(splashLoad2, {x: FlxG.width}, duration, {
 					onComplete: function(twn:FlxTween) {
@@ -104,8 +110,8 @@ class CustomFadeTransition extends MusicBeatSubstate {
 				#if !NO_PRELOAD_ALL } else {
 				splashLoad1.x = -splashLoad1.width;
 				splashLoad2.x = FlxG.width;
-				FlxTween.tween(splashLoad1, {x: 0}, duration, { ease: FlxEase.circInOut });
-				FlxTween.tween(splashLoad2, {x: FlxG.width - splashLoad2.width}, duration, {
+				FlxTween.tween(splashLoad1, {x: offsetScreenX}, duration, { ease: FlxEase.circInOut });
+				FlxTween.tween(splashLoad2, {x: (FlxG.width - splashLoad2.width)-offsetScreenX}, duration, {
 					onComplete: function(twn:FlxTween) {
 						if(finishCallback != null) {
 							finishCallback();

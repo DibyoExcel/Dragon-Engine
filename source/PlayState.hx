@@ -5671,7 +5671,7 @@ class PlayState extends MusicBeatState
 					time += timeAdd;
 				}
 				if (note.playStrumAnim && !note.fakeNoHit && !ClientPrefs.clsstrum) {
-					StrumPlayAnim((gamemode == "opponent" || ((gamemode == "bothside v2" || gamemode == "bothside") && note.mustPress) ? false : true), Std.int(Math.abs(note.noteData)), time, true, note.fieldTarget, note);
+					StrumPlayAnim(time, note);
 				}
 				if (note.fieldTarget.length > 0) {
 					callOnLuas('fieldNoteHit', [note.fieldTarget, notes.members.indexOf(note), Math.abs(note.noteData), note.noteType, note.isSustainNote]);
@@ -5879,7 +5879,7 @@ class PlayState extends MusicBeatState
 					time += timeAdd;
 				}
 				if (note.playStrumAnim && !note.fakeNoHit && !ClientPrefs.clsstrum) {
-					StrumPlayAnim(!note.mustPress ? true : false, Std.int(Math.abs(note.noteData)), time, true, note.fieldTarget, note);
+					StrumPlayAnim(time, note);
 				}
 			} else {
 				if (note.autoPress || (playableField.length < 1 ? note.fieldTarget.length > 0 : playableField.indexOf(note.fieldTarget) == -1)) {
@@ -5901,7 +5901,7 @@ class PlayState extends MusicBeatState
 						time += timeAdd;
 					}
 					if (note.playStrumAnim && !note.fakeNoHit && !ClientPrefs.clsstrum) {
-						StrumPlayAnim(!note.mustPress ? true : false, Std.int(Math.abs(note.noteData)), time, true, note.fieldTarget, note);
+						StrumPlayAnim(time, note);
 					}
 				} else {
 					var spr = note.strumNote;
@@ -6409,13 +6409,14 @@ class PlayState extends MusicBeatState
 		}
 		#end
 	}
-	//lol the param become useless
-	function StrumPlayAnim(isDad:Bool, id:Int, time:Float, custom:Bool = false, ft:String = '', ?note:Note) {
-		//please ignore the unused param because is used from old code and i cant remove without refactoring:/
+	function StrumPlayAnim(time:Float, ?note:Note) {
 		var spr:StrumNote = null;
 		if (note != null) spr = note.strumNote;
-		if(spr != null) {//i just realized i can do make less code by get note attach
-			spr.playAnim(note.animConfirm == null || note.animConfirm.length < 1 ? (spr.animConfirm == null || spr.animConfirm.length < 1 ? 'confirm' : spr.animConfirm) : note.animConfirm, true, note.isSustainNote, note, true);
+		if(spr != null && note != null) {//i just realized i can do make less code by get note attach
+			var anim = 'confirm';//default anim
+			if (spr.animConfirm != null && spr.animConfirm.length > 1) anim = spr.animConfirm;
+			if (note.animConfirm != null && note.animConfirm.length > 1) anim = note.animConfirm;
+			spr.playAnim(anim, true, note.isSustainNote, note, true);
 			spr.resetAnim = time;
 		}
 		//old inefficient code(and bad ngl)
