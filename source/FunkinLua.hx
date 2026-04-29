@@ -71,7 +71,7 @@ import Discord;
 import wallpaper.Wallpaper;
 #end
 
-#if android
+#if mobile
 import extension.eightsines.EsOrientation;
 #end
 
@@ -3677,7 +3677,7 @@ class FunkinLua {
 		});
 
 		Lua_helper.add_callback(lua, "changeOrientation", function(orientation:String = 'landscape') {
-			#if android
+			#if mobile
 			switch(orientation) {
 				case 'unspecific':
 					EsOrientation.setScreenOrientation(EsOrientation.ORIENTATION_UNSPECIFIED);

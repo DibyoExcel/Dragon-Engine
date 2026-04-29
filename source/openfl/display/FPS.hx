@@ -48,7 +48,7 @@ class FPS extends TextField
 		currentFPS = 0;
 		selectable = false;
 		mouseEnabled = false;
-		defaultTextFormat = new TextFormat("_sans", ClientPrefs.fpsFontSize, color);
+		defaultTextFormat = new TextFormat(Paths.textFormatFont('vcr.ttf'), ClientPrefs.fpsFontSize, color);
 		background = true;
 		backgroundColor = 0xFF000000;
 		autoSize = LEFT;

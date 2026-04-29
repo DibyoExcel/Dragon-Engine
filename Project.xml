@@ -5,7 +5,7 @@
 	<app title="FNF: Dragon Engine" if="mobile"/> <!--Shorter title for mobile because too long titles get cut off. idk why so fucking long comments lol-->
 	<!--YY.MJ.MN-->
 	<!--app version-->
-	<app version="26.8.1"/>
+	<app version="26.8.2"/>
 	<!--compile msg-->
 	<echo value="Make your idea creativity become true."/>
 	<echo value="Dragon Engine - DubEnderDragon" />
@@ -235,7 +235,6 @@
 		<android permission="android.permission.WRITE_EXTERNAL_STORAGE"/>
 		<android permission="android.permission.INTERNET"/>
 		<haxelib name="android6permissions" />
-		<haxelib name="extension-orientation" />
 	</section>
 	<template path="tamplates/"/>
 
@@ -249,6 +248,7 @@
 		<icon path="draconisteam/icon144_android.png" size="144"/>
 		<icon path="draconisteam/icon192_android.png" size="192"/>
 		<icon path="draconisteam/iconOG_android.png"/>
+		<haxelib name="extension-orientation" />
 	</section>
 
 	<section unless="mobile">

@@ -425,9 +425,6 @@ class ChartingState extends MusicBeatState
 		add(rightIcon);
 		eventIcon.setPosition(((GRID_SIZE/2)-(eventIcon.width/2))-(GRID_SIZE*1), 25);
 		eventIcon.offset.set(0, 0);
-		leftIcon.offset.set(0, 0);
-		rightIcon.offset.set(0, 0);
-		gfIcon.offset.set(0, 0);
 		leftIcon.x = eventIcon.x + (GRID_SIZE*2);
 		rightIcon.x = eventIcon.x + (GRID_SIZE*6);
 		gfIcon.x = eventIcon.x + (GRID_SIZE*10);
@@ -2972,9 +2969,6 @@ class ChartingState extends MusicBeatState
 				gfIcon.changeIcon(healthIconP3);
 			}
 		}
-		leftIcon.offset.set(0, 0);
-		rightIcon.offset.set(0, 0);
-		gfIcon.offset.set(0, 0);
 	}
 
 	function loadHealthIconFromCharacter(char:String) {

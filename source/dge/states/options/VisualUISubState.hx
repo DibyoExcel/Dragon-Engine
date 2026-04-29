@@ -218,7 +218,7 @@ class VisualUISubState extends BaseOptionsMenu
 		option.scrollSpeed = 15;
 		option.onChange = function() {
 			if (Main.fpsVar != null) {
-				Main.fpsVar.defaultTextFormat = new TextFormat("_sans", ClientPrefs.fpsFontSize);
+				Main.fpsVar.defaultTextFormat = new TextFormat(Paths.textFormatFont('vcr.ttf'), ClientPrefs.fpsFontSize);
 			}
 		}
 		addOption(option);

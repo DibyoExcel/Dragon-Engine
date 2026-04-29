@@ -33,7 +33,7 @@ class HealthIcon extends FlxSprite
 	public var winIcon:Bool = false;
 	public var isCustom:Bool = false;//enable this if you want custom change icon system to your own
 	public var fullIcon(default, set):Bool = false;
-	public var spriteSheet:Bool = false;
+	public var spriteSheet:Bool = false;//becareful set this or else it break icon
 	private var offsetMap:Map<String, Array<Float>> = new Map<String, Array<Float>>();
 
 
@@ -92,15 +92,16 @@ class HealthIcon extends FlxSprite
 						this.winIcon = false;
 					}
 				}
-				
 			} else {
+				//fun fact: the animated icon inspired from RetroSpecter P2(again from this mods) in Catastrofiend song(also is my fav song). and i forgot to put this comment here lol
+				//also this enable "if" has json same name besides(idk why i added this comment even though is already in documentation web before this comment)
 				var json:String = Paths.getTextFromFile('images/' + name + '.json');
-				var data:IconConfig = initJsonLoad(json);
+				var data:IconConfig = initJsonLoad(json);//init json data(is already check missing field)
 				frames = Paths.getSparrowAtlas(name);
-				initFrames(data);
+				initFrames(data);//idk but whatever
 				if (!full) animation.play('netral');/*default animation(please dont judge me for this)*/ else animation.play('full');
-				iconOffsets[0] = (width - 150) + data.netral.offset[0];
-				iconOffsets[1] = (height -150) + data.netral.offset[1];
+				iconOffsets[0] = data.netral.offset[0];
+				iconOffsets[1] = data.netral.offset[1];
 				offsetMap.set('netral', data.netral.offset);
 				offsetMap.set('lose', data.lose.offset);
 				if (data.win != null) offsetMap.set('win', data.win.offset);
@@ -147,7 +148,7 @@ class HealthIcon extends FlxSprite
 			};
 		} else {
 			if (jsonData.netral.xmlName == null) jsonData.netral.xmlName = 'netral';
-			if (jsonData.netral.offset == null || jsonData.netral.offset.length < 2) jsonData.netral.offset = [0, 0];
+			if (jsonData.netral.offset == null || jsonData.netral.offset.length < 2) jsonData.netral.offset = (jsonData.netral.offset != null && jsonData.netral.offset.length == 1) ? [jsonData.netral.offset[0], jsonData.netral.offset[0]] : [0, 0];//lmao inline abused
 			if (jsonData.netral.fps == null) jsonData.netral.fps = 24;
 			if (jsonData.netral.loop == null) jsonData.netral.loop = true;
 			if (jsonData.netral.flipX == null) jsonData.netral.flipX = false;
@@ -157,11 +158,19 @@ class HealthIcon extends FlxSprite
 			jsonData.lose = jsonData.netral;
 		} else {
 			if (jsonData.lose.xmlName == null) jsonData.lose.xmlName = 'lose';
-			if (jsonData.lose.offset == null || jsonData.lose.offset.length < 2) jsonData.lose.offset = [0, 0];
+			if (jsonData.lose.offset == null || jsonData.lose.offset.length < 2) jsonData.lose.offset = (jsonData.lose.offset != null && jsonData.lose.offset.length == 1) ? [jsonData.lose.offset[0], jsonData.lose.offset[0]] : [0, 0];//lmao inline abused
 			if (jsonData.lose.fps == null) jsonData.lose.fps = 24;
 			if (jsonData.lose.loop == null) jsonData.lose.loop = true;
 			if (jsonData.lose.flipX == null) jsonData.lose.flipX = false;
 			if (jsonData.lose.flipY == null) jsonData.lose.flipY = false;
+		}
+		if (jsonData.win != null) {//fix crash when added win field(sowwy)
+			if (jsonData.win.xmlName == null) jsonData.win.xmlName = 'win';
+			if (jsonData.win.offset == null || jsonData.win.offset.length < 2) jsonData.win.offset = (jsonData.win.offset != null && jsonData.win.offset.length == 1) ? [jsonData.win.offset[0], jsonData.win.offset[0]] : [0, 0];//lmao inline abused
+			if (jsonData.win.fps == null) jsonData.win.fps = 24;
+			if (jsonData.win.loop == null) jsonData.win.loop = true;
+			if (jsonData.win.flipX == null) jsonData.win.flipX = false;
+			if (jsonData.win.flipY == null) jsonData.win.flipY = false;
 		}
 		if (jsonData.full == null) {
 			jsonData.full = jsonData.netral;
@@ -210,17 +219,26 @@ class HealthIcon extends FlxSprite
 		updateHitbox();
 	}
 	public function playAnim(name:String, force:Bool = false) {
-		if (animation != null && animation.curAnim != null && animation.curAnim.name != name || force) {
+		if (spriteSheet && animation != null && animation.curAnim != null && animation.curAnim.name != name || force) {
+			var currentFrame = animation.curAnim.curFrame;//idk this work or not(?)
+			var frameLength = animation.getByName(name) != null ? animation.getByName(name).frames.length : 0;
 			animation.play(name);
-			if (offsetMap.exists(name)) {
-				iconOffsets[0] = (width - 150) + offsetMap.get(name)[0];
-				iconOffsets[1] = (height -150) + offsetMap.get(name)[1];
-			} else if (offsetMap.exists('netral')) {//backup
-				iconOffsets[0] = (width - 150) + offsetMap.get('netral')[0];
-				iconOffsets[1] = (height -150) + offsetMap.get('netral')[1];
+			if (frameLength > 0 && currentFrame <= frameLength-1) {
+				animation.curAnim.curFrame = currentFrame;//prevents animation reset when change anim(i think)
+			} else if (currentFrame > frameLength - 1 && frameLength > 0) {
+				animation.curAnim.curFrame = frameLength - 1;
 			} else {
-				iconOffsets[0] = (width - 150);
-				iconOffsets[1] = (height -150);
+				animation.curAnim.curFrame = 0;
+			}
+			if (offsetMap.exists(name)) {
+				iconOffsets[0] = offsetMap.get(name)[0];
+				iconOffsets[1] = offsetMap.get(name)[1];
+			} else if (offsetMap.exists('netral')) {//backup
+				iconOffsets[0] = offsetMap.get('netral')[0];
+				iconOffsets[1] = offsetMap.get('netral')[1];
+			} else {
+				iconOffsets[0] = 0;
+				iconOffsets[1] = 0;
 			}
 			changeOffsets();
 		}
