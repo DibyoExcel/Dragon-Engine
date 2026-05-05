@@ -1110,7 +1110,7 @@ class ChartingState extends MusicBeatState
 							key++;
 						}
 					}
-					if (!FileSystem.isDirectory(path) && file.endsWith('.json') && file != 'all.json') {//'all' note type should not exits as json(use lua if want add notetype name 'all')
+					if (!FileSystem.isDirectory(path) && file.endsWith('.json')) {
 						var fileToCheck:String = file.substr(0, file.length - 5);
 						if(!noteTypeMap.exists(fileToCheck)) {
 							displayNameList.push(fileToCheck);

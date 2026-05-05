@@ -481,7 +481,8 @@ class EditorPlayState extends MusicBeatState
 					}
 					if(daNote.copyY) {
 						if (ClientPrefs.downScroll) {
-							daNote.y = (strumY + 0.45 * (Conductor.songPosition - (daNote.strumTime + daNote.offsetStrumTime)) * PlayState.SONG.speed);
+							if (daNote.updateDistance) daNote.distance = 0.45 * (Conductor.songPosition - (daNote.strumTime + daNote.offsetStrumTime)) * PlayState.SONG.speed;
+							daNote.y = (strumY + daNote.distance);
 							if (daNote.isSustainNote) {
 								if (daNote.animation.curAnim.name.endsWith('end')) {
 									daNote.y += 10.5 * (fakeCrochet / 400) * 1.5 * PlayState.SONG.speed + (46 * (PlayState.SONG.speed - 1));
@@ -509,7 +510,8 @@ class EditorPlayState extends MusicBeatState
 								}
 							}
 						} else {
-							daNote.y = (strumY - 0.45 * (Conductor.songPosition - (daNote.strumTime + daNote.offsetStrumTime)) * PlayState.SONG.speed);
+							if (daNote.updateDistance) daNote.distance = 0.45 * (Conductor.songPosition - (daNote.strumTime + daNote.offsetStrumTime)) * PlayState.SONG.speed;
+							daNote.y = (strumY - daNote.distance);
 	
 							if(daNote.mustPress || (!daNote.ignoreNote && !daNote.canFreeze))
 							{

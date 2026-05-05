@@ -148,8 +148,7 @@ class ErrorState extends FlxState
             if (text.y > 0)
             {
                 text.y = 0;
-            }
-            else if (text.y + text.height < FlxG.height)
+            } else if (text.y < FlxG.height - text.height)
             {
                 text.y = FlxG.height - text.height;
             }

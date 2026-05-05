@@ -19,6 +19,23 @@ import dge.obj.game.HoldCover;
 
 using StringTools;
 
+typedef NoteJson = {
+	noteData:Null<NoteSide>
+}
+
+typedef NoteSide = {
+	global:Null<NoteState>,
+	player:Null<NoteState>,
+	opponent:Null<NoteState>,
+	gfPlayer:Null<NoteState>,
+	gfOpponent:Null<NoteState>
+}
+
+typedef NoteState = {
+	sustain:Dynamic,
+	normal:Dynamic
+}
+
 typedef EventNote =
 {
 	strumTime:Float,
@@ -247,6 +264,8 @@ class Note extends FlxSprite
 	//black and white
 	public var holdCoverBAndWMult:Float = 1;
 	public var holdCoverBAndWThreshold:Float = 1;
+	//distance update
+	public var updateDistance:Bool = true;//whether update distance for note(only for visual, not affect hit time)
 	//end dge core
 
 	@:noCompletion
@@ -765,103 +784,7 @@ class Note extends FlxSprite
 	private function runConfig(value:String = '') {
 		#if (MODS_ALLOWED && sys)
 		//also affected if change note in midgame
-		var jsonRa:String = '';
-		var haxeRa:Dynamic = {};
-		//precache system(1 time precache each states reference the note.hx)
-		if (!CacheTools.jsonParse.exists('all')) {
-			var jsonString:String = '';
-			if (FileSystem.exists(Paths.modFolders('custom_notetypes/all.json'))) {
-				jsonString =  File.getContent(Paths.modFolders('custom_notetypes/all.json'));
-			} else if (FileSystem.exists(Paths.externalPreloadPath('custom_notetypes/all.json'))) {
-				jsonString =  File.getContent(Paths.externalPreloadPath('custom_notetypes/all.json'));
-			} else {
-				jsonString = '';
-			}
-			if (jsonString.length > 0) {
-				try {
-					CacheTools.jsonParse.set('all', haxe.Json.parse(jsonString));
-				} catch (e:Dynamic) {
-					trace('Error parsing custom_notetypes/all.json.(' + e + ')');
-					CacheTools.jsonParse.set('all', {});
-				}
-			} else {
-				CacheTools.jsonParse.set('all', {});
-			}
-		}
-		if (!CacheTools.jsonParse.exists(value)) {
-			var jsonString:String = '';
-			if (FileSystem.exists(Paths.modFolders('custom_notetypes/' + value + '.json'))) {
-				jsonString =  File.getContent(Paths.modFolders('custom_notetypes/' + value + '.json'));
-			} else if (FileSystem.exists(Paths.externalPreloadPath('custom_notetypes/' + value + '.json'))) {
-				jsonString =  File.getContent(Paths.externalPreloadPath('custom_notetypes/' + value + '.json'));
-			} else {
-				jsonString = '';
-			}
-			if (jsonString.length > 0) {
-				try {
-					CacheTools.jsonParse.set(value, haxe.Json.parse(jsonString));
-				} catch (e:Dynamic) {
-					trace('Error parsing custom_notetypes/' + value + '.json.(' + e + ')');
-					CacheTools.jsonParse.set(value, {});
-				}
-			} else {
-				CacheTools.jsonParse.set(value, {});
-			}
-		}
-		if (CacheTools.jsonParse.exists('all') && Reflect.fields(CacheTools.jsonParse.get('all')).length > 0) {
-			var jokowi = Reflect.fields(CacheTools.jsonParse.get('all'));
-			for (hidup in jokowi) {
-				if (hidup.startsWith("_")) continue;
-				var SDM = hidup.split('.');
-				var val = Reflect.field(CacheTools.jsonParse.get('all'), hidup);
-				if (SDM.length <= 1) {
-					try{
-						Reflect.setProperty(this, hidup, val);
-					} catch (e:Dynamic) {
-						trace(e);
-					}
-				} else {
-					//get this shit from FunkinLua.hx
-					try{
-						var target = Reflect.getProperty(this, SDM[0]);
-						for (key in 1...SDM.length-1) {
-							target = Reflect.getProperty(target, SDM[key]);
-						}
-						Reflect.setProperty(target, SDM[SDM.length-1], val);
-					} catch (e:Dynamic) {
-						trace(e);
-						CacheTools.jsonParse.set('all', {});
-					}
-				}
-			}
-		} else if (CacheTools.jsonParse.exists(value) && Reflect.fields(CacheTools.jsonParse.get(value)).length > 0) {
-			var koruptor = Reflect.fields(CacheTools.jsonParse.get(value));
-			for (tikus in koruptor) {
-				if (tikus.startsWith("_")) continue;
-				var beban = tikus.split('.');
-				var val = Reflect.field(CacheTools.jsonParse.get(value), tikus);
-				if (beban.length <= 1) {
-					try{
-						Reflect.setProperty(this, tikus, val);
-					} catch (e:Dynamic) {
-						trace(e);
-					}
-				} else {
-					//get this shit from FunkinLua.hx
-					try{
-						var target = Reflect.getProperty(this, beban[0]);
-						for (key in 1...beban.length-1) {
-							target = Reflect.getProperty(target, beban[key]);
-						}
-						Reflect.setProperty(target, beban[beban.length-1], val);
-					} catch (e:Dynamic) {
-						trace(e);
-						//dont repeat when is error
-						CacheTools.jsonParse.set(value, {});
-					}
-				}
-			}
-		}
+		loadAndSetConfig(value);
 		#end
 	}
 	//bruh useless
@@ -1042,6 +965,116 @@ class Note extends FlxSprite
 			if (PlayState.instance != null && PlayState.instance.songSpeed < 0) down = !down;
 			if (multSpeed < 0) down = !down;
 			return down;
+		}
+	}
+	function loadAndSetConfig(value:String) {
+		#if (MODS_ALLOWED && sys)
+		if (!CacheTools.jsonParse.exists(value)) {
+			var jsonString:String = '';
+			if (FileSystem.exists(Paths.modFolders('custom_notetypes/' + value + '.json'))) {
+				jsonString =  File.getContent(Paths.modFolders('custom_notetypes/' + value + '.json'));
+			} else if (FileSystem.exists(Paths.externalPreloadPath('custom_notetypes/' + value + '.json'))) {
+				jsonString =  File.getContent(Paths.externalPreloadPath('custom_notetypes/' + value + '.json'));
+			} else {
+				jsonString = '';
+			}
+			if (jsonString.length > 0) {
+				try {
+					CacheTools.jsonParse.set(value, haxe.Json.parse(jsonString));
+				} catch (e:Dynamic) {
+					trace('Error parsing custom_notetypes/' + value + '.json.(' + e + ')');
+					CacheTools.jsonParse.set(value, {});
+				}
+			} else {
+				CacheTools.jsonParse.set(value, {});
+			}
+		}
+		//overengineer lol
+		if (CacheTools.jsonParse.exists(value) && Reflect.fields(CacheTools.jsonParse.get(value)).length > 0) {
+			var jsonVar:NoteJson = cast CacheTools.jsonParse.get(value);
+			if (jsonVar.noteData == null) {
+				//classsic(it has been here long ago from v1.6.1.7)(but not advance like the new one, it just simply set the property without check anything)
+				setConfig(jsonVar, value);
+			} else {
+				//new(note if inside field error entire json just removed due idk how to fix deleted inside field)
+				//global is for all type(no matter what type is this)
+				if (jsonVar.noteData.global != null) {
+					if (jsonVar.noteData.global.sustain != null && isSustainNote) {
+						setConfig(jsonVar.noteData.global.sustain, value);
+					} else if (jsonVar.noteData.global.normal != null && !isSustainNote) {
+						setConfig(jsonVar.noteData.global.normal, value);
+					} else {
+						setConfig(jsonVar.noteData.global, value);
+					}
+				}
+				//is for specific type
+				if (jsonVar.noteData.player != null && mustPress && !gfNote) {
+					if (jsonVar.noteData.player.sustain != null && isSustainNote) {
+						setConfig(jsonVar.noteData.player.sustain, value);
+					} else if (jsonVar.noteData.player.normal != null && !isSustainNote) {
+						setConfig(jsonVar.noteData.player.normal, value);
+					} else {
+						setConfig(jsonVar.noteData.player, value);
+					}
+				} else if (jsonVar.noteData.opponent != null && !mustPress && !gfNote) {
+					if (jsonVar.noteData.opponent.sustain != null && isSustainNote) {
+						setConfig(jsonVar.noteData.opponent.sustain, value);
+					} else if (jsonVar.noteData.opponent.normal != null && !isSustainNote) {
+						setConfig(jsonVar.noteData.opponent.normal, value);
+					} else {
+						setConfig(jsonVar.noteData.opponent, value);
+					}
+				} else if (jsonVar.noteData.gfOpponent != null && !mustPress && gfNote) {
+					if (jsonVar.noteData.gfOpponent.sustain != null && isSustainNote) {
+						setConfig(jsonVar.noteData.gfOpponent.sustain, value);
+					} else if (jsonVar.noteData.gfOpponent.normal != null && !isSustainNote) {
+						setConfig(jsonVar.noteData.gfOpponent.normal, value);
+					} else {
+						setConfig(jsonVar.noteData.gfOpponent, value);
+					}
+				} else if (jsonVar.noteData.gfPlayer != null && mustPress && gfNote) {
+					if (jsonVar.noteData.gfPlayer.sustain != null && isSustainNote) {
+						setConfig(jsonVar.noteData.gfPlayer.sustain, value);
+					} else if (jsonVar.noteData.gfPlayer.normal != null && !isSustainNote) {
+						setConfig(jsonVar.noteData.gfPlayer.normal, value);
+					} else {
+						setConfig(jsonVar.noteData.gfPlayer, value);
+					}
+				} else {
+					setConfig(jsonVar.noteData, value);
+				}
+			}
+		}
+		#end
+	}
+
+	function setConfig(jsonRaw:Dynamic, name:String):Void {
+		if (Reflect.fields(jsonRaw).length < 1 || name == null || name.length < 1) return;
+		var koruptor = Reflect.fields(jsonRaw);
+		for (tikus in koruptor) {
+			if (tikus.startsWith("_")) continue;
+			var beban = tikus.split('.');
+			var val = Reflect.field(jsonRaw, tikus);
+			if (beban.length <= 1) {
+				try{
+					Reflect.setProperty(this, tikus, val);
+				} catch (e:Dynamic) {
+					trace(e);
+				}
+			} else {
+				//get this shit from FunkinLua.hx
+				try{
+					var target = Reflect.getProperty(this, beban[0]);
+					for (key in 1...beban.length-1) {
+						target = Reflect.getProperty(target, beban[key]);
+					}
+					Reflect.setProperty(target, beban[beban.length-1], val);
+				} catch (e:Dynamic) {
+					trace(e);
+					//dont repeat when is error
+					CacheTools.jsonParse.set(name, {});//idk how i remove when inside field was error so i deleted entire instead
+				}
+			}
 		}
 	}
 }

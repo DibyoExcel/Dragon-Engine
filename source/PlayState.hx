@@ -3908,15 +3908,17 @@ class PlayState extends MusicBeatState
 							daNote.noteSplashCam = strumCam;
 							daNote.holdCoverCam = strumCam;
 						}
-						if (strumScroll) //Downscroll
-						{
-							//daNote.y = (strumY + 0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed);
-							daNote.distance = (0.45 * (Conductor.songPosition - daNote.strumTime + daNote.offsetStrumTime) * Math.abs(songSpeed * daNote.multSpeed));
-						}
-						else //Upscroll
-						{
-							//daNote.y = (strumY - 0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed);
-							daNote.distance = (-0.45 * (Conductor.songPosition - daNote.strumTime + daNote.offsetStrumTime) * Math.abs(songSpeed * daNote.multSpeed));
+						if (daNote.updateDistance) {
+							if (strumScroll) //Downscroll
+							{
+								//daNote.y = (strumY + 0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed);
+								daNote.distance = (0.45 * (Conductor.songPosition - daNote.strumTime + daNote.offsetStrumTime) * Math.abs(songSpeed * daNote.multSpeed));
+							}
+							else //Upscroll
+							{
+								//daNote.y = (strumY - 0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed);
+								daNote.distance = (-0.45 * (Conductor.songPosition - daNote.strumTime + daNote.offsetStrumTime) * Math.abs(songSpeed * daNote.multSpeed));
+							}
 						}
 						if (daNote.copyFlipY) {
 							daNote.flipY = strumScroll;
@@ -7123,13 +7125,13 @@ class PlayState extends MusicBeatState
 		for (note in notes) {
 			if (note.canFreeze && !note.isSustainNote && (note.strumTime + note.offsetStrumTime) >= songPos && (note.strumTime + note.offsetStrumTime) - (second * 1000) <= songPos) {
 				note.strumTime += (second * 1000);
-				note.attachStrum = false;//detach from strum to stop move
+				note.updateDistance = false;//detach from strum to stop move
 				noteGotCaught.push(note);
 				if (note.tail != null) {
 					for (parent in note.tail) {
 						//not list as caught because already get caught by parent(lol)
 						parent.strumTime += (second * 1000);
-						parent.attachStrum = false;
+						parent.updateDistance = false;
 					}
 				}
 			}
@@ -7137,12 +7139,12 @@ class PlayState extends MusicBeatState
 		for (note in unspawnNotes) {
 			if (note.canFreeze && !note.isSustainNote && (note.strumTime >= songPos && note.strumTime - (second * 1000) <= songPos)) {
 				note.strumTime += (second * 1000);
-				note.attachStrum = false;//detach from strum to stop move
+				note.updateDistance = false;//detach from strum to stop move
 				noteGotCaught.push(note);
 				if (note.tail != null) {
 					for (parent in note.tail) {
 						parent.strumTime += (second * 1000);
-						parent.attachStrum = false;
+						parent.updateDistance = false;
 					}
 				}
 			}
@@ -7166,11 +7168,11 @@ class PlayState extends MusicBeatState
 					} else {
 						while (iTail >= 0) {
 							var thisTail:Note = thisNote.tail[iTail];
-							thisTail.attachStrum = true;
+							thisTail.updateDistance = true;
 							thisTail.canFreeze = false;
 							iTail--;
 						}
-						thisNote.attachStrum = true;
+						thisNote.updateDistance = true;
 						thisNote.canFreeze = false;
 					}
 				}
