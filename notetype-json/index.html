@@ -11,7 +11,7 @@
     <meta name="description" content="Dragon Engine Documentation🐲">
 
     <!-- Open Graph Meta Tags -->
-    <meta property="og:url" content="https://dibyoexcel.github.io/dragon-engine/custom-mod-setting-andglobal-setting/">
+    <meta property="og:url" content="https://dibyoexcel.github.io/dragon-engine/notetype-json/">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Dragon Engine">
     <meta property="og:description" content="Dragon Engine Documentation🐲">
@@ -22,7 +22,7 @@
     <!-- Twitter Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta property="twitter:domain" content="dibyoexcel.github.io">
-    <meta property="twitter:url" content="https://dibyoexcel.github.io/dragon-engine/custom-mod-setting-andglobal-setting/">
+    <meta property="twitter:url" content="https://dibyoexcel.github.io/dragon-engine/notetype-json/">
     <meta name="twitter:title" content="Dragon Engine">
     <meta name="twitter:description" content="Dragon Engine Documentation🐲">
     <meta name="twitter:image" content="https://raw.githubusercontent.com/DibyoExcel/Dragon-Engine/refs/heads/website/opengraph.png">
@@ -56,11 +56,23 @@
         <div class="dialogue">
             <div class="dialogue_title">
                 <h3>
-                    Animate Health Icon(26.8.0+)
+                    NoteType Json(1.6.1.7+)
                 </h3>
             </div>
             <div class="dialogue_content">
-                <h3>This will health icon can be animate.</h3>
+                <h3>Make notetype with json file.</h3>
+            </div>
+        </div>
+        <div class ="dialogue">
+            <div class="dialogue_title">
+                <h3>
+                    Json Tamplate
+                </h3>
+            </div>
+            <div class="dialogue_content">
+                <h3>1. <a href="classic.json">Classic Json Structure</a>.</h3>
+                <h3>2. <a href="new-with-sperate-sustain-and-normal.json">New Json Structure(with separate sustain and normal)</a>.</h3>
+                <h3>3. <a href="new-not-separate.json">New Json Structure(not separate)</a>.</h3>
             </div>
         </div>
         <div class ="dialogue">
@@ -70,15 +82,15 @@
                 </h3>
             </div>
             <div class="dialogue_content">
-                <h3>1. create json file beside healthicon image, and rename icon same as health icon filename. Example if health icon name is <code>karl.png</code>, the file json must <code>karl.json</code>.</h3>
-                <h3>2. in json field that has field. <a href="#listfield">List Field</a> or <a href="example.json">example.json</a>.</h3>
-                <h3>3. after writing in json file, the game should be automatic use animate version.</h3>
+                <h3>1. Create json file name what notetype name should use(normally it inside <code>%mods%/custom_notetypes/</code> folder). Example <code>Death Note.json</code>.</h3>
+                <h2>2. Also can use both json and lua as long same file name(case sensitive). Example json file name was <code>Death Note.json</code> and lua must same file name as <code>Death Note.lua</code>.</h2>
+                <h3>3. Note: before version <code>26.8.3</code>. it use simple version by using <a href="#noteProperty">note property</a> directly while new notetype json structure above version <code>26.8.3</code> has more advanced to use. <a href="#noteJsonField">Note Json Field</a></h3>
             </div>
         </div>
-        <div class="dialogue" id="listfield">
+        <div class="dialogue" id="noteJsonField">
             <div class="dialogue_title">
                 <h3>
-                    Json Fields
+                    Note Json Field
                 </h3>
             </div>
             <div class="dialogue_content">
@@ -88,45 +100,20 @@
                             <th>Field</th>
                             <th>Type</th>
                             <th>Description</th>
-                            <th>Default</th>
-                            <th>Required</th>
                         </tr>
                         <tr>
-                            <td>netral</td>
-                            <td><h3><a href="#stateObject">State Object</a></h3></td>
-                            <td>the netral icon. Or default icon state.</td>
-                            <td>{xmlName: 'netral', offset: [0, 0], fps: 24, loop: true, flipX: false, flipY: false}</td>
-                            <td class="check">&#10003;</td>
-                        </tr>
-                        <tr>
-                            <td>lose</td>
-                            <td><h3><a href="#stateObject">State Object</a></h3></td>
-                            <td>the lose icon state.</td>
-                            <td>same as <code>netral</code></td>
-                            <td class="check">&#10003;</td>
-                        </tr>
-                        <tr>
-                            <td>win</td>
-                            <td><h3><a href="#stateObject">State Object</a></h3></td>
-                            <td>the win icon state.</td>
-                            <td></td>
-                            <td class="cross">&#10007;</td>
-                        </tr>
-                        <tr>
-                            <td>full</td>
-                            <td><h3><a href="#stateObject">State Object</a></h3></td>
-                            <td>the full icon state.</td>
-                            <td>same as <code>netral</code></td>
-                            <td class="cross">&#10007;</td>
+                            <td>noteData</td>
+                            <td><h3><a href="#noteSideField">Note Side</a>(high priority), <a href="#noteProperty">Note Property</a></h3></td>
+                            <td>the way use new notetype json structure. if not added this field will use classic notetype json structure.</td>
                         </tr>
                     </table>
                 </div>
             </div>
         </div>
-        <div class="dialogue" id ="stateObject">
+        <div class="dialogue" id="noteSideField">
             <div class="dialogue_title">
                 <h3>
-                    State Object Fields
+                    Note Side Field
                 </h3>
             </div>
             <div class="dialogue_content">
@@ -136,53 +123,72 @@
                             <th>Field</th>
                             <th>Type</th>
                             <th>Description</th>
-                            <th>Default</th>
-                            <th>Required</th>
                         </tr>
                         <tr>
-                            <td>xmlName</td>
-                            <td>String</td>
-                            <td>Xml field name to use animate.</td>
-                            <td>%fields%</td>
-                            <td class="check">&#10003;</td>
+                            <td>global</td>
+                            <td><h3><a href="#noteStateField">Note State</a>(high priority), <a href="#noteProperty">Note Property</a></h3></td>
+                            <td>all type note not matter what side node is this.</td>
                         </tr>
                         <tr>
-                            <td>offset</td>
-                            <td>Array&lt;Float&gt;</td>
-                            <td>Sprite offset.</td>
-                            <td>[0, 0]</td>
-                            <td class="cross">&#10007;</td>
+                            <td>player</td>
+                            <td><h3><a href="#noteStateField">Note State</a>(high priority), <a href="#noteProperty">Note Property</a></h3></td>
+                            <td>player type note(no gf type).</td>
                         </tr>
                         <tr>
-                            <td>fps</td>
-                            <td>Int</td>
-                            <td>Animation fps speed.</td>
-                            <td>24</td>
-                            <td class="cross">&#10007;</td>
+                            <td>opponent</td>
+                            <td><h3><a href="#noteStateField">Note State</a>(high priority), <a href="#noteProperty">Note Property</a></h3></td>
+                            <td>opponent type note(no gf type).</td>
                         </tr>
                         <tr>
-                            <td>loop</td>
-                            <td>Bool</td>
-                            <td>Set animation to keep looping.</td>
-                            <td>true</td>
-                            <td class="cross">&#10007;</td>
+                            <td>gfPlayer</td>
+                            <td><h3><a href="#noteStateField">Note State</a>(high priority), <a href="#noteProperty">Note Property</a></h3></td>
+                            <td>player type note(gf type).</td>
                         </tr>
                         <tr>
-                            <td>flipX</td>
-                            <td>Bool</td>
-                            <td>Flip sprite X.</td>
-                            <td>false</td>
-                            <td class="cross">&#10007;</td>
-                        </tr>
-                        <tr>
-                            <td>flipY</td>
-                            <td>Bool</td>
-                            <td>Flip sprite Y.</td>
-                            <td>false</td>
-                            <td class="cross">&#10007;</td>
+                            <td>gfOpponent</td>
+                            <td><h3><a href="#noteStateField">Note State</a>(high priority), <a href="#noteProperty">Note Property</a></h3></td>
+                            <td>opponent type note(gf type).</td>
                         </tr>
                     </table>
                 </div>
+            </div>
+        </div>
+        <div class="dialogue" id="noteStateField">
+            <div class="dialogue_title">
+                <h3>
+                    Note Side Field
+                </h3>
+            </div>
+            <div class="dialogue_content">
+                <div style="overflow: auto; max-width:100%">
+                    <table>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td>normal</td>
+                            <td><h3><a href="#noteProperty">Note Property</a></h3></td>
+                            <td>normal notes type.</td>
+                        </tr>
+                        <tr>
+                            <td>sustain</td>
+                            <td><h3><a href="#noteProperty">Note Property</a></h3></td>
+                            <td>long/sustain notes type.</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class ="dialogue" id="noteProperty">
+            <div class="dialogue_title">
+                <h3>
+                   Note Property
+                </h3>
+            </div>
+            <div class="dialogue_content">
+                <h3>Note property is a note property, example <code>ignoreNote</code> can be use for bot/opponent to ignore or be to pressed, or other thing that related note's property value could use.</h3>
             </div>
         </div>
     </div>

@@ -1,0 +1,54 @@
+{
+    "noteData": {
+        "global": {
+            "normal": {
+                "_comment": "normal note",
+                "_comment2": "note property here"
+            },
+            "sustain": {
+                "_comment": "sustain note",
+                "_comment2": "note property here"
+            }
+        },
+        "player": {
+            "normal": {
+                "_comment": "normal note",
+                "_comment2": "note property here"
+            },
+            "sustain": {
+                "_comment": "sustain note",
+                "_comment2": "note property here"
+            }
+        },
+        "opponent": {
+            "normal": {
+                "_comment": "normal note",
+                "_comment2": "note property here"
+            },
+            "sustain": {
+                "_comment": "sustain note",
+                "_comment2": "note property here"
+            }
+        },
+        "gfOpponent": {
+            "normal": {
+                "_comment": "normal note",
+                "_comment2": "note property here"
+            },
+            "sustain": {
+                "_comment": "sustain note",
+                "_comment2": "note property here"
+            }
+        },
+        "gfPlayer": {
+            "normal": {
+                "_comment": "normal note",
+                "_comment2": "note property here"
+            },
+            "sustain": {
+                "_comment": "sustain note",
+                "_comment2": "note property here"
+            }
+        }
+    }
+}

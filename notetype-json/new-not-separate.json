@@ -1,0 +1,24 @@
+{
+    "noteData": {
+        "global": {
+           "_comment": "all type",
+           "_comment2": "note property here"
+        },
+        "player": {
+            "_comment": "player side",
+            "_comment2": "note property here"
+        },
+        "opponent": {
+            "_comment": "opponent side",
+            "_comment2": "note property here"
+        },
+        "gfOpponent": {
+           "_comment": "gf opponent side",
+           "_comment2": "note property here"
+        },
+        "gfPlayer": {
+            "_comment": "gf player side",
+            "_comment2": "note property here"
+        }
+    }
+}

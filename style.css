@@ -131,6 +131,7 @@ div.sidebar a.dialogue_link, div.dialogue a.dialogue_link{
     padding: 10px;
     border-radius: 15px;
     max-width: 100%;
+    vertical-align: middle;
 }
 
 div.sidebar a.dialogue_link:hover, div.dialogue a.dialogue_link:hover{
@@ -313,6 +314,13 @@ div.codeHandle{
     border-radius: 10px;
 }
 
+div.split_screen{
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    max-width: 75%;
+}
+
 
 :root{
     --accent-color: #f00;
@@ -358,6 +366,9 @@ div.codeHandle{
         transition: top 0.25s ease-out;
     }
     div.dialogue_group{
+        max-width: 95%;
+    }
+    div.split_screen{
         max-width: 95%;
     }
 }
