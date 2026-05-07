@@ -17,7 +17,7 @@ header.header{
     top: 0;
     z-index: 9999;
     overflow: hidden;
-    background-color: var(--background-color);
+    background-color: var(--background-color-blur);
     height: var(--header-height);
     width: 100vw;
     border-bottom: 2px solid var(--accent-color);
@@ -29,6 +29,7 @@ header.header{
     padding-right: 5px;
     color: var(--accent-color);
     word-break: break-word;
+    backdrop-filter: blur(15px);
 }
 
 .ratio{
@@ -241,7 +242,7 @@ div.sidebar{
     max-width: 75%;
     left: -250px;
     height: calc(100vh - var(--header-height));
-    background-color: var(--background-color);
+    background-color: var(--background-color-blur);
     border-right: 2px solid var(--accent-color);
     transition: left 0.25s ease-in;
     overflow-y: auto;
@@ -251,6 +252,7 @@ div.sidebar{
     gap: 10px;
     overflow-wrap: break-word;
     padding: 10px;
+    backdrop-filter: blur(15px);
 }
 
 div.sidebar.open{
@@ -328,6 +330,7 @@ div.split_screen{
     --third-accent-color: #0f0;
     --header-height: 50px;
     --background-color: #000;
+    --background-color-blur: rgba(0, 0, 0, 0.9);
     --button-color: #222;
     --button-color-hover: #333;
     --font-use: 'PhantomMuff', 'Mojangles', 'Arial';
@@ -376,6 +379,7 @@ div.split_screen{
 @media (prefers-color-scheme: light) {
     :root{
         --background-color: #fff;
+        --background-color-blur: rgba(255, 255, 255, 0.9);
         --accent-color: #800;
         --secondary-accent-color: #08f;
         --third-accent-color: #080;
