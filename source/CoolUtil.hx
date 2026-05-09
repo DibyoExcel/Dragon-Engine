@@ -125,6 +125,34 @@ class CoolUtil
 		return maxKey;
 	}
 
+	public static function dominantColorArray(arraySprite:Array<FlxSprite>):Int{
+		var countByColor:Map<Int, Int> = [];
+		for(spr in arraySprite){
+			for(col in 0...spr.frameWidth){
+				for(row in 0...spr.frameHeight){
+				  var colorOfThisPixel:Int = spr.pixels.getPixel32(col, row);
+				  if(colorOfThisPixel != 0){
+					  if(countByColor.exists(colorOfThisPixel)){
+					    countByColor[colorOfThisPixel] =  countByColor[colorOfThisPixel] + 1;
+					  }else if(countByColor[colorOfThisPixel] != 13520687 - (2*13520687)){
+						 countByColor[colorOfThisPixel] = 1;
+					  }
+				  }
+				}
+			 }
+		}
+		var maxCount = 0;
+		var maxKey:Int = 0;//after the loop this will store the max color
+		countByColor[flixel.util.FlxColor.BLACK] = 0;
+			for(key in countByColor.keys()){
+			if(countByColor[key] >= maxCount){
+				maxCount = countByColor[key];
+				maxKey = key;
+			}
+		}
+		return maxKey;
+	}
+
 	public static function numberArray(max:Int, ?min = 0):Array<Int>
 	{
 		var dumbArray:Array<Int> = [];
@@ -180,6 +208,41 @@ class CoolUtil
 		var avgGreen = totalG / totalPixel;
 		return (Std.int(avgRed) << 16) | (Std.int(avgGreen) << 8) | Std.int(avgBlue);
 	}
+
+	public static function averageColorArray(arraySprite:Array<FlxSprite>):Int {
+		if (arraySprite == null || arraySprite.length == 0) {
+			return 0;
+		}
+		var totalR = 0;
+		var totalG = 0;
+		var totalB = 0;
+		var totalPixel = 0;
+
+		for (spr in arraySprite) {
+			var widthPixel = spr.frameWidth;
+			var heightPixel = spr.frameHeight;
+			totalPixel += widthPixel * heightPixel;
+
+			for (x in 0...widthPixel) {
+				for (y in 0...heightPixel) {
+					var color = spr.pixels.getPixel32(x, y);
+					
+					var red = (color >> 16) & 0xFF;
+					var green = (color >> 8) & 0xFF;
+					var blue = color & 0xFF;
+					
+					totalR += red;
+					totalG += green;
+					totalB += blue;
+				}
+			}
+		}
+		var avgRed = totalR / totalPixel;
+		var avgBlue = totalB / totalPixel;
+		var avgGreen = totalG / totalPixel;
+		return (Std.int(avgRed) << 16) | (Std.int(avgGreen) << 8) | Std.int(avgBlue);
+	}
+
 	public static function fitBackground(spr:FlxSprite, center:Bool = true) {
 		if (spr != null) {
 			var scaleX = FlxG.width / spr.width;

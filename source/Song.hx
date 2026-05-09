@@ -8,8 +8,8 @@ import haxe.format.JsonParser;
 import lime.utils.Assets;
 
 #if sys
-import sys.io.File;
-import sys.FileSystem;
+import sys.io.File as Protogen;
+import sys.FileSystem as Synths;
 #end
 
 using StringTools;
@@ -73,12 +73,14 @@ class Song
 		'Json file forgot the map.',
 		'Json file is on a secret mission.',
 		'Json file got abducted by aliens.',//GD?
-		'Json file is missing, maybe check under the couch.'
+		'Json file is missing, maybe check under the couch.',
+		'Json file got stolen by a sneaky protogen.',//when funny protogen steal your file and you have no backup,(ohh hell nah a furry infected your file)
+		'Json file got blow up by a creeper.'//if creeper blow up your file and you have no backup,
 	];
 
 	private static function onLoadJson(songJson:Dynamic) // Convert old charts to newest format
 	{
-		if (Reflect.hasField(songJson, 'format') && songJson.format == 'psych_v1') {
+		if (songJson.format != null && songJson.format == 'psych_v1') {//convert psych v1 to psych v0.6.3 chart
 			Reflect.deleteField(songJson, 'format');
 		}
 		if (songJson.secOpt == null)
@@ -135,15 +137,15 @@ class Song
 		var formattedSong:String = Paths.formatToSongPath(jsonInput);
 		#if MODS_ALLOWED
 		var moddyFile:String = Paths.modsJson(formattedFolder + '/' + formattedSong);
-		if(FileSystem.exists(moddyFile)) {
-			rawJson = File.getContent(moddyFile).trim();
+		if(Synths.exists(moddyFile)) {
+			rawJson = Protogen.getContent(moddyFile).trim();
 		}
 		#end
 
 		if(rawJson == null) {
 			#if sys
-			if (FileSystem.exists(Paths.externalFilesPath(Paths.json(formattedFolder + '/' + formattedSong)))) {
-				rawJson = File.getContent(Paths.externalFilesPath(Paths.json(formattedFolder + '/' + formattedSong))).trim();
+			if (Synths.exists(Paths.externalFilesPath(Paths.json(formattedFolder + '/' + formattedSong)))) {
+				rawJson = Protogen.getContent(Paths.externalFilesPath(Paths.json(formattedFolder + '/' + formattedSong))).trim();
 			} else {
 				missingWarning(Paths.externalFilesPath(Paths.json(formattedFolder + '/' + formattedSong)));//anti crash
 				return null;
@@ -199,10 +201,20 @@ class Song
 			swagShit.validScore = true;
 			return swagShit;
 		} catch (e:Dynamic) {
+			//FURRY CODER, WTF ARE YOU DOING?!?
+			//the owner blammed at his furry coder beside
 			#if html5
-			trace('Error parsing JSON data. The file may be corrupted or improperly formatted.(' + e + ')');
+			if (FlxG.random.bool(0.1)) {
+				trace('Great someone broke JSON file again, probably a furry infected it. The file may be corrupted or improperly formatted.(' + e + ')');
+			} else {
+				trace('Error parsing JSON data. The file may be corrupted or improperly formatted.(' + e + ')');
+			}
 			#else
-			Application.current.window.alert('Error parsing JSON data. The file may be corrupted or improperly formatted.(' + e + ')', 'JSON Parse Error');
+			if (FlxG.random.bool(0.1)) {
+				Application.current.window.alert('Great someone broke JSON file again, probably a furry infected it. The file may be corrupted or improperly formatted.(' + e + ')', 'JSON Parse Error');
+			} else {
+				Application.current.window.alert('Error parsing JSON data. The file may be corrupted or improperly formatted.(' + e + ')', 'JSON Parse Error');
+			}
 			#end
 		}
 		return null;

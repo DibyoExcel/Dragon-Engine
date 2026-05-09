@@ -6,7 +6,6 @@ import dge.obj.Keypress;
 #if mobile
 import dge.obj.mobile.Hitbox;
 #end
-import dge.backend.CacheTools;
 import flixel.graphics.FlxGraphic;
 #if desktop
 import Discord.DiscordClient;
@@ -428,7 +427,7 @@ class PlayState extends MusicBeatState
 	override public function create()
 	{
 		if (SONG == null) SONG = Song.loadFromJson('tutorial');
-		CacheTools.clearCache();
+		CacheUtil.clearCache();
 		Paths.clearStoredMemory();
 		//trace('Playback Rate: ' + playbackRate);
 
@@ -3010,13 +3009,6 @@ class PlayState extends MusicBeatState
 		return FlxSort.byValues(Order, time1 * Obj1.multSpeed, time2 * Obj2.multSpeed);
 	}
 	
-
-	function sortNoteTime(Order:Int, Obj1:Note, Obj2:Note):Int {
-		return FlxSort.byValues(Order, Obj1.strumTime + Obj1.offsetStrumTime, Obj2.strumTime + Obj2.offsetStrumTime);
-	}
-	
-	
-
 	function sortByShit(Obj1:Note, Obj2:Note):Int
 	{
 		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.strumTime + Obj1.offsetStrumTime, Obj2.strumTime + Obj2.offsetStrumTime);
@@ -3799,7 +3791,7 @@ class PlayState extends MusicBeatState
 		if (generatedMusic)
 		{
 			//input sort(i guess)
-			if (notes.length > 0) notes.sort(sortNoteTime, FlxSort.ASCENDING);
+			//if (notes.length > 0) notes.sort(sortNoteTime, FlxSort.ASCENDING);//NVM it just make virsual long note break
 			//visual sort
 			var groupToSort = [playerNotes, gfNotes, opponentNotes];
 			for (group in groupToSort) {
@@ -3860,14 +3852,15 @@ class PlayState extends MusicBeatState
 					if (strumGroup != null && (daNote.noteData < strumGroup.length) && daNote.noteData >= 0 && daNote.attachStrum) {//try prevent crash when change gamemode throught script or out ranged noteData:D
 						actualStrum = strumGroup.members[daNote.noteData];
 						daNote.strumNote = actualStrum;//fuck strum assign
-						var strumX:Float = actualStrum.x;
 						var strumSC:Array<Float> = actualStrum.scrollFactorCam;
 						var strumCam:String = actualStrum.camTarget;
-						var strumY:Float = actualStrum.y;
-						var strumAngle:Float = actualStrum.angle;
-						var strumDirection:Float = actualStrum.direction;
-						var strumAlpha:Float = actualStrum.alpha;
-						var strumScroll:Bool = actualStrum.downScroll;
+						//uh
+						var strumX:Float = daNote.fakeStrumX == null ? actualStrum.x : daNote.fakeStrumX;
+						var strumY:Float = daNote.fakeStrumY == null ? actualStrum.y : daNote.fakeStrumY;
+						var strumAngle:Float = daNote.fakeStrumAngle == null ? actualStrum.angle : daNote.fakeStrumAngle;
+						var strumDirection:Float = daNote.fakeStrumDirection == null ? actualStrum.direction : daNote.fakeStrumDirection;
+						var strumAlpha:Float = daNote.fakeStrumAlpha == null ? actualStrum.alpha : daNote.fakeStrumAlpha;
+						var strumScroll:Bool = daNote.fakeStrumDownScroll == null ? actualStrum.downScroll : daNote.fakeStrumDownScroll;
 						if (songSpeed < 0) {
 							strumScroll = !strumScroll;
 						}
@@ -5738,9 +5731,7 @@ class PlayState extends MusicBeatState
 
 			if ((ClientPrefs.hitsoundVolume > 0 && !note.hitsoundDisabled) || note.forceHitsound)
 			{
-				if (CacheTools.cacheSound.exists(note.hitsound)) {
-					FlxG.sound.play(CacheTools.cacheSound.get(note.hitsound), (!note.forceHitsound ? ClientPrefs.hitsoundVolume : 1.0));
-				}
+				FlxG.sound.play(Paths.sound(note.hitsound), (!note.forceHitsound ? ClientPrefs.hitsoundVolume : 1.0));
 			}
 
 			if(note.hitCausesMiss && gamemode != 'opponent') {
@@ -5945,18 +5936,20 @@ class PlayState extends MusicBeatState
 			if (note.mustPress ? ClientPrefs.noteSplashes : ClientPrefs.noteSplashesOpt) {
 				var strum:StrumNote = note.strumNote;//better because get by attach;
 				if(strum != null) {
-					spawnNoteSplash(strum.x, strum.y, note.noteData, note);
+					spawnNoteSplash(strum.x, strum.y, note);
 				}
 			}
 		}
 	}
 
-	public function spawnNoteSplash(x:Float, y:Float, data:Int, ?note:Note = null) {
+	public function spawnNoteSplash(x:Float, y:Float, ?note:Note = null) {
 		var skin:String = '';//empty because NoteSplash.hx class already handle texture choosing "if" was empty string or null
 
 		var hue:Float = 0;
 		var sat:Float = 0;
 		var brt:Float = 0;
+		var data = 0;
+		if (note != null) data = note.noteData;
 		if (data > -1 && data%4 < ClientPrefs.arrowHSV.length)
 		{
 			hue = ClientPrefs.arrowHSV[data%4][0] / 360;
@@ -5975,7 +5968,6 @@ class PlayState extends MusicBeatState
 				groupTarget = noteSplashGroupMap.get(note.fieldTarget);
 			} else if (!note.mustPress) {//opps forgot add to notesplash opponent group lmao
 				groupTarget = grpNoteSplashesOpt;
-
 			} else if (note.gfNote || note.secondOpponent) {
 				groupTarget = grpNoteSplashesGf;
 			}
@@ -6168,7 +6160,7 @@ class PlayState extends MusicBeatState
 
 	override function destroy() {
 		PlayState.SONG.secOpt = tempSecOpt;//rolled back
-		CacheTools.clearCache();
+		CacheUtil.clearCache();
 		for (lua in luaArray) {
 			lua.call('onDestroy', []);
 			lua.stop();

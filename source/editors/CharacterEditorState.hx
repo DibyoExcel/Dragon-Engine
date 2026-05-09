@@ -37,6 +37,7 @@ import Character;
 import flixel.system.debug.interaction.tools.Pointer.GraphicCursorCross;
 import lime.system.Clipboard;
 import flixel.animation.FlxAnimation;
+import dge.obj.ui.HealthIcon as Kemono;//lol
 
 #if MODS_ALLOWED
 import sys.FileSystem;
@@ -77,7 +78,10 @@ class CharacterEditorState extends MusicBeatState
 	private var camMenu:FlxCamera;
 
 	var changeBGbutton:FlxButton;
-	var leHealthIcon:HealthIcon;
+	//var leHealthIcon:HealthIcon;//prob unused later
+	//icon 3 piece
+	var stateArray:Array<String> = ['netral', 'lose', 'win'];
+	var iconArray:Array<Kemono> = [];
 	var characterList:Array<String> = [];
 
 	var cameraFollowPointer:FlxSprite;
@@ -138,11 +142,19 @@ class CharacterEditorState extends MusicBeatState
 		add(healthBarBG);
 		healthBarBG.cameras = [camHUD];
 
-		leHealthIcon = new HealthIcon(char.healthIcon, false, true);
+		/*leHealthIcon = new HealthIcon(char.healthIcon, false, true);
 		leHealthIcon.y = FlxG.height - 150;
 		leHealthIcon.x = 100;
 		add(leHealthIcon);
-		leHealthIcon.cameras = [camHUD];
+		leHealthIcon.cameras = [camHUD];*/
+		for (i in 0...stateArray.length) {
+			var healthIcon:Kemono = new Kemono(char.healthIcon, stateArray[i]);
+			healthIcon.y = FlxG.height - 150;
+			healthIcon.x = 100 + (i * 150);
+			healthIcon.cameras = [camHUD];
+			add(healthIcon);
+			iconArray.push(healthIcon);
+		}
 
 		dumbTexts = new FlxTypedGroup<FlxText>();
 		add(dumbTexts);
@@ -591,7 +603,13 @@ class CharacterEditorState extends MusicBeatState
 
 		var decideIconColor:FlxButton = new FlxButton(reloadImage.x, reloadImage.y + 30, "Get Icon Color", function()
 			{
-				var coolColor = FlxColor.fromInt(CoolUtil.dominantColor(leHealthIcon));
+				var acceptArray:Array<Kemono> = [];
+				for(i in 0...iconArray.length) {
+					if(iconArray[i].visible) {
+						acceptArray.push(iconArray[i]);
+					}
+				}
+				var coolColor = FlxColor.fromInt(CoolUtil.dominantColorArray(cast acceptArray));//force
 				healthColorStepperR.value = coolColor.red;
 				healthColorStepperG.value = coolColor.green;
 				healthColorStepperB.value = coolColor.blue;
@@ -601,7 +619,13 @@ class CharacterEditorState extends MusicBeatState
 			});
 		var averageIconColor:FlxButton = new FlxButton(decideIconColor.x, decideIconColor.y + 30, "Icon Average Color", function()
 			{
-				var coolColor = FlxColor.fromInt(CoolUtil.averageColor(leHealthIcon));
+				var acceptArray:Array<Kemono> = [];
+				for(i in 0...iconArray.length) {
+					if(iconArray[i].visible) {
+						acceptArray.push(iconArray[i]);
+					}
+				}
+				var coolColor = FlxColor.fromInt(CoolUtil.averageColorArray(cast acceptArray));
 				healthColorStepperR.value = coolColor.red;
 				healthColorStepperG.value = coolColor.green;
 				healthColorStepperB.value = coolColor.blue;
@@ -610,7 +634,7 @@ class CharacterEditorState extends MusicBeatState
 				getEvent(FlxUINumericStepper.CHANGE_EVENT, healthColorStepperB, null);
 			});
 
-		healthIconInputText = new FlxUIInputText(15, imageInputText.y + 35, 75, leHealthIcon.getCharacter(), 8);
+		healthIconInputText = new FlxUIInputText(15, imageInputText.y + 35, 75, iconArray[0].getCharacter(), 8);
 
 		singDurationStepper = new FlxUINumericStepper(15, healthIconInputText.y + 45, 0.1, 4, 0, 999, 1);
 
@@ -836,7 +860,15 @@ class CharacterEditorState extends MusicBeatState
 	override function getEvent(id:String, sender:Dynamic, data:Dynamic, ?params:Array<Dynamic>) {
 		if(id == FlxUIInputText.CHANGE_EVENT && (sender is FlxUIInputText)) {
 			if(sender == healthIconInputText) {
-				leHealthIcon.changeIcon(healthIconInputText.text, true);
+				//leHealthIcon.changeIcon(healthIconInputText.text, true);
+				for (i in 0...iconArray.length) {
+					iconArray[i].changeIconState(healthIconInputText.text, stateArray[i]);
+					if (i > 1 && !iconArray[i].winIcon) {
+						iconArray[i].visible = false;
+					} else {
+						iconArray[i].visible = true;
+					}
+				}
 				char.healthIcon = healthIconInputText.text;
 				updatePresence();
 			}
@@ -1064,7 +1096,15 @@ class CharacterEditorState extends MusicBeatState
 			flipXCheckBox.checked = char.originalFlipX;
 			noAntialiasingCheckBox.checked = char.noAntialiasing;
 			resetHealthBarColor();
-			leHealthIcon.changeIcon(healthIconInputText.text, true);
+			//leHealthIcon.changeIcon(healthIconInputText.text, true);
+			for (i in 0...iconArray.length) {
+				iconArray[i].changeIconState(healthIconInputText.text, stateArray[i]);
+				if (i > 1 && !iconArray[i].winIcon) {
+					iconArray[i].visible = false;
+				} else {
+					iconArray[i].visible = true;
+				}
+			}
 			positionXStepper.value = char.positionArray[0];
 			positionYStepper.value = char.positionArray[1];
 			positionCameraXStepper.value = char.cameraPosition[0];
@@ -1158,7 +1198,7 @@ class CharacterEditorState extends MusicBeatState
 	function updatePresence() {
 		#if desktop
 		// Updating Discord Rich Presence
-		DiscordClient.changePresence("Character Editor", "Character: " + daAnim, leHealthIcon.getCharacter());
+		DiscordClient.changePresence("Character Editor", "Character: " + daAnim, iconArray[0].getCharacter());
 		#end
 	}
 

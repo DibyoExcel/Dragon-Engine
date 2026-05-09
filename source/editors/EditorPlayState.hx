@@ -2,7 +2,6 @@ package editors;
 #if mobile
 import dge.obj.mobile.Hitbox;
 #end
-import dge.backend.CacheTools;
 
 import flixel.graphics.FlxGraphic;
 import flixel.FlxCamera;
@@ -83,7 +82,7 @@ class EditorPlayState extends MusicBeatState
 
 	override function create()
 	{
-		CacheTools.clearCache();
+		CacheUtil.clearCache();
 		Paths.clearStoredMemory();
 		instance = this;
 
@@ -1231,7 +1230,7 @@ class EditorPlayState extends MusicBeatState
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 		}
-		CacheTools.clearCache();
+		CacheUtil.clearCache();
 		super.destroy();
 	}
 }

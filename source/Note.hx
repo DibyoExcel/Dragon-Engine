@@ -14,7 +14,6 @@ import flixel.graphics.frames.FlxFrame;
 import sys.FileSystem;
 import sys.io.File;
 #end
-import dge.backend.CacheTools;
 import dge.obj.game.HoldCover;
 
 using StringTools;
@@ -43,6 +42,7 @@ typedef EventNote =
 	value1:String,
 	value2:String
 }
+
 
 class Note extends FlxSprite
 {
@@ -266,6 +266,14 @@ class Note extends FlxSprite
 	public var holdCoverBAndWThreshold:Float = 1;
 	//distance update
 	public var updateDistance:Bool = true;//whether update distance for note(only for visual, not affect hit time)
+	//fake strum(more likely strum land  override hehe)
+	//not anything because kinda odd to put it XD
+	public var fakeStrumX:Null<Float> = null;//override strum attach x to 'this' position x
+	public var fakeStrumY:Null<Float> = null;//override strum attach y to 'this' position y
+	public var fakeStrumAngle:Null<Float> = null;//override strum attach angle to 'this' angle
+	public var fakeStrumAlpha:Null<Float> = null;//override strum attach alpha to 'this' alpha
+	public var fakeStrumDirection:Null<Float> = null;//override strum attach direction to 'this' direction
+	public var fakeStrumDownScroll:Null<Bool> = null;//override strum attach downScroll to 'this' downScroll
 	//end dge core
 
 	@:noCompletion
@@ -969,7 +977,7 @@ class Note extends FlxSprite
 	}
 	function loadAndSetConfig(value:String) {
 		#if (MODS_ALLOWED && sys)
-		if (!CacheTools.jsonParse.exists(value)) {
+		if (!CacheUtil.jsonParse.exists(value)) {
 			var jsonString:String = '';
 			if (FileSystem.exists(Paths.modFolders('custom_notetypes/' + value + '.json'))) {
 				jsonString =  File.getContent(Paths.modFolders('custom_notetypes/' + value + '.json'));
@@ -980,18 +988,18 @@ class Note extends FlxSprite
 			}
 			if (jsonString.length > 0) {
 				try {
-					CacheTools.jsonParse.set(value, haxe.Json.parse(jsonString));
+					CacheUtil.jsonParse.set(value, haxe.Json.parse(jsonString));
 				} catch (e:Dynamic) {
 					trace('Error parsing custom_notetypes/' + value + '.json.(' + e + ')');
-					CacheTools.jsonParse.set(value, {});
+					CacheUtil.jsonParse.set(value, {});
 				}
 			} else {
-				CacheTools.jsonParse.set(value, {});
+				CacheUtil.jsonParse.set(value, {});
 			}
 		}
 		//overengineer lol
-		if (CacheTools.jsonParse.exists(value) && Reflect.fields(CacheTools.jsonParse.get(value)).length > 0) {
-			var jsonVar:NoteJson = cast CacheTools.jsonParse.get(value);
+		if (CacheUtil.jsonParse.exists(value) && Reflect.fields(CacheUtil.jsonParse.get(value)).length > 0) {
+			var jsonVar:NoteJson = cast CacheUtil.jsonParse.get(value);
 			if (jsonVar.noteData == null) {
 				//classsic(it has been here long ago from v1.6.1.7)(but not advance like the new one, it just simply set the property without check anything)
 				setConfig(jsonVar, value);
@@ -1072,7 +1080,7 @@ class Note extends FlxSprite
 				} catch (e:Dynamic) {
 					trace(e);
 					//dont repeat when is error
-					CacheTools.jsonParse.set(name, {});//idk how i remove when inside field was error so i deleted entire instead
+					CacheUtil.jsonParse.set(name, {});//idk how i remove when inside field was error so i deleted entire instead
 				}
 			}
 		}

@@ -10,8 +10,7 @@ typedef IconConfig = {
 	//using Null<> because haxe didt like check if this value is null or not:/
 	netral:Null<StateObject>,
 	lose:Null<StateObject>,//optional, if not set, it will be the same as netral
-	win:Null<StateObject>,//optional, if not set, it will nothing to do(aka netral icon)
-	full:Null<StateObject>//optional, if not set, it will be the same as netral
+	win:Null<StateObject>//optional, if not set, it will nothing to do(aka netral icon
 };
 
 typedef StateObject = {
@@ -32,18 +31,17 @@ class HealthIcon extends FlxSprite
 	private var char:String = '';
 	public var winIcon:Bool = false;
 	public var isCustom:Bool = false;//enable this if you want custom change icon system to your own
-	public var fullIcon(default, set):Bool = false;
 	public var spriteSheet:Bool = false;//becareful set this or else it break icon
 	private var offsetMap:Map<String, Array<Float>> = new Map<String, Array<Float>>();
 
 
 
-	public function new(char:String = 'bf', isPlayer:Bool = false, full:Bool = false)
+	public function new(char:String = 'bf', isPlayer:Bool = false)
 	{
 		super();
 		isOldIcon = (char == 'bf-old');
 		this.isPlayer = isPlayer;
-		changeIcon(char, full);
+		changeIcon(char);
 		scrollFactor.set();
 	}
 
@@ -61,7 +59,7 @@ class HealthIcon extends FlxSprite
 	}
 
 	private var iconOffsets:Array<Float> = [0, 0];
-	public function changeIcon(char:String, full:Bool = false) {
+	public function changeIcon(char:String) {
 		if(this.char != char) {
 			//reset
 			offsetMap = new Map<String, Array<Float>>();
@@ -73,24 +71,21 @@ class HealthIcon extends FlxSprite
 				var file:Dynamic = Paths.image(name);
 	
 				loadGraphic(file); //Load stupidly first for getting the file size
-				if (!full) {
-	
-					var frameArray:Array<Int> = [];
-					var flipbook:Int = Math.round(width/height);//basicly flipbook from minecraft texture pack
-					loadGraphic(file, true, Math.floor(width / flipbook), Math.floor(height)); //Then load it fr
-					for (i in 0...flipbook) {
-						frameArray.push(i);
-					}
-					iconOffsets[0] = (width - 150) / flipbook;
-					iconOffsets[1] = (width - 150) / flipbook;
-					updateHitbox();
-					animation.add(char, frameArray, 0, false, isPlayer);
-					animation.play(char);
-					if (flipbook >= 3) {//for win icon //and when more than 3 you might can make weird stuff...but required lua
-						this.winIcon = true;
-					} else {
-						this.winIcon = false;
-					}
+				var frameArray:Array<Int> = [];
+				var flipbook:Int = Math.round(width/height);//basicly flipbook from minecraft texture pack
+				loadGraphic(file, true, Math.floor(width / flipbook), Math.floor(height)); //Then load it fr
+				for (i in 0...flipbook) {
+					frameArray.push(i);
+				}
+				iconOffsets[0] = (width - 150) / flipbook;
+				iconOffsets[1] = (width - 150) / flipbook;
+				updateHitbox();
+				animation.add(char, frameArray, 0, false, isPlayer);
+				animation.play(char);
+				if (flipbook >= 3) {//for win icon //and when more than 3 you might can make weird stuff...but required lua
+					this.winIcon = true;
+				} else {
+					this.winIcon = false;
 				}
 			} else {
 				//fun fact: the animated icon inspired from RetroSpecter P2(again from this mods) in Catastrofiend song(also is my fav song). and i forgot to put this comment here lol
@@ -99,12 +94,17 @@ class HealthIcon extends FlxSprite
 				var data:IconConfig = initJsonLoad(json);//init json data(is already check missing field)
 				frames = Paths.getSparrowAtlas(name);
 				initFrames(data);//idk but whatever
-				if (!full) animation.play('netral');/*default animation(please dont judge me for this)*/ else animation.play('full');
+				animation.play('netral');/*default animation(please dont judge me for this)*/
 				iconOffsets[0] = data.netral.offset[0];
 				iconOffsets[1] = data.netral.offset[1];
 				offsetMap.set('netral', data.netral.offset);
 				offsetMap.set('lose', data.lose.offset);
-				if (data.win != null) offsetMap.set('win', data.win.offset);
+				if (data.win != null) { 
+					this.winIcon = true;
+					offsetMap.set('win', data.win.offset);
+				} else {
+					this.winIcon = false;
+				}
 				updateHitbox();//again to set offset
 			}
 			this.char = char;
@@ -123,14 +123,6 @@ class HealthIcon extends FlxSprite
 
 	public function getCharacter():String {
 		return char;
-	}
-
-	function set_fullIcon(value:Bool):Bool {
-		if (fullIcon != value) {
-			fullIcon = value;
-			changeIcon(char, value);
-		}
-		return value;
 	}
 	function initJsonLoad(jsonRaw:String):IconConfig {
 		var jsonDataRaw:Dynamic = haxe.Json.parse(jsonRaw);
@@ -172,16 +164,6 @@ class HealthIcon extends FlxSprite
 			if (jsonData.win.flipX == null) jsonData.win.flipX = false;
 			if (jsonData.win.flipY == null) jsonData.win.flipY = false;
 		}
-		if (jsonData.full == null) {
-			jsonData.full = jsonData.netral;
-		} else {
-			if (jsonData.full.xmlName == null) jsonData.full.xmlName = 'full';
-			if (jsonData.full.offset == null || jsonData.lose.offset.length < 2) jsonData.full.offset = [0, 0];
-			if (jsonData.full.fps == null) jsonData.full.fps = 24;
-			if (jsonData.full.loop == null) jsonData.full.loop = true;
-			if (jsonData.full.flipX == null) jsonData.full.flipX = false;
-			if (jsonData.full.flipY == null) jsonData.full.flipY = false;
-		}
 		return jsonData;
 	}
 	function initFrames(Data:IconConfig):Void {
@@ -200,21 +182,7 @@ class HealthIcon extends FlxSprite
 			if (Data.win.flipX) {
 				isFlip = !isFlip;
 			}
-			winIcon = true;
 			animation.addByPrefix('win', Data.win.xmlName, Data.win.fps, Data.win.loop, isFlip, Data.win.flipY);
-		}
-		if (Data.full != null) {
-			var isFlip = isPlayer;
-			if (Data.full.flipX) {
-				isFlip = !isFlip;
-			}
-			animation.addByPrefix('full', Data.full.xmlName, Data.full.fps, Data.full.loop, isFlip, Data.full.flipY);
-		} else {
-			var isFlip = isPlayer;
-			if (Data.netral.flipX) {
-				isFlip = !isFlip;
-			}
-			animation.addByPrefix('full', Data.netral.xmlName, Data.netral.fps, Data.netral.loop, isFlip, Data.netral.flipY);
 		}
 		updateHitbox();
 	}

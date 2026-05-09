@@ -4,7 +4,6 @@ package editors;
 import dge.obj.mobile.VirtualButton;
 import dge.obj.mobile.ToggleButton;
 #end
-import dge.backend.CacheTools;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -3836,7 +3835,7 @@ class AttachedFlxText extends FlxText
 		}
 	}
 	override public function destroy() {
-		CacheTools.clearCache();
+		CacheUtil.clearCache();
 		super.destroy();
 	}
 }

@@ -398,6 +398,14 @@ class FreeplayState extends MusicBeatState
 					vocals.looped = true;
 					vocals.volume = 0.7;
 					instPlaying = curSelected;
+				} else if (FlxG.random.bool(0.1)) {
+					//joke msg
+					#if htnl5
+					//LMAO WTF
+					trace('HEY YOU! YEAH, YOU! STOP TRYING TO PLAY THE SONG, IT\'S NOT EVEN THERE!');
+					#else
+					lime.app.Application.current.window.alert('Sike!, couldn\'t find the song file! Maybe it\'s time to end this game?', 'Sike!!');
+					#end
 				}
 				#end
 			}
