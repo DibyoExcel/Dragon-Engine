@@ -43,6 +43,7 @@ class MenuCharacterEditorState extends MusicBeatState
 	var txtOffsets:FlxText;
 	var defaultCharacters:Array<String> = ['dad', 'bf', 'gf'];
 	#if mobile
+	private var touch:TouchUtil = new TouchUtil();
 	private var shiftButton:VirtualButton;
 	private var spaceButton:VirtualButton;
 	#end
@@ -325,19 +326,19 @@ class MenuCharacterEditorState extends MusicBeatState
 			var shiftMult:Int = 1;
 			if(FlxG.keys.pressed.SHIFT #if mobile || shiftButton.pressed #end) shiftMult = 10;
 
-			if(FlxG.keys.justPressed.LEFT #if mobile || dge.backend.TouchUtil.swipeLeft() #end) {
+			if(FlxG.keys.justPressed.LEFT #if mobile || touch.swipeLeft() #end) {
 				characterFile.position[0] += shiftMult;
 				updateOffset();
 			}
-			if(FlxG.keys.justPressed.RIGHT #if mobile || dge.backend.TouchUtil.swipeRight() #end) {
+			if(FlxG.keys.justPressed.RIGHT #if mobile || touch.swipeRight() #end) {
 				characterFile.position[0] -= shiftMult;
 				updateOffset();
 			}
-			if(FlxG.keys.justPressed.UP #if mobile || dge.backend.TouchUtil.swipeUp() #end) {
+			if(FlxG.keys.justPressed.UP #if mobile || touch.swipeUp() #end) {
 				characterFile.position[1] += shiftMult;
 				updateOffset();
 			}
-			if(FlxG.keys.justPressed.DOWN #if mobile || dge.backend.TouchUtil.swipeDown() #end) {
+			if(FlxG.keys.justPressed.DOWN #if mobile || touch.swipeDown() #end) {
 				characterFile.position[1] -= shiftMult;
 				updateOffset();
 			}

@@ -59,6 +59,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 
 	#if mobile
 	//mobile
+	private var touch:TouchUtil = new TouchUtil();
 	private var leftButton:VirtualButton;
 	private var rightButton:VirtualButton;
 	private var enterButton:VirtualButton;
@@ -240,11 +241,11 @@ class BaseOptionsMenu extends MusicBeatSubstate
 				spriteNote[3].centerOffsets();
 			}
 		}
-		if ((controls.UI_UP_P #if mobile || dge.backend.TouchUtil.swipeUp() #end) && !keyBroker)
+		if ((controls.UI_UP_P #if mobile || touch.swipeUp() #end) && !keyBroker)
 		{
 			changeSelection(-1);
 		}
-		if ((controls.UI_DOWN_P #if mobile || dge.backend.TouchUtil.swipeDown() #end) && !keyBroker)
+		if ((controls.UI_DOWN_P #if mobile || touch.swipeDown() #end) && !keyBroker)
 		{
 			changeSelection(1);
 		}

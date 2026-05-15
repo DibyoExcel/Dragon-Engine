@@ -43,14 +43,11 @@ class DubEnderLoader extends FlxBasePreloader
 		{
 			lime.app.Application.current.window.alert('This app required external storage permission.', 'Storage Manager');
 			Permissions.requestPermission(Permissions.WRITE_EXTERNAL_STORAGE);
-			lime.app.Application.current.window.alert('this required restart.', 'Storage Manager');
-			Sys.exit(0);
+			lime.app.Application.current.window.alert('Permision Request Pending.(Press OK if done allow)', 'Permision Request');//just prevent crash
 		} 
 		if (Permissions.hasPermission(Permissions.WRITE_EXTERNAL_STORAGE)) {
 			if (!FileSystem.exists(dge.backend.StorageManager.getEngineDir())) {
 				FileSystem.createDirectory(dge.backend.StorageManager.getEngineDir());
-				Application.current.window.alert('External(' + dge.backend.StorageManager.getEngineDir() + ')Folder has been created. Please insert app assets bundles("assets") to' + dge.backend.StorageManager.getEngineDir() + '.', 'Storage Manager');
-				Sys.exit(0);
 			}
 			var loadData:Array<String> = ['dialogue', 'dialoguecharacter', 'menucharacter', 'weeks'];
 			for (i in 0...loadData.length) {
@@ -71,11 +68,8 @@ class DubEnderLoader extends FlxBasePreloader
 				FileSystem.createDirectory(Paths.externalFilesPath('mods/'));
 				File.saveContent(Paths.externalFilesPath('mods/put mods folder here.txt'), 'only mobile have this generated text.');
 			}
-			if (!FileSystem.exists(Paths.externalFilesPath('assets/'))) {
-				Application.current.window.alert('Assets Folder is Missing. Please insert app assets bundles("assets") to ' + dge.backend.StorageManager.getEngineDir() + '. If you don\'t know press OK to open how to insert assets.', 'Storage Manager');
-				FlxG.openURL('https://dibyoexcel.github.io/Dragon-Engine/mobile_tutorial/');
-				Sys.exit(0);
-			}
+		} else {
+			Sys.exit(0);
 		}
 		#end
 		#if WINDOW_COLOR

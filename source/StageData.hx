@@ -3,9 +3,8 @@ package;
 #if MODS_ALLOWED
 import sys.io.File;
 import sys.FileSystem;
-#else
-import openfl.utils.Assets;
 #end
+import openfl.utils.Assets;
 import haxe.Json;
 import haxe.format.JsonParser;
 import Song;
@@ -78,6 +77,8 @@ class StageData {
 			rawJson = File.getContent(modPath);
 		} else if(FileSystem.exists(Paths.externalFilesPath(path))) {
 			rawJson = File.getContent(Paths.externalFilesPath(path));
+		} else if (Assets.exists(path)) {
+			rawJson = Assets.getText(path);
 		}
 		#else
 		if(Assets.exists(path)) {

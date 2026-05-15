@@ -48,6 +48,7 @@ class NotesSubState extends MusicBeatSubstate
 
 	var posX = 230 + (CoolUtil.getXFrom1280P());
 	#if mobile
+	private var touch:TouchUtil = new TouchUtil();
 	private var leftButton:VirtualButton;
 	private var rightButton:VirtualButton;
 	private var enterButton:VirtualButton;
@@ -150,19 +151,19 @@ class NotesSubState extends MusicBeatSubstate
 				}
 			}
 		} else {
-			if (controls.UI_UP_P #if mobile || dge.backend.TouchUtil.swipeUp() #end) {
+			if (controls.UI_UP_P #if mobile || touch.swipeUp() #end) {
 				changeSelection(-1);
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 			}
-			if (controls.UI_DOWN_P #if mobile || dge.backend.TouchUtil.swipeDown() #end) {
+			if (controls.UI_DOWN_P #if mobile || touch.swipeDown() #end) {
 				changeSelection(1);
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 			}
-			if (controls.UI_LEFT_P #if mobile || dge.backend.TouchUtil.swipeLeft() #end) {
+			if (controls.UI_LEFT_P #if mobile || touch.swipeLeft() #end) {
 				changeType(-1);
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 			}
-			if (controls.UI_RIGHT_P #if mobile || dge.backend.TouchUtil.swipeRight() #end) {
+			if (controls.UI_RIGHT_P #if mobile || touch.swipeRight() #end) {
 				changeType(1);
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 			}

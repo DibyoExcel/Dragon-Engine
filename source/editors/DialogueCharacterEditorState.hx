@@ -1,5 +1,4 @@
 package editors;
-
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -35,13 +34,18 @@ import sys.io.File;
 import sys.FileSystem;
 #end
 
+#if mobile
+import dge.obj.mobile.VirtualButton;
+import dge.obj.mobile.ToggleButton;
+#end
+
 using StringTools;
 
 class DialogueCharacterEditorState extends MusicBeatState
 {
 	var box:FlxSprite;
 	var daText:TypedAlphabet = null;
-
+	#if !mobile
 	private static var TIP_TEXT_MAIN:String =
 	'JKLI - Move camera (Hold Shift to move 4x faster)
 	\nQ/E - Zoom out/in
@@ -57,7 +61,23 @@ class DialogueCharacterEditorState extends MusicBeatState
 	\nWASD - Move Looping animation offset (Red)
 	\nArrow Keys - Move Idle/Finished animation offset (Blue)
 	\nHold Shift to move offsets 10x faster';
+	#else
+	private static var TIP_TEXT_MAIN:String =
+	'Swipe(Hand Mode) - Move camera (Hold Shift to move 4x faster)
+	\nPinch - Zoom out/in
+	\nR - Reset Camera
+	\nH - Toggle Speech Bubble
+	\nSpace - Reset text';
 
+	private static var TIP_TEXT_OFFSET:String =
+	'Swipe(Hand Mode) - Move camera (Hold Shift to move 4x faster)
+	\nPinch - Zoom out/in
+	\nR - Reset Camera
+	\nH - Toggle Ghosts
+	\nWASD - Move Looping animation offset (Red)
+	\nArrow Keys - Move Idle/Finished animation offset (Blue)
+	\nHold Shift to move offsets 10x faster';
+	#end
 	var tipText:FlxText;
 	var offsetLoopText:FlxText;
 	var offsetIdleText:FlxText;
@@ -75,6 +95,29 @@ class DialogueCharacterEditorState extends MusicBeatState
 
 	var curAnim:Int = 0;
 	private static var loadFileName:FlxUIInputText;
+	#if mobile
+	private var touch:TouchUtil = new TouchUtil();
+	private var handButton:ToggleButton;
+	//main
+	private var mainButtonGroup:FlxTypedGroup<VirtualButton>;
+	//offset
+	private var offsetButtonGroup:FlxTypedGroup<VirtualButton>;
+	//button
+	private var rButton:VirtualButton;
+	private var hButton:VirtualButton;
+	private var shiftButton:VirtualButton;
+	private var spaceButton:VirtualButton;
+	//wasd
+	private var wButton:VirtualButton;
+	private var aButton:VirtualButton;
+	private var sButton:VirtualButton;
+	private var dButton:VirtualButton;
+	//arrow key
+	private var upButton:VirtualButton;
+	private var downButton:VirtualButton;
+	private var leftButton:VirtualButton;
+	private var rightButton:VirtualButton;
+	#end
 
 	override function create() {
 		persistentUpdate = persistentDraw = true;
@@ -164,6 +207,61 @@ class DialogueCharacterEditorState extends MusicBeatState
 		FlxG.mouse.visible = true;
 		updateCharTypeBox();
 		
+		#if mobile
+		mainButtonGroup = new FlxTypedGroup<VirtualButton>();
+		offsetButtonGroup = new FlxTypedGroup<VirtualButton>();
+		//main
+		rButton = new VirtualButton(0, FlxG.height - 500, 'r');
+		rButton.cameras = [camHUD];
+		add(rButton);
+		handButton = new ToggleButton(rButton.x+125, rButton.y, 'hand');
+		handButton.cameras = [camHUD];
+		add(handButton);
+		hButton = new VirtualButton(rButton.x, rButton.y+125, 'h');
+		hButton.cameras = [camHUD];
+		add(hButton);
+		shiftButton = new VirtualButton(hButton.x, hButton.y+125, 'shift');
+		shiftButton.cameras = [camHUD];
+		add(shiftButton);
+		spaceButton = new VirtualButton(hButton.x + 125, hButton.y, 'space');
+		spaceButton.cameras = [camHUD];
+		mainButtonGroup.add(spaceButton);
+		//wasd
+		aButton = new VirtualButton(0, FlxG.height-125, 'a');
+		aButton.cameras = [camHUD];
+		offsetButtonGroup.add(aButton);
+		sButton = new VirtualButton(aButton.x + 125, aButton.y, 's');
+		sButton.cameras = [camHUD];
+		offsetButtonGroup.add(sButton);
+		wButton = new VirtualButton(sButton.x, sButton.y - 125, 'w');
+		wButton.cameras = [camHUD];
+		offsetButtonGroup.add(wButton);
+		dButton = new VirtualButton(sButton.x + 125, sButton.y, 'd');
+		dButton.cameras = [camHUD];
+		offsetButtonGroup.add(dButton);
+		//arrow key
+		leftButton = new VirtualButton(dButton.x + 125, dButton.y, 'left');
+		leftButton.cameras = [camHUD];
+		offsetButtonGroup.add(leftButton);
+		downButton = new VirtualButton(leftButton.x + 125, leftButton.y, 'down');
+		downButton.cameras = [camHUD];
+		offsetButtonGroup.add(downButton);
+		upButton = new VirtualButton(downButton.x, downButton.y - 125, 'up');
+		upButton.cameras = [camHUD];
+		offsetButtonGroup.add(upButton);
+		rightButton = new VirtualButton(downButton.x + 125, downButton.y, 'right');
+		rightButton.cameras = [camHUD];
+		offsetButtonGroup.add(rightButton);
+		add(mainButtonGroup);
+		add(offsetButtonGroup);
+		for (button in offsetButtonGroup.members) {
+			button.visible = false;
+		}
+		for (button in mainButtonGroup.members) {
+			button.visible = true;
+		}
+		#end
+
 		super.create();
 	}
 
@@ -538,7 +636,7 @@ class DialogueCharacterEditorState extends MusicBeatState
 			FlxG.sound.muteKeys = TitleState.muteKeys;
 			FlxG.sound.volumeDownKeys = TitleState.volumeDownKeys;
 			FlxG.sound.volumeUpKeys = TitleState.volumeUpKeys;
-			if(FlxG.keys.justPressed.SPACE && UI_mainbox.selected_tab_id == 'Character') {
+			if((FlxG.keys.justPressed.SPACE #if mobile || spaceButton.justPressed #end) && UI_mainbox.selected_tab_id == 'Character') {
 				character.playAnim(character.jsonFile.animations[curAnim].anim);
 				daText.resetDialogue();
 				updateTextBox();
@@ -547,8 +645,10 @@ class DialogueCharacterEditorState extends MusicBeatState
 			//lots of Ifs lol get trolled
 			var offsetAdd:Int = 1;
 			var speed:Float = 300;
-			if(FlxG.keys.pressed.SHIFT) {
+			var speedT:Float = 1;
+			if(FlxG.keys.pressed.SHIFT #if mobile || shiftButton.pressed #end) {
 				speed = 1200;
+				speedT = 4;
 				offsetAdd = 10;
 			}
 
@@ -563,12 +663,18 @@ class DialogueCharacterEditorState extends MusicBeatState
 					}
 				}
 			}
+			#if mobile
+			if (handButton.enable) {
+				mainGroup.x += touch.scrollSwipeSmoothX() * speedT;
+				mainGroup.y += touch.scrollSwipeSmooth() * speedT;
+			}
+			#end
 
 			if(UI_mainbox.selected_tab_id == 'Animations' && curSelectedAnim != null && character.dialogueAnimations.exists(curSelectedAnim)) {
 				var moved:Bool = false;
 				var animShit:DialogueAnimArray = character.dialogueAnimations.get(curSelectedAnim);
-				var controlArrayLoop:Array<Bool> = [FlxG.keys.justPressed.A, FlxG.keys.justPressed.W, FlxG.keys.justPressed.D, FlxG.keys.justPressed.S];
-				var controlArrayIdle:Array<Bool> = [FlxG.keys.justPressed.LEFT, FlxG.keys.justPressed.UP, FlxG.keys.justPressed.RIGHT, FlxG.keys.justPressed.DOWN];
+				var controlArrayLoop:Array<Bool> = [FlxG.keys.justPressed.A #if mobile || aButton.justPressed #end, FlxG.keys.justPressed.W #if mobile || wButton.justPressed #end, FlxG.keys.justPressed.D #if mobile || dButton.justPressed #end, FlxG.keys.justPressed.S #if mobile || sButton.justPressed #end];
+				var controlArrayIdle:Array<Bool> = [FlxG.keys.justPressed.LEFT #if mobile || leftButton.justPressed #end, FlxG.keys.justPressed.UP #if mobile || upButton.justPressed #end, FlxG.keys.justPressed.RIGHT #if mobile || rightButton.justPressed #end, FlxG.keys.justPressed.DOWN #if mobile || downButton.justPressed #end];
 				for (i in 0...controlArrayLoop.length) {
 					if(controlArrayLoop[i]) {
 						if(i % 2 == 1) {
@@ -606,7 +712,20 @@ class DialogueCharacterEditorState extends MusicBeatState
 				camGame.zoom += elapsed * camGame.zoom;
 				if(camGame.zoom > 1) camGame.zoom = 1;
 			}
-			if(FlxG.keys.justPressed.H) {
+			#if mobile
+			if (handButton.enable && !shiftButton.pressed) {
+				var zoomPitch = touch.pinchZoom(1, 'zoom');
+				if (zoomPitch != 1) {
+					camGame.zoom *= zoomPitch;
+					//trace(camGame.zoom);
+					if(camGame.zoom < 0.1) camGame.zoom = 0.1;
+					else if(camGame.zoom > 1) camGame.zoom = 1;
+				}
+			}
+			//if (!shiftButton.pressed) {//prevent zooming while hold shift to move camera faster
+			//}
+			#end
+			if(FlxG.keys.justPressed.H #if mobile || hButton.justPressed #end) {
 				if(UI_mainbox.selected_tab_id == 'Animations') {
 					currentGhosts++;
 					if(currentGhosts > 2) currentGhosts = 0;
@@ -619,7 +738,7 @@ class DialogueCharacterEditorState extends MusicBeatState
 					hudGroup.visible = !hudGroup.visible;
 				}
 			}
-			if(FlxG.keys.justPressed.R) {
+			if(FlxG.keys.justPressed.R #if mobile || rButton.justPressed #end) {
 				camGame.zoom = 1;
 				mainGroup.setPosition(0, 0);
 				hudGroup.visible = true;
@@ -636,6 +755,16 @@ class DialogueCharacterEditorState extends MusicBeatState
 					offsetIdleText.visible = true;
 					animText.visible = false;
 					currentGhosts = 0;
+					#if mobile
+					for (button in mainButtonGroup.members) {
+						if(button != null) button.visible = false;
+					}
+					mainButtonGroup.visible = false;
+					for (button in offsetButtonGroup.members) {
+						if(button != null) button.visible = true;
+					}
+					offsetButtonGroup.visible = true;
+					#end
 				} else {
 					hudGroup.alpha = 1;
 					mainGroup.alpha = 1;
@@ -653,6 +782,14 @@ class DialogueCharacterEditorState extends MusicBeatState
 					
 					character.playAnim(character.jsonFile.animations[curAnim].anim);
 					animText.text = 'Animation: ' + character.jsonFile.animations[curAnim].anim + ' (' + (curAnim + 1) +' / ' + character.jsonFile.animations.length + ') - ' + #if mobile 'Swipe Up or Down to scroll' #else 'Press W or S to scroll' #end;
+					#if mobile
+					for (button in offsetButtonGroup.members) {
+						if(button != null) button.visible = false;
+					}
+					for (button in mainButtonGroup.members) {
+						if(button != null) button.visible = true;
+					}
+					#end
 				}
 				lastTab = UI_mainbox.selected_tab_id;
 				currentGhosts = 0;
@@ -661,7 +798,7 @@ class DialogueCharacterEditorState extends MusicBeatState
 			if(UI_mainbox.selected_tab_id == 'Character')
 			{
 				var negaMult:Array<Int> = [1, -1];
-				var controlAnim:Array<Bool> = [FlxG.keys.justPressed.W #if mobile || dge.backend.TouchUtil.swipeUp() #end, FlxG.keys.justPressed.S #if mobile || dge.backend.TouchUtil.swipeDown() #end];
+				var controlAnim:Array<Bool> = [FlxG.keys.justPressed.W #if mobile || (touch.swipeUp() && !handButton.enable) #end, FlxG.keys.justPressed.S #if mobile || (touch.swipeDown() && !handButton.enable) #end];
 
 				if(controlAnim.contains(true))
 				{

@@ -620,6 +620,9 @@ class WeekEditorState extends MusicBeatState
 class WeekEditorFreeplayState extends MusicBeatState
 {
 	var weekFile:WeekFile = null;
+	#if mobile
+	private var touch:TouchUtil = new TouchUtil();
+	#end
 	public function new(weekFile:WeekFile = null)
 	{
 		super();
@@ -860,8 +863,8 @@ class WeekEditorFreeplayState extends MusicBeatState
 				FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			}
 
-			if(controls.UI_UP_P #if mobile || dge.backend.TouchUtil.swipeUp() #end) changeSelection(-1);
-			if(controls.UI_DOWN_P #if mobile || dge.backend.TouchUtil.swipeDown() #end) changeSelection(1);
+			if(controls.UI_UP_P #if mobile || touch.swipeUp() #end) changeSelection(-1);
+			if(controls.UI_DOWN_P #if mobile || touch.swipeDown() #end) changeSelection(1);
 		}
 		super.update(elapsed);
 	}

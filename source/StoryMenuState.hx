@@ -52,9 +52,12 @@ class StoryMenuState extends MusicBeatState
 
 	var loadedWeeks:Array<WeekData> = [];
 	#if mobile
+	private var touch:TouchUtil = new TouchUtil();
 	private var ctrlButton:VirtualButton;
 	private var resetButton:VirtualButton;
 	private var enterButton:VirtualButton;
+	private var leftButton:VirtualButton;
+	private var rightButton:VirtualButton;
 	#end
 	public static var songListLength:Int = 0;
 
@@ -219,6 +222,10 @@ class StoryMenuState extends MusicBeatState
 		add(resetButton);
 		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
 		add(enterButton);
+		leftButton = new VirtualButton(ctrlButton.x, ctrlButton.y-125, 'left');
+		add(leftButton);
+		rightButton = new VirtualButton(resetButton.x, resetButton.y-125, 'right');
+		add(rightButton);
 		#end
 
 		super.create();
@@ -263,7 +270,7 @@ class StoryMenuState extends MusicBeatState
 				changeDifficulty();
 			}
 			#if mobile
-			var swipeWheel = dge.backend.TouchUtil.scrollSwipe();
+			var swipeWheel = touch.scrollSwipe();
 			if(swipeWheel != 0)
 			{
 				FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
@@ -272,20 +279,20 @@ class StoryMenuState extends MusicBeatState
 			}
 			#end
 			if (WeekData.weeksList.length > 0) {
-				if (controls.UI_RIGHT #if mobile || dge.backend.TouchUtil.swipeRight() #end)
+				if (controls.UI_RIGHT #if mobile || rightButton.justPressed #end)
 					rightArrow.animation.play('press')
 				else
 					rightArrow.animation.play('idle');
 	
-				if (controls.UI_LEFT #if mobile || dge.backend.TouchUtil.swipeLeft() #end)
+				if (controls.UI_LEFT #if mobile || leftButton.justPressed #end)
 					leftArrow.animation.play('press');
 				else
 					leftArrow.animation.play('idle');
 			}
 
-			if (controls.UI_RIGHT_P #if mobile || dge.backend.TouchUtil.swipeRight() #end)
+			if (controls.UI_RIGHT_P #if mobile || rightButton.justPressed #end)
 				changeDifficulty(1);
-			else if (controls.UI_LEFT_P #if mobile || dge.backend.TouchUtil.swipeLeft() #end)
+			else if (controls.UI_LEFT_P #if mobile || leftButton.justPressed #end)
 				changeDifficulty(-1);
 			else if (upP || downP)
 				changeDifficulty();

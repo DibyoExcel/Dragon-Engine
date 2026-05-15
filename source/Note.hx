@@ -274,6 +274,10 @@ class Note extends FlxSprite
 	public var fakeStrumAlpha:Null<Float> = null;//override strum attach alpha to 'this' alpha
 	public var fakeStrumDirection:Null<Float> = null;//override strum attach direction to 'this' direction
 	public var fakeStrumDownScroll:Null<Bool> = null;//override strum attach downScroll to 'this' downScroll
+	//distance more detail
+	//idk why i set default to 2000 but it didt affected that much
+	public var distanceX:Float = 2000;
+	public var distanceY:Float = 2000;
 	//end dge core
 
 	@:noCompletion

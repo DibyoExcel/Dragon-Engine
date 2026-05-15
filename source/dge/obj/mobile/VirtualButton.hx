@@ -24,7 +24,7 @@ class VirtualButton extends FlxButton {
     }
     private function set_texture(value:String):String {
         if (texture != value) {
-            if (value.length <= 0) {
+            if (value.length <= 0 || value == null) {
                 value = texture;
             }
             if (pressed) {

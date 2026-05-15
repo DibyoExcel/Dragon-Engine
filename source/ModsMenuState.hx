@@ -66,6 +66,10 @@ class ModsMenuState extends MusicBeatState
 	var visibleWhenNoMods:Array<FlxBasic> = [];
 	var visibleWhenHasMods:Array<FlxBasic> = [];
 
+	#if mobile
+	private var touch:TouchUtil = new TouchUtil();
+	#end
+
 	override function create()
 	{
 		Paths.clearStoredMemory();
@@ -530,12 +534,12 @@ class ModsMenuState extends MusicBeatState
 			}
 		}
 
-		if(controls.UI_UP_P #if mobile || dge.backend.TouchUtil.swipeUp() #end)
+		if(controls.UI_UP_P #if mobile || touch.swipeUp() #end)
 		{
 			changeSelection(-1);
 			FlxG.sound.play(Paths.sound('scrollMenu'));
 		}
-		if(controls.UI_DOWN_P #if mobile || dge.backend.TouchUtil.swipeDown() #end)
+		if(controls.UI_DOWN_P #if mobile || touch.swipeDown() #end)
 		{
 			changeSelection(1);
 			FlxG.sound.play(Paths.sound('scrollMenu'));

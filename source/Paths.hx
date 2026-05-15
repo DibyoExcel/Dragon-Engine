@@ -335,8 +335,17 @@ class Paths
 				if(FileSystem.exists(darkPathXml)) {
 					pathXml = darkPathXml;
 				} else {
+					//light mode
+					if(FileSystem.exists(modsXml(key))) {
+						pathXml = modsXml(key);
+					}
+				}
+				if (FileSystem.exists(pathXml)) {
+					xmlExists = true;
+				} else {
 					if(FileSystem.exists(externalPreloadPath('images/${key}Dark.xml'))) {
 						pathXml = externalPreloadPath('images/${key}Dark.xml');
+						xmlExists = true;
 					}
 				}
 			}
@@ -373,8 +382,17 @@ class Paths
 				if(FileSystem.exists(darkPathTxt)) {
 					pathTxt = darkPathTxt;
 				} else {
+					//light mode
+					if(FileSystem.exists(modsTxt(key))) {
+						pathTxt = modsTxt(key);
+					}
+				}
+				if (FileSystem.exists(pathTxt)) {
+					txtExists = true;
+				} else {
 					if(FileSystem.exists(externalPreloadPath('images/${key}Dark.txt'))) {
 						pathTxt = externalPreloadPath('images/${key}Dark.txt');
+						txtExists = true;
 					}
 				}
 			}
@@ -387,7 +405,7 @@ class Paths
 				}
 			}
 	
-			var atlas = FlxAtlasFrames.fromSpriteSheetPacker((imageLoaded != null ? imageLoaded : image(key, library)), (txtExists ? File.getContent(modsTxt(key)) : file('images/$key.txt', library)));
+			var atlas = FlxAtlasFrames.fromSpriteSheetPacker((imageLoaded != null ? imageLoaded : image(key, library)), (txtExists ? File.getContent(pathTxt) : file('images/$key.txt', library)));
 			CacheUtil.cachePackerAtlas.set(currentModDirectory + key, atlas);
 			return atlas;
 			#else
@@ -426,6 +444,19 @@ class Paths
 					CacheUtil.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(modKey));
 					return currentTrackedAssets.get(modKey);
 				}
+				//lightmode/default
+				var modKey:String = modsImages(key);
+				if(FileSystem.exists(modKey)) {
+					if(!currentTrackedAssets.exists(modKey)) {
+						var newBitmap:BitmapData = BitmapData.fromFile(modKey);
+						var newGraphic:FlxGraphic = FlxGraphic.fromBitmapData(newBitmap, false, modKey);
+						newGraphic.persist = true;
+						currentTrackedAssets.set(modKey, newGraphic);
+					}
+					localTrackedAssets.push(modKey);
+					CacheUtil.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(modKey));
+					return currentTrackedAssets.get(modKey);
+				}
 				var preloadPath:String = externalPreloadPath('images/${key}Dark.png');
 				if(FileSystem.exists(preloadPath)) {
 					if(!currentTrackedAssets.exists(preloadPath)) {
@@ -438,8 +469,23 @@ class Paths
 					CacheUtil.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(preloadPath));
 					return currentTrackedAssets.get(preloadPath);
 				}
+				var preloadPath:String = externalPreloadPath('images/$key.png');
+				if(FileSystem.exists(preloadPath)) {
+					if(!currentTrackedAssets.exists(preloadPath)) {
+						var newBitmap:BitmapData = BitmapData.fromFile(preloadPath);
+						var newGraphic:FlxGraphic = FlxGraphic.fromBitmapData(newBitmap, false, preloadPath);
+						newGraphic.persist = true;
+						currentTrackedAssets.set(preloadPath, newGraphic);
+					}
+					localTrackedAssets.push(preloadPath);
+					CacheUtil.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(preloadPath));
+					return currentTrackedAssets.get(preloadPath);
+				}
+			}
+			#end
+			if (ClientPrefs.darkmode) {
 				var path = getPath('images/${key}Dark.png', IMAGE, library);
-				//trace(path);
+					//trace(path);
 				if (OpenFlAssets.exists(path, IMAGE)) {
 					if(!currentTrackedAssets.exists(path)) {
 						var newGraphic:FlxGraphic = FlxG.bitmap.add(path, false, path);
@@ -451,34 +497,7 @@ class Paths
 					return currentTrackedAssets.get(path);
 				}
 			}
-			//lightmode/default
-			var modKey:String = modsImages(key);
-			if(FileSystem.exists(modKey)) {
-				if(!currentTrackedAssets.exists(modKey)) {
-					var newBitmap:BitmapData = BitmapData.fromFile(modKey);
-					var newGraphic:FlxGraphic = FlxGraphic.fromBitmapData(newBitmap, false, modKey);
-					newGraphic.persist = true;
-					currentTrackedAssets.set(modKey, newGraphic);
-				}
-				localTrackedAssets.push(modKey);
-				CacheUtil.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(modKey));
-				return currentTrackedAssets.get(modKey);
-			}
-
-			var preloadPath:String = externalPreloadPath('images/$key.png');
-			if(FileSystem.exists(preloadPath)) {
-				if(!currentTrackedAssets.exists(preloadPath)) {
-					var newBitmap:BitmapData = BitmapData.fromFile(preloadPath);
-					var newGraphic:FlxGraphic = FlxGraphic.fromBitmapData(newBitmap, false, preloadPath);
-					newGraphic.persist = true;
-					currentTrackedAssets.set(preloadPath, newGraphic);
-				}
-				localTrackedAssets.push(preloadPath);
-				CacheUtil.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(preloadPath));
-				return currentTrackedAssets.get(preloadPath);
-			}
-			#end
-	
+			
 			var path = getPath('images/$key.png', IMAGE, library);
 			//trace(path);
 			if (OpenFlAssets.exists(path, IMAGE)) {
@@ -529,7 +548,15 @@ class Paths
 			// trace(gottenPath);
 			if(!currentTrackedSounds.exists(gottenPath))
 			#if MODS_ALLOWED
-				currentTrackedSounds.set(gottenPath, Sound.fromFile(externalFilesPath(gottenPath)));
+				if (FileSystem.exists(externalFilesPath(gottenPath))) {
+					currentTrackedSounds.set(gottenPath, Sound.fromFile(externalFilesPath(gottenPath)));
+				} else if (OpenFlAssets.exists(getPath('$path/$key.$SOUND_EXT', SOUND, library), SOUND)) {
+					var folder:String = '';
+					currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)));
+				} else {
+					trace('Missing sound asset: ' + key + '. Using silence placeholder.');
+					currentTrackedSounds.set(gottenPath, new Sound());
+				}
 			#else
 			{
 				var folder:String = '';

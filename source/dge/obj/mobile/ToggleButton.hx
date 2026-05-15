@@ -19,7 +19,7 @@ class ToggleButton extends VirtualButton//it should could nested?
     }
     override function set_texture(value:String):String {
         if (texture != value) {
-            if (value.length > 0) {
+            if (value != null && value.length > 0) {
                 texture = value;
                 updateGraphic();
             }

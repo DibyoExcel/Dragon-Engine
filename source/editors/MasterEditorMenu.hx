@@ -38,7 +38,10 @@ class MasterEditorMenu extends MusicBeatState
 	private var curDirectory = 0;
 	private var directoryTxt:FlxText;
 	#if mobile
+	private var touch:TouchUtil = new TouchUtil();
 	private var enterButton:VirtualButton;
+	private var leftButton:VirtualButton;
+	private var rightButton:VirtualButton;
 	#end
 
 	override function create()
@@ -88,6 +91,12 @@ class MasterEditorMenu extends MusicBeatState
 		#end
 		changeSelection();
 		#if mobile
+		leftButton = new VirtualButton(0, 0, 'left');
+		leftButton.screenCenter(Y);
+		add(leftButton);
+		rightButton = new VirtualButton(FlxG.width-125, 0, 'right');
+		rightButton.screenCenter(Y);
+		add(rightButton);
 		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
 		add(enterButton);
 		#end
@@ -98,20 +107,20 @@ class MasterEditorMenu extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if (controls.UI_UP_P #if mobile || dge.backend.TouchUtil.swipeUp() #end)
+		if (controls.UI_UP_P #if mobile || touch.swipeUp() #end)
 		{
 			changeSelection(-1);
 		}
-		if (controls.UI_DOWN_P #if mobile || dge.backend.TouchUtil.swipeDown() #end)
+		if (controls.UI_DOWN_P #if mobile || touch.swipeDown() #end)
 		{
 			changeSelection(1);
 		}
 		#if MODS_ALLOWED
-		if(controls.UI_LEFT_P #if mobile || dge.backend.TouchUtil.swipeLeft() #end)
+		if(controls.UI_LEFT_P #if mobile || leftButton.justPressed #end)
 		{
 			changeDirectory(-1);
 		}
-		if(controls.UI_RIGHT_P #if mobile || dge.backend.TouchUtil.swipeRight() #end)
+		if(controls.UI_RIGHT_P #if mobile || rightButton.justPressed #end)
 		{
 			changeDirectory(1);
 		}
@@ -139,7 +148,7 @@ class MasterEditorMenu extends MusicBeatState
 					LoadingState.loadAndSwitchState(new ChartingState(), false);
 			}
 			FlxG.sound.music.volume = 0;
-			#if PRELOAD_ALL
+			#if !web
 			FreeplayState.destroyFreeplayVocals();
 			#end
 		}

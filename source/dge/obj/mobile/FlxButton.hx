@@ -187,6 +187,7 @@ class FlxTypedButton<T:FlxSprite> extends FlxSprite implements IFlxInput
 	public var released(get, never):Bool;
 	public var pressed(get, never):Bool;
 	public var justPressed(get, never):Bool;
+	public var disableInput:Bool = false;
 
 	/**
 	 * We cast label to a `FlxSprite` for internal operations to avoid Dynamic casts in C++
@@ -308,8 +309,9 @@ class FlxTypedButton<T:FlxSprite> extends FlxSprite implements IFlxInput
 				lastStatus = status;
 			}
 		}
-
-		input.update();
+		if (!disableInput) {
+			input.update();
+		}
 	}
 
 	function updateStatusAnimation():Void
@@ -590,22 +592,22 @@ class FlxTypedButton<T:FlxSprite> extends FlxSprite implements IFlxInput
 
 	inline function get_justReleased():Bool
 	{
-		return input.justReleased;
+		return (!disableInput ? input.justReleased : false);
 	}
 
 	inline function get_released():Bool
 	{
-		return input.released;
+		return (!disableInput ? input.released : true);
 	}
 
 	inline function get_pressed():Bool
 	{
-		return input.pressed;
+		return (!disableInput ? input.pressed : false);
 	}
 
 	inline function get_justPressed():Bool
 	{
-		return input.justPressed;
+		return (!disableInput ? input.justPressed : false);
 	}
 }
 

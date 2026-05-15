@@ -56,6 +56,9 @@ class FlxUIDropDownMenuCustom extends FlxUIGroup implements IFlxUIWidget impleme
 
 	private var currentScroll:Int = 0; //Handles the scrolling
 	public var canScroll:Bool = true;
+	#if mobile
+	private var touch:TouchUtil = new TouchUtil();
+	#end
 
 	private function get_selectedId():String
 	{
@@ -435,7 +438,7 @@ class FlxUIDropDownMenuCustom extends FlxUIGroup implements IFlxUIWidget impleme
 		{
 			if(list.length > 1 && canScroll) {
 				#if mobile
-				var mobileScroll = dge.backend.TouchUtil.scrollSwipe();
+				var mobileScroll = touch.scrollSwipe();
 				#end
 				if(FlxG.mouse.wheel > 0 || FlxG.keys.justPressed.UP #if mobile || mobileScroll > 0 #end) {
 					// Go up
@@ -451,7 +454,7 @@ class FlxUIDropDownMenuCustom extends FlxUIGroup implements IFlxUIWidget impleme
 				}
 			}
 			#if mobile
-			if (dge.backend.TouchUtil.tap() && !mouseOverlapping())
+			if (touch.tap() && !mouseOverlapping())
 			{
 				showList(false);
 			}

@@ -5,14 +5,15 @@
 	<app title="FNF: Dragon Engine" if="mobile"/> <!--Shorter title for mobile because too long titles get cut off. idk why so fucking long comments lol-->
 	<!--YY.MJ.MN-->
 	<!--app version-->
-	<app version="26.8.4"/>
-	<!--compile msg-->
-	<echo value="Make your idea creativity become true."/>
-	<echo value="Dragon Engine - DubEnderDragon" />
-	<echo value="Building for target: Windows" if="windows"/>
-	<echo value="Building for target: Android" if="android"/>
-	<echo value="Building for target: HTML5" if="html5"/>
-	<echo value="             +***@                      
+	<app version="26.9.0"/>
+	<section unless="display"><!--haxe language server fix--><!--thank you @senoritaniz)-->
+		<!--compile msg-->
+		<echo value="Make your idea creativity become true."/>
+		<echo value="Dragon Engine - DubEnderDragon" />
+		<echo value="Building for target: Windows" if="windows"/>
+		<echo value="Building for target: Android" if="android"/>
+		<echo value="Building for target: HTML5" if="html5"/>
+		<echo value="             +***@                      
                 *%@##@                  
  @****#%%%%##***#**@@@#*                
    @*****##%@@@@@@@@@@@@@@#**#          
@@ -32,6 +33,7 @@
   *%@*           @#@%#*         *%#     
    %##*          #%*              **    
      #*          *                      "/>
+	</section>
 
 	<app main="Main" company="DubEnderDragon" />
 	<app file="Dragon Engine" packageName="id.dubenderdragon.dge" package="id.dubenderdragon.dge" if="release" />
@@ -97,49 +99,54 @@
 	<define name="CHECK_FOR_UPDATES" if="desktop || android"/>
 
 	<!-- <define name="PRELOAD_ALL" /> -->
-	<define name="PRELOAD_ALL" unless="web" />
-	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
-	
-	<library name="videos"        preload="true" />
-	<section if="PRELOAD_ALL">
-		<library name="songs"         preload="true" />
-		<library name="shared"        preload="true" />
-		<library name="week2"         preload="true" />
-		<library name="week3"         preload="true" />
-		<library name="week4"         preload="true" />
-		<library name="week5"         preload="true" />
-		<library name="week6"         preload="true" />
-		<library name="week7"         preload="true" />
+	<section if="web"><!--sory not have idea how to fix in html5-->
+		<define name="PRELOAD_ALL" unless="web" />
+		<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
+		
+		<library name="videos"        preload="true" />
+		<section if="PRELOAD_ALL">
+			<library name="songs"         preload="true" />
+			<library name="shared"        preload="true" />
+			<library name="week2"         preload="true" />
+			<library name="week3"         preload="true" />
+			<library name="week4"         preload="true" />
+			<library name="week5"         preload="true" />
+			<library name="week6"         preload="true" />
+			<library name="week7"         preload="true" />
+		</section>
+		
+		<section if="NO_PRELOAD_ALL">
+			<library name="songs"         preload="true" />
+			<library name="shared"        preload="false" />
+			<library name="week2"         preload="false" />
+			<library name="week3"         preload="false" />
+			<library name="week4"         preload="false" />
+			<library name="week5"         preload="false" />
+			<library name="week6"         preload="false" />
+			<library name="week7"         preload="false" />
+		</section>
+		
+		<assets path="assets/videos"        library="videos"        if="VIDEOS_ALLOWED"/>
+		<assets path="assets/songs"         library="songs"         exclude="*.ogg"/>
+		<assets path="assets/shared"        library="shared"        exclude="*.ogg"/>
+		<assets path="assets/week2"         library="week2"         exclude="*.ogg"/>
+		<assets path="assets/week3"         library="week3"         exclude="*.ogg"/>
+		<assets path="assets/week4"         library="week4"         exclude="*.ogg"/>
+		<assets path="assets/week5"         library="week5"         exclude="*.ogg"/>
+		<assets path="assets/week6"         library="week6"         exclude="*.ogg"/>
+		<assets path="assets/week7"         library="week7"         exclude="*.ogg"/>
 	</section>
-	
-	<section if="NO_PRELOAD_ALL">
-		<library name="songs"         preload="true" />
-		<library name="shared"        preload="false" />
-		<library name="week2"         preload="false" />
-		<library name="week3"         preload="false" />
-		<library name="week4"         preload="false" />
-		<library name="week5"         preload="false" />
-		<library name="week6"         preload="false" />
-		<library name="week7"         preload="false" />
+	<section unless="web">
+		<assets path="assets/videos"        rename="assets/videos"        if="VIDEOS_ALLOWED"/>
+		<assets path="assets/songs"         rename="assets/songs"         exclude="*.mp3"/>
+		<assets path="assets/shared"        rename="assets"        exclude="*.mp3"/>
+		<assets path="assets/week2"         rename="assets"         exclude="*.mp3"/>
+		<assets path="assets/week3"         rename="assets"         exclude="*.mp3"/>
+		<assets path="assets/week4"         rename="assets"         exclude="*.mp3"/>
+		<assets path="assets/week5"         rename="assets"         exclude="*.mp3"/>
+		<assets path="assets/week6"         rename="assets"         exclude="*.mp3"/>
+		<assets path="assets/week7"         rename="assets"         exclude="*.mp3"/>
 	</section>
-	
-	<assets path="assets/videos"        library="videos"        if="VIDEOS_ALLOWED"/>
-	<assets path="assets/songs"         library="songs"         exclude="*.ogg" if="web"/>
-	<assets path="assets/songs"         library="songs"         exclude="*.mp3" unless="web"/>
-	<assets path="assets/shared"        library="shared"        exclude="*.ogg" if="web"/>
-	<assets path="assets/shared"        library="shared"        exclude="*.mp3" unless="web"/>
-	<assets path="assets/week2"         library="week2"         exclude="*.ogg" if="web"/>
-	<assets path="assets/week2"         library="week2"         exclude="*.mp3" unless="web"/>
-	<assets path="assets/week3"         library="week3"         exclude="*.ogg" if="web"/>
-	<assets path="assets/week3"         library="week3"         exclude="*.mp3" unless="web"/>
-	<assets path="assets/week4"         library="week4"         exclude="*.ogg" if="web"/>
-	<assets path="assets/week4"         library="week4"         exclude="*.mp3" unless="web"/>
-	<assets path="assets/week5"         library="week5"         exclude="*.ogg" if="web"/>
-	<assets path="assets/week5"         library="week5"         exclude="*.mp3" unless="web"/>
-	<assets path="assets/week6"         library="week6"         exclude="*.ogg" if="web"/>
-	<assets path="assets/week6"         library="week6"         exclude="*.mp3" unless="web"/>
-	<assets path="assets/week7"         library="week7"         exclude="*.ogg" if="web"/>
-	<assets path="assets/week7"         library="week7"         exclude="*.mp3" unless="web"/>
 	
 	<section if="MODS_ALLOWED">
 		<assets path='example_mods' rename='mods' embed='false'/>

@@ -34,9 +34,12 @@ class MainMenuState extends MusicBeatState
 	private var camGame:FlxCamera;
 	private var camAchievement:FlxCamera;
 
+	#if mobile
 	//mobile
+	private var touch:TouchUtil = new TouchUtil();
 	private var debugButton:VirtualButton;
 	private var enterButton:VirtualButton;
+	#end
 	
 	var optionShit:Array<String> = [
 		'story_mode',
@@ -208,13 +211,13 @@ class MainMenuState extends MusicBeatState
 
 		if (!selectedSomethin)
 		{
-			if (controls.UI_UP_P #if mobile || dge.backend.TouchUtil.swipeUp() #end)
+			if (controls.UI_UP_P #if mobile || touch.swipeUp() #end)
 			{
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 				changeItem(-1);
 			}
 
-			if (controls.UI_DOWN_P #if mobile || dge.backend.TouchUtil.swipeDown() #end)
+			if (controls.UI_DOWN_P #if mobile || touch.swipeDown() #end)
 			{
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 				changeItem(1);

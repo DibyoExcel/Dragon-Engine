@@ -21,6 +21,7 @@ class ResetScoreSubState extends MusicBeatSubstate
 	var difficulty:Int;
 	var week:Int;
 	#if mobile
+	private var touch:TouchUtil = new TouchUtil();
 	private var enterButton:VirtualButton;
 	#end
 
@@ -92,7 +93,7 @@ class ResetScoreSubState extends MusicBeatSubstate
 		}
 		if(week == -1) icon.alpha += elapsed * 2.5;
 
-		if((controls.UI_LEFT_P #if mobile || dge.backend.TouchUtil.swipeLeft() #end) || (controls.UI_RIGHT_P #if mobile || dge.backend.TouchUtil.swipeRight() #end)) {
+		if((controls.UI_LEFT_P #if mobile || touch.swipeLeft() #end) || (controls.UI_RIGHT_P #if mobile || touch.swipeRight() #end)) {
 			FlxG.sound.play(Paths.sound('scrollMenu'), 1);
 			onYes = !onYes;
 			updateOptions();

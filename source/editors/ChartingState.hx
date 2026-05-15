@@ -3,6 +3,7 @@ package editors;
 #if mobile
 import dge.obj.mobile.VirtualButton;
 import dge.obj.mobile.ToggleButton;
+import dge.backend.instance.ButtonSwapHandle;
 #end
 #if desktop
 import Discord.DiscordClient;
@@ -146,7 +147,7 @@ class ChartingState extends MusicBeatState
 	var highlight:FlxSprite;
 
 	public static var GRID_SIZE:Int = #if mobile 60 #else 40 #end;//slightly bigger grid size for mobile for better visibility and easier note placement, also it would be too hard to place notes with 40px grid on mobile, so yeah.
-	var CAM_OFFSET:Float = 360+(GRID_SIZE*4);
+	var CAM_OFFSET:Float = (360+(GRID_SIZE*4)) - #if mobile 125 #else 0 #end;
 
 	var dummyArrow:FlxSprite;
 	
@@ -246,6 +247,12 @@ class ChartingState extends MusicBeatState
 	public var mouseQuant:Bool = false;
 	#if mobile
 	//mobile
+	//container layout
+	private var container:ButtonSwapHandle;
+	//button
+	private var leftContainerButton:VirtualButton;
+	private var rightContainerButton:VirtualButton;
+	private var touch:TouchUtil = new TouchUtil();
 	private var handButton:ToggleButton;
 	private var enterButton:VirtualButton;
 	private var backButton:VirtualButton;
@@ -261,6 +268,15 @@ class ChartingState extends MusicBeatState
 	private var rightBracketButton:VirtualButton;
 	private var altButton:VirtualButton;
 	private var ctrlButton:VirtualButton;
+	private var aButton:VirtualButton;
+	private var dButton:VirtualButton;
+	private var arrayLayoutName:Array<String> = [
+		"sustain",
+		"snap_grid",
+		"zoom",
+		"playback_rate",
+		"section"
+	];
 	#end
 	override function create()
 	{
@@ -521,38 +537,78 @@ class ChartingState extends MusicBeatState
 		optChar.y = (FlxG.height)-(optChar.height);
 		plyChar.y = (FlxG.height)-(plyChar.height);
 		#if mobile
+		//precache button
+		for (img in arrayLayoutName) {
+			Paths.image('button/' + img);
+			Paths.image('button/' + img + '-hover');
+		}
+		// # region Permanent ui
+		// # region container
+		leftContainerButton = new VirtualButton(0, 0, 'left');
+		add(leftContainerButton);
+		rightContainerButton = new VirtualButton(FlxG.width-125, 0, 'right');
+		add(rightContainerButton);
+		//init container
+		container = new ButtonSwapHandle();
+		// # endregion
 		//left ui
 		handButton = new ToggleButton(0, FlxG.height-125, 'hand');
 		add(handButton);
+		shiftButton  = new VirtualButton(handButton.x, handButton.y-125, 'shift');
+		add(shiftButton);
 		//right ui
 		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
 		add(enterButton);
-		backButton = new VirtualButton(FlxG.width-250, FlxG.height-125, 'back');
-		add(backButton);
-		spaceButton  = new VirtualButton(FlxG.width-125, FlxG.height-250, 'space');
+		spaceButton  = new VirtualButton(enterButton.x-125, enterButton.y, 'space');
 		add(spaceButton);
-		leftButton = new VirtualButton(FlxG.width-250, FlxG.height-375, 'left');
-		add(leftButton);
-		shiftButton  = new VirtualButton(FlxG.width-250, FlxG.height-250, 'shift');
-		add(shiftButton);
-		altButton  = new VirtualButton(FlxG.width-375, FlxG.height-250, 'alt');
+		backButton = new VirtualButton(spaceButton.x-125, spaceButton.y, 'back');
+		add(backButton);
+		altButton  = new VirtualButton(enterButton.x, enterButton.y-125, 'alt');
 		add(altButton);
-		rightButton = new VirtualButton(FlxG.width-125, FlxG.height-375, 'right');
-		add(rightButton);
-		downButton = new VirtualButton(FlxG.width-375, FlxG.height-375, 'down');
-		add(downButton);
-		upButton = new VirtualButton(FlxG.width-375, FlxG.height-500, 'up');
-		add(upButton);
-		xButton = new VirtualButton(FlxG.width-375, FlxG.height-125, 'x');
-		add(xButton);
-		zButton = new VirtualButton(FlxG.width-500, FlxG.height-125, 'z');
-		add(zButton);
-		leftBracketButton = new VirtualButton(FlxG.width-250, FlxG.height-500, 'left_bracket');
-		add(leftBracketButton);
-		rightBracketButton = new VirtualButton(FlxG.width-125, FlxG.height-500, 'right_bracket');
-		add(rightBracketButton);
-		ctrlButton  = new VirtualButton(FlxG.width-500, FlxG.height-250, 'ctrl');
+		ctrlButton  = new VirtualButton(altButton.x-125, altButton.y, 'ctrl');
 		add(ctrlButton);
+		// # endregion
+		// # region layout1
+		downButton = new VirtualButton(altButton.x, altButton.y-125, 'down');
+		container.addButton(downButton, 0);
+		upButton = new VirtualButton(downButton.x, downButton.y-125, 'up');
+		container.addButton(upButton, 0);
+		// # endregion
+		// # region layout2
+		leftButton = new VirtualButton(ctrlButton.x, ctrlButton.y-125, 'left');
+		container.addButton(leftButton, 1);
+		rightButton = new VirtualButton(altButton.x, altButton.y-125, 'right');
+		container.addButton(rightButton, 1);
+		// #endregion
+		// # region layout3
+		zButton = new VirtualButton(ctrlButton.x, ctrlButton.y-125, 'z');
+		container.addButton(zButton, 2);
+		xButton = new VirtualButton(altButton.x, altButton.y-125, 'x');
+		container.addButton(xButton, 2);
+		// # endregion
+		// # region layout4
+		leftBracketButton = new VirtualButton(ctrlButton.x, ctrlButton.y-125, 'left_bracket');
+		container.addButton(leftBracketButton, 3);
+		rightBracketButton = new VirtualButton(altButton.x, altButton.y-125, 'right_bracket');
+		container.addButton(rightBracketButton, 3);
+		// # endregion
+		// # region layout5
+		aButton = new VirtualButton(ctrlButton.x, ctrlButton.y-125, 'a');
+		container.addButton(aButton, 4);
+		dButton = new VirtualButton(altButton.x, altButton.y-125, 'd');
+		container.addButton(dButton, 4);
+		// #endregion
+		for (button in container.getAllButtons()) {
+			add(button);
+		}
+		container.init(function(index:Int) {
+			var indexPrev = index-1;
+			if (indexPrev < 0) indexPrev = arrayLayoutName.length-1;
+			var indexNext = index+1;
+			if (indexNext >= arrayLayoutName.length) indexNext = 0;
+			leftContainerButton.texture = arrayLayoutName[indexPrev];
+			rightContainerButton.texture = arrayLayoutName[indexNext];
+		});
 		#end
 		super.create();
 	}
@@ -626,7 +682,14 @@ class ChartingState extends MusicBeatState
 			var songName:String = Paths.formatToSongPath(_song.song);
 			var file:String = Paths.externalFilesPath(Paths.json(songName + '/events'));
 			#if sys
-			if (#if MODS_ALLOWED FileSystem.exists(Paths.modsJson(songName + '/events')) || #end FileSystem.exists(file))
+			var openFlAssets:Bool = false;
+			if (!FileSystem.exists(file) && !FileSystem.exists(Paths.modsJson(songName + '/events'))) {
+				openFlAssets = true;
+				file = Paths.json(songName + '/events');
+			}
+			#end
+			#if sys
+			if (!openFlAssets ? #if MODS_ALLOWED (FileSystem.exists(Paths.modsJson(songName + '/events')) || #end FileSystem.exists(file)) : OpenFlAssets.exists(file))
 			#else
 			if (OpenFlAssets.exists(file))
 			#end
@@ -677,6 +740,7 @@ class ChartingState extends MusicBeatState
 
 		var tempMap:Map<String, Bool> = new Map<String, Bool>();
 		var characters:Array<String> = CoolUtil.coolTextFile(Paths.externalFilesPath(Paths.txt('characterList')));
+		if (characters ==null || characters.length < 1) characters = CoolUtil.coolTextFile(Paths.txt('characterList'), true);
 		for (i in 0...characters.length) {
 			tempMap.set(characters[i], true);
 		}
@@ -1693,6 +1757,15 @@ class ChartingState extends MusicBeatState
 	var colorSine:Float = 0;
 	override function update(elapsed:Float)
 	{
+		#if mobile
+		var containerControl:Array<VirtualButton> = [leftContainerButton, rightContainerButton];
+		for (i in 0...containerControl.length) {
+			if (containerControl[i] != null && containerControl[i].justPressed) {
+				var value:Int = i == 0 ? -1 : 1;
+				container.changeLayout(value);
+			}
+		}
+		#end
 		curStep = recalculateSteps();
 
 		if(FlxG.sound.music.time < 0) {
@@ -2017,14 +2090,14 @@ class ChartingState extends MusicBeatState
 			}
 			#if mobile
 			if (handButton.enable) {
-				var wheelRange = dge.backend.TouchUtil.scrollSwipe(0.5);
-				var wheelRangeH = dge.backend.TouchUtil.scrollSwipeSmoothX();
-				if (wheelRangeH != 0 #if mobile && handButton.enable #end) {//in mobile only hand mode can do scroll
+				var wheelRange = touch.scrollSwipe(0.5);
+				var wheelRangeH = touch.scrollSwipeSmoothX();
+				if (wheelRangeH != 0 && handButton.enable) {//in mobile only hand mode can do scroll
 					FlxG.sound.music.pause();
 					CAM_OFFSET -= wheelRangeH;
 					camPos.setPosition(strumLine.x + CAM_OFFSET, strumLine.y);
 				}
-				if (wheelRange != 0 #if mobile && handButton.enable #end)//in mobile only hand mode can do scroll
+				if (wheelRange != 0 && handButton.enable)//in mobile only hand mode can do scroll
 				{
 					FlxG.sound.music.pause();
 					if (!mouseQuant)
@@ -2199,9 +2272,9 @@ class ChartingState extends MusicBeatState
 			if ((FlxG.keys.pressed.SHIFT #if mobile || shiftButton.pressed #end))
 				shiftThing = 4;
 
-			if (FlxG.keys.justPressed.D)
+			if (FlxG.keys.justPressed.D #if mobile || dButton.justPressed #end)
 				changeSection(curSec + shiftThing);
-			if (FlxG.keys.justPressed.A) {
+			if (FlxG.keys.justPressed.A #if mobile || aButton.justPressed #end) {
 				if(curSec <= 0) {
 					changeSection(_song.notes.length-1);
 				} else {
@@ -2988,7 +3061,14 @@ class ChartingState extends MusicBeatState
 		}
 
 		#if MODS_ALLOWED
-		var rawJson = File.getContent(path);
+		var rawJson:String = null;
+		if (FileSystem.exists(path)) {
+			rawJson = File.getContent(path);
+		} else if (OpenFlAssets.exists(Paths.getPreloadPath(characterPath))) {
+			rawJson = OpenFlAssets.getText(Paths.getPreloadPath(characterPath));
+		} else {
+			rawJson = OpenFlAssets.getText(Paths.getPreloadPath('characters/' + Character.DEFAULT_CHARACTER + '.json'));
+		}
 		#else
 		var rawJson = OpenFlAssets.getText(path);
 		#end

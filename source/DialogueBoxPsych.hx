@@ -100,10 +100,18 @@ class DialogueCharacter extends FlxSprite
 		if(!FileSystem.exists(path)) {
 			path = Paths.externalPreloadPath('images/dialogue/' + DEFAULT_CHARACTER + '.json');
 		}
-		rawJson = File.getContent(path);
-
+		if (FileSystem.exists(path)) {
+			rawJson = File.getContent(path);
+		} else if(Assets.exists(Paths.getPreloadPath(characterPath))) {
+			rawJson = Assets.getText(Paths.getPreloadPath(characterPath));
+		} else if(!Assets.exists(Paths.getPreloadPath(characterPath))) {
+			rawJson = Assets.getText(Paths.getPreloadPath('images/dialogue/' + DEFAULT_CHARACTER + '.json'));
+		}
 		#else
 		var path:String = Paths.getPreloadPath(characterPath);
+		if(!Assets.exists(path)) {
+			path = Paths.getPreloadPath('images/dialogue/' + DEFAULT_CHARACTER + '.json');
+		}
 		rawJson = Assets.getText(path);
 		#end
 		

@@ -53,6 +53,9 @@ class ErrorState extends FlxState
         fontType: "vcr.ttf",
         errorMessage: "ERROR!!\n\n{logmsg}\n\nDevice Info:\nModel: {deviceModel}\nVendor: {deviceVendor}\nPlatform: {platformLabel} ({platformName} {platformVersion})"
     };
+    #if mobile
+    private var touch:TouchUtil = new TouchUtil();
+    #end
     public function new(errorMessage:String)
     {
         super();
@@ -143,7 +146,7 @@ class ErrorState extends FlxState
                 scrollText(1);
             }
             #if mobile
-            scrollTextTouch(dge.backend.TouchUtil.scrollSwipeSmooth());
+            scrollTextTouch(touch.scrollSwipeSmooth());
             #end
             if (text.y > 0)
             {
@@ -198,16 +201,11 @@ class ErrorState extends FlxState
         return defaultJson;
     }
     function scrollText(value:Int) {
-        if (value < 0)
-        {
-            text.y -= 20 * value;
-        }
-        else if (value > 0)
-        {
-            text.y += 20 * value;
-        }
+        text.y += 20 * value;
     }
+    #if mobile
     function scrollTextTouch(value:Float) {
         text.y += value;
     }
+    #end
 }

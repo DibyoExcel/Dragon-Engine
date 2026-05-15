@@ -55,11 +55,14 @@ class FreeplayState extends MusicBeatState
 	//buttton
 	//space, ctrl, shift, reset
 	#if mobile
+	private var touch:TouchUtil = new TouchUtil();
 	private var spaceButton:VirtualButton;
 	private var ctrlButton:VirtualButton;
 	private var shiftButton:VirtualButton;
 	private var resetButton:VirtualButton;
 	private var enterButton:VirtualButton;//use this cuz prevent accident press while press another button
+	private var leftButton:VirtualButton;
+	private var rightButton:VirtualButton;
 	#end
 
 	override function create()
@@ -220,13 +223,17 @@ class FreeplayState extends MusicBeatState
 		add(resetButton);
 		enterButton = new VirtualButton(FlxG.width-125, (FlxG.height-26)-125, 'enter');
 		add(enterButton);
+		leftButton = new VirtualButton(shiftButton.x, shiftButton.y-125, 'left');
+		add(leftButton);
+		rightButton = new VirtualButton(resetButton.x, resetButton.y-125, 'right');
+		add(rightButton);
 		#end
 
 		var textBG:FlxSprite = new FlxSprite(0, FlxG.height - 26).makeGraphic(FlxG.width, 26, 0xFF000000);
 		textBG.alpha = 0.6;
 		add(textBG);
 
-		#if PRELOAD_ALL
+		#if !web
 		var leText:String = "Press SPACE to listen to the Song / Press CTRL to open the Gameplay Changers Menu / Press RESET to Reset your Score and Accuracy.";
 		var size:Int = 16;
 		#else
@@ -343,7 +350,7 @@ class FreeplayState extends MusicBeatState
 				changeDiff();
 			}
 			#if mobile
-			var swipeWheel = dge.backend.TouchUtil.scrollSwipe();
+			var swipeWheel = touch.scrollSwipe();
 			if(swipeWheel != 0)
 			{
 				FlxG.sound.play(Paths.sound('scrollMenu'), 0.2);
@@ -353,9 +360,9 @@ class FreeplayState extends MusicBeatState
 			#end
 		}
 
-		if (controls.UI_LEFT_P #if mobile || dge.backend.TouchUtil.swipeLeft() #end)
+		if (controls.UI_LEFT_P #if mobile || leftButton.justPressed #end)
 			changeDiff(-1);
-		else if (controls.UI_RIGHT_P #if mobile || dge.backend.TouchUtil.swipeRight() #end)
+		else if (controls.UI_RIGHT_P #if mobile || rightButton.justPressed #end)
 			changeDiff(1);
 		else if (upP || downP) changeDiff();
 
@@ -378,7 +385,7 @@ class FreeplayState extends MusicBeatState
 		{
 			if(instPlaying != curSelected)
 			{
-				#if PRELOAD_ALL
+				#if !web
 				Paths.currentModDirectory = songs[curSelected].folder;
 				var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
 				var songData = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());

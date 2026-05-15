@@ -49,6 +49,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 	private var gamemodeArray:Array<String> = [ 'none', 'bothside', 'bothside v2', 'opponent' ];//default
 	#if mobile
 	//mobile
+	private var touch:TouchUtil = new TouchUtil();
 	private var leftButton:VirtualButton;
 	private var rightButton:VirtualButton;
 	private var enterButton:VirtualButton;
@@ -280,11 +281,11 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 	var holdValue:Float = 0;
 	override function update(elapsed:Float)
 	{
-		if (controls.UI_UP_P #if mobile || dge.backend.TouchUtil.swipeUp() #end)
+		if (controls.UI_UP_P #if mobile || touch.swipeUp() #end)
 		{
 			changeSelection(-1);
 		}
-		if (controls.UI_DOWN_P #if mobile || dge.backend.TouchUtil.swipeDown() #end)
+		if (controls.UI_DOWN_P #if mobile || touch.swipeDown() #end)
 		{
 			changeSelection(1);
 		}

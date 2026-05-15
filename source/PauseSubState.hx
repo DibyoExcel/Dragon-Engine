@@ -37,6 +37,7 @@ class PauseSubState extends MusicBeatSubstate
 	var skinPly:String;
 	#if mobile
 	//mobile
+	private var touch:TouchUtil = new TouchUtil();
 	private var leftButton:VirtualButton;
 	private var rightButton:VirtualButton;
 	private var enterButton:VirtualButton;
@@ -182,8 +183,8 @@ class PauseSubState extends MusicBeatSubstate
 
 		super.update(elapsed);
 		updateSkipTextStuff();
-		var upP = controls.UI_UP_P #if mobile || dge.backend.TouchUtil.swipeUp() #end;
-		var downP = controls.UI_DOWN_P #if mobile || dge.backend.TouchUtil.swipeDown() #end;
+		var upP = controls.UI_UP_P #if mobile || touch.swipeUp() #end;
+		var downP = controls.UI_DOWN_P #if mobile || touch.swipeDown() #end;
 		var accepted = controls.ACCEPT #if mobile || enterButton.justPressed #end;
 		if (upP)
 		{

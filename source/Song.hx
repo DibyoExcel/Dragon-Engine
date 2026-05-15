@@ -146,6 +146,8 @@ class Song
 			#if sys
 			if (Synths.exists(Paths.externalFilesPath(Paths.json(formattedFolder + '/' + formattedSong)))) {
 				rawJson = Protogen.getContent(Paths.externalFilesPath(Paths.json(formattedFolder + '/' + formattedSong))).trim();
+			} else if ((Assets.exists(Paths.json(formattedFolder + '/' + formattedSong)))) {
+				rawJson = Assets.getText(Paths.json(formattedFolder + '/' + formattedSong)).trim();
 			} else {
 				missingWarning(Paths.externalFilesPath(Paths.json(formattedFolder + '/' + formattedSong)));//anti crash
 				return null;

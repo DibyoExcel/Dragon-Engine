@@ -114,11 +114,17 @@ class Character extends FlxSprite
 				{
 					path = #if MODS_ALLOWED dge.backend.StorageManager.getEngineDir() + #end Paths.getPreloadPath('characters/' + DEFAULT_CHARACTER + '.json'); //If a character couldn't be found, change him to BF just to prevent a crash
 				}
-
+				var rawJson:String = null;
 				#if MODS_ALLOWED
-				var rawJson = File.getContent(path);
+				if (FileSystem.exists(path)) {
+					rawJson = File.getContent(path);
+				} else if (Assets.exists(Paths.getPreloadPath(characterPath))) {
+					rawJson = Assets.getText(Paths.getPreloadPath(characterPath));
+				} else {
+					rawJson = Assets.getText(Paths.getPreloadPath('characters/' + DEFAULT_CHARACTER + '.json'));
+				}
 				#else
-				var rawJson = Assets.getText(path);
+				rawJson = Assets.getText(path);
 				#end
 
 				var json:CharacterFile = cast Json.parse(rawJson);

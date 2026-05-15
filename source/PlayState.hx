@@ -5,6 +5,7 @@ import dge.backend.PrivateData;
 import dge.obj.Keypress;
 #if mobile
 import dge.obj.mobile.Hitbox;
+import dge.obj.mobile.VirtualButton;
 #end
 import flixel.graphics.FlxGraphic;
 #if desktop
@@ -370,6 +371,7 @@ class PlayState extends MusicBeatState
 	public var hitboxCam:FlxCamera;
 	public var hitbox:FlxTypedGroup<Hitbox>;
 	public var hitboxSpace:Hitbox;
+	public var pauseButton:VirtualButton;
 	#end
 	//precache
 	public var cacheRating:Map<String, FlxGraphic> = new Map();//cache rating(slighty better performance)
@@ -1591,6 +1593,9 @@ class PlayState extends MusicBeatState
 			hitboxSpace.color = 0xffff8000;
 			add(hitboxSpace);
 		}
+		pauseButton = new VirtualButton(FlxG.width - 125, 0, "pause");
+		pauseButton.cameras = [hitboxCam];//
+		add(pauseButton);
 		#end
 		cachePopUpScore();
 		cacheCountdown();
@@ -2681,8 +2686,16 @@ class PlayState extends MusicBeatState
 
 		var songName:String = Paths.formatToSongPath(SONG.song);
 		var file:String = Paths.externalFilesPath(Paths.json(songName + '/events'));
+		#if sys
+		var isopenFlAssets:Bool = false;
+		if (!FileSystem.exists(file) && !FileSystem.exists(Paths.modsJson(songName + '/events'))) {
+			isopenFlAssets = true;
+			file = Paths.json(songName + '/events');//swwith to openfl ssets
+			//trace(file);
+		}
+		#end
 		#if MODS_ALLOWED
-		if (FileSystem.exists(Paths.modsJson(songName + '/events')) || FileSystem.exists(file)) {
+		if (!isopenFlAssets ? (FileSystem.exists(Paths.modsJson(songName + '/events')) || FileSystem.exists(file)) : OpenFlAssets.exists(file)) {
 		#else
 		if (OpenFlAssets.exists(file)) {
 		#end
@@ -3539,7 +3552,7 @@ class PlayState extends MusicBeatState
 			botplayTxt.alpha = 1 - Math.sin((Math.PI * botplaySine) / 180);
 		}
 
-		if ((controls.PAUSE #if android || FlxG.android.justPressed.BACK #end) && startedCountdown && canPause)
+		if ((controls.PAUSE #if android || FlxG.android.justReleased.BACK #end #if mobile || pauseButton.justReleased #end) && startedCountdown && canPause)
 		{
 			var ret:Dynamic = callOnLuas('onPause', [], false);
 			if(ret != FunkinLua.Function_Stop) {
@@ -3787,19 +3800,21 @@ class PlayState extends MusicBeatState
 				noteCount--;
 			}
 		}
-
 		if (generatedMusic)
 		{
 			//input sort(i guess)
 			//if (notes.length > 0) notes.sort(sortNoteTime, FlxSort.ASCENDING);//NVM it just make virsual long note break
 			//visual sort
 			var groupToSort = [playerNotes, gfNotes, opponentNotes];
-			for (group in groupToSort) {
-				if (group.length > 0) group.sort(sortNoteLayer, FlxSort.DESCENDING);
+			if (notesGroupMap != null) {
+				for (group in notesGroupMap) {
+					if (group != null) groupToSort.push(group);
+				}
 			}
-			for (i in notesGroupMap.keys()) {
-				var group = notesGroupMap.get(i);
-				if (group.length > 0) group.sort(sortNoteLayer, FlxSort.DESCENDING);
+			for (group in groupToSort) {
+				if (group != null && group.length > 0) {
+					group.sort(sortNoteLayer, FlxSort.DESCENDING);
+				}
 			}
 		}
 		if (generatedMusic && !inCutscene)
@@ -3855,12 +3870,19 @@ class PlayState extends MusicBeatState
 						var strumSC:Array<Float> = actualStrum.scrollFactorCam;
 						var strumCam:String = actualStrum.camTarget;
 						//uh
-						var strumX:Float = daNote.fakeStrumX == null ? actualStrum.x : daNote.fakeStrumX;
-						var strumY:Float = daNote.fakeStrumY == null ? actualStrum.y : daNote.fakeStrumY;
-						var strumAngle:Float = daNote.fakeStrumAngle == null ? actualStrum.angle : daNote.fakeStrumAngle;
-						var strumDirection:Float = daNote.fakeStrumDirection == null ? actualStrum.direction : daNote.fakeStrumDirection;
-						var strumAlpha:Float = daNote.fakeStrumAlpha == null ? actualStrum.alpha : daNote.fakeStrumAlpha;
-						var strumScroll:Bool = daNote.fakeStrumDownScroll == null ? actualStrum.downScroll : daNote.fakeStrumDownScroll;
+						var strumX:Float = daNote.fakeStrumX == null ? (actualStrum.fakeStrumX == null ? actualStrum.x : actualStrum.fakeStrumX) : daNote.fakeStrumX;
+						var strumY:Float = daNote.fakeStrumY == null ? (actualStrum.fakeStrumY == null ? actualStrum.y : actualStrum.fakeStrumY) : daNote.fakeStrumY;
+						var strumAngle:Float = daNote.fakeStrumAngle == null ? (actualStrum.fakeStrumAngle == null ? actualStrum.angle : actualStrum.fakeStrumAngle) : daNote.fakeStrumAngle;
+						var strumDirection:Float = daNote.fakeStrumDirection == null ? (actualStrum.fakeStrumDirection == null ? actualStrum.direction : actualStrum.fakeStrumDirection) : daNote.fakeStrumDirection;
+						var strumAlpha:Float = daNote.fakeStrumAlpha == null ? (actualStrum.fakeStrumAlpha == null ? actualStrum.alpha : actualStrum.fakeStrumAlpha) : daNote.fakeStrumAlpha;
+						var strumScroll:Bool = daNote.fakeStrumDownScroll == null ? (actualStrum.fakeStrumDirection == null ? actualStrum.downScroll : actualStrum.fakeStrumDownScroll) : daNote.fakeStrumDownScroll;
+						strumDirection += daNote.direction;
+						var angleDir = strumDirection * Math.PI / 180;
+						strumX += daNote.offsetX;
+						strumY += daNote.offsetY;
+						strumAngle += daNote.offsetAngle;
+						strumAlpha *= daNote.multAlpha;
+						var longNotesOffset:Float = 0;
 						if (songSpeed < 0) {
 							strumScroll = !strumScroll;
 						}
@@ -3877,20 +3899,17 @@ class PlayState extends MusicBeatState
 						if (daNote.isSustainNote && daNote.parent != null) {
 							switch(daNote.alignSustainNote) {
 								case 'left':
-									strumX += 0;//left the long notes from parent(0 cuz is already left align by default)
+									longNotesOffset += 0;// left the long notes from parent(0 cuz is already left align by default)
 								case 'center':
-									strumX += (daNote.parent.width/2)-(daNote.width/2);//center the long notes from parent
+									longNotesOffset += (daNote.parent.width/2)-(daNote.width/2);//center the long notes from parent
 								case 'right':
-									strumX += (daNote.parent.width)-(daNote.width);//right the long notes from parent
+									longNotesOffset += (daNote.parent.width)-(daNote.width);//right the long notes from parent
 								default:
-									strumX += (daNote.parent.width/2)-(daNote.width/2);//center the long notes from parent
+									longNotesOffset += (daNote.parent.width/2)-(daNote.width/2);//center the long notes from parent
 							}
 						}
-						strumX += daNote.offsetX;
-						strumY += daNote.offsetY;
-						strumAngle += daNote.offsetAngle;
-						strumAlpha *= daNote.multAlpha;
-						strumDirection += daNote.direction;
+						strumX += Math.sin(angleDir) * longNotesOffset;
+						strumY += Math.cos(angleDir) * longNotesOffset;
 						if (daNote.copyScrollFactor) {
 							daNote.scrollFactorCam = strumSC;
 							daNote.noteSplashScrollFactor = strumSC;
@@ -3912,12 +3931,13 @@ class PlayState extends MusicBeatState
 								//daNote.y = (strumY - 0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed);
 								daNote.distance = (-0.45 * (Conductor.songPosition - daNote.strumTime + daNote.offsetStrumTime) * Math.abs(songSpeed * daNote.multSpeed));
 							}
+							daNote.distanceX = Math.cos(angleDir) * daNote.distance;
+							daNote.distanceY = Math.sin(angleDir) * daNote.distance;
 						}
 						if (daNote.copyFlipY) {
 							daNote.flipY = strumScroll;
 						}
 
-						var angleDir = strumDirection * Math.PI / 180;
 						if (daNote.copyAngle && daNote.copyDirection) {
 							daNote.angle = strumDirection - 90 + strumAngle;
 						} else {
@@ -3932,25 +3952,33 @@ class PlayState extends MusicBeatState
 							daNote.alpha = strumAlpha;
 
 						if(daNote.copyX)
-							daNote.x = strumX + Math.cos(angleDir) * daNote.distance;
+							daNote.x = strumX + daNote.distanceX;
 
 						if(daNote.copyY)
 						{
-							daNote.y = strumY + Math.sin(angleDir) * daNote.distance;
+							daNote.y = strumY + daNote.distanceY;
 
 							if(strumScroll && daNote.isSustainNote)
 							{
+								var angleX:Float = Math.cos(angleDir);
+								var angleY:Float = Math.sin(angleDir);
 								if (daNote.animation.curAnim.name.endsWith('end')) {
-									daNote.y += 10.5 * (fakeCrochet / 400) * 1.5 * (Math.abs(songSpeed * daNote.multSpeed)) + (46 * ((Math.abs(songSpeed * daNote.multSpeed)) - 1));
-									daNote.y -= 46 * (1 - (fakeCrochet / 600)) * (Math.abs(songSpeed * daNote.multSpeed));
+									daNote.x += (10.5 * (fakeCrochet / 400) * 1.5 * (Math.abs(songSpeed * daNote.multSpeed)) + (46 * ((Math.abs(songSpeed * daNote.multSpeed)) - 1))) * angleX;
+									daNote.y += (10.5 * (fakeCrochet / 400) * 1.5 * (Math.abs(songSpeed * daNote.multSpeed)) + (46 * ((Math.abs(songSpeed * daNote.multSpeed)) - 1))) * angleY;
+									daNote.x -= (46 * (1 - (fakeCrochet / 600)) * (Math.abs(songSpeed * daNote.multSpeed))) * angleX;
+									daNote.y -= (46 * (1 - (fakeCrochet / 600)) * (Math.abs(songSpeed * daNote.multSpeed))) * angleY;
 									if(PlayState.isPixelStage) {
-										daNote.y += 8 + (6 - daNote.originalHeightForCalcs) * PlayState.daPixelZoom;
+										daNote.x += (8 + (6 - daNote.originalHeightForCalcs) * PlayState.daPixelZoom) * angleX;
+										daNote.y += (8 + (6 - daNote.originalHeightForCalcs) * PlayState.daPixelZoom) * angleY;
 									} else {
-										daNote.y -= 19;
+										daNote.x -= 19 * angleX;
+										daNote.y -= 19 * angleY;
 									}
 								}
-								daNote.y += (Note.swagWidth / 2) - (60.5 * ((Math.abs(songSpeed * daNote.multSpeed)) - 1));
-								daNote.y += 27.5 * ((SONG.bpm / 100) - 1) * ((Math.abs(songSpeed * daNote.multSpeed)) - 1);
+								daNote.x += ((Note.swagWidth / 2) - (60.5 * ((Math.abs(songSpeed * daNote.multSpeed)) - 1))) * angleX;
+								daNote.y += ((Note.swagWidth / 2) - (60.5 * ((Math.abs(songSpeed * daNote.multSpeed)) - 1))) * angleY;
+								daNote.x += (27.5 * ((SONG.bpm / 100) - 1) * ((Math.abs(songSpeed * daNote.multSpeed)) - 1)) * angleX;
+								daNote.y += (27.5 * ((SONG.bpm / 100) - 1) * ((Math.abs(songSpeed * daNote.multSpeed)) - 1)) * angleY;
 							}
 						}
 						if (!daNote.fakeNoHit) {

@@ -88,6 +88,7 @@ class CharacterEditorState extends MusicBeatState
 	var healthBarBG:FlxSprite;
 	#if mobile
 	//mobile
+	private var touch:TouchUtil = new TouchUtil();
 	private var handButton:ToggleButton;
 	private var leftButton:VirtualButton;
 	private var downButton:VirtualButton;
@@ -1180,6 +1181,9 @@ class CharacterEditorState extends MusicBeatState
 				}
 			}
 		}
+		if (characterList == null || characterList.length < 1) {
+			characterList = CoolUtil.coolTextFile(Paths.txt('characterList'), true);
+		}
 		#else
 		characterList = CoolUtil.coolTextFile(Paths.txt('characterList'));
 		#end
@@ -1256,9 +1260,9 @@ class CharacterEditorState extends MusicBeatState
 			}
 			#if mobile
 			if (!shiftButton.pressed) {//prevent zooming while hold shift to move camera faster
-				var zoomPitch = dge.backend.TouchUtil.pinchZoom();
+				var zoomPitch = touch.pinchZoom();
 				if (zoomPitch != 1 && handButton.enable) {
-					FlxG.camera.zoom += (zoomPitch-1) * FlxG.camera.zoom;
+					FlxG.camera.zoom *= zoomPitch;
 					if(FlxG.camera.zoom > 3) FlxG.camera.zoom = 3;
 					if(FlxG.camera.zoom < 0.1) FlxG.camera.zoom = 0.1;
 				}
@@ -1282,8 +1286,8 @@ class CharacterEditorState extends MusicBeatState
 					camFollow.x += addToCam;
 			}
 			#if mobile
-			var wheelRange = dge.backend.TouchUtil.scrollSwipeSmooth();
-			var wheelRangeX = dge.backend.TouchUtil.scrollSwipeSmoothX();
+			var wheelRange = touch.scrollSwipeSmooth();
+			var wheelRangeX = touch.scrollSwipeSmoothX();
 			if ((wheelRange != 0 || wheelRangeX != 0) && handButton.enable) {
 				var addToCam:Float = 1;
 				//add shift later

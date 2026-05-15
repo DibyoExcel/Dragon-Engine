@@ -50,6 +50,7 @@ class DialogueEditorState extends MusicBeatState
 	var defaultLine:DialogueLine;
 	var dialogueFile:DialogueFile = null;
 	#if mobile
+	private var touch:TouchUtil = new TouchUtil();
 	private var oButton:VirtualButton;
 	private var pButton:VirtualButton;
 	#end
@@ -384,8 +385,8 @@ class DialogueEditorState extends MusicBeatState
 				transitioning = true;
 			}
 			var negaMult:Array<Int> = [1, -1];
-			var controlAnim:Array<Bool> = [FlxG.keys.justPressed.W #if mobile || dge.backend.TouchUtil.swipeUp() #end, FlxG.keys.justPressed.S #if mobile || dge.backend.TouchUtil.swipeDown() #end];
-			var controlText:Array<Bool> = [FlxG.keys.justPressed.D #if mobile || dge.backend.TouchUtil.swipeLeft() #end, FlxG.keys.justPressed.A #if mobile || dge.backend.TouchUtil.swipeRight() #end];
+			var controlAnim:Array<Bool> = [FlxG.keys.justPressed.W #if mobile ||touch.swipeUp() #end, FlxG.keys.justPressed.S #if mobile ||touch.swipeDown() #end];
+			var controlText:Array<Bool> = [FlxG.keys.justPressed.D #if mobile ||touch.swipeLeft() #end, FlxG.keys.justPressed.A #if mobile ||touch.swipeRight() #end];
 			for (i in 0...controlAnim.length) {
 				if(controlAnim[i] && character.jsonFile.animations.length > 0) {
 					curAnim -= negaMult[i];

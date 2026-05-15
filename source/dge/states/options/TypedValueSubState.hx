@@ -7,7 +7,6 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 #if mobile
 import dge.obj.mobile.VirtualButton;
-import dge.backend.TouchUtil;
 #end
 using StringTools;
 
@@ -20,6 +19,7 @@ class TypedValueSubState extends MusicBeatSubstate
     private var textTyping:Alphabet;
     private var nextAccept:Float = 5;
     #if mobile
+    private var touch:TouchUtil = new TouchUtil();
     private var enterButton:VirtualButton;
     private var resetButton:VirtualButton;
     #end
@@ -131,7 +131,7 @@ class TypedValueSubState extends MusicBeatSubstate
         }
         if (nextAccept <= 0) {
             #if mobile
-            if (TouchUtil.tap()) {
+            if (touch.tap()) {
                 FlxG.stage.window.textInputEnabled = true;
             }
             #end

@@ -37,6 +37,7 @@ class PsychOptionsState extends MusicBeatState
 	private static var curSelected:Int = 0;
 	public static var menuBG:FlxSprite;
 	#if mobile
+	private var touch:TouchUtil = new TouchUtil();
 	private var enterButton:VirtualButton;
 	#end
 
@@ -104,10 +105,10 @@ class PsychOptionsState extends MusicBeatState
 	override function update(elapsed:Float) {
 		super.update(elapsed);
 
-		if (controls.UI_UP_P #if mobile || dge.backend.TouchUtil.swipeUp() #end) {
+		if (controls.UI_UP_P #if mobile || touch.swipeUp() #end) {
 			changeSelection(-1);
 		}
-		if (controls.UI_DOWN_P #if mobile || dge.backend.TouchUtil.swipeDown() #end) {
+		if (controls.UI_DOWN_P #if mobile || touch.swipeDown() #end) {
 			changeSelection(1);
 		}
 

@@ -15,7 +15,7 @@ class StrumNote extends FlxSprite
 	public var sustainReduce:Bool = true;
 	private var player:Int;
 	public var texture(default, set):String = null;
-	//dge core
+	// # region dge core
 	public var animConfirm:String = 'confirm';//'confirm', 'static', 'pressed', 'notes'(mayybe could custom if use callPropertyFromGroup())
 	public var fieldName:String = '';//only use for remove object and target of 'customStrum'
 	public var memberID:Int =0; //only use target 'customStrum'(deprecated)
@@ -32,6 +32,15 @@ class StrumNote extends FlxSprite
 	public var classicAnim:Bool = ClientPrefs.classicAnim;//use classic anim behavior
 	public var isLocked:Bool = false;//strums become unpresseable(affected dpending gamemode)(inspired retrospcter p2 chain notes)
 	public var reloadAnimation:Bool = true;//if false it will not reload anim when playAnim called
+	//fake strum stats (for custom strum, it will use these stats instead of strum stats, if not null)
+	//not anything because kinda odd to put it XD
+	public var fakeStrumX:Null<Float> = null;//override strum stat x to 'this' position x
+	public var fakeStrumY:Null<Float> = null;//override strum stat y to 'this' position y
+	public var fakeStrumAngle:Null<Float> = null;//override strum stat angle to 'this' angle
+	public var fakeStrumAlpha:Null<Float> = null;//override strum stat alpha to 'this' alpha
+	public var fakeStrumDirection:Null<Float> = null;//override strum stat direction to 'this' direction
+	public var fakeStrumDownScroll:Null<Bool> = null;//override strum stat downScroll to 'this' downScroll
+	// # endregion
 	
 	private function set_texture(value:String):String {
 		if (value == null) {

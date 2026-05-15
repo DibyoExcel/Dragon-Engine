@@ -26,6 +26,9 @@ class AchievementsMenuState extends MusicBeatState
 	private var achievementArray:Array<AttachedAchievement> = [];
 	private var achievementIndex:Array<Int> = [];
 	private var descText:FlxText;
+	#if mobile
+	private var touch:TouchUtil = new TouchUtil();
+	#end
 
 	override function create() {
 		#if desktop
@@ -78,10 +81,10 @@ class AchievementsMenuState extends MusicBeatState
 	override function update(elapsed:Float) {
 		super.update(elapsed);
 
-		if (controls.UI_UP_P #if mobile || dge.backend.TouchUtil.swipeUp() #end) {
+		if (controls.UI_UP_P #if mobile || touch.swipeUp() #end) {
 			changeSelection(-1);
 		}
-		if (controls.UI_DOWN_P #if mobile || dge.backend.TouchUtil.swipeDown() #end) {
+		if (controls.UI_DOWN_P #if mobile || touch.swipeDown() #end) {
 			changeSelection(1);
 		}
 
