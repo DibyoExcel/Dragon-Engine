@@ -230,6 +230,13 @@ class VisualUISubState extends BaseOptionsMenu
 			false);
 		addOption(option);
 
+		var option:Option = new Option('Sticky Note Splash',
+			"If Checked, The Note Splash Always Follow Strum Poosition Even Strum Has Moving.",
+			'stickyNoteSplash',
+			'bool',
+			false);
+		addOption(option);
+
 		super();
 		changeBGColor(0xffff0000);
 	}

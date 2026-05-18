@@ -19,8 +19,6 @@ class StrumNote extends FlxSprite
 	public var animConfirm:String = 'confirm';//'confirm', 'static', 'pressed', 'notes'(mayybe could custom if use callPropertyFromGroup())
 	public var fieldName:String = '';//only use for remove object and target of 'customStrum'
 	public var memberID:Int =0; //only use target 'customStrum'(deprecated)
-	public var camTarget(default, set):String = null;
-	public var scrollFactorCam(default,set):Array<Float> = [0.0, 0.0];//only can affected in camGame
 	public var gfType:Bool = false;
 	public var snapX:Float = 0;
 	public var snapY:Float = 0;
@@ -61,8 +59,7 @@ class StrumNote extends FlxSprite
 		gfType = gf;
 		texture = '';
 		shaderType = 'swap';
-		camTarget = 'hud';
-		scrollFactor.set(scrollFactorCam[0], scrollFactorCam[1]);
+		scrollFactor.set();
 	}
 
 	public function reloadNote(image:String = '')
@@ -125,31 +122,6 @@ class StrumNote extends FlxSprite
 				centerOrigin();
 			}
 		}
-	}
-	private function set_camTarget(value:String):String {
-		if (camTarget != value && FlxG.state is PlayState) {
-			if (value != '') {
-				var camArray:Array<String> = value.split(',');
-				var realCam:Array<String> = [];
-				for (i in 0...camArray.length) {
-					realCam[i] = camArray[i].trim();
-				}
-				cameras = FunkinLua.cameraArrayFromString(realCam);
-			} else {
-				cameras = null;
-			}
-		}
-		camTarget = value;
-		return value;
-	}
-
-	function set_scrollFactorCam(value:Array<Float>):Array<Float> {
-		if (scrollFactorCam[0] != value[0] || scrollFactorCam[1] != value[1]) {
-			scrollFactor.set(value[0], value[1]);
-		}
-		scrollFactorCam[0] = value[0];
-		scrollFactorCam[1] = value[1];
-		return value;
 	}
 
 	override public function set_y(value:Float):Float {

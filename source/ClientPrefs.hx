@@ -8,6 +8,7 @@ import Controls;
 
 class ClientPrefs {
 	//dge setting
+	public static var stickyNoteSplash:Bool = false;
 	public static var legacyNoteLayer:Bool = false;//classic note layer
 	public static var holdCoverAlpha:Float = 1;//hold cover alpha
 	public static var holdCover:Bool = true;//hold cover
@@ -166,6 +167,7 @@ class ClientPrefs {
 	}
 
 	public static function saveSettings() {
+		FlxG.save.data.stickyNoteSplash = stickyNoteSplash;
 		FlxG.save.data.legacyNoteLayer = legacyNoteLayer;
 		FlxG.save.data.holdCoverAlpha = holdCoverAlpha;
 		FlxG.save.data.holdCover = holdCover;
@@ -258,6 +260,9 @@ class ClientPrefs {
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.stickyNoteSplash != null) {
+			stickyNoteSplash = FlxG.save.data.stickyNoteSplash;
 		}
 		if(FlxG.save.data.legacyNoteLayer != null) {
 			legacyNoteLayer = FlxG.save.data.legacyNoteLayer;

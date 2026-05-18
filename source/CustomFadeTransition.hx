@@ -24,9 +24,9 @@ class CustomFadeTransition extends MusicBeatSubstate {
 	public static var useGraphics:Bool = false;
 	//transition idea inspired nf engine(sorry codename)
 	//bruh so ugly compile condition due html5
-	#if !NO_PRELOAD_ALL
-	public static var splashLoad1:FlxSprite;
-	public static var splashLoad2:FlxSprite;
+	#if !web
+	public var splashLoad1:FlxSprite;
+	public var splashLoad2:FlxSprite;
 	#end
 	private var transitionCamera:FlxCamera;
 
@@ -37,7 +37,7 @@ class CustomFadeTransition extends MusicBeatSubstate {
 		var zoom:Float = CoolUtil.boundTo(FlxG.camera.zoom, 0.05, 1);
 		var width:Int = Std.int(FlxG.width / zoom);
 		var height:Int = Std.int(FlxG.height / zoom);
-		#if !NO_PRELOAD_ALL if (!grp && !useGraphics) {#end
+		#if !web if (!grp && !useGraphics) {#end
 			transGradient = FlxGradient.createGradientFlxSprite(width, height, (isTransIn ? [0x0, FlxColor.BLACK] : [FlxColor.BLACK, 0x0]));
 			transGradient.scrollFactor.set();
 			add(transGradient);
@@ -48,7 +48,7 @@ class CustomFadeTransition extends MusicBeatSubstate {
 	
 			transGradient.x -= (width - FlxG.width) / 2;
 			transBlack.x = transGradient.x;
-			#if !NO_PRELOAD_ALL } else {
+			#if !web } else {
 			splashLoad1 = new FlxSprite(0, 0).loadGraphic(Paths.image('ui/splashLoad_1'));
 			splashLoad2 = new FlxSprite(0, 0).loadGraphic(Paths.image('ui/splashLoad_2'));
 			splashLoad1.antialiasing = ClientPrefs.globalAntialiasing;
@@ -56,6 +56,8 @@ class CustomFadeTransition extends MusicBeatSubstate {
 			add(splashLoad2);
 			add(splashLoad1);//because ...
 			//warnign change resolution beyond 16 is gonna make the loading screen look really bad
+			//laptop resolution(1336P) also break andddd idk how to fix due pixel fraction naturally
+			//only break when use "resizeGame()" lua
 			var scale = splashLoad1.height / FlxG.height;
 			var scale2 = splashLoad2.height / FlxG.height;
 			splashLoad1.setGraphicSize(Std.int(splashLoad1.width / scale), Std.int(splashLoad1.height / scale));
@@ -64,8 +66,8 @@ class CustomFadeTransition extends MusicBeatSubstate {
 			splashLoad2.updateHitbox();
 			var scale = FlxG.width/(FlxG.height*16/9);//well this original mean for 16:9 but reabjust ratio when different ratio and idk why complicated than i expected
 			if (FlxG.width > (FlxG.height*16/9)) {
-				splashLoad1.scale.set(scale, scale);
-				splashLoad2.scale.set(scale, scale);
+				splashLoad1.setGraphicSize(Std.int(splashLoad1.width * scale), Std.int(splashLoad1.height * scale));
+				splashLoad2.setGraphicSize(Std.int(splashLoad2.width * scale), Std.int(splashLoad2.height * scale));
 				splashLoad1.updateHitbox();
 				splashLoad2.updateHitbox();
 			}
@@ -78,14 +80,14 @@ class CustomFadeTransition extends MusicBeatSubstate {
 		}
 
 		if(isTransIn) {
-			#if !NO_PRELOAD_ALL if (!grp) {#end
+			#if !web if (!grp) {#end
 				transGradient.y = transBlack.y - transBlack.height;
 				FlxTween.tween(transGradient, {y: transGradient.height + 50}, duration, {
 					onComplete: function(twn:FlxTween) {
 						close();
 					},
 				ease: FlxEase.linear});
-				#if !NO_PRELOAD_ALL } else {
+				#if !web } else {
 				splashLoad1.x = offsetScreenX;
 				splashLoad2.x = (FlxG.width - splashLoad2.width)-offsetScreenX;
 				FlxTween.tween(splashLoad1, {x: -splashLoad1.width}, duration, { ease: FlxEase.circInOut });
@@ -97,7 +99,7 @@ class CustomFadeTransition extends MusicBeatSubstate {
 			}#end
 		} else {
 			useGraphics = grp;
-			#if !NO_PRELOAD_ALL if (!grp) { #end
+			#if !web if (!grp) { #end
 				transGradient.y = -transGradient.height;
 				transBlack.y = transGradient.y - transBlack.height + 50;
 				leTween = FlxTween.tween(transGradient, {y: transGradient.height + 50}, duration, {
@@ -107,7 +109,7 @@ class CustomFadeTransition extends MusicBeatSubstate {
 						}
 					},
 				ease: FlxEase.linear});
-				#if !NO_PRELOAD_ALL } else {
+				#if !web } else {
 				splashLoad1.x = -splashLoad1.width;
 				splashLoad2.x = FlxG.width;
 				FlxTween.tween(splashLoad1, {x: offsetScreenX}, duration, { ease: FlxEase.circInOut });
@@ -126,7 +128,7 @@ class CustomFadeTransition extends MusicBeatSubstate {
 		if(transitionCamera != null && transBlack != null && transGradient != null) {
 			transBlack.cameras = [transitionCamera];
 			transGradient.cameras = [transitionCamera];
-		} #if !NO_PRELOAD_ALL else if (transitionCamera != null && splashLoad1 != null && splashLoad2 != null) {
+		} #if !web else if (transitionCamera != null && splashLoad1 != null && splashLoad2 != null) {
 			splashLoad1.cameras = [transitionCamera];
 			splashLoad2.cameras = [transitionCamera];
 		}#end

@@ -2315,7 +2315,7 @@ class FunkinLua {
 				object = getVarInArray(getInstance(), obj);
 			}
 
-			if(object != null) {
+			if(object != null && object is FlxBasic) {
 				object.cameras = cameraArrayFromString(realCam);
 				return true;
 			}
@@ -3689,6 +3689,311 @@ class FunkinLua {
 			return true;//is working lol
 			#end
 			return false;
+		});
+
+		Lua_helper.add_callback(lua, "changeNotesCameras", function(targetField:String = 'all', cam:Array<String>, ?strum:Bool = true, ?note:Bool = true, ?noteSplash:Bool = true, ?holdCover:Bool = true, ?excludeNoteType:Array<String>) {
+			if (cam == null || cam.length < 1) {
+				cam = ['hud'];
+			}
+			var cameraString = cam.join(',');
+			if (excludeNoteType == null) {
+				excludeNoteType = [];
+			}
+			var cameras:Array<FlxCamera> = cameraArrayFromString(cam);
+			if (targetField == null || targetField.length < 1) {
+				targetField = 'all';
+			}
+			if (targetField.startsWith('@')) {
+				var getString:String = targetField.substring(1);
+				if (strum && PlayState.instance.strumGroupMap.exists(getString)) {
+					var strumGroup = PlayState.instance.strumGroupMap.get(getString);
+					for (i in strumGroup.members) {
+						i.cameras = cameras;
+					}
+				}
+				for (i in PlayState.instance.notes) {
+					if (i.fieldTarget == getString) {
+						if (note) i.cameras = cameras;
+						if (holdCover) i.holdCoverCam = cameraString;
+						if (noteSplash) i.noteSplashCam = cameraString;
+					}
+				}
+				for (i in PlayState.instance.unspawnNotes) {
+					if (i.fieldTarget == getString) {
+						if (note) i.cameras = cameras;
+						if (holdCover) i.holdCoverCam = cameraString;
+						if (noteSplash) i.noteSplashCam = cameraString;
+					}
+				}
+			} else {
+				switch(targetField) {
+					case 'player': 
+						for (i in PlayState.instance.notes) {
+							if (i.mustPress && !i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								if (note) i.cameras = cameras;
+								if (holdCover) i.holdCoverCam = cameraString;
+								if (noteSplash) i.noteSplashCam = cameraString;
+							}
+						}
+						for (i in PlayState.instance.unspawnNotes) {
+							if (i.mustPress && !i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								if (note) i.cameras = cameras;
+								if (holdCover) i.holdCoverCam = cameraString;
+								if (noteSplash) i.noteSplashCam = cameraString;
+							}
+						}
+						if (strum) for (i in PlayState.instance.playerStrums) {
+							i.cameras = cameras;
+						}
+					case 'opponent':
+						for (i in PlayState.instance.notes) {
+							if (!i.mustPress && !i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								if (note) i.cameras = cameras;
+								if (holdCover) i.holdCoverCam = cameraString;
+								if (noteSplash) i.noteSplashCam = cameraString;
+							}
+						}
+						for (i in PlayState.instance.unspawnNotes) {
+							if (!i.mustPress && !i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								if (note) i.cameras = cameras;
+								if (holdCover) i.holdCoverCam = cameraString;
+								if (noteSplash) i.noteSplashCam = cameraString;
+							}
+						}
+						if (strum) for (i in PlayState.instance.opponentStrums) {
+							i.cameras = cameras;
+						}
+					case 'gf':
+						for (i in PlayState.instance.notes) {
+							if (i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								if (note) i.cameras = cameras;
+								if (holdCover) i.holdCoverCam = cameraString;
+								if (noteSplash) i.noteSplashCam = cameraString;
+							}
+						}
+						for (i in PlayState.instance.unspawnNotes) {
+							if (i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								if (note) i.cameras = cameras;
+								if (holdCover) i.holdCoverCam = cameraString;
+								if (noteSplash) i.noteSplashCam = cameraString;
+							}
+						}
+						if (strum) for (i in PlayState.instance.gfStrums) {
+							i.cameras = cameras;
+						}
+					case 'gf-player':
+						for (i in PlayState.instance.notes) {
+							if (i.gfNote && i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								if (note) i.cameras = cameras;
+								if (holdCover) i.holdCoverCam = cameraString;
+								if (noteSplash) i.noteSplashCam = cameraString;
+							}
+						}
+						for (i in PlayState.instance.unspawnNotes) {
+							if (i.gfNote && i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								if (note) i.cameras = cameras;
+								if (holdCover) i.holdCoverCam = cameraString;
+								if (noteSplash) i.noteSplashCam = cameraString;
+							}
+						}
+						if (strum) for (i in PlayState.instance.gfStrums) {
+							i.cameras = cameras;
+						}
+					case 'gf-opponent':
+						for (i in PlayState.instance.notes) {
+							if (i.gfNote && !i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								if (note) i.cameras = cameras;
+								if (holdCover) i.holdCoverCam = cameraString;
+								if (noteSplash) i.noteSplashCam = cameraString;
+							}
+						}
+						for (i in PlayState.instance.unspawnNotes) {
+							if (i.gfNote && !i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								if (note) i.cameras = cameras;
+								if (holdCover) i.holdCoverCam = cameraString;
+								if (noteSplash) i.noteSplashCam = cameraString;
+							}
+						}
+						if (strum) for (i in PlayState.instance.gfStrums) {
+							i.cameras = cameras;
+						}
+					case 'all': 
+						for (i in PlayState.instance.notes) {
+							if (note) i.cameras = cameras;
+							if (holdCover) i.holdCoverCam = cameraString;
+							if (noteSplash) i.noteSplashCam = cameraString;
+						}
+						for (i in PlayState.instance.unspawnNotes) {
+							if (note) i.cameras = cameras;
+							if (holdCover) i.holdCoverCam = cameraString;
+							if (noteSplash) i.noteSplashCam = cameraString;
+						}
+						if (strum) {
+							for (i in PlayState.instance.playerStrums) {
+								i.cameras = cameras;
+							}
+							for (i in PlayState.instance.opponentStrums) {
+								i.cameras = cameras;
+							}
+							for (i in PlayState.instance.gfStrums) {
+								i.cameras = cameras;
+							}
+						}
+				}
+			}
+		});
+
+		Lua_helper.add_callback(lua, "changeNotesScrollFactor", function(targetField:String = 'all', scroll:Array<Float>, ?strum:Bool = true, ?note:Bool = true, ?noteSplash:Bool = true, ?holdCover:Bool = true, ?exludeNoteType:Array<String>) {
+			if (exludeNoteType == null) {
+				exludeNoteType = [];
+			}
+			if (scroll == null && scroll.length < 1) {
+				scroll = [0, 0];
+			}
+			if (scroll.length < 2) {
+				scroll.push(scroll[0]);
+			}
+			if (targetField == null || targetField.length < 1) {
+				targetField = 'all';
+			}
+			if (targetField.startsWith('@')) {//special string to use custom field
+				var getString:String = targetField.substring(1);
+				if (strum && PlayState.instance.strumGroupMap.exists(getString)) {
+					var strumGroup = PlayState.instance.strumGroupMap.get(getString);
+					for (i in strumGroup.members) {
+						i.scrollFactor.set(scroll[0], scroll[1]);
+					}
+				}
+				for (i in PlayState.instance.notes) {
+					if (i.fieldTarget == getString) {
+						if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+						if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+						if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+					}
+				}
+				for (i in PlayState.instance.unspawnNotes) {
+					if (i.fieldTarget == getString) {
+						if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+						if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+						if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+					}
+				}
+			} else {
+				switch(targetField) {
+					case 'player': 
+						for (i in PlayState.instance.notes) {
+							if (i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
+								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+							}
+						}
+						for (i in PlayState.instance.unspawnNotes) {
+							if (i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
+								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+							}
+						}
+						if (strum) for (i in PlayState.instance.playerStrums) {
+							i.scrollFactor.set(scroll[0], scroll[1]);
+						}
+					case 'opponent':
+						for (i in PlayState.instance.notes) {
+							if (!i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
+								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+							}
+						}
+						for (i in PlayState.instance.unspawnNotes) {
+							if (!i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
+								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+							}
+						}
+						if (strum) for (i in PlayState.instance.opponentStrums) {
+							i.scrollFactor.set(scroll[0], scroll[1]);
+						}
+					case 'gf':
+						for (i in PlayState.instance.notes) {
+							if (i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
+								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+							}
+						}
+						for (i in PlayState.instance.unspawnNotes) {
+							if (i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
+								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+							}
+						}
+						if (strum) for (i in PlayState.instance.gfStrums) {
+							i.scrollFactor.set(scroll[0], scroll[1]);
+						}
+					case 'gf-player':
+						for (i in PlayState.instance.notes) {
+							if (i.gfNote && i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
+								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+							}
+						}
+						for (i in PlayState.instance.unspawnNotes) {
+							if (i.gfNote && i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
+								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+							}
+						}
+						if (strum) for (i in PlayState.instance.gfStrums) {
+							i.scrollFactor.set(scroll[0], scroll[1]);
+						}
+					case 'gf-opponent':
+						for (i in PlayState.instance.notes) {
+							if (i.gfNote && !i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
+								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+							}
+						}
+						for (i in PlayState.instance.unspawnNotes) {
+							if (i.gfNote && !i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
+								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+							}
+						}
+						if (strum) for (i in PlayState.instance.gfStrums) {
+							i.scrollFactor.set(scroll[0], scroll[1]);
+						}
+					case 'all':
+						for (i in PlayState.instance.notes) {
+							if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+							if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+							if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+						}
+						for (i in PlayState.instance.unspawnNotes) {
+							if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+							if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+							if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+						}
+						if (strum) {
+							for (i in PlayState.instance.playerStrums) {
+								i.scrollFactor.set(scroll[0], scroll[1]);
+							}
+							for (i in PlayState.instance.opponentStrums) {
+								i.scrollFactor.set(scroll[0], scroll[1]);
+							}
+							for (i in PlayState.instance.gfStrums) {
+								i.scrollFactor.set(scroll[0], scroll[1]);
+							}
+						}
+				}
+			}
 		});
 
 		call('onCreate', []);

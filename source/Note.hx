@@ -8,7 +8,6 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import flixel.math.FlxRect;
-import flixel.FlxCamera;
 import flixel.graphics.frames.FlxFrame;
 #if sys
 import sys.FileSystem;
@@ -156,10 +155,9 @@ class Note extends FlxSprite
 	public var autoPress:Bool = false; // auto press like cpuControlled behavior but specific notes(cant be pressed by player)
 	public var direction:Float = 0;
 	public var noteScale(default, set):Float = 1.0;
-	public var scrollFactorCam(default,set):Array<Float> = [0.0, 0.0];//only can see in camGame
-	public var noteSplashCam:String = 'hud';//notesplash on specific cam
+	public var noteSplashCam:String = 'hud';//notesplash on specific cam(if want the this 'note' use 'setObjectCamera()' in lua)
 	public var noteSplashScale:Float = 1.0;
-	public var noteSplashScrollFactor:Array<Float> = [1, 1];//dont ask why 1 cuz is default of note splash
+	public var noteSplashScrollFactor:Array<Float> = [1, 1];//dont ask why 1 cuz is default of note splash(if want the this 'note' use 'setScrollFactor()' in lua)
 	public var offsetStrumTime:Float = 0;
 	public var fakeNoHit:Bool = false;//DISABLED!
 	public var ignoreTextureChange:Bool = false;//for prevent change when use changeNotesTexture() lua
@@ -170,7 +168,6 @@ class Note extends FlxSprite
 	//custom field
 	public var customField:Bool = false;
 	public var fieldTarget:String = '';//warning if not exist it might set 'customField' to false(hopefully)
-	public var camTarget(default, set):String = null;
 	//end of custom field
 	//sustain thing
 	public var sustainTail:Bool = false;
@@ -198,8 +195,6 @@ class Note extends FlxSprite
 	public var opponentRating:Bool = false;//whether this note give rating to opponent when hit
 	//end opponent rating
 	//copy thing
-	public var copyCam:Bool = true;//attach cam from strums
-	public var copyScrollFactor:Bool = true;//attach scroll factor from strums
 	public var copyFlipY:Bool = false;//for auto flip when use between downscroll and upscroll
 	public var copyDirection:Bool = true;//attach direction from strums
 	//end copy thing
@@ -221,14 +216,15 @@ class Note extends FlxSprite
 	public var noteSplashOffsetOriginX:Float = 0;//note splash x origin offset
 	public var noteSplashOffsetOriginY:Float = 0;//note splash y origin offset
 	public var noteSplashCopyAlpha:Bool = true;
+	public var stickyNoteSplash:Bool = ClientPrefs.stickyNoteSplash;//make note splash always sticky at strum
 	//hold cover implement(hope this work)
 	public var holdCover(default, set):HoldCover = null;//this only for get current hold cover after hold cover spr spawn
 	public var holdCoverDisabled:Bool = false;
 	public var holdCoverTexture(default, set):String = null;
 	public var holdCoverAlpha:Float = ClientPrefs.holdCoverAlpha;
 	public var holdCoverCopyAlpha:Bool = true;
-	public var holdCoverCam:String = 'hud';
-	public var holdCoverScrollFactor:Array<Float> = [1, 1];
+	public var holdCoverCam:String = 'hud';//hold cover on specific cam(if want the this 'note' use 'setObjectCamera()' in lua)
+	public var holdCoverScrollFactor:Array<Float> = [1, 1];//(if want the this 'note' use 'setScrollFactor()' in lua)
 	public var holdCoverScale:Float = 1;
 	public var holdCoverOffsetX:Float = 0;
 	public var holdCoverOffsetY:Float = 0;
@@ -519,9 +515,8 @@ class Note extends FlxSprite
 			earlyHitMult = 1;
 		}
 		if (!inEditor) {
-			scrollFactor.set(scrollFactorCam[0], scrollFactorCam[1]);
+			scrollFactor.set();
 		}
-		camTarget = 'hud';
 		hitsound = 'hitsound';
 		if (PlayState.SONG.secOpt && !(gamemode == "bothside") && !mustPress) {
 			noteScale = 0.75;
@@ -750,33 +745,6 @@ class Note extends FlxSprite
 				}
 			}
 		}
-	}
-
-
-	private function set_camTarget(value:String):String {
-		if (camTarget != value && FlxG.state is PlayState) {
-			if (value != '') {
-				var camArray:Array<String> = value.split(',');
-				var realCam:Array<String> = [];
-				for (i in 0...camArray.length) {
-					realCam[i] = camArray[i].trim();
-				}
-				cameras = FunkinLua.cameraArrayFromString(realCam);
-			} else {
-				cameras = null;
-			}
-		}
-		camTarget = value;
-		return value;
-	}
-
-	private function set_scrollFactorCam(value:Array<Float>):Array<Float> {
-		if (scrollFactorCam[0] != value[0] || scrollFactorCam[1] != value[1]) {
-			scrollFactor.set(value[0], value[1]);
-		}
-		scrollFactorCam[0] = value[0];
-		scrollFactorCam[1] = value[1];
-		return value;
 	}
 
 	private function set_noteScale(value:Float):Float {

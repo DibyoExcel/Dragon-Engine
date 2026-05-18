@@ -1350,6 +1350,12 @@ class PlayState extends MusicBeatState
 		timeBarBG.cameras = [camHUD];
 		timeTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
+		playerStrums.cameras = [camHUD];
+		opponentStrums.cameras = [camHUD];
+		gfStrums.cameras = [camHUD];
+		playerNotes.cameras = [camHUD];
+		opponentNotes.cameras = [camHUD];
+		gfNotes.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
@@ -3867,8 +3873,6 @@ class PlayState extends MusicBeatState
 					if (strumGroup != null && (daNote.noteData < strumGroup.length) && daNote.noteData >= 0 && daNote.attachStrum) {//try prevent crash when change gamemode throught script or out ranged noteData:D
 						actualStrum = strumGroup.members[daNote.noteData];
 						daNote.strumNote = actualStrum;//fuck strum assign
-						var strumSC:Array<Float> = actualStrum.scrollFactorCam;
-						var strumCam:String = actualStrum.camTarget;
 						//uh
 						var strumX:Float = daNote.fakeStrumX == null ? (actualStrum.fakeStrumX == null ? actualStrum.x : actualStrum.fakeStrumX) : daNote.fakeStrumX;
 						var strumY:Float = daNote.fakeStrumY == null ? (actualStrum.fakeStrumY == null ? actualStrum.y : actualStrum.fakeStrumY) : daNote.fakeStrumY;
@@ -3910,16 +3914,6 @@ class PlayState extends MusicBeatState
 						}
 						strumX += Math.sin(angleDir) * longNotesOffset;
 						strumY += Math.cos(angleDir) * longNotesOffset;
-						if (daNote.copyScrollFactor) {
-							daNote.scrollFactorCam = strumSC;
-							daNote.noteSplashScrollFactor = strumSC;
-							daNote.holdCoverScrollFactor = strumSC;
-						}
-						if (daNote.copyCam) {
-							daNote.camTarget = strumCam;
-							daNote.noteSplashCam = strumCam;
-							daNote.holdCoverCam = strumCam;
-						}
 						if (daNote.updateDistance) {
 							if (strumScroll) //Downscroll
 							{
@@ -6838,8 +6832,14 @@ class PlayState extends MusicBeatState
 				//trace("create strums:", tag);
 				for (i in 0...data) {
 					var babyArrow:StrumNote = new StrumNote(0+(i*Note.swagWidth), strumLine.y, i, (player ? 1 : 0), gf);
-					babyArrow.scrollFactorCam = [sfX, sfY];
-					babyArrow.camTarget = camera;
+					babyArrow.scrollFactor.set(sfX, sfY);
+					//string to array
+					var stringArray:Array<String> = camera.split(',');
+					var realCam:Array<FlxCamera> = [];
+					for (i in 0...stringArray.length) {
+						realCam.push(FunkinLua.cameraBetterFromString(stringArray[i].trim()));
+					}
+					babyArrow.cameras = realCam;
 					babyArrow.downScroll = downScroll;
 					babyArrow.postAddedToGroup();
 					strumTamp.add(babyArrow);

@@ -297,7 +297,6 @@ class EditorPlayState extends MusicBeatState
 						var gfSec = (section.gfSection && (songNotes[1]<4) || should_gf != -1 || (!section.gfSection ? songNotes[1]>7 : false));
 						var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, null, null, (songNotes[3] == "GF Sing Force Opponent"/**compatibility backward**/ || should_opt != -1 ? false : (should_ply != -1 ? true : gottaHitNote)), gfSec, noteType);
 						swagNote.sustainLength = songNotes[2];
-						swagNote.camTarget = '';//set to active cam;
 						swagNote.noteSplashCam = '';//set to active cam;
 						swagNote.scrollFactor.set();
 
@@ -314,7 +313,6 @@ class EditorPlayState extends MusicBeatState
 
 								var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + (Conductor.stepCrochet / FlxMath.roundDecimal(PlayState.SONG.speed, 2)), daNoteData, oldNote, true, null, (songNotes[3] == "GF Sing Force Opponent"/**compatibility backward**/ || should_opt != -1 ? false : (should_ply != -1 ? true : gottaHitNote)), gfSec, swagNote.noteType, susNote == (floorSus));
 								sustainNote.scrollFactor.set();
-								sustainNote.camTarget = '';//set to active cam;
 								sustainNote.noteSplashCam = '';//set to active cam;
 								sustainNote.parent = swagNote;
 								unspawnNotes.push(sustainNote);
@@ -1094,7 +1092,6 @@ class EditorPlayState extends MusicBeatState
 						// FlxG.log.add(i);
 			
 						var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : (player == 1 ? FlxG.width*0.75 : FlxG.width*0.25))-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, player);
-						babyArrow.camTarget = '';
 						if (player == 1)
 						{
 							if (gamemode == "bothside") {
@@ -1128,7 +1125,6 @@ class EditorPlayState extends MusicBeatState
 					var noteSizeSub = Note.swagWidth*(Math.min(0.125, 0.15*(FlxG.width/1280)));
 					var number = (-(noteSize*4))+(noteSize*i);
 					var babyArrow:StrumNote = new StrumNote((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : (FlxG.width*0.25)+(Note.swagWidth/2))+number-noteSizeSub, strumLine.y, i, player, i>3);
-						babyArrow.camTarget ='';
 						if (player != 1)
 						{
 							if(ClientPrefs.middleScroll)
@@ -1157,7 +1153,6 @@ class EditorPlayState extends MusicBeatState
 							}
 							var number = (PlayState.SONG.secOpt && gamemode == 'bothside' ? (-Note.swagWidth*4) : (-(Note.swagWidth)*2))+(Note.swagWidth*i);
 							var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : FlxG.width*0.75)+number), strumLine.y, i, player, i>3);
-							babyArrow.camTarget ='';
 						
 							if (player == 1)
 							{
@@ -1213,7 +1208,7 @@ class EditorPlayState extends MusicBeatState
 			sat = note.noteSplashSat;
 			brt = note.noteSplashBrt;
 			var splash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
-			splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.camTarget, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1]);
+			splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, '', note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1]);
 			note.noteSplash = splash;
 			grpNoteSplashes.add(splash);
 		}

@@ -9,6 +9,7 @@ class NoteSplash extends FlxSprite
 	private var idleAnim:String;
 	private var strum:StrumNote = null;
 	private var note:Note = null;
+	public var stickyStrum:Bool = false;
 
 	public function new(x:Float = 0, y:Float = 0, ?note:Int = 0, ?type:String = 'bf') {
 		super(x, y);
@@ -153,6 +154,7 @@ class NoteSplash extends FlxSprite
 				noteWidth = oriNote.strumNote.width;
 				noteHeight = oriNote.strumNote.height;
 			}
+			stickyStrum = oriNote.stickyNoteSplash;
 			noteSplashOffsetX = oriNote.noteSplashOffsetX;
 			noteSplashOffsetY = oriNote.noteSplashOffsetY;
 			noteSplashOffsetOriginX = oriNote.noteSplashOffsetOriginX;
@@ -191,8 +193,11 @@ class NoteSplash extends FlxSprite
 	}
 
 	override function update(elapsed:Float) {
-		if (strum != null && note != null) {
-			if (note.noteSplashCopyAlpha) {
+		if (strum != null && alive) {
+			if (stickyStrum) {
+				setPosition((strum.x + (strum.width/2)-(width/2)), (strum.y + (strum.height/2))-(height/2));
+			}
+			if (note != null && note.noteSplashCopyAlpha) {
 				alpha = strum.alpha * note.noteSplashAlpha;
 			} 
 		}
