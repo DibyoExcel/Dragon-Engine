@@ -196,6 +196,9 @@ div.dialogue div.dialogue_content button.dialogue_button{
 }
 
 div.dialogue_group{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     min-width: 25%;
     max-width: 75%;
     border: 2.5px solid var(--accent-color);
@@ -203,9 +206,9 @@ div.dialogue_group{
     border-radius: 15px;
 }
 
-div.dialogue_group h3{
+div.dialogue div.dialogue_content div.dialogue_group h3{
     margin: 0;
-    font-size: 2rem;
+    font-size: 1.5rem;
     padding: 10px;
     border: 1px solid var(--accent-color);
     border-radius: 15px;
@@ -215,7 +218,6 @@ div.dialogue_group h4{
     margin: 0;
     color: var(--secondary-accent-color);
     font-size: 1.25rem;
-    padding: 10px;
 }
 
 div.dialogue_group a{
