@@ -260,13 +260,6 @@ class ModsMenuState extends MusicBeatState
 
 		buttonSetting = new FlxButton(startX, 0, "SETTINGS", function() {
 			if (FileSystem.exists(Paths.mods(mods[curSelected].folder + '/settings.json'))) {
-				var directory:String = 'shared';
-				var weekDir:String = StageData.forceNextDirectory;
-				StageData.forceNextDirectory = null;
-
-				if(weekDir != null && weekDir.length > 0 && weekDir != '') directory = weekDir;
-
-				Paths.setCurrentLevel(directory);
 				//TO DO: make state;
 				var contentFile = File.getContent(Paths.mods(mods[curSelected].folder + '/settings.json'));
 				var getStorageKey = haxe.Json.parse(contentFile).storageKey;

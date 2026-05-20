@@ -444,7 +444,7 @@ class Paths
 					CacheUtil.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(modKey));
 					return currentTrackedAssets.get(modKey);
 				}
-				//lightmode/default
+				//lightmode(fallback)
 				var modKey:String = modsImages(key);
 				if(FileSystem.exists(modKey)) {
 					if(!currentTrackedAssets.exists(modKey)) {
@@ -469,18 +469,32 @@ class Paths
 					CacheUtil.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(preloadPath));
 					return currentTrackedAssets.get(preloadPath);
 				}
-				var preloadPath:String = externalPreloadPath('images/$key.png');
-				if(FileSystem.exists(preloadPath)) {
-					if(!currentTrackedAssets.exists(preloadPath)) {
-						var newBitmap:BitmapData = BitmapData.fromFile(preloadPath);
-						var newGraphic:FlxGraphic = FlxGraphic.fromBitmapData(newBitmap, false, preloadPath);
+			} else {
+				var modKey:String = modsImages(key);
+				if(FileSystem.exists(modKey)) {
+					if(!currentTrackedAssets.exists(modKey)) {
+						var newBitmap:BitmapData = BitmapData.fromFile(modKey);
+						var newGraphic:FlxGraphic = FlxGraphic.fromBitmapData(newBitmap, false, modKey);
 						newGraphic.persist = true;
-						currentTrackedAssets.set(preloadPath, newGraphic);
+						currentTrackedAssets.set(modKey, newGraphic);
 					}
-					localTrackedAssets.push(preloadPath);
-					CacheUtil.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(preloadPath));
-					return currentTrackedAssets.get(preloadPath);
+					localTrackedAssets.push(modKey);
+					CacheUtil.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(modKey));
+					return currentTrackedAssets.get(modKey);
 				}
+			}
+			//default
+			var preloadPath:String = externalPreloadPath('images/$key.png');
+			if(FileSystem.exists(preloadPath)) {
+				if(!currentTrackedAssets.exists(preloadPath)) {
+					var newBitmap:BitmapData = BitmapData.fromFile(preloadPath);
+					var newGraphic:FlxGraphic = FlxGraphic.fromBitmapData(newBitmap, false, preloadPath);
+					newGraphic.persist = true;
+					currentTrackedAssets.set(preloadPath, newGraphic);
+				}
+				localTrackedAssets.push(preloadPath);
+				CacheUtil.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(preloadPath));
+				return currentTrackedAssets.get(preloadPath);
 			}
 			#end
 			if (ClientPrefs.darkmode) {

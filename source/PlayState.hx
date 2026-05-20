@@ -1356,6 +1356,12 @@ class PlayState extends MusicBeatState
 		playerNotes.cameras = [camHUD];
 		opponentNotes.cameras = [camHUD];
 		gfNotes.cameras = [camHUD];
+		grpHoldCover.cameras = [camHUD];
+		grpHoldCoverOpt.cameras = [camHUD];
+		grpHoldCoverGf.cameras = [camHUD];
+		grpNoteSplashes.cameras = [camHUD];
+		grpNoteSplashesOpt.cameras = [camHUD];
+		grpNoteSplashesGf.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
@@ -1708,7 +1714,10 @@ class PlayState extends MusicBeatState
 	{
 		if(generatedMusic)
 		{
-			if (value == 0) value = 0.01;
+			if (Math.abs(value) <= 0.001) {
+				if (value < 0) value = -0.001;
+				else value = 0.001;
+			}
 			var ratio:Float = value / songSpeed; //funny word huh
 			for (note in notes) note.resizeByRatio(Math.abs(ratio));
 			for (note in unspawnNotes) note.resizeByRatio(Math.abs(ratio));
@@ -3912,8 +3921,8 @@ class PlayState extends MusicBeatState
 									longNotesOffset += (daNote.parent.width/2)-(daNote.width/2);//center the long notes from parent
 							}
 						}
-						strumX += Math.sin(angleDir) * longNotesOffset;
-						strumY += Math.cos(angleDir) * longNotesOffset;
+						strumX += Math.abs(Math.sin(angleDir) * longNotesOffset);
+						strumY += Math.abs(Math.cos(angleDir) * longNotesOffset);
 						if (daNote.updateDistance) {
 							if (strumScroll) //Downscroll
 							{
@@ -3990,6 +3999,11 @@ class PlayState extends MusicBeatState
 										swagRect.y = daNote.frameHeight - swagRect.height;
 	
 										daNote.clipRect = swagRect;
+									} else {
+										//scroll speed fix
+										if (daNote.clipRect != null) {
+											daNote.clipRect = null;
+										}
 									}
 								}
 								else
@@ -4001,8 +4015,22 @@ class PlayState extends MusicBeatState
 										swagRect.height -= swagRect.y;
 	
 										daNote.clipRect = swagRect;
+									} else {
+										//scroll speed fix
+										if (daNote.clipRect != null) {
+											daNote.clipRect = null;
+										}
 									}
 								}
+							} else {
+								//i know it was not on purpose change after hit but just incase if some 'modder' try messed up
+								if (daNote.clipRect != null) {
+									daNote.clipRect = null;
+								}
+							}
+						} else {
+							if (daNote.clipRect != null) {
+								daNote.clipRect = null;
 							}
 						}
 					} else {
@@ -4050,22 +4078,22 @@ class PlayState extends MusicBeatState
 							}
 						}
 					}
-					var botCanHit = (daNote.isSustainNote && (daNote.strumTime + daNote.offsetStrumTime) < Conductor.songPosition + (Conductor.safeZoneOffset * daNote.earlyHitMult)) || (!daNote.isSustainNote && ((daNote.strumTime + daNote.offsetStrumTime) <= Conductor.songPosition));//just be sure bot only hit in perfect time :) and also cant miss when lagging like hell.
-					if (((daNote.strumNote != null && !daNote.strumNote.isLocked) || daNote.strumNote == null) && (gamemode == 'opponent' ? (!daNote.blockHit && !daNote.canFreeze) && daNote.mustPress : !daNote.mustPress) && (!daNote.ignoreNote && !daNote.canFreeze) && daNote.fieldTarget.length < 1 && !(gamemode == "bothside v2" || gamemode == "bothside") && botCanHit)
+					var botCanHit = ((daNote.isSustainNote && (daNote.strumTime + daNote.offsetStrumTime) < Conductor.songPosition + (Conductor.safeZoneOffset * daNote.earlyHitMult) && (daNote.parent != null ? daNote.parent.wasGoodHit : true)) || (!daNote.isSustainNote && ((daNote.strumTime + daNote.offsetStrumTime) <= Conductor.songPosition))) && ((daNote.strumNote != null && !daNote.strumNote.isLocked) || daNote.strumNote == null);//just be sure bot only hit in perfect time :) and also cant miss when lagging like hell.
+					if ((gamemode == 'opponent' ? (!daNote.blockHit && !daNote.canFreeze) && daNote.mustPress : !daNote.mustPress) && (!daNote.ignoreNote && !daNote.canFreeze) && daNote.fieldTarget.length < 1 && !(gamemode == "bothside v2" || gamemode == "bothside") && botCanHit)
 					{
 						opponentNoteHit(daNote);
 					}
 					//custom field use opponent(FD BOT)
-					if (((daNote.strumNote != null && !daNote.strumNote.isLocked) || daNote.strumNote == null) && (gamemode == 'opponent' ? (!daNote.blockHit && !daNote.canFreeze) && daNote.mustPress : !daNote.mustPress) && (!daNote.ignoreNote && !daNote.canFreeze) && daNote.fieldTarget.length > 0 && botCanHit)
+					if ((gamemode == 'opponent' ? (!daNote.blockHit && !daNote.canFreeze) && daNote.mustPress : !daNote.mustPress) && (!daNote.ignoreNote && !daNote.canFreeze) && daNote.fieldTarget.length > 0 && botCanHit)
 					{
 						opponentNoteHit(daNote);
 					}
 
-					if(((daNote.strumNote != null && !daNote.strumNote.isLocked) || daNote.strumNote == null) && (gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && cpuControlled && !(daNote.autoPress || (playableField.length < 1 ? daNote.fieldTarget.length > 0 : playableField.indexOf(daNote.fieldTarget) == -1)) && botCanHit) {
+					if((gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && cpuControlled && !(daNote.autoPress || (playableField.length < 1 ? daNote.fieldTarget.length > 0 : playableField.indexOf(daNote.fieldTarget) == -1)) && botCanHit) {
 						goodNoteHit(daNote);
 					}
 					//custom field player(FD BOT)
-					if((daNote.strumNote != null && !daNote.strumNote.isLocked) && (gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && (daNote.autoPress || (playableField.length < 1 ? daNote.fieldTarget.length > 0 : playableField.indexOf(daNote.fieldTarget) == -1)) && botCanHit) {
+					if((gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && (daNote.autoPress || (playableField.length < 1 ? daNote.fieldTarget.length > 0 : playableField.indexOf(daNote.fieldTarget) == -1)) && botCanHit) {
 						goodNoteHit(daNote);
 					}
 
@@ -5994,7 +6022,7 @@ class PlayState extends MusicBeatState
 				groupTarget = grpNoteSplashesGf;
 			}
 			var splash:NoteSplash = groupTarget.recycle(NoteSplash);
-			splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.noteSplashCam, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1], note);
+			splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, null, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1], note);
 			note.noteSplash = splash;
 			groupTarget.add(splash);
 			splash.color = 0xFFFFFFFF;
@@ -6816,14 +6844,23 @@ class PlayState extends MusicBeatState
 		//trace("trigger");
 		//gf param only work for opponent if player it act normal player strums
 		if (tag != '' && !strumGroupMap.exists(tag) && !notesGroupMap.exists(tag) && !noteSplashGroupMap.exists(tag) && !holdCoverGroupMap.exists(tag)) {
+			var stringArray:Array<String> = camera.split(',');
+			var realCam:Array<FlxCamera> = [];
+			for (i in 0...stringArray.length) {
+				realCam.push(FunkinLua.cameraBetterFromString(stringArray[i].trim()));
+			}
 			var strumTamp:FlxTypedGroup<StrumNote>;
 			strumTamp =  new FlxTypedGroup<StrumNote>();
+			strumTamp.cameras = realCam;
 			var notesTamp:FlxTypedGroup<Note>;
 			notesTamp =  new FlxTypedGroup<Note>();
+			notesTamp.cameras = realCam;
 			var noteSplashTamp:FlxTypedGroup<NoteSplash>;
 			noteSplashTamp =  new FlxTypedGroup<NoteSplash>();
+			noteSplashTamp.cameras = realCam;
 			var holdCoverTamp:FlxTypedGroup<HoldCover>;
 			holdCoverTamp =  new FlxTypedGroup<HoldCover>();
+			holdCoverTamp.cameras = realCam;
 			if (downScroll == null) {
 				downScroll = ClientPrefs.downScroll;
 			}
@@ -6833,19 +6870,26 @@ class PlayState extends MusicBeatState
 				for (i in 0...data) {
 					var babyArrow:StrumNote = new StrumNote(0+(i*Note.swagWidth), strumLine.y, i, (player ? 1 : 0), gf);
 					babyArrow.scrollFactor.set(sfX, sfY);
-					//string to array
-					var stringArray:Array<String> = camera.split(',');
-					var realCam:Array<FlxCamera> = [];
-					for (i in 0...stringArray.length) {
-						realCam.push(FunkinLua.cameraBetterFromString(stringArray[i].trim()));
-					}
-					babyArrow.cameras = realCam;
 					babyArrow.downScroll = downScroll;
 					babyArrow.postAddedToGroup();
 					strumTamp.add(babyArrow);
 					babyArrow.fieldName = tag;
 					babyArrow.memberID = i;//unused but for lua
 					customStrum.add(babyArrow);
+				}
+			}
+			if (notes != null) {
+				for (note in notes.members) {
+					if (note.fieldTarget == tag) {
+						note.scrollFactor.set(sfX, sfY);
+					}
+				}
+			}
+			if (unspawnNotes != null) {
+				for (note in unspawnNotes) {
+					if (note.fieldTarget == tag) {
+						note.scrollFactor.set(sfX, sfY);
+					}
 				}
 			}
 			strumGroupMap.set(tag, strumTamp);

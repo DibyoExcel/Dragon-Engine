@@ -76,14 +76,6 @@ class NoteSplash extends FlxSprite
 				texture = 'noteSplashes';
 			}
 		}
-		if (cam != null && cam != '') {
-			var camArray:Array<String> = cam.split(',');
-			var realCam:Array<String> = [];
-			for (i in 0...camArray.length) {
-				realCam[i] = camArray[i].trim();
-			}
-			cameras = FunkinLua.cameraArrayFromString(realCam);
-		}
 		scrollFactor.set(sfX, sfY);
 		var noteWidth = Note.swagWidth;
 		var noteHeight = Note.swagWidth;

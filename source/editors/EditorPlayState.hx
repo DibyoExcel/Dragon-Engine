@@ -297,7 +297,6 @@ class EditorPlayState extends MusicBeatState
 						var gfSec = (section.gfSection && (songNotes[1]<4) || should_gf != -1 || (!section.gfSection ? songNotes[1]>7 : false));
 						var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, null, null, (songNotes[3] == "GF Sing Force Opponent"/**compatibility backward**/ || should_opt != -1 ? false : (should_ply != -1 ? true : gottaHitNote)), gfSec, noteType);
 						swagNote.sustainLength = songNotes[2];
-						swagNote.noteSplashCam = '';//set to active cam;
 						swagNote.scrollFactor.set();
 
 						var susLength:Float = swagNote.sustainLength;
@@ -313,7 +312,6 @@ class EditorPlayState extends MusicBeatState
 
 								var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + (Conductor.stepCrochet / FlxMath.roundDecimal(PlayState.SONG.speed, 2)), daNoteData, oldNote, true, null, (songNotes[3] == "GF Sing Force Opponent"/**compatibility backward**/ || should_opt != -1 ? false : (should_ply != -1 ? true : gottaHitNote)), gfSec, swagNote.noteType, susNote == (floorSus));
 								sustainNote.scrollFactor.set();
-								sustainNote.noteSplashCam = '';//set to active cam;
 								sustainNote.parent = swagNote;
 								unspawnNotes.push(sustainNote);
 
