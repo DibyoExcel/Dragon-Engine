@@ -813,8 +813,11 @@ class FlxSprite extends FlxObject
 
 		if (dirty) // rarely
 			calcFrame(useFramePixels);
-
-		for (camera in cameras)
+		var cam = cameras;
+		if (cam == null) {
+			cam = @:privateAccess {FlxCamera._defaultCameras;};
+		}
+		for (camera in cam)
 		{
 			if (!camera.visible || !camera.exists || !isOnScreen(camera))
 				continue;

@@ -9,6 +9,7 @@ import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import flixel.math.FlxRect;
 import flixel.graphics.frames.FlxFrame;
+import flixel.FlxCamera;
 #if sys
 import sys.FileSystem;
 import sys.io.File;
@@ -155,6 +156,7 @@ class Note extends FlxSprite
 	public var autoPress:Bool = false; // auto press like cpuControlled behavior but specific notes(cant be pressed by player)
 	public var direction:Float = 0;
 	public var noteScale(default, set):Float = 1.0;
+	public var noteSplashCam:String = '';//notesplash on specific cam(if want the this 'note' use 'setObjectCamera()' in lua)
 	public var noteSplashScale:Float = 1.0;
 	public var noteSplashScrollFactor:Array<Float> = [1, 1];//dont ask why 1 cuz is default of note splash(if want the this 'note' use 'setScrollFactor()' in lua)
 	public var offsetStrumTime:Float = 0;
@@ -196,6 +198,8 @@ class Note extends FlxSprite
 	//copy thing
 	public var copyFlipY:Bool = false;//for auto flip when use between downscroll and upscroll
 	public var copyDirection:Bool = true;//attach direction from strums
+	public var copyScrollFactor:Bool = true;
+	public var copyCam:Bool = true;
 	//end copy thing
 	//snap prop
 	public var snapX:Float = 0;
@@ -222,6 +226,7 @@ class Note extends FlxSprite
 	public var holdCoverTexture(default, set):String = null;
 	public var holdCoverAlpha:Float = ClientPrefs.holdCoverAlpha;
 	public var holdCoverCopyAlpha:Bool = true;
+	public var holdCoverCam:String = '';//hold cover on specific cam(if want the this 'note' use 'setObjectCamera()' in lua)
 	public var holdCoverScrollFactor:Array<Float> = [1, 1];//(if want the this 'note' use 'setScrollFactor()' in lua)
 	public var holdCoverScale:Float = 1;
 	public var holdCoverOffsetX:Float = 0;
@@ -1054,5 +1059,10 @@ class Note extends FlxSprite
 				}
 			}
 		}
+	}
+	@:noCompletion
+	override function get_cameras():Array<FlxCamera>
+	{
+		return _cameras;
 	}
 }

@@ -170,6 +170,16 @@ class HoldCover extends FlxSprite
                 blackAndWhite.threshold = note.holdCoverBAndWThreshold;
             }
             scrollFactor.set(note.holdCoverScrollFactor[0], note.holdCoverScrollFactor[1]);
+            if (note.holdCoverCam != null && note.holdCoverCam.length > 0) {
+                var camArray:Array<String> = note.holdCoverCam.split(',');
+                var realCam:Array<String> = [];
+                for (i in 0...camArray.length) {
+                    realCam[i] = camArray[i].trim();
+                }
+                cameras = FunkinLua.cameraArrayFromString(realCam);
+            } else {
+                cameras = null;
+            }
         }
     }
     override function update(elapsed:Float) {

@@ -3984,6 +3984,13 @@ class PlayState extends MusicBeatState
 								daNote.y += (27.5 * ((SONG.bpm / 100) - 1) * ((Math.abs(songSpeed * daNote.multSpeed)) - 1)) * angleY;
 							}
 						}
+						if (daNote.copyScrollFactor) {
+							daNote.scrollFactor.x = actualStrum.scrollFactor.x;
+							daNote.scrollFactor.y = actualStrum.scrollFactor.y;
+						}
+						if (daNote.copyCam) {
+							daNote.cameras = actualStrum.cameras;
+						}
 						if (!daNote.fakeNoHit) {
 
 							var center:Float = strumY + (actualStrum.height * actualStrum.sustainReducePoint);
@@ -6022,7 +6029,7 @@ class PlayState extends MusicBeatState
 				groupTarget = grpNoteSplashesGf;
 			}
 			var splash:NoteSplash = groupTarget.recycle(NoteSplash);
-			splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, null, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1], note);
+			splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.noteSplashCam, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1], note);
 			note.noteSplash = splash;
 			groupTarget.add(splash);
 			splash.color = 0xFFFFFFFF;

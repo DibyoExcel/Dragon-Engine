@@ -3,6 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.FlxCamera;
 
 using StringTools;
 
@@ -306,5 +307,10 @@ class StrumNote extends FlxSprite
 			scale.x *= 0.75;
 			scale.y *= 0.75;
 		}
+	}
+	@:noCompletion
+	override function get_cameras():Array<FlxCamera>
+	{
+		return _cameras;
 	}
 }
