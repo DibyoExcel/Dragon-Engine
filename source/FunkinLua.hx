@@ -3342,6 +3342,7 @@ class FunkinLua {
 		});
 
 		Lua_helper.add_callback(lua, "changeNotesTexture", function(player:Bool = false, gf:Bool = false, texture:String = '') {
+			luaTrace("changeNotesTexture is deprecated! Use changeNotesTextureV2 instead", false, true);
 			for (i in PlayState.instance.notes) {
 				if (!i.ignoreTextureChange && i.mustPress == player && i.gfNote == gf) {
 					i.texture = texture;
@@ -3352,15 +3353,21 @@ class FunkinLua {
 					i.texture = texture;
 				}
 			}
-			if (player) {
-				for (i in PlayState.instance.playerStrums) {
-					if (!i.ignoreTextureChange && i.gfType == gf) {
+			if (gf) {
+				for (i in PlayState.instance.gfStrums) {
+					if (!i.ignoreTextureChange) {
+						i.texture = texture;
+					}
+				}
+			} else if (player) {
+				for (i in PlayState.instance.opponentStrums) {
+					if (!i.ignoreTextureChange) {
 						i.texture = texture;
 					}
 				}
 			} else {
-				for (i in PlayState.instance.opponentStrums) {
-					if (!i.ignoreTextureChange && i.gfType == gf) {
+				for (i in PlayState.instance.playerStrums) {
+					if (!i.ignoreTextureChange) {
 						i.texture = texture;
 					}
 				}
@@ -3647,6 +3654,7 @@ class FunkinLua {
 		});
 
 		Lua_helper.add_callback(lua, "changeNotesSplashTexture", function(player:Bool = false, gf:Bool = false, texture:String = 'noteSplashes') {
+			luaTrace("changeNotesSplashTexture is deprecated! Use changeNotesSplashTextureV2 instead", false, true);
 			for (i in PlayState.instance.notes) {
 				if (!i.ignoreTextureChange && i.mustPress == player && i.gfNote == gf) {
 					i.noteSplashTexture = texture;
@@ -3664,6 +3672,7 @@ class FunkinLua {
 		});
 
 		Lua_helper.add_callback(lua, "changeNotesHoldCover", function(player:Bool = false, gf:Bool = false, texture:String = '') {
+			luaTrace("changeNotesHoldCover is deprecated! Use changeNotesHoldCoverV2 instead", false, true);
 			for (i in PlayState.instance.notes) {
 				if (!i.ignoreTextureChange && i.mustPress == player && i.gfNote == gf) {
 					i.holdCoverTexture = texture;
@@ -3692,6 +3701,8 @@ class FunkinLua {
 		});
 
 		Lua_helper.add_callback(lua, "changeNotesCameras", function(targetField:String = 'all', cam:Array<String>, ?strum:Bool = true, ?note:Bool = true, ?noteSplash:Bool = true, ?holdCover:Bool = true) {
+			var game = PlayState.instance;
+			if (game == null) return;//ENOUGH
 			if (cam == null || cam.length < 1) {
 				cam = ['hud'];
 			}
@@ -3702,83 +3713,83 @@ class FunkinLua {
 			}
 			if (targetField.startsWith('@')) {
 				var getString:String = targetField.substring(1);
-				if (strum && PlayState.instance.strumGroupMap.exists(getString)) {
-					var strumGroup = PlayState.instance.strumGroupMap.get(getString);
+				if (strum && game.strumGroupMap != null && game.strumGroupMap.exists(getString)) {
+					var strumGroup = game.strumGroupMap.get(getString);
 					strumGroup.cameras = cameras;
 				}
-				if ((note) && PlayState.instance.notesGroupMap.exists(getString)) {
-					var noteGroup = PlayState.instance.notesGroupMap.get(getString);
+				if (note && game.notesGroupMap != null && game.notesGroupMap.exists(getString)) {
+					var noteGroup = game.notesGroupMap.get(getString);
 					noteGroup.cameras = cameras;
 				}
-				if ((noteSplash) && PlayState.instance.noteSplashGroupMap.exists(getString)) {
-					var noteSplashGroup = PlayState.instance.noteSplashGroupMap.get(getString);
+				if (noteSplash && game.noteSplashGroupMap != null && game.noteSplashGroupMap.exists(getString)) {
+					var noteSplashGroup = game.noteSplashGroupMap.get(getString);
 					noteSplashGroup.cameras = cameras;
 				}
-				if ((holdCover) && PlayState.instance.holdCoverGroupMap.exists(getString)) {
-					var holdCoverGroup = PlayState.instance.holdCoverGroupMap.get(getString);
+				if (holdCover && game.holdCoverGroupMap != null && game.holdCoverGroupMap.exists(getString)) {
+					var holdCoverGroup = game.holdCoverGroupMap.get(getString);
 					holdCoverGroup.cameras = cameras;
 				}
 			} else {
 				switch(targetField) {
 					case 'player': 
-						if (note && PlayState.instance.playerNotes != null) PlayState.instance.playerNotes.cameras = cameras;
-						if (noteSplash && PlayState.instance.grpNoteSplashes != null) PlayState.instance.grpNoteSplashes.cameras = cameras;
-						if (holdCover && PlayState.instance.grpHoldCover != null) PlayState.instance.grpHoldCover.cameras = cameras;
-						if (strum && PlayState.instance.playerStrums != null) PlayState.instance.playerStrums.cameras = cameras;
+						if (note && game.playerNotes != null) game.playerNotes.cameras = cameras;
+						if (noteSplash && game.grpNoteSplashes != null) game.grpNoteSplashes.cameras = cameras;
+						if (holdCover && game.grpHoldCover != null) game.grpHoldCover.cameras = cameras;
+						if (strum && game.playerStrums != null) game.playerStrums.cameras = cameras;
 					case 'opponent':
-						if (note && PlayState.instance.opponentNotes != null) PlayState.instance.opponentNotes.cameras = cameras;
-						if (noteSplash && PlayState.instance.grpNoteSplashesOpt != null) PlayState.instance.grpNoteSplashesOpt.cameras = cameras;
-						if (holdCover && PlayState.instance.grpHoldCoverOpt != null) PlayState.instance.grpHoldCoverOpt.cameras = cameras;
-						if (strum && PlayState.instance.opponentStrums != null) PlayState.instance.opponentStrums.cameras = cameras;
+						if (note && game.opponentNotes != null) game.opponentNotes.cameras = cameras;
+						if (noteSplash && game.grpNoteSplashesOpt != null) game.grpNoteSplashesOpt.cameras = cameras;
+						if (holdCover && game.grpHoldCoverOpt != null) game.grpHoldCoverOpt.cameras = cameras;
+						if (strum && game.opponentStrums != null) game.opponentStrums.cameras = cameras;
 					case 'gf':
-						if (note && PlayState.instance.gfNotes != null) PlayState.instance.gfNotes.cameras = cameras;
-						if (noteSplash && PlayState.instance.grpNoteSplashesGf != null) PlayState.instance.grpNoteSplashesGf.cameras = cameras;
-						if (holdCover && PlayState.instance.grpHoldCoverGf != null) PlayState.instance.grpHoldCoverGf.cameras = cameras;
-						if (strum && PlayState.instance.gfStrums != null) PlayState.instance.gfStrums.cameras = cameras;
+						if (note && game.gfNotes != null) game.gfNotes.cameras = cameras;
+						if (noteSplash && game.grpNoteSplashesGf != null) game.grpNoteSplashesGf.cameras = cameras;
+						if (holdCover && game.grpHoldCoverGf != null) game.grpHoldCoverGf.cameras = cameras;
+						if (strum && game.gfStrums != null) game.gfStrums.cameras = cameras;
 					case 'all': 
 						if (note) {
-							if (PlayState.instance.notesGroupMap != null) {
-								for (keys in PlayState.instance.notesGroupMap.keys()) {
-									var noteGroup = PlayState.instance.notesGroupMap.get(keys);
-									noteGroup.cameras = cameras;
-								}
+							if (game.notesGroupMap != null) for (keys in game.notesGroupMap.keys()) {
+								var noteGroup = game.notesGroupMap.get(keys);
+								noteGroup.cameras = cameras;
 							}
-							if (PlayState.instance.playerNotes != null) PlayState.instance.playerNotes.cameras = cameras;
-							if (PlayState.instance.opponentNotes != null) PlayState.instance.opponentNotes.cameras = cameras;
-							if (PlayState.instance.gfNotes != null) PlayState.instance.gfNotes.cameras = cameras;
+							if (game.playerNotes != null) game.playerNotes.cameras = cameras;
+							if (game.opponentNotes != null) game.opponentNotes.cameras = cameras;
+							if (game.gfNotes != null) game.gfNotes.cameras = cameras;
 						}
 						if (noteSplash) {
-							if (PlayState.instance.noteSplashGroupMap != null) {
-								for (keys in PlayState.instance.noteSplashGroupMap.keys()) {
-									var noteSplashGroup = PlayState.instance.noteSplashGroupMap.get(keys);
-									noteSplashGroup.cameras = cameras;
-								}
+							if (game.noteSplashGroupMap != null) for (keys in game.noteSplashGroupMap.keys()) {
+								var noteSplashGroup = game.noteSplashGroupMap.get(keys);
+								noteSplashGroup.cameras = cameras;
 							}
-							if (PlayState.instance.grpNoteSplashes != null) PlayState.instance.grpNoteSplashes.cameras = cameras;
-							if (PlayState.instance.grpNoteSplashesOpt != null) PlayState.instance.grpNoteSplashesOpt.cameras = cameras;
-							if (PlayState.instance.grpNoteSplashesGf != null) PlayState.instance.grpNoteSplashesGf.cameras = cameras;
+							if (game.grpNoteSplashes != null) game.grpNoteSplashes.cameras = cameras;
+							if (game.grpNoteSplashesOpt != null) game.grpNoteSplashesOpt.cameras = cameras;
+							if (game.grpNoteSplashesGf != null) game.grpNoteSplashesGf.cameras = cameras;
 						}
 						if (holdCover) {
-							if (PlayState.instance.holdCoverGroupMap != null) {
-								for (keys in PlayState.instance.holdCoverGroupMap.keys()) {
-									var holdCoverGroup = PlayState.instance.holdCoverGroupMap.get(keys);
-									holdCoverGroup.cameras = cameras;
-								}
+							if (game.holdCoverGroupMap != null) for (keys in game.holdCoverGroupMap.keys()) {
+								var holdCoverGroup = game.holdCoverGroupMap.get(keys);
+								holdCoverGroup.cameras = cameras;
 							}
-							if (PlayState.instance.grpHoldCover != null) PlayState.instance.grpHoldCover.cameras = cameras;
-							if (PlayState.instance.grpHoldCoverOpt != null) PlayState.instance.grpHoldCoverOpt.cameras = cameras;
-							if (PlayState.instance.grpHoldCoverGf != null) PlayState.instance.grpHoldCoverGf.cameras = cameras;
+							if (game.grpHoldCover != null) game.grpHoldCover.cameras = cameras;
+							if (game.grpHoldCoverOpt != null) game.grpHoldCoverOpt.cameras = cameras;
+							if (game.grpHoldCoverGf != null) game.grpHoldCoverGf.cameras = cameras;
 						}
 						if (strum) {
-							if (PlayState.instance.playerStrums != null) PlayState.instance.playerStrums.cameras = cameras;
-							if (PlayState.instance.opponentStrums != null) PlayState.instance.opponentStrums.cameras = cameras;
-							if (PlayState.instance.gfStrums != null) PlayState.instance.gfStrums.cameras = cameras;
+							if (game.strumGroupMap != null) for (key in game.strumGroupMap.keys()) {
+								var strum = game.strumGroupMap.get(key);
+								strum.cameras = cameras;
+							}
+							if (game.playerStrums != null) game.playerStrums.cameras = cameras;
+							if (game.opponentStrums != null) game.opponentStrums.cameras = cameras;
+							if (game.gfStrums != null) game.gfStrums.cameras = cameras;
 						}
 				}
 			}
 		});
 
 		Lua_helper.add_callback(lua, "changeNotesScrollFactor", function(targetField:String = 'all', scroll:Array<Float>, ?strum:Bool = true, ?note:Bool = true, ?noteSplash:Bool = true, ?holdCover:Bool = true, ?exludeNoteType:Array<String>) {
+			var game = PlayState.instance;
+			if (game == null) return;
 			if (exludeNoteType == null) {
 				exludeNoteType = [];
 			}
@@ -3793,14 +3804,14 @@ class FunkinLua {
 			}
 			if (targetField.startsWith('@')) {//special string to use custom field
 				var getString:String = targetField.substring(1);
-				if (strum && PlayState.instance.strumGroupMap.exists(getString)) {
-					var strumGroup = PlayState.instance.strumGroupMap.get(getString);
+				if (strum && game.strumGroupMap != null && game.strumGroupMap.exists(getString)) {
+					var strumGroup = game.strumGroupMap.get(getString);
 					for (i in strumGroup.members) {
 						i.scrollFactor.set(scroll[0], scroll[1]);
 					}
 				}
-				if (PlayState.instance.notes != null) {
-					for (i in PlayState.instance.notes.members) {
+				if (game.notes != null) {
+					for (i in game.notes.members) {
 						if (i.fieldTarget == getString) {
 							if (note) i.scrollFactor.set(scroll[0], scroll[1]);
 							if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
@@ -3808,8 +3819,8 @@ class FunkinLua {
 						}
 					}
 				}
-				if (PlayState.instance.unspawnNotes != null) {
-					for (i in PlayState.instance.unspawnNotes) {
+				if (game.unspawnNotes != null) {
+					for (i in game.unspawnNotes) {
 						if (i.fieldTarget == getString) {
 							if (note) i.scrollFactor.set(scroll[0], scroll[1]);
 							if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
@@ -3820,115 +3831,441 @@ class FunkinLua {
 			} else {
 				switch(targetField) {
 					case 'player': 
-						for (i in PlayState.instance.notes) {
-							if (i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
-								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+						if (note || holdCover || noteSplash) {
+							for (i in game.notes) {
+								if (i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
+									if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+									if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+									if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+								}
+							}
+							for (i in game.unspawnNotes) {
+								if (i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
+									if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+									if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+									if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+								}
 							}
 						}
-						for (i in PlayState.instance.unspawnNotes) {
-							if (i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
-								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
-							}
-						}
-						if (strum) for (i in PlayState.instance.playerStrums) {
+						if (strum) for (i in game.playerStrums) {
 							i.scrollFactor.set(scroll[0], scroll[1]);
 						}
 					case 'opponent':
-						for (i in PlayState.instance.notes) {
-							if (!i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
-								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+						if (note || holdCover || noteSplash) {
+							for (i in game.notes) {
+								if (!i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
+									if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+									if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+									if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+								}
+							}
+							for (i in game.unspawnNotes) {
+								if (!i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
+									if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+									if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+									if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+								}
 							}
 						}
-						for (i in PlayState.instance.unspawnNotes) {
-							if (!i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
-								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
-							}
-						}
-						if (strum) for (i in PlayState.instance.opponentStrums) {
+						if (strum) for (i in game.opponentStrums) {
 							i.scrollFactor.set(scroll[0], scroll[1]);
 						}
 					case 'gf':
-						for (i in PlayState.instance.notes) {
-							if (i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
-								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+						if (note || holdCover || noteSplash) {
+							for (i in game.notes) {
+								if (i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
+									if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+									if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+									if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+								}
 							}
-						}
-						for (i in PlayState.instance.unspawnNotes) {
-							if (i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
-								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+							for (i in game.unspawnNotes) {
+								if (i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
+									if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+									if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+									if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+								}
 							}
 						}
 						if (strum) for (i in PlayState.instance.gfStrums) {
 							i.scrollFactor.set(scroll[0], scroll[1]);
 						}
 					case 'gf-player':
-						for (i in PlayState.instance.notes) {
-							if (i.gfNote && i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
-								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+						if (note || holdCover || noteSplash) {
+							for (i in game.notes) {
+								if (i.gfNote && i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
+									if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+									if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+									if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+								}
 							}
-						}
-						for (i in PlayState.instance.unspawnNotes) {
-							if (i.gfNote && i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
-								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+							for (i in game.unspawnNotes) {
+								if (i.gfNote && i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
+									if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+									if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+									if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+								}
 							}
 						}
 						if (strum) for (i in PlayState.instance.gfStrums) {
 							i.scrollFactor.set(scroll[0], scroll[1]);
 						}
 					case 'gf-opponent':
-						for (i in PlayState.instance.notes) {
-							if (i.gfNote && !i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
-								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+						if (note || holdCover || noteSplash) {
+							for (i in PlayState.instance.notes) {
+								if (i.gfNote && !i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
+									if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+									if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+									if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+								}
 							}
-						}
-						for (i in PlayState.instance.unspawnNotes) {
-							if (i.gfNote && !i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
-								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+							for (i in PlayState.instance.unspawnNotes) {
+								if (i.gfNote && !i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
+									if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+									if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+									if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+								}
 							}
 						}
 						if (strum) for (i in PlayState.instance.gfStrums) {
 							i.scrollFactor.set(scroll[0], scroll[1]);
 						}
 					case 'all':
-						for (i in PlayState.instance.notes) {
-							if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-							if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-							if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
-						}
-						for (i in PlayState.instance.unspawnNotes) {
-							if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-							if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-							if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+						if (note || holdCover || noteSplash) {
+							for (i in game.notes) {
+								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+							}
+							for (i in game.unspawnNotes) {
+								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
+								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
+								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+							}
 						}
 						if (strum) {
-							for (i in PlayState.instance.playerStrums) {
-								i.scrollFactor.set(scroll[0], scroll[1]);
+							for (key in game.strumGroupMap.keys()) {
+								var strumGroup = game.strumGroupMap.get(key);
+								for (i in strumGroup) i.scrollFactor.set(scroll[0], scroll[2]);
 							}
-							for (i in PlayState.instance.opponentStrums) {
-								i.scrollFactor.set(scroll[0], scroll[1]);
+							if (game.playerStrums != null) for (i in game.playerStrums) i.scrollFactor.set(scroll[0], scroll[1]);
+							if (game.opponentStrums != null) for (i in game.opponentStrums) i.scrollFactor.set(scroll[0], scroll[1]);
+							if (game.gfStrums != null) for (i in game.gfStrums) i.scrollFactor.set(scroll[0], scroll[1]);
+						}
+				}
+			}
+		});
+		Lua_helper.add_callback(lua, "changeNotesTextureV2", function(targetField:String = 'all', texture:String = '', ?note:Bool = true, ?strum:Bool = true, ?excludeNoteType:Array<String>) {
+			var game = PlayState.instance;
+			if (game == null) return;
+			if (targetField == null || targetField.length < 1) {
+				targetField = 'all';
+			}
+			if (excludeNoteType == null) excludeNoteType = [];
+			if (targetField.startsWith('@')) {
+				var getString:String = targetField.substring(1);
+				if (strum && game.strumGroupMap != null && game.strumGroupMap.exists(getString)) {
+					var strumGroup = game.strumGroupMap.get(getString);
+					if (strum) for (i in strumGroup.members) {
+						i.texture = texture;
+					}
+				}
+				if (note) {
+					if (game.notes != null) for (i in game.notes.members) {
+						if (i.fieldTarget == getString && excludeNoteType.indexOf(i.noteType) == -1) {
+							i.texture = texture;
+						}
+					}
+					if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
+						if (i.fieldTarget == getString && excludeNoteType.indexOf(i.noteType) == -1) {
+							i.texture = texture;
+						}
+					}
+				}
+			} else {
+				switch (targetField) {
+					case 'player': 
+						if (note) {
+							if (game.notes != null) for (i in game.notes) {
+								if (i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+									i.texture = texture;
+								}
 							}
-							for (i in PlayState.instance.gfStrums) {
-								i.scrollFactor.set(scroll[0], scroll[1]);
+							if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
+								if (i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+									i.texture = texture;		
+								}
+							}
+						}
+						if (strum && game.playerStrums != null) for (i in game.playerStrums) {
+							i.texture = texture;
+						}
+					case 'opponent':
+						if (note) {
+							if (game.notes != null) for (i in game.notes) {
+								if (!i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+									i.texture = texture;
+								}
+							}
+							if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
+								if (!i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+									i.texture = texture;
+								}
+							}
+						}
+						if (strum && game.opponentStrums != null) for (i in game.opponentStrums) {
+							i.texture = texture;
+						}
+					case 'gf':
+						if (note) {
+							if (game.notes != null) for (i in game.notes) {
+								if (i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+									i.texture = texture;
+								}
+							}
+							if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
+								if (i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+									i.texture = texture;
+								}
+							}
+						}
+						if (strum && game.gfStrums != null) for (i in game.gfStrums) {
+							i.texture = texture;
+						}
+					case 'gf-player':
+						if (note) {
+							if (game.notes != null) for (i in game.notes) {
+								if (i.gfNote && i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+									i.texture = texture;
+								}
+							}
+							if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
+								if (i.gfNote && i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+									i.texture = texture;
+								}
+							}
+						}
+						if (strum && game.gfStrums != null) for (i in game.gfStrums) {
+							i.texture = texture;
+						}
+					case 'gf-opponent':
+						if (note) {
+							if (game.notes != null) for (i in game.notes) {
+								if (i.gfNote && !i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+									if (note) i.texture = texture;
+								}
+							}
+							if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
+								if (i.gfNote && !i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+									i.texture = texture;
+								}
+							}
+						}
+						if (strum && game.gfStrums != null) for (i in game.gfStrums) {
+							i.texture = texture;
+						}
+					case 'all':
+						if (note) {
+							if (game.notes != null) for (i in game.notes) {
+								if (excludeNoteType.indexOf(i.noteType) == -1) {
+									i.texture = texture;
+								}
+							}
+							if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
+								if (excludeNoteType.indexOf(i.noteType) == -1) {
+									i.texture = texture;
+								}
+							}
+						}
+						if (strum) {
+							for (key in game.strumGroupMap.keys()) {
+								var strumGroup = game.strumGroupMap.get(key);
+								for (i in strumGroup) i.texture = texture;
+							}
+							if (game.playerStrums != null) for (i in game.playerStrums) i.texture = texture;
+							if (game.opponentStrums != null) for (i in game.opponentStrums) i.texture = texture;
+							if (game.gfStrums != null) for (i in game.gfStrums) i.texture = texture;
+						}
+				}
+			}
+		});
+
+		Lua_helper.add_callback(lua, "changeNotesSplashTextureV2", function(targetField:String = 'all', texture:String = '', ?excludeNoteType:Array<String>) {
+			var game = PlayState.instance;
+			if (game == null) return;
+			if (targetField == null || targetField.length < 1) {
+				targetField = 'all';
+			}
+			if (excludeNoteType == null) excludeNoteType = [];
+			if (targetField.startsWith('@')) {
+				var getString = targetField.substring(1);
+				if (game.notes != null) for (i in game.notes.members) {
+					if (i.fieldTarget == getString && excludeNoteType.indexOf(i.noteType) == -1) {
+						i.noteSplashTexture = texture;
+					}
+				}
+				if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
+					if (i.fieldTarget == getString && excludeNoteType.indexOf(i.noteType) == -1) {
+						i.noteSplashTexture = texture;
+					}
+				}
+			} else {
+				switch (targetField) {
+					case 'player': 
+						if (game.notes != null) for (i in game.notes) {
+							if (i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								i.noteSplashTexture = texture;
+							}
+						}
+						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
+							if (i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								i.noteSplashTexture = texture;		
+							}
+						}
+					case 'opponent':
+						if (game.notes != null) for (i in game.notes) {
+							if (!i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								i.noteSplashTexture = texture;
+							}
+						}
+						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
+							if (!i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								i.noteSplashTexture = texture;
+							}
+						}
+					case 'gf':
+						if (game.notes != null) for (i in game.notes) {
+							if (i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								i.noteSplashTexture = texture;
+							}
+						}
+						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
+							if (i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								i.noteSplashTexture = texture;
+							}
+						}
+					case 'gf-player':
+						if (game.notes != null) for (i in game.notes) {
+							if (i.gfNote && i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								i.noteSplashTexture = texture;
+							}
+						}
+						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
+							if (i.gfNote && i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								i.noteSplashTexture = texture;
+							}
+						}
+					case 'gf-opponent':
+						if (game.notes != null) for (i in game.notes) {
+							if (i.gfNote && !i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								i.noteSplashTexture = texture;
+							}
+						}
+						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
+							if (i.gfNote && !i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								i.noteSplashTexture = texture;
+							}
+						}
+					case 'all':
+						if (game.notes != null) for (i in game.notes) {
+							if (excludeNoteType.indexOf(i.noteType) == -1) {
+								i.noteSplashTexture = texture;
+							}
+						}
+						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
+							if (excludeNoteType.indexOf(i.noteType) == -1) {
+								i.noteSplashTexture = texture;
+							}
+						}
+				}
+			}
+		});
+
+		Lua_helper.add_callback(lua, "changeNotesHoldCoverV2", function(targetField:String = 'all', texture:String = '', ?excludeNoteType:Array<String>) {
+			var game = PlayState.instance;
+			if (game == null) return;
+			if (targetField == null || targetField.length < 1) {
+				targetField = 'all';
+			}
+			if (excludeNoteType == null) excludeNoteType = [];
+			if (targetField.startsWith('@')) {
+				var getString = targetField.substring(1);
+				if (game.notes != null) for (i in game.notes.members) {
+					if (i.fieldTarget == getString && excludeNoteType.indexOf(i.noteType) == -1) {
+						i.holdCoverTexture = texture;
+					}
+				}
+				if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
+					if (i.fieldTarget == getString && excludeNoteType.indexOf(i.noteType) == -1) {
+						i.holdCoverTexture = texture;
+					}
+				}
+			} else {
+				switch (targetField) {
+					case 'player': 
+						if (game.notes != null) for (i in game.notes) {
+							if (i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								i.holdCoverTexture = texture;
+							}
+						}
+						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
+							if (i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								i.holdCoverTexture = texture;		
+							}
+						}
+					case 'opponent':
+						if (game.notes != null) for (i in game.notes) {
+							if (!i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								i.holdCoverTexture = texture;
+							}
+						}
+						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
+							if (!i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								i.holdCoverTexture = texture;
+							}
+						}
+					case 'gf':
+						if (game.notes != null) for (i in game.notes) {
+							if (i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								i.holdCoverTexture = texture;
+							}
+						}
+						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
+							if (i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								i.holdCoverTexture = texture;
+							}
+						}
+					case 'gf-player':
+						if (game.notes != null) for (i in game.notes) {
+							if (i.gfNote && i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								i.holdCoverTexture = texture;
+							}
+						}
+						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
+							if (i.gfNote && i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								i.holdCoverTexture = texture;
+							}
+						}
+					case 'gf-opponent':
+						if (game.notes != null) for (i in game.notes) {
+							if (i.gfNote && !i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								i.holdCoverTexture = texture;
+							}
+						}
+						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
+							if (i.gfNote && !i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
+								i.holdCoverTexture = texture;
+							}
+						}
+					case 'all':
+						if (game.notes != null) for (i in game.notes) {
+							if (excludeNoteType.indexOf(i.noteType) == -1) {
+								i.holdCoverTexture = texture;
+							}
+						}
+						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
+							if (excludeNoteType.indexOf(i.noteType) == -1) {
+								i.holdCoverTexture = texture;
 							}
 						}
 				}

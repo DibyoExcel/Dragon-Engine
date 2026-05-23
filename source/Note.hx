@@ -521,11 +521,6 @@ class Note extends FlxSprite
 			scrollFactor.set();
 		}
 		hitsound = 'hitsound';
-		if (PlayState.SONG.secOpt && !(gamemode == "bothside") && !mustPress) {
-			noteScale = 0.75;
-			noteSplashScale = 0.75;
-			holdCoverScale = 0.75;
-		}
 		this.mustPress = mustPress;
 		this.gfNote = gfSec;
 		this.noteSplashTexture = '';
@@ -734,19 +729,6 @@ class Note extends FlxSprite
 	public function onChangeSecOpt(value:Bool = false) {
 		if (!mustPress) {
 			var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
-			if (value) {
-				if (!(gamemode == "bothside")) {
-					noteScale = 0.75;
-					noteSplashScale = 0.75;
-					holdCoverScale = 0.75;
-				}
-			} else {
-				if (!(gamemode == "bothside")) {
-					noteScale = 1.0;
-					noteSplashScale = 1.0;
-					holdCoverScale = 1.0;
-				}
-			}
 		}
 	}
 
@@ -924,9 +906,6 @@ class Note extends FlxSprite
 		noteScale = 1;
 		reloadNote('', texture);
 		noteScale = lastScale;
-		if (PlayState.SONG.secOpt && !mustPress) {//purpose trigger
-			noteScale = 0.75;
-		}
 	}
 	function set_holdCover(value:HoldCover):HoldCover{
 		if (holdCover != value) {

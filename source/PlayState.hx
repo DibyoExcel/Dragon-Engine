@@ -210,6 +210,7 @@ class PlayState extends MusicBeatState
 	public var playerStrums:FlxTypedGroup<StrumNote>;
 	public var opponentStrums:FlxTypedGroup<StrumNote>;
 	public var gfStrums:FlxTypedGroup<StrumNote>;
+	public var bothStrums:FlxTypedGroup<StrumNote>;
 	public var customStrum:FlxTypedGroup<StrumNote>;//if it might only advanced know this
 	public var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
 	public var grpNoteSplashesOpt:FlxTypedGroup<NoteSplash>;
@@ -1281,6 +1282,7 @@ class PlayState extends MusicBeatState
 		playerStrums = new FlxTypedGroup<StrumNote>();
 		opponentStrums = new FlxTypedGroup<StrumNote>();
 		gfStrums = new FlxTypedGroup<StrumNote>();
+		bothStrums = new FlxTypedGroup<StrumNote>();
 		//it should able with setObjectOrder()
 		add(opponentStrums);
 		add(gfStrums);
@@ -3055,7 +3057,195 @@ class PlayState extends MusicBeatState
 			if(!ClientPrefs.opponentStrums) targetAlpha = 0;
 		else if(ClientPrefs.middleScroll) targetAlpha = 0.35;
 		}
-		if (!PlayState.SONG.secOpt) {
+		if (gamemode == 'bothside') {
+			for (i in 0...4) {
+				var babyArrow:StrumNote = new StrumNote(((FlxG.width * strumPointMiddle)-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, 1);
+				if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
+					babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
+				}
+				babyArrow.downScroll = ClientPrefs.downScroll;
+				if (!isStoryMode && !skipArrowStartTween && t)
+				{
+					babyArrow.alpha = 0;
+					if (oldTransitionNotes) {
+						babyArrow.y += 20;
+						FlxTween.tween(babyArrow, {y: babyArrow.y - 20, alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+					} else {
+						FlxTween.tween(babyArrow, {alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+					}
+				}
+				else
+				{
+					babyArrow.alpha = targetAlpha;
+				}
+				opponentStrums.add(babyArrow);
+				if (PlayState.SONG.secOpt) gfStrums.add(babyArrow);
+				playerStrums.add(babyArrow);
+				bothStrums.add(babyArrow);
+				strumLineNotes.add(babyArrow);
+				babyArrow.postAddedToGroup();
+			}
+		} else if (gamemode == 'opponent') {
+			if (player == 0) {
+				for (i in 0...4) {
+					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, 0);
+					if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
+						babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
+					}
+					babyArrow.downScroll = ClientPrefs.downScroll;
+					if (!isStoryMode && !skipArrowStartTween && t)
+					{
+						babyArrow.alpha = 0;
+						if (oldTransitionNotes) {
+							babyArrow.y += 20;
+							FlxTween.tween(babyArrow, {y: babyArrow.y - 20, alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+						} else {
+							FlxTween.tween(babyArrow, {alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+						}
+					}
+					else
+					{
+						babyArrow.alpha = targetAlpha;
+					}
+					if(ClientPrefs.middleScroll)
+					{
+						if(i > 1) { //Up and Right
+							babyArrow.x += FlxG.width / 4;
+						} else {
+							babyArrow.x -= FlxG.width / 4;
+						}
+					}
+					opponentStrums.add(babyArrow);
+					strumLineNotes.add(babyArrow);
+					babyArrow.postAddedToGroup();
+				}
+			} else if (player == 1) {
+				for (i in 0...4) {
+					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointPlayer)-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, 1);
+					if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
+						babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
+					}
+					babyArrow.downScroll = ClientPrefs.downScroll;
+					if (!isStoryMode && !skipArrowStartTween && t)
+					{
+						babyArrow.alpha = 0;
+						if (oldTransitionNotes) {
+							babyArrow.y += 20;
+							FlxTween.tween(babyArrow, {y: babyArrow.y - 20, alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+						} else {
+							FlxTween.tween(babyArrow, {alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+						}
+					}
+					else
+					{
+						babyArrow.alpha = targetAlpha;
+					}
+					playerStrums.add(babyArrow);
+					strumLineNotes.add(babyArrow);
+					babyArrow.postAddedToGroup();
+				}
+			}
+		} else {
+			//default and all gamemode(design inspired from RetroSpecter P2 mods)
+			if (player == 0) {
+				for (i in 0...4) {
+					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, 0);
+					if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
+						babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
+					}
+					babyArrow.downScroll = ClientPrefs.downScroll;
+					if (PlayState.SONG.secOpt) {
+						babyArrow.y -= Note.swagWidth/2;
+					}
+					if (!isStoryMode && !skipArrowStartTween && t)
+					{
+						babyArrow.alpha = 0;
+						if (oldTransitionNotes) {
+							babyArrow.y += 20;
+							FlxTween.tween(babyArrow, {y: babyArrow.y - 20, alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+						} else {
+							FlxTween.tween(babyArrow, {alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+						}
+					}
+					else
+					{
+						babyArrow.alpha = targetAlpha;
+					}
+					if(ClientPrefs.middleScroll)
+					{
+						if(i > 1) { //Up and Right
+							babyArrow.x += FlxG.width / 4;
+						} else {
+							babyArrow.x -= FlxG.width / 4;
+						}
+					}
+					opponentStrums.add(babyArrow);
+					strumLineNotes.add(babyArrow);
+					babyArrow.postAddedToGroup();
+				}
+				if (PlayState.SONG.secOpt) {
+					for (i in 0...4) {
+						var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, 0, true);
+						if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
+							babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
+						}
+						babyArrow.downScroll = ClientPrefs.downScroll;
+						babyArrow.y += Note.swagWidth/2;
+						if (!isStoryMode && !skipArrowStartTween && t)
+						{
+							babyArrow.alpha = 0;
+							if (oldTransitionNotes) {
+								babyArrow.y += 20;
+								FlxTween.tween(babyArrow, {y: babyArrow.y - 20, alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+							} else {
+								FlxTween.tween(babyArrow, {alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+							}
+						}
+						else
+						{
+							babyArrow.alpha = targetAlpha;
+						}
+						if(ClientPrefs.middleScroll)
+						{
+							if(i > 1) { //Up and Right
+								babyArrow.x += FlxG.width / 4;
+							} else {
+								babyArrow.x -= FlxG.width / 4;
+							}
+						}
+						gfStrums.add(babyArrow);
+						strumLineNotes.add(babyArrow);
+						babyArrow.postAddedToGroup();
+					}
+				}
+			} else if (player == 1) {
+				for (i in 0...4) {
+					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointPlayer)-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, 1);
+					if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
+						babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
+					}
+					babyArrow.downScroll = ClientPrefs.downScroll;
+					if (!isStoryMode && !skipArrowStartTween && t)
+					{
+						babyArrow.alpha = 0;
+						if (oldTransitionNotes) {
+							babyArrow.y += 20;
+							FlxTween.tween(babyArrow, {y: babyArrow.y - 20, alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+						} else {
+							FlxTween.tween(babyArrow, {alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+						}
+					}
+					else
+					{
+						babyArrow.alpha = targetAlpha;
+					}
+					playerStrums.add(babyArrow);
+					strumLineNotes.add(babyArrow);
+					babyArrow.postAddedToGroup();
+				}
+			}
+		}
+		/*if (!PlayState.SONG.secOpt) {
 			for (i in 0...4)
 				{
 					// FlxG.log.add(i);
@@ -3187,7 +3377,7 @@ class PlayState extends MusicBeatState
 						babyArrow.postAddedToGroup();
 					}
 			}				
-		}
+		}*/
 	}
 
 	override function openSubState(SubState:FlxSubState)
@@ -3843,7 +4033,7 @@ class PlayState extends MusicBeatState
 				if(gamemode == 'opponent' && boyfriend != null && boyfriend.animation.curAnim != null && boyfriend.holdTimer > Conductor.stepCrochet * (0.0011 / FlxG.sound.music.pitch) * boyfriend.singDuration && boyfriend.animation.curAnim.name.startsWith('sing')) {
 					boyfriend.dance();
 				}
-				if((gamemode != 'opponent' && gamemode != 'bothside' && gamemode != 'bothside v2') && dad != null && dad.animation.curAnim != null && dad.holdTimer > Conductor.stepCrochet * (0.0011 / FlxG.sound.music.pitch) * dad.singDuration && dad.animation.curAnim.name.startsWith('sing')) {
+				if((gamemode != 'opponent' && gamemode != 'bothside') && dad != null && dad.animation.curAnim != null && dad.holdTimer > Conductor.stepCrochet * (0.0011 / FlxG.sound.music.pitch) * dad.singDuration && dad.animation.curAnim.name.startsWith('sing')) {
 					dad.dance();
 				}
 			} else {
@@ -4086,7 +4276,7 @@ class PlayState extends MusicBeatState
 						}
 					}
 					var botCanHit = ((daNote.isSustainNote && (daNote.strumTime + daNote.offsetStrumTime) < Conductor.songPosition + (Conductor.safeZoneOffset * daNote.earlyHitMult) && (daNote.parent != null ? daNote.parent.wasGoodHit : true)) || (!daNote.isSustainNote && ((daNote.strumTime + daNote.offsetStrumTime) <= Conductor.songPosition))) && ((daNote.strumNote != null && !daNote.strumNote.isLocked) || daNote.strumNote == null);//just be sure bot only hit in perfect time :) and also cant miss when lagging like hell.
-					if ((gamemode == 'opponent' ? (!daNote.blockHit && !daNote.canFreeze) && daNote.mustPress : !daNote.mustPress) && (!daNote.ignoreNote && !daNote.canFreeze) && daNote.fieldTarget.length < 1 && !(gamemode == "bothside v2" || gamemode == "bothside") && botCanHit)
+					if ((gamemode == 'opponent' ? (!daNote.blockHit && !daNote.canFreeze) && daNote.mustPress : !daNote.mustPress) && (!daNote.ignoreNote && !daNote.canFreeze) && daNote.fieldTarget.length < 1 && !(gamemode == "bothside") && botCanHit)
 					{
 						opponentNoteHit(daNote);
 					}
@@ -4096,11 +4286,11 @@ class PlayState extends MusicBeatState
 						opponentNoteHit(daNote);
 					}
 
-					if((gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && cpuControlled && !(daNote.autoPress || (playableField.length < 1 ? daNote.fieldTarget.length > 0 : playableField.indexOf(daNote.fieldTarget) == -1)) && botCanHit) {
+					if((gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" ? true : daNote.mustPress) : !daNote.mustPress) && cpuControlled && !(daNote.autoPress || (playableField.length < 1 ? daNote.fieldTarget.length > 0 : playableField.indexOf(daNote.fieldTarget) == -1)) && botCanHit) {
 						goodNoteHit(daNote);
 					}
 					//custom field player(FD BOT)
-					if((gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" || gamemode == "bothside v2" ? true : daNote.mustPress) : !daNote.mustPress) && (daNote.autoPress || (playableField.length < 1 ? daNote.fieldTarget.length > 0 : playableField.indexOf(daNote.fieldTarget) == -1)) && botCanHit) {
+					if((gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" ? true : daNote.mustPress) : !daNote.mustPress) && (daNote.autoPress || (playableField.length < 1 ? daNote.fieldTarget.length > 0 : playableField.indexOf(daNote.fieldTarget) == -1)) && botCanHit) {
 						goodNoteHit(daNote);
 					}
 
@@ -4108,7 +4298,7 @@ class PlayState extends MusicBeatState
 					if (Conductor.songPosition > (noteKillOffset / (Math.abs(songSpeed * daNote.multSpeed)))/**GET OUT**/ + (daNote.strumTime + daNote.offsetStrumTime))
 					{
 						//if (daNote.canFreeze) return;
-						if ((gamemode != 'opponent' ? ((gamemode == "bothside" || gamemode == "bothside v2") ? true : daNote.mustPress) : !daNote.mustPress) && !cpuControlled && !daNote.ignoreNote && !endingSong && (daNote.tooLate || !daNote.wasGoodHit) && !(daNote.autoPress || (playableField.length < 1 ? daNote.fieldTarget.length > 0 : playableField.indexOf(daNote.fieldTarget) == -1))) {
+						if ((gamemode != 'opponent' ? ((gamemode == "bothside") ? true : daNote.mustPress) : !daNote.mustPress) && !cpuControlled && !daNote.ignoreNote && !endingSong && (daNote.tooLate || !daNote.wasGoodHit) && !(daNote.autoPress || (playableField.length < 1 ? daNote.fieldTarget.length > 0 : playableField.indexOf(daNote.fieldTarget) == -1))) {
 							noteMiss(daNote);
 						}
 						destroyNote(daNote);
@@ -5301,7 +5491,8 @@ class PlayState extends MusicBeatState
 			if(!boyfriend.stunned && generatedMusic && !endingSong)
 			{
 				if (playableField.length < 1) {
-					var spr = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key-playerStrums.length] : playerStrums.members[key]) : opponentStrums.members[key]);
+					var spr = playerStrums.members[key];
+					if (gamemode == 'opponent') spr = opponentStrums.members[key]; else if (gamemode == 'bothside') spr = bothStrums.members[key];
 					if(spr != null && !spr.isLocked)
 					{
 						spr.playAnim('pressed');
@@ -5311,7 +5502,8 @@ class PlayState extends MusicBeatState
 					for (field in playableField) {//hope works, if not well, rip
 						var spr:StrumNote = null;
 						if (field == '') {
-							spr = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key-playerStrums.length] : playerStrums.members[key]) : opponentStrums.members[key]);//if field is empty string, it will be treated as the default strum field
+							spr = playerStrums.members[key];
+							if (gamemode == 'opponent') spr = opponentStrums.members[key]; else if (gamemode == 'bothside') spr = bothStrums.members[key];
 						} else {
 							if (strumGroupMap.exists(field)) {
 								spr = strumGroupMap.get(field).members[key];//if field is not empty string, it will be treated as the custom strum field with the same name as the field
@@ -5338,9 +5530,9 @@ class PlayState extends MusicBeatState
 				var sortedNotesList:Array<Note> = [];
 				notes.forEachAlive(function(daNote:Note)
 				{
-					if (strumsBlocked[daNote.noteData + ((gamemode == "bothside v2" && !daNote.mustPress ? keyCount : 0)+(!daNote.mustPress && (daNote.gfNote || daNote.secondOpponent) && PlayState.SONG.secOpt ? keyCount : 0))] != true && (daNote.canBeHit && (((gamemode == 'opponent') || (gamemode == "bothside v2" && key >= keyCount)) ? !daNote.mustPress : (gamemode == "bothside" ? true : daNote.mustPress)) && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote && (gamemode == "opponent"  ? (!daNote.ignoreNote && !daNote.canFreeze) : (!daNote.blockHit && !daNote.canFreeze)) && !daNote.autoPress) && !((playableField.length < 1 ? daNote.fieldTarget.length > 0 : playableField.indexOf(daNote.fieldTarget) == -1)) && ((daNote.strumNote != null && !daNote.strumNote.isLocked) || daNote.strumNote == null))//when player play as opponent the player cant press ignore note(based opponent itself), you cant press autoPress notes,notes only can hit if attach strums and not has been locked
+					if (strumsBlocked[daNote.noteData] != true && (daNote.canBeHit && (((gamemode == 'opponent')) ? !daNote.mustPress : (gamemode == "bothside" ? true : daNote.mustPress)) && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote && (gamemode == "opponent"  ? (!daNote.ignoreNote && !daNote.canFreeze) : (!daNote.blockHit && !daNote.canFreeze)) && !daNote.autoPress) && !((playableField.length < 1 ? daNote.fieldTarget.length > 0 : playableField.indexOf(daNote.fieldTarget) == -1)) && ((daNote.strumNote != null && !daNote.strumNote.isLocked) || daNote.strumNote == null))//when player play as opponent the player cant press ignore note(based opponent itself), you cant press autoPress notes,notes only can hit if attach strums and not has been locked
 					{
-						if(daNote.noteData == key-((((daNote.gfNote || daNote.secondOpponent) && !daNote.mustPress) && PlayState.SONG.secOpt ? keyCount : 0)+(daNote.mustPress && gamemode=='bothside v2' ? keyCount : 0)))
+						if(daNote.noteData == key)
 						{
 							sortedNotesList.push(daNote);
 							//notesDatas.push(daNote.noteData);
@@ -5419,7 +5611,8 @@ class PlayState extends MusicBeatState
 		if(!cpuControlled && startedCountdown && !paused && key > -1)
 			{
 				if (playableField.length < 1) {
-					var spr = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key-playerStrums.length] : playerStrums.members[key]) : opponentStrums.members[key]);
+					var spr = playerStrums.members[key];
+					 if (gamemode == 'opponent') spr = opponentStrums.members[key]; else if (gamemode == 'bothside') spr = bothStrums.members[key];
 					if(spr != null && !spr.isLocked)
 					{
 						spr.playAnim('static');
@@ -5429,7 +5622,8 @@ class PlayState extends MusicBeatState
 					for (field in playableField) {//hope works, if not, well, rip
 						var spr:StrumNote = null;
 						if (field == '') {
-							spr = (gamemode != "opponent"  ? (((gamemode == "bothside v2" && key > 3)) ? opponentStrums.members[key-playerStrums.length] : playerStrums.members[key]) : opponentStrums.members[key]);//if field is empty string, it will be treated as the default strum field
+							spr = playerStrums.members[key];
+							if (gamemode == 'opponent') spr = opponentStrums.members[key]; else if (gamemode == 'bothside') spr = bothStrums.members[key];
 						} else {
 							if (strumGroupMap.exists(field)) {
 								spr = strumGroupMap.get(field).members[key];//if field is not empty string, it will be treated as the custom strum field with the same name as the field
@@ -5496,8 +5690,8 @@ class PlayState extends MusicBeatState
 			notes.forEachAlive(function(daNote:Note)
 			{
 				// hold note functions
-				if (strumsBlocked[daNote.noteData+(((gamemode == "bothside v2" && !daNote.mustPress) ? keyCount : 0)+(!daNote.mustPress && (daNote.gfNote || daNote.secondOpponent) && PlayState.SONG.secOpt ? keyCount : 0))] != true && daNote.isSustainNote && parsedHoldArray[daNote.noteData+(((gamemode == "bothside v2" && !daNote.mustPress) ? keyCount : 0)+(!daNote.mustPress && (daNote.gfNote || daNote.secondOpponent) && PlayState.SONG.secOpt ? keyCount : 0))] && daNote.canBeHit
-				&& (gamemode != 'opponent' ? (gamemode == "bothside v2" || gamemode == "bothside" ? true : daNote.mustPress) : !daNote.mustPress) && !daNote.tooLate && !daNote.wasGoodHit && (gamemode == 'opponent' || ((gamemode == "bothside v2" || gamemode == "bothside") && !daNote.mustPress) ? (!daNote.ignoreNote && !daNote.canFreeze) : (!daNote.blockHit && !daNote.canFreeze))) {
+				if (strumsBlocked[daNote.noteData] != true && daNote.isSustainNote && parsedHoldArray[daNote.noteData] && daNote.canBeHit
+				&& (gamemode != 'opponent' ? (gamemode == "bothside" ? true : daNote.mustPress) : !daNote.mustPress) && !daNote.tooLate && !daNote.wasGoodHit && (gamemode == 'opponent' || ((gamemode == "bothside") && !daNote.mustPress) ? (!daNote.ignoreNote && !daNote.canFreeze) : (!daNote.blockHit && !daNote.canFreeze))) {
 					if (((daNote.strumNote != null && !daNote.strumNote.isLocked) || daNote.strumNote == null)) {
 						goodNoteHit(daNote);
 					}
@@ -5518,7 +5712,7 @@ class PlayState extends MusicBeatState
 					boyfriend.dance();
 					//boyfriend.animation.curAnim.finish();
 				}
-				if ((gamemode == 'opponent' || gamemode == 'bothside' || gamemode == "bothside v2") && dad.animation.curAnim != null && dad.holdTimer > Conductor.stepCrochet * (0.0011 / FlxG.sound.music.pitch) * dad.singDuration && dad.animation.curAnim.name.startsWith('sing') && !dad.animation.curAnim.name.endsWith('miss'))
+				if ((gamemode == 'opponent' || gamemode == 'bothside') && dad.animation.curAnim != null && dad.holdTimer > Conductor.stepCrochet * (0.0011 / FlxG.sound.music.pitch) * dad.singDuration && dad.animation.curAnim.name.startsWith('sing') && !dad.animation.curAnim.name.endsWith('miss'))
 					{
 						dad.dance();
 						//boyfriend.animation.curAnim.finish();
@@ -5559,7 +5753,7 @@ class PlayState extends MusicBeatState
 	function noteMiss(daNote:Note):Void { //You didn't hit the key and let it go offscreen, also used by Hurt Notes
 		//Dupe note remove
 		notes.forEachAlive(function(note:Note) {
-			if (daNote != note && (gamemode != 'opponent' ? ((gamemode == "bothside" || gamemode == "bothside v2") ?  true : daNote.mustPress) : !daNote.mustPress) && daNote.noteData == note.noteData && daNote.isSustainNote == note.isSustainNote && Math.abs((daNote.strumTime + daNote.offsetStrumTime) - (note.strumTime + note.offsetStrumTime)) < 1) {
+			if (daNote != note && (gamemode != 'opponent' ? ((gamemode == "bothside") ?  true : daNote.mustPress) : !daNote.mustPress) && daNote.noteData == note.noteData && daNote.isSustainNote == note.isSustainNote && Math.abs((daNote.strumTime + daNote.offsetStrumTime) - (note.strumTime + note.offsetStrumTime)) < 1) {
 				destroyNote(daNote);
 			}
 		});
@@ -5586,7 +5780,7 @@ class PlayState extends MusicBeatState
 
 		totalPlayed++;
 		RecalculateRating(true);
-		var char:Character = (((gamemode == "bothside v2" || gamemode == "bothside") && !daNote.mustPress) || daNote.isDad || gamemode == 'opponent' ? dad : boyfriend);
+		var char:Character = (((gamemode == "bothside") && !daNote.mustPress) || daNote.isDad || gamemode == 'opponent' ? dad : boyfriend);
 			if(daNote.gfNote) {
 				char = gf;
 			}
@@ -5596,7 +5790,7 @@ class PlayState extends MusicBeatState
 				var animToPlay:String = singAnimations[Std.int(Math.abs(daNote.noteData))] + 'miss' + daNote.animSuffix;
 				char.playAnim(animToPlay, true);
 			}
-		callOnLuas((gamemode == 'opponent' || ((gamemode == "bothside" || gamemode == "bothside v2" && !daNote.mustPress))  ? 'opponentNoteMiss' : 'noteMiss'), [notes.members.indexOf(daNote), daNote.noteData, daNote.noteType, daNote.isSustainNote]);
+		callOnLuas((gamemode == 'opponent' || ((gamemode == "bothside" && !daNote.mustPress))  ? 'opponentNoteMiss' : 'noteMiss'), [notes.members.indexOf(daNote), daNote.noteData, daNote.noteType, daNote.isSustainNote]);
 		if (daNote.isSustainNote && daNote.parent != null && daNote.parent.holdCover != null) {
 			daNote.parent.holdCover.kill();
 			daNote.parent.holdCover = null;
@@ -5802,7 +5996,7 @@ class PlayState extends MusicBeatState
 					switch(note.noteType) {
 						case 'Hurt Note': //Hurt note
 							if (!note.isDad) {
-								if (((gamemode == "bothside v2" || gamemode == "bothside") && !note.mustPress) || gamemode == "opponent") {
+								if (((gamemode == "bothside") && !note.mustPress) || gamemode == "opponent") {
 									if(dad.animation.getByName('hurt') != null) {
 										dad.playAnim('hurt', true, false, 0, note.isSustainNote);
 										dad.specialAnim = true;
@@ -5875,7 +6069,7 @@ class PlayState extends MusicBeatState
 				else
 				{
 					if (!note.isDad) {
-						if (gamemode == 'opponent' || ((gamemode == "bothside v2" || gamemode == "bothside") && !note.mustPress)) {
+						if (gamemode == 'opponent' || (gamemode == "bothside" && !note.mustPress)) {
 							dad.playAnim(animToPlay + note.animSuffix, true, false, 0, note.isSustainNote);
 							dad.holdTimer = 0;
 						} else {
@@ -6668,8 +6862,10 @@ class PlayState extends MusicBeatState
 				//regenerate strums
 				if (gamemode != "bothside") {
 					generateStaticArrows(0, t2);
+					generateStaticArrows(1, t);
+				} else {
+					generateStaticArrows(1, t);
 				}
-				generateStaticArrows(1, t);
 				for (i in 0...playerStrums.length) {
 					setOnLuas('defaultPlayerStrumX' + i, 0);
 					setOnLuas('defaultPlayerStrumY' + i, 0);
@@ -6694,50 +6890,6 @@ class PlayState extends MusicBeatState
 						setOnLuas('defaultGfStrumX' + i, gfStrums.members[i].x);
 						setOnLuas('defaultGfStrumY' + i, gfStrums.members[i].y-(oldTransitionNotes ? 20 : 0));//eh
 						//if(ClientPrefs.middleScroll) gfStrums.members[i].visible = false;
-					}
-				}
-				setKey();
-				if (ClientPrefs.extUI) {
-					var lastCount = keyPressUI.length;
-					if (lastCount != keysArray.length) {
-						#if mobile
-							while (hitbox.length > 0) {
-								var obj = hitbox.members[0];
-								obj.kill();
-								hitbox.remove(obj, true);
-								obj.destroy();
-							}
-						#end
-					}
-					if (lastCount != keysArray.length) {
-						while (keyPressUI.length > 0) {
-							var obj = keyPressUI.members[0];
-							obj.kill();
-							keyPressUI.remove(obj, true);
-							obj.destroy();
-							obj = null;
-						}
-					}
-					if (lastCount != keysArray.length) {
-						for (i in 0...keysArray.length) {
-							var notePressUISpr = new Keypress(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4))), colorOrder[i%colorOrder.length]);
-							notePressUISpr.cameras = [ camHUD ];
-							keyPressUI.add(notePressUISpr);
-						}
-						#if mobile
-						for (i in 0...keysArray.length) {
-							var bruh = new Hitbox(i*Std.int(FlxG.width/keysArray.length), (ClientPrefs.spaceKeyPosition == 'top' ? 150 : 0));
-							bruh.color = colorOrder[i%colorOrder.length];
-							bruh.cameras = [hitboxCam];
-							bruh.sizeWidth = Std.int(FlxG.width/keysArray.length);
-							bruh.sizeHeight = FlxG.height - (ClientPrefs.spaceKey ? 150 : 0);
-							bruh.updateHitbox();
-							hitbox.add(bruh);
-						}
-						if (hitboxSpace != null) {
-							hitboxSpace.y = (ClientPrefs.spaceKeyPosition == 'top' ? 0 : FlxG.height-150);
-						}
-						#end
 					}
 				}
 				callOnLuas('onChangeOpponent', [value, t, t2]);
@@ -6802,46 +6954,6 @@ class PlayState extends MusicBeatState
 				setOnLuas('defaultGfStrumX' + i, gfStrums.members[i].x);
 				setOnLuas('defaultGfStrumY' + i, gfStrums.members[i].y-(oldTransitionNotes ? 20 : 0));//eh
 				//if(ClientPrefs.middleScroll) gfStrums.members[i].visible = false;
-			}
-		}
-		setKey();
-		if (ClientPrefs.extUI) {
-			var lastCount = keysArray.length;
-			if (lastCount != keysArray.length) {
-				while (keyPressUI.length > 0) {
-					var obj = keyPressUI.members[0];
-					obj.kill();
-					keyPressUI.remove(obj, true);
-					obj.destroy();
-					obj = null;
-				}
-				#if mobile
-					while (hitbox.length > 0) {
-						var obj = hitbox.members[0];
-						obj.kill();
-						hitbox.remove(obj, true);
-						obj.destroy();
-					}
-				#end
-				for (i in 0...keysArray.length) {
-					var notePressUISpr = new Keypress(50+((i%4)*50), (FlxG.height/2)+(50*(Math.floor(i/4))), colorOrder[i%colorOrder.length]);
-					notePressUISpr.cameras = [ camHUD ];
-					keyPressUI.add(notePressUISpr);
-				}
-				#if mobile
-				for (i in 0...keysArray.length) {
-					var bruh = new Hitbox(i*Std.int(FlxG.width/keysArray.length), (ClientPrefs.spaceKeyPosition == 'top' ? 150 : 0));
-					bruh.color = colorOrder[i%colorOrder.length];
-					bruh.cameras = [hitboxCam];
-					bruh.sizeWidth = Std.int(FlxG.width/keysArray.length);
-					bruh.sizeHeight = FlxG.height - (ClientPrefs.spaceKey ? 150 : 0);
-					bruh.updateHitbox();
-					hitbox.add(bruh);
-				}
-				if (hitboxSpace != null) {
-					hitboxSpace.y = (ClientPrefs.spaceKeyPosition == 'top' ? 0 : FlxG.height-150);
-				}
-				#end
 			}
 		}
 		callOnLuas('onChangeGamemode', [gamemode, t]);
@@ -7002,144 +7114,18 @@ class PlayState extends MusicBeatState
 	private function setKey() {
 		keysArray = [];
 		controlArray = [];
-		if (gamemode == 'bothside v2') {
-			if (PlayState.SONG.secOpt) {
-				keysArray = [
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left_OPT')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down_OPT')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up_OPT')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right_OPT')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left_OPT2')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down_OPT2')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up_OPT2')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right_OPT2'))
-				];
-				controlArray = [
-					'NOTE_LEFT',
-					'NOTE_DOWN',
-					'NOTE_UP',
-					'NOTE_RIGHT',
-					'NOTE_LEFT_OPT',
-					'NOTE_DOWN_OPT',
-					'NOTE_UP_OPT',
-					'NOTE_RIGHT_OPT',
-					'NOTE_LEFT_OPT2',
-					'NOTE_DOWN_OPT2',
-					'NOTE_UP_OPT2',
-					'NOTE_RIGHT_OPT2'
-				];
-			} else {
-				keysArray = [
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left_2')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down_2')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up_2')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right_2'))
-				];
-				controlArray = [
-					'NOTE_LEFT',
-					'NOTE_DOWN',
-					'NOTE_UP',
-					'NOTE_RIGHT',
-					'NOTE_LEFT_2',
-					'NOTE_DOWN_2',
-					'NOTE_UP_2',
-					'NOTE_RIGHT_2'
-				];
-			}
-		} else if (gamemode == 'opponent') {
-			if (PlayState.SONG.secOpt) {
-				keysArray = [
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left_OPT')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down_OPT')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up_OPT')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right_OPT')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left_OPT2')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down_OPT2')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up_OPT2')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right_OPT2'))
-				];
-				controlArray = [
-					'NOTE_LEFT_OPT',
-					'NOTE_DOWN_OPT',
-					'NOTE_UP_OPT',
-					'NOTE_RIGHT_OPT',
-					'NOTE_LEFT_OPT2',
-					'NOTE_DOWN_OPT2',
-					'NOTE_UP_OPT2',
-					'NOTE_RIGHT_OPT2'
-				];
-			} else {
-				keysArray = [
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right'))
-				];
-				controlArray = [
-					'NOTE_LEFT',
-					'NOTE_DOWN',
-					'NOTE_UP',
-					'NOTE_RIGHT'
-				];
-			}
-		} else if (gamemode == 'bothside') {
-			if (PlayState.SONG.secOpt) {
-				keysArray = [
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left_OPT')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down_OPT')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up_OPT')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right_OPT')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left_OPT2')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down_OPT2')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up_OPT2')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right_OPT2'))
-				];
-				controlArray = [
-					'NOTE_LEFT_OPT',
-					'NOTE_DOWN_OPT',
-					'NOTE_UP_OPT',
-					'NOTE_RIGHT_OPT',
-					'NOTE_LEFT_OPT2',
-					'NOTE_DOWN_OPT2',
-					'NOTE_UP_OPT2',
-					'NOTE_RIGHT_OPT2'
-				];
-			} else {
-				keysArray = [
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')),
-					ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right'))
-				];
-				controlArray = [
-					'NOTE_LEFT',
-					'NOTE_DOWN',
-					'NOTE_UP',
-					'NOTE_RIGHT'
-				];	
-			}
-		} else {
-			keysArray = [
-				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')),
-				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')),
-				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')),
-				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right'))
-			];
-			controlArray = [
-				'NOTE_LEFT',
-				'NOTE_DOWN',
-				'NOTE_UP',
-				'NOTE_RIGHT'
-			];	
-		}
+		keysArray = [
+			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')),
+			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')),
+			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')),
+			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right'))
+		];
+		controlArray = [
+			'NOTE_LEFT',
+			'NOTE_DOWN',
+			'NOTE_UP',
+			'NOTE_RIGHT'
+		];
 	}
 	public function addCamera(name:String = '', x:Int, y:Int, width:Int, height:Int, zoom:Float = 1, ?sectionZoom:Bool = false) {
 		if (name != '' && !variables.exists('camera:' + name) && !customCameraMap.exists(name)) {
@@ -7180,7 +7166,7 @@ class PlayState extends MusicBeatState
 		if (note != null) {
 			if (gamemode == 'opponent') {
 				return !note.mustPress;
-			} else if (gamemode == 'bothside' || gamemode == 'bothside v2') {
+			} else if (gamemode == 'bothside') {
 				return true;
 			} else {
 				return note.mustPress;
@@ -7304,7 +7290,7 @@ class PlayState extends MusicBeatState
 							if (field == '') {
 								var strumTarget = playerStrums;
 								if (gamemode == 'opponent') strumTarget = opponentStrums;
-								if (gamemode == 'bothside' || gamemode == 'bothside v2') strumTarget = strumLineNotes;
+								if (gamemode == 'bothside') strumTarget = strumLineNotes;
 								if (strumTarget != null) {
 									for (spr in strumTarget.members) {
 										var oriColor:FlxColor = spr.color;
@@ -7333,7 +7319,7 @@ class PlayState extends MusicBeatState
 					} else {
 						var strumTarget = playerStrums;
 						if (gamemode == 'opponent') strumTarget = opponentStrums;
-						if (gamemode == 'bothside' || gamemode == 'bothside v2') strumTarget = strumLineNotes;
+						if (gamemode == 'bothside') strumTarget = strumLineNotes;
 						if (strumTarget != null) {
 							for (spr in strumTarget.members) {
 								var oriColor:FlxColor = spr.color;
@@ -7349,7 +7335,7 @@ class PlayState extends MusicBeatState
 				if (playableField.indexOf('') == -1) {
 					var strumTarget = playerStrums;
 					if (gamemode == 'opponent') strumTarget = opponentStrums;
-					if (gamemode == 'bothside' || gamemode == 'bothside v2') strumTarget = strumLineNotes;
+					if (gamemode == 'bothside') strumTarget = strumLineNotes;
 					if (strumTarget != null) {
 						for (spr in strumTarget.members) {
 							spr.resetAnim = spr.resetTime;

@@ -46,7 +46,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 	private var checkboxGroup:FlxTypedGroup<CheckboxThingie>;
 	private var grpTexts:FlxTypedGroup<AttachedText>;
 	private var gamemodeMap:Map<String, Int> = [];
-	private var gamemodeArray:Array<String> = [ 'none', 'bothside', 'bothside v2', 'opponent' ];//default
+	private var gamemodeArray:Array<String> = [ 'none', 'bothside', 'opponent'];//default
 	#if mobile
 	//mobile
 	private var touch:TouchUtil = new TouchUtil();

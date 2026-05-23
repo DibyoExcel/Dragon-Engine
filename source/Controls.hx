@@ -42,48 +42,6 @@ enum abstract Action(String) to String from String
 	var NOTE_RIGHT_R = "note_right-release";
 	var NOTE_DOWN_R = "note_down-release";
 
-	//2
-
-	var NOTE_UP_2 = "note_up_2";
-	var NOTE_LEFT_2 = "note_left_2";
-	var NOTE_RIGHT_2 = "note_right_2";
-	var NOTE_DOWN_2 = "note_down_2";
-	var NOTE_UP_2_P = "note_up_2-press";
-	var NOTE_LEFT_2_P = "note_left_2-press";
-	var NOTE_RIGHT_2_P = "note_right_2-press";
-	var NOTE_DOWN_2_P = "note_down_2-press";
-	var NOTE_UP_2_R = "note_up_2-release";
-	var NOTE_LEFT_2_R = "note_left_2-release";
-	var NOTE_RIGHT_2_R = "note_right_2-release";
-	var NOTE_DOWN_2_R = "note_down_2-release";
-
-	//8 KEYS OPT
-	
-	var NOTE_UP_OPT = "note_up_OPT";
-	var NOTE_LEFT_OPT = "note_left_OPT";
-	var NOTE_RIGHT_OPT = "note_right_OPT";
-	var NOTE_DOWN_OPT = "note_down_OPT";
-	var NOTE_UP_OPT_P = "note_up_OPT-press";
-	var NOTE_LEFT_OPT_P = "note_left_OPT-press";
-	var NOTE_RIGHT_OPT_P = "note_right_OPT-press";
-	var NOTE_DOWN_OPT_P = "note_down_OPT-press";
-	var NOTE_UP_OPT_R = "note_up_OPT-release";
-	var NOTE_LEFT_OPT_R = "note_left_OPT-release";
-	var NOTE_RIGHT_OPT_R = "note_right_OPT-release";
-	var NOTE_DOWN_OPT_R = "note_down_OPT-release";
-	var NOTE_UP_OPT2 = "note_up_OPT2";
-	var NOTE_LEFT_OPT2 = "note_left_OPT2";
-	var NOTE_RIGHT_OPT2 = "note_right_OPT2";
-	var NOTE_DOWN_OPT2 = "note_down_OPT2";
-	var NOTE_UP_OPT2_P = "note_up_OPT2-press";
-	var NOTE_LEFT_OPT2_P = "note_left_OPT2-press";
-	var NOTE_RIGHT_OPT2_P = "note_right_OPT2-press";
-	var NOTE_DOWN_OPT2_P = "note_down_OPT2-press";
-	var NOTE_UP_OPT2_R = "note_up_OPT2-release";
-	var NOTE_LEFT_OPT2_R = "note_left_OPT2-release";
-	var NOTE_RIGHT_OPT2_R = "note_right_OPT2-release";
-	var NOTE_DOWN_OPT2_R = "note_down_OPT2-release";
-
 
 
 	var ACCEPT = "accept";
@@ -122,48 +80,6 @@ abstract Action(String) to String from String
 	var NOTE_LEFT_R = "note_left-release";
 	var NOTE_RIGHT_R = "note_right-release";
 	var NOTE_DOWN_R = "note_down-release";
-
-	//2
-
-	var NOTE_UP_2 = "note_up_2";
-	var NOTE_LEFT_2 = "note_left_2";
-	var NOTE_RIGHT_2 = "note_right_2";
-	var NOTE_DOWN_2 = "note_down_2";
-	var NOTE_UP_2_P = "note_up_2-press";
-	var NOTE_LEFT_2_P = "note_left_2-press";
-	var NOTE_RIGHT_2_P = "note_right_2-press";
-	var NOTE_DOWN_2_P = "note_down_2-press";
-	var NOTE_UP_2_R = "note_up_2-release";
-	var NOTE_LEFT_2_R = "note_left_2-release";
-	var NOTE_RIGHT_2_R = "note_right_2-release";
-	var NOTE_DOWN_2_R = "note_down_2-release";
-
-	//8 KEYS OPT
-	
-	var NOTE_UP_OPT = "note_up_OPT";
-	var NOTE_LEFT_OPT = "note_left_OPT";
-	var NOTE_RIGHT_OPT = "note_right_OPT";
-	var NOTE_DOWN_OPT = "note_down_OPT";
-	var NOTE_UP_OPT_P = "note_up_OPT-press";
-	var NOTE_LEFT_OPT_P = "note_left_OPT-press";
-	var NOTE_RIGHT_OPT_P = "note_right_OPT-press";
-	var NOTE_DOWN_OPT_P = "note_down_OPT-press";
-	var NOTE_UP_OPT_R = "note_up_OPT-release";
-	var NOTE_LEFT_OPT_R = "note_left_OPT-release";
-	var NOTE_RIGHT_OPT_R = "note_right_OPT-release";
-	var NOTE_DOWN_OPT_R = "note_down_OPT-release";
-	var NOTE_UP_OPT2 = "note_up_OPT2";
-	var NOTE_LEFT_OPT2 = "note_left_OPT2";
-	var NOTE_RIGHT_OPT2 = "note_right_OPT2";
-	var NOTE_DOWN_OPT2 = "note_down_OPT2";
-	var NOTE_UP_OPT2_P = "note_up_OPT2-press";
-	var NOTE_LEFT_OPT2_P = "note_left_OPT2-press";
-	var NOTE_RIGHT_OPT2_P = "note_right_OPT2-press";
-	var NOTE_DOWN_OPT2_P = "note_down_OPT2-press";
-	var NOTE_UP_OPT2_R = "note_up_OPT2-release";
-	var NOTE_LEFT_OPT2_R = "note_left_OPT2-release";
-	var NOTE_RIGHT_OPT2_R = "note_right_OPT2-release";
-	var NOTE_DOWN_OPT2_R = "note_down_OPT2-release";
 	
 
 	var ACCEPT = "accept";
@@ -194,19 +110,6 @@ enum Control
 	NOTE_LEFT;
 	NOTE_RIGHT;
 	NOTE_DOWN;
-	NOTE_UP_2;
-	NOTE_LEFT_2;
-	NOTE_RIGHT_2;
-	NOTE_DOWN_2;
-	//opt 8 keys
-	NOTE_UP_OPT;
-	NOTE_LEFT_OPT;
-	NOTE_RIGHT_OPT;
-	NOTE_DOWN_OPT;
-	NOTE_UP_OPT2;
-	NOTE_LEFT_OPT2;
-	NOTE_RIGHT_OPT2;
-	NOTE_DOWN_OPT2;
 	RESET;
 	ACCEPT;
 	BACK;
@@ -254,47 +157,6 @@ class Controls extends FlxActionSet
 	var _note_leftR = new FlxActionDigital(Action.NOTE_LEFT_R);
 	var _note_rightR = new FlxActionDigital(Action.NOTE_RIGHT_R);
 	var _note_downR = new FlxActionDigital(Action.NOTE_DOWN_R);
-
-	//2
-	
-	var _note_up_2 = new FlxActionDigital(Action.NOTE_UP_2);
-	var _note_left_2 = new FlxActionDigital(Action.NOTE_LEFT_2);
-	var _note_right_2 = new FlxActionDigital(Action.NOTE_RIGHT_2);
-	var _note_down_2 = new FlxActionDigital(Action.NOTE_DOWN_2);
-	var _note_up_2P = new FlxActionDigital(Action.NOTE_UP_2_P);
-	var _note_left_2P = new FlxActionDigital(Action.NOTE_LEFT_2_P);
-	var _note_right_2P = new FlxActionDigital(Action.NOTE_RIGHT_2_P);
-	var _note_down_2P = new FlxActionDigital(Action.NOTE_DOWN_2_P);
-	var _note_up_2R = new FlxActionDigital(Action.NOTE_UP_2_R);
-	var _note_left_2R = new FlxActionDigital(Action.NOTE_LEFT_2_R);
-	var _note_right_2R = new FlxActionDigital(Action.NOTE_RIGHT_2_R);
-	var _note_down_2R = new FlxActionDigital(Action.NOTE_DOWN_2_R);
-
-	//opt 8 keys
-	var _note_up_OPT = new FlxActionDigital(Action.NOTE_UP_OPT);
-	var _note_left_OPT = new FlxActionDigital(Action.NOTE_LEFT_OPT);
-	var _note_right_OPT = new FlxActionDigital(Action.NOTE_RIGHT_OPT);
-	var _note_down_OPT = new FlxActionDigital(Action.NOTE_DOWN_OPT);
-	var _note_upP_OPT = new FlxActionDigital(Action.NOTE_UP_OPT_P);
-	var _note_leftP_OPT = new FlxActionDigital(Action.NOTE_LEFT_OPT_P);
-	var _note_rightP_OPT = new FlxActionDigital(Action.NOTE_RIGHT_OPT_P);
-	var _note_downP_OPT = new FlxActionDigital(Action.NOTE_DOWN_OPT_P);
-	var _note_upR_OPT = new FlxActionDigital(Action.NOTE_UP_OPT_R);
-	var _note_leftR_OPT = new FlxActionDigital(Action.NOTE_LEFT_OPT_R);
-	var _note_rightR_OPT = new FlxActionDigital(Action.NOTE_RIGHT_OPT_R);
-	var _note_downR_OPT = new FlxActionDigital(Action.NOTE_DOWN_OPT_R);
-	var _note_up_OPT2 = new FlxActionDigital(Action.NOTE_UP_OPT2);
-	var _note_left_OPT2 = new FlxActionDigital(Action.NOTE_LEFT_OPT2);
-	var _note_right_OPT2 = new FlxActionDigital(Action.NOTE_RIGHT_OPT2);
-	var _note_down_OPT2 = new FlxActionDigital(Action.NOTE_DOWN_OPT2);
-	var _note_upP_OPT2 = new FlxActionDigital(Action.NOTE_UP_OPT2_P);
-	var _note_leftP_OPT2 = new FlxActionDigital(Action.NOTE_LEFT_OPT2_P);
-	var _note_rightP_OPT2 = new FlxActionDigital(Action.NOTE_RIGHT_OPT2_P);
-	var _note_downP_OPT2 = new FlxActionDigital(Action.NOTE_DOWN_OPT2_P);
-	var _note_upR_OPT2 = new FlxActionDigital(Action.NOTE_UP_OPT2_R);
-	var _note_leftR_OPT2 = new FlxActionDigital(Action.NOTE_LEFT_OPT2_R);
-	var _note_rightR_OPT2 = new FlxActionDigital(Action.NOTE_RIGHT_OPT2_R);
-	var _note_downR_OPT2 = new FlxActionDigital(Action.NOTE_DOWN_OPT2_R);
 
 	var _accept = new FlxActionDigital(Action.ACCEPT);
 	var _back = new FlxActionDigital(Action.BACK);
@@ -432,190 +294,6 @@ class Controls extends FlxActionSet
 	inline function get_NOTE_DOWN_R()
 		return _note_downR.check();
 
-	//2
-	public var NOTE_UP_2(get, never):Bool;
-
-	inline function get_NOTE_UP_2()
-		return _note_up_2.check();
-
-	public var NOTE_LEFT_2(get, never):Bool;
-
-	inline function get_NOTE_LEFT_2()
-		return _note_left_2.check();
-
-	public var NOTE_RIGHT_2(get, never):Bool;
-
-	inline function get_NOTE_RIGHT_2()
-		return _note_right_2.check();
-
-	public var NOTE_DOWN_2(get, never):Bool;
-
-	inline function get_NOTE_DOWN_2()
-		return _note_down_2.check();
-
-	public var NOTE_UP_2_P(get, never):Bool;
-
-	inline function get_NOTE_UP_2_P()
-		return _note_up_2P.check();
-
-	public var NOTE_LEFT_2_P(get, never):Bool;
-
-	inline function get_NOTE_LEFT_2_P()
-		return _note_left_2P.check();
-
-	public var NOTE_RIGHT_2_P(get, never):Bool;
-
-	inline function get_NOTE_RIGHT_2_P()
-		return _note_right_2P.check();
-
-	public var NOTE_DOWN_2_P(get, never):Bool;
-
-	inline function get_NOTE_DOWN_2_P()
-		return _note_down_2P.check();
-
-	public var NOTE_UP_2_R(get, never):Bool;
-
-	inline function get_NOTE_UP_2_R()
-		return _note_up_2R.check();
-
-	public var NOTE_LEFT_2_R(get, never):Bool;
-
-	inline function get_NOTE_LEFT_2_R()
-		return _note_left_2R.check();
-
-	public var NOTE_RIGHT_2_R(get, never):Bool;
-
-	inline function get_NOTE_RIGHT_2_R()
-		return _note_right_2R.check();
-
-	public var NOTE_DOWN_2_R(get, never):Bool;
-
-	inline function get_NOTE_DOWN_2_R()
-		return _note_down_2R.check();
-
-	//opt 8 keys
-	public var NOTE_UP_OPT(get, never):Bool;
-
-	inline function get_NOTE_UP_OPT()
-		return _note_up_OPT.check();
-
-	public var NOTE_LEFT_OPT(get, never):Bool;
-
-	inline function get_NOTE_LEFT_OPT()
-		return _note_left_OPT.check();
-
-	public var NOTE_RIGHT_OPT(get, never):Bool;
-
-	inline function get_NOTE_RIGHT_OPT()
-		return _note_right_OPT.check();
-
-	public var NOTE_DOWN_OPT(get, never):Bool;
-
-	inline function get_NOTE_DOWN_OPT()
-		return _note_down_OPT.check();
-
-	public var NOTE_UP_OPT_P(get, never):Bool;
-
-	inline function get_NOTE_UP_OPT_P()
-		return _note_upP_OPT.check();
-
-	public var NOTE_LEFT_OPT_P(get, never):Bool;
-
-	inline function get_NOTE_LEFT_OPT_P()
-		return _note_leftP_OPT.check();
-
-	public var NOTE_RIGHT_OPT_P(get, never):Bool;
-
-	inline function get_NOTE_RIGHT_OPT_P()
-		return _note_rightP_OPT.check();
-
-	public var NOTE_DOWN_OPT_P(get, never):Bool;
-
-	inline function get_NOTE_DOWN_OPT_P()
-		return _note_downP_OPT.check();
-
-	public var NOTE_UP_OPT_R(get, never):Bool;
-
-	inline function get_NOTE_UP_OPT_R()
-		return _note_upR_OPT.check();
-
-	public var NOTE_LEFT_OPT_R(get, never):Bool;
-
-	inline function get_NOTE_LEFT_OPT_R()
-		return _note_leftR_OPT.check();
-
-	public var NOTE_RIGHT_OPT_R(get, never):Bool;
-
-	inline function get_NOTE_RIGHT_OPT_R()
-		return _note_rightR_OPT.check();
-
-	public var NOTE_DOWN_OPT_R(get, never):Bool;
-
-	inline function get_NOTE_DOWN_OPT_R()
-		return _note_downR_OPT.check();
-
-	public var NOTE_UP_OPT2(get, never):Bool;
-
-	inline function get_NOTE_UP_OPT2()
-		return _note_up_OPT2.check();
-
-	public var NOTE_LEFT_OPT2(get, never):Bool;
-
-	inline function get_NOTE_LEFT_OPT2()
-		return _note_left_OPT2.check();
-
-	public var NOTE_RIGHT_OPT2(get, never):Bool;
-
-	inline function get_NOTE_RIGHT_OPT2()
-		return _note_right_OPT2.check();
-
-	public var NOTE_DOWN_OPT2(get, never):Bool;
-
-	inline function get_NOTE_DOWN_OPT2()
-		return _note_down_OPT2.check();
-
-	public var NOTE_UP_OPT2_P(get, never):Bool;
-
-	inline function get_NOTE_UP_OPT2_P()
-		return _note_upP_OPT2.check();
-
-	public var NOTE_LEFT_OPT2_P(get, never):Bool;
-
-	inline function get_NOTE_LEFT_OPT2_P()
-		return _note_leftP_OPT2.check();
-
-	public var NOTE_RIGHT_OPT2_P(get, never):Bool;
-
-	inline function get_NOTE_RIGHT_OPT2_P()
-		return _note_rightP_OPT2.check();
-
-	public var NOTE_DOWN_OPT2_P(get, never):Bool;
-
-	inline function get_NOTE_DOWN_OPT2_P()
-		return _note_downP_OPT2.check();
-
-	public var NOTE_UP_OPT2_R(get, never):Bool;
-
-	inline function get_NOTE_UP_OPT2_R()
-		return _note_upR_OPT2.check();
-
-	public var NOTE_LEFT_OPT2_R(get, never):Bool;
-
-	inline function get_NOTE_LEFT_OPT2_R()
-		return _note_leftR_OPT2.check();
-
-	public var NOTE_RIGHT_OPT2_R(get, never):Bool;
-
-	inline function get_NOTE_RIGHT_OPT2_R()
-		return _note_rightR_OPT2.check();
-
-	public var NOTE_DOWN_OPT2_R(get, never):Bool;
-
-	inline function get_NOTE_DOWN_OPT2_R()
-		return _note_downR_OPT2.check();
-
-	//end of 8 keys opt
-
 	public var ACCEPT(get, never):Bool;
 
 	inline function get_ACCEPT()
@@ -668,47 +346,6 @@ class Controls extends FlxActionSet
 		add(_note_rightR);
 		add(_note_downR);
 
-		//2
-		add(_note_up_2);
-		add(_note_left_2);
-		add(_note_right_2);
-		add(_note_down_2);
-		add(_note_up_2P);
-		add(_note_left_2P);
-		add(_note_right_2P);
-		add(_note_down_2P);
-		add(_note_up_2R);
-		add(_note_left_2R);
-		add(_note_right_2R);
-		add(_note_down_2R);
-
-
-		//2nd strums
-		add(_note_up_OPT);
-		add(_note_left_OPT);
-		add(_note_right_OPT);
-		add(_note_down_OPT);
-		add(_note_upP_OPT);
-		add(_note_leftP_OPT);
-		add(_note_rightP_OPT);
-		add(_note_downP_OPT);
-		add(_note_upR_OPT);
-		add(_note_leftR_OPT);
-		add(_note_rightR_OPT);
-		add(_note_downR_OPT);
-		add(_note_up_OPT2);
-		add(_note_left_OPT2);
-		add(_note_right_OPT2);
-		add(_note_down_OPT2);
-		add(_note_upP_OPT2);
-		add(_note_leftP_OPT2);
-		add(_note_rightP_OPT2);
-		add(_note_downP_OPT2);
-		add(_note_upR_OPT2);
-		add(_note_leftR_OPT2);
-		add(_note_rightR_OPT2);
-		add(_note_downR_OPT2);
-
 
 		add(_accept);
 		add(_back);
@@ -751,45 +388,6 @@ class Controls extends FlxActionSet
 		add(_note_rightR);
 		add(_note_downR);
 
-		//2
-		add(_note_up_2);
-		add(_note_left_2);
-		add(_note_right_2);
-		add(_note_down_2);
-		add(_note_up_2P);
-		add(_note_left_2P);
-		add(_note_right_2P);
-		add(_note_down_2P);
-		add(_note_up_2R);
-		add(_note_left_2R);
-		add(_note_right_2R);
-		add(_note_down_2R);
-
-		//2nd strums
-		add(_note_up_OPT);
-		add(_note_left_OPT);
-		add(_note_right_OPT);
-		add(_note_down_OPT);
-		add(_note_upP_OPT);
-		add(_note_leftP_OPT);
-		add(_note_rightP_OPT);
-		add(_note_downP_OPT);
-		add(_note_upR_OPT);
-		add(_note_leftR_OPT);
-		add(_note_rightR_OPT);
-		add(_note_downR_OPT);
-		add(_note_up_OPT2);
-		add(_note_left_OPT2);
-		add(_note_right_OPT2);
-		add(_note_down_OPT2);
-		add(_note_upP_OPT2);
-		add(_note_leftP_OPT2);
-		add(_note_rightP_OPT2);
-		add(_note_downP_OPT2);
-		add(_note_upR_OPT2);
-		add(_note_leftR_OPT2);
-		add(_note_rightR_OPT2);
-		add(_note_downR_OPT2);
 
 		add(_accept);
 		add(_back);
@@ -852,23 +450,6 @@ class Controls extends FlxActionSet
 			case NOTE_LEFT: _note_left;
 			case NOTE_RIGHT: _note_right;
 
-			//2
-			case NOTE_UP_2: _note_up_2;
-			case NOTE_DOWN_2: _note_down_2;
-			case NOTE_LEFT_2: _note_left_2;
-			case NOTE_RIGHT_2: _note_right_2;
-
-			//opt 8 keys
-
-			case NOTE_UP_OPT: _note_up_OPT;
-			case NOTE_DOWN_OPT: _note_down_OPT;
-			case NOTE_LEFT_OPT: _note_left_OPT;
-			case NOTE_RIGHT_OPT: _note_right_OPT;
-			case NOTE_UP_OPT2: _note_up_OPT2;
-			case NOTE_DOWN_OPT2: _note_down_OPT2;
-			case NOTE_LEFT_OPT2: _note_left_OPT2;
-			case NOTE_RIGHT_OPT2: _note_right_OPT2;
-
 
 			case ACCEPT: _accept;
 			case BACK: _back;
@@ -928,59 +509,6 @@ class Controls extends FlxActionSet
 				func(_note_down, PRESSED);
 				func(_note_downP, JUST_PRESSED);
 				func(_note_downR, JUST_RELEASED);
-
-			//2
-			case NOTE_UP_2:
-				func(_note_up_2, PRESSED);
-				func(_note_up_2P, JUST_PRESSED);
-				func(_note_up_2R, JUST_RELEASED);
-			case NOTE_LEFT_2:
-				func(_note_left_2, PRESSED);
-				func(_note_left_2P, JUST_PRESSED);
-				func(_note_left_2R, JUST_RELEASED);
-			case NOTE_RIGHT_2:
-				func(_note_right_2, PRESSED);
-				func(_note_right_2P, JUST_PRESSED);
-				func(_note_right_2R, JUST_RELEASED);
-			case NOTE_DOWN_2:
-				func(_note_down_2, PRESSED);
-				func(_note_down_2P, JUST_PRESSED);
-				func(_note_down_2R, JUST_RELEASED);
-
-				//opt 8 keys
-			case NOTE_UP_OPT:
-				func(_note_up_OPT, PRESSED);
-				func(_note_upP_OPT, JUST_PRESSED);
-				func(_note_upR_OPT, JUST_RELEASED);
-			case NOTE_LEFT_OPT:
-				func(_note_left_OPT, PRESSED);
-				func(_note_leftP_OPT, JUST_PRESSED);
-				func(_note_leftR_OPT, JUST_RELEASED);
-			case NOTE_RIGHT_OPT:
-				func(_note_right_OPT, PRESSED);
-				func(_note_rightP_OPT, JUST_PRESSED);
-				func(_note_rightR_OPT, JUST_RELEASED);
-			case NOTE_DOWN_OPT:
-				func(_note_down_OPT, PRESSED);
-				func(_note_downP_OPT, JUST_PRESSED);
-				func(_note_downR_OPT, JUST_RELEASED);
-
-			case NOTE_UP_OPT2:
-				func(_note_up_OPT2, PRESSED);
-				func(_note_upP_OPT2, JUST_PRESSED);
-				func(_note_upR_OPT2, JUST_RELEASED);
-			case NOTE_LEFT_OPT2:
-				func(_note_left_OPT2, PRESSED);
-				func(_note_leftP_OPT2, JUST_PRESSED);
-				func(_note_leftR_OPT2, JUST_RELEASED);
-			case NOTE_RIGHT_OPT2:
-				func(_note_right_OPT2, PRESSED);
-				func(_note_rightP_OPT2, JUST_PRESSED);
-				func(_note_rightR_OPT2, JUST_RELEASED);
-			case NOTE_DOWN_OPT2:
-				func(_note_down_OPT2, PRESSED);
-				func(_note_downP_OPT2, JUST_PRESSED);
-				func(_note_downR_OPT2, JUST_RELEASED);
 
 
 			case ACCEPT:
@@ -1150,21 +678,6 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.NOTE_DOWN, keysMap.get('note_down'));
 				inline bindKeys(Control.NOTE_LEFT, keysMap.get('note_left'));
 				inline bindKeys(Control.NOTE_RIGHT, keysMap.get('note_right'));
-
-				inline bindKeys(Control.NOTE_UP_2, keysMap.get('note_up_2'));
-				inline bindKeys(Control.NOTE_DOWN_2, keysMap.get('note_down_2'));
-				inline bindKeys(Control.NOTE_LEFT_2, keysMap.get('note_left_2'));
-				inline bindKeys(Control.NOTE_RIGHT_2, keysMap.get('note_right_2'));
-
-				//8 keys
-				inline bindKeys(Control.NOTE_UP_OPT, keysMap.get('note_up_OPT'));
-				inline bindKeys(Control.NOTE_DOWN_OPT, keysMap.get('note_down_OPT'));
-				inline bindKeys(Control.NOTE_LEFT_OPT, keysMap.get('note_left_OPT'));
-				inline bindKeys(Control.NOTE_RIGHT_OPT, keysMap.get('note_right_OPT'));
-				inline bindKeys(Control.NOTE_UP_OPT2, keysMap.get('note_up_OPT2'));
-				inline bindKeys(Control.NOTE_DOWN_OPT2, keysMap.get('note_down_OPT2'));
-				inline bindKeys(Control.NOTE_LEFT_OPT2, keysMap.get('note_left_OPT2'));
-				inline bindKeys(Control.NOTE_RIGHT_OPT2, keysMap.get('note_right_OPT2'));
 
 				inline bindKeys(Control.ACCEPT, keysMap.get('accept'));
 				inline bindKeys(Control.BACK, keysMap.get('back'));

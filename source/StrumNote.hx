@@ -99,7 +99,7 @@ class StrumNote extends FlxSprite
 	}
 
 	public function playAnim(anim:String, ?force:Bool = false, sustainNote:Bool = false, ?note:Note = null, reloadAnim:Bool = false) {
-		if (animation != null && animation.curAnim != null && animation.curAnim.name == anim && sustainNote && !classicAnim) return;
+		if (sustainNote && !classicAnim) return;
 		if (reloadAnim && reloadAnimation) {
 			reloadAnims(texture, note);
 		}
@@ -303,10 +303,6 @@ class StrumNote extends FlxSprite
 			}
 		}
 		updateHitbox();
-		if (player == 0 && PlayState.SONG.secOpt) {
-			scale.x *= 0.75;
-			scale.y *= 0.75;
-		}
 	}
 	@:noCompletion
 	override function get_cameras():Array<FlxCamera>
