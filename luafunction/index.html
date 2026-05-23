@@ -137,7 +137,7 @@
                     <h4>Change os wallpaper.<br>path: the path of images file(must be absolute. example: the <code>example.png</code> in <code>mods/modname/images/</code> you had write <code>path</code> as <code>mods/modname/images/example.png</code>).<br>absolute(1.6.3.9+): if true it will use system path(example: <code>C:\Windows\Web\Wallpaper\Windows\img0.jpg</code>. the <code>path</code> must write like <code>C:\\Windows\\Web\\Wallpaper\\Windows\\img0.jpg</code>).</h4>
                 </div>
                 <div class="dialogue_group">
-                    <h3>changeNotesTexture(player:Bool = false, gf:Bool = false, texture:String = '')(1.6.3.9m2+)</h3>
+                    <h3>changeNotesTexture(player:Bool = false, gf:Bool = false, texture:String = '')(1.6.3.9m2+)(Deprecated)</h3>
                     <h4>Change the notes texture.<br>player: Player or Opponent notes.<br>gf: Gf notes or normal notes.<br>texture: What texture should use?.<br>Info: for ignore change texture, set notes or strums <code>ignoreTextureChange</code> to <code>true</code>.</h4>
                 </div>
                 <div class="dialogue_group">
@@ -161,11 +161,11 @@
                     <h4>resize game world resolution.<br>width: size width of game world resolution.<br>height: size height of game world resolution.<br>resetLayout: should layout ui layout reset?<br>duration: duration for transition.<br>ease: The tweening method used, example: 'linear', 'circInOut'. <a href="https://api.haxeflixel.com/flixel/tweens/FlxEase.html">All Tween Method</a>.<br>excludeCam: exclude cam from resize(separate with comma example: 'hud, game').<br>Warning: best use in <code>onCreate()</code>. in other function can use but the camera character slightly bit off.</h4>
                 </div>
                 <div class="dialogue_group">
-                    <h3>changeNotesSplashTexture(player:Bool = false, gf:Bool = false, texture:String = 'noteSplashes')(26.2.0+)</h3>
+                    <h3>changeNotesSplashTexture(player:Bool = false, gf:Bool = false, texture:String = 'noteSplashes')(26.2.0+)(Deprecated)</h3>
                     <h4>Change the notes splash texture.<br>player: Player or Opponent notes.<br>gf: Gf notes or normal notes.<br>texture: What splash texture should use?.<br>Info: for ignore change texture, set notes or strums <code>ignoreTextureChange</code> to <code>true</code>.</h4>
                 </div>
                 <div class="dialogue_group">
-                    <h3>changeNotesHoldCover(player:Bool = false, gf:Bool = false, texture:String = '')(26.6.0+)</h3>
+                    <h3>changeNotesHoldCover(player:Bool = false, gf:Bool = false, texture:String = '')(26.6.0+)(Deprecated)</h3>
                     <h4>Change the notes hold cover texture.<br>player: Player or Opponent notes.<br>gf: Gf notes or normal notes.<br>texture: What hold cover texture should use?.<br>Info: for ignore change texture, set notes or strums <code>ignoreTextureChange</code> to <code>true</code>.</h4>
                 </div>
                 <div class="dialogue_group">
@@ -178,7 +178,19 @@
                 </div>
                 <div class="dialogue_group">
                     <h3>changeNotesScrollFactor(targetField:String = 'all', scroll:Array&lt;Float&gt;, ?strum:Bool = true, ?note:Bool = true, ?noteSplash:Bool = true, ?holdCover:Bool = true, ?excludeNoteType:Array&lt;String&gt;)(26.9.1+)</h3>
-                    <h4>Change Notes Scroll Factor.<br>targetField: what note field should use?(allowed value: <code>player</code>, <code>opponent</code>, <code>gf</code>, <code>gf-player</code>, <code>gf-player</code>, <code>all</code>)(use <code>@</code> prefix to use custom field from <code>createCustomStrum()</code>).<br>cam: camera to set, like <code>game</code>, <code>hud</code>, <code>other</code> or <code>customCamera</code>(use <code>addCamera()</code>).<br>strum: should affected change to strum?<br>note: should affected change to note?<br>noteSplash: should affected change to note splash?<br>holdCover: should affected change hold cover?<br>excludeNoteType: what notetype should do unchanged?</h4>
+                    <h4>Change Notes Scroll Factor.<br>targetField: what note field should use?(allowed value: <code>player</code>, <code>opponent</code>, <code>gf</code>, <code>gf-player</code>, <code>gf-player</code>, <code>all</code>)(use <code>@</code> prefix to use custom field from <code>createCustomStrum()</code>).<br>scroll: how much scrollfactor to set(0 = no scroll).<br>strum: should affected change to strum?<br>note: should affected change to note?<br>noteSplash: should affected change to note splash?<br>holdCover: should affected change hold cover?<br>excludeNoteType: what notetype should do unchanged?</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>changeNotesTextureV2(targetField:String = 'all', texture:String = '', ?note:Bool = true, ?strum:Bool = true, ?excludeNoteType:Array&lt;String&gt;)(26.9.4+)</h3>
+                    <h4>Change Notes Texture.<br>targetField: what note field should use?(allowed value: <code>player</code>, <code>opponent</code>, <code>gf</code>, <code>gf-player</code>, <code>gf-player</code>, <code>all</code>)(use <code>@</code> prefix to use custom field from <code>createCustomStrum()</code>).<br>texture: what texture should use?<br>note: should affected change to note?<br>strum: should affected change to strum?<br>excludeNoteType: what notetype should do unchanged?</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>changeNotesSplashTextureV2(targetField:String = 'all', texture:String = '', ?excludeNoteType:Array&lt;String&gt;)(26.9.4+)</h3>
+                    <h4>Change Notes Splash Texture.<br>targetField: what note field should use?(allowed value: <code>player</code>, <code>opponent</code>, <code>gf</code>, <code>gf-player</code>, <code>gf-player</code>, <code>all</code>)(use <code>@</code> prefix to use custom field from <code>createCustomStrum()</code>).<br>texture: what note splash texture should use?<br>excludeNoteType: what notetype should do unchanged?</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>changeNotesHoldCoverV2(targetField:String = 'all', texture:String = '', ?excludeNoteType:Array&lt;String&gt;)(26.9.4+)</h3>
+                    <h4>Change Notes Hold Cover Texture.<br>targetField: what note field should use?(allowed value: <code>player</code>, <code>opponent</code>, <code>gf</code>, <code>gf-player</code>, <code>gf-player</code>, <code>all</code>)(use <code>@</code> prefix to use custom field from <code>createCustomStrum()</code>).<br>texture: what hold cover texture should use?<br>excludeNoteType: what notetype should do unchanged?</h4>
                 </div>
             </div>
             
