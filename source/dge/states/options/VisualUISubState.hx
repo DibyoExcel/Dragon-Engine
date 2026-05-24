@@ -34,7 +34,7 @@ using StringTools;
 class VisualUISubState extends BaseOptionsMenu
 {
 
-	var colorKeyPress:Array<String> = ['FF00FF', '00FFFF', '00FF00', '0000FF'];
+	var colorKeyPress:Array<String> = ['FF00FF', '00FFFF', '00FF00', 'FF0000'];
 	public function new()
 	{
 

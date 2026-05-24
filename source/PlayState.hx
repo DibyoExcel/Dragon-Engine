@@ -1714,8 +1714,9 @@ class PlayState extends MusicBeatState
 
 	function set_songSpeed(value:Float):Float
 	{
+		var reloadNoteAnim:Bool = false;
 		if(generatedMusic)
-		{
+			{
 			if (Math.abs(value) <= 0.001) {
 				if (value < 0) value = -0.001;
 				else value = 0.001;
@@ -1724,12 +1725,15 @@ class PlayState extends MusicBeatState
 			for (note in notes) note.resizeByRatio(Math.abs(ratio));
 			for (note in unspawnNotes) note.resizeByRatio(Math.abs(ratio));
 			if ((songSpeed < 0 && value >= 0) || (songSpeed >= 0 && value < 0)) {
-				//swap anim in invert scroll
-				for (note in notes) if (note.downScroll == null) note.reloadNoteSkin();
-				for (note in unspawnNotes) if (note.downScroll == null) note.reloadNoteSkin();
+				reloadNoteAnim = true;
 			}
 		}
 		songSpeed = value;
+		if (reloadNoteAnim) {
+			//swap anim in invert scroll
+			for (note in notes) if (note.downScroll == null) note.reloadAnim();
+			for (note in unspawnNotes) if (note.downScroll == null) note.reloadAnim();
+		}
 		return value;
 	}
 
@@ -4062,7 +4066,7 @@ class PlayState extends MusicBeatState
 					} else {
 						daNote.fieldTarget == '';
 						if(!daNote.mustPress) {
-							if ((daNote.gfNote || daNote.secondOpponent) && PlayState.SONG.secOpt) {
+							if ((daNote.gfNote || daNote.secondOpponent) && PlayState.SONG.secOpt && gamemode != 'bothside') {
 								strumGroup = gfStrums;
 							} else {
 								strumGroup = opponentStrums;
@@ -4155,7 +4159,7 @@ class PlayState extends MusicBeatState
 							{
 								var angleX:Float = Math.cos(angleDir);
 								var angleY:Float = Math.sin(angleDir);
-								if (daNote.animation.curAnim.name.endsWith('end')) {
+								if (daNote.animation.curAnim != null && (daNote.animation.curAnim.name.endsWith('end') || daNote.animation.curAnim.name.endsWith('end_down'))) {
 									daNote.x += (10.5 * (fakeCrochet / 400) * 1.5 * (Math.abs(songSpeed * daNote.multSpeed)) + (46 * ((Math.abs(songSpeed * daNote.multSpeed)) - 1))) * angleX;
 									daNote.y += (10.5 * (fakeCrochet / 400) * 1.5 * (Math.abs(songSpeed * daNote.multSpeed)) + (46 * ((Math.abs(songSpeed * daNote.multSpeed)) - 1))) * angleY;
 									daNote.x -= (46 * (1 - (fakeCrochet / 600)) * (Math.abs(songSpeed * daNote.multSpeed))) * angleX;
@@ -6112,7 +6116,7 @@ class PlayState extends MusicBeatState
 				if (note.resetTimeStrumAnim > 0) {
 					time = note.resetTimeStrumAnim;
 				}
-				if(note.isSustainNote && !note.animation.curAnim.name.endsWith('end')) {
+				if(note.isSustainNote && note.animation.curAnim != null && !(note.animation.curAnim.name.endsWith('end') || note.animation.curAnim.name.endsWith('end_down'))) {
 					var timeAdd = 0.2;
 					if (note.strumNote != null) {
 						timeAdd = note.strumNote.resetTime;
@@ -6152,7 +6156,7 @@ class PlayState extends MusicBeatState
 					if(spr != null)
 					{
 						if (note.playStrumAnim  && !note.fakeNoHit) {
-							spr.playAnim(note.animConfirm == null || note.animConfirm.length < 1 ? (spr.animConfirm == null || spr.animConfirm.length < 1 ? 'confirm' : spr.animConfirm) : note.animConfirm, true, note.isSustainNote, note, true);
+							spr.playAnim(note.animConfirm == null || note.animConfirm.length < 1 ? (spr.animConfirm == null || spr.animConfirm.length < 1 ? 'confirm' : spr.animConfirm) : note.animConfirm, true, note.isSustainNote, note);
 						}
 					}
 				}
@@ -6661,7 +6665,7 @@ class PlayState extends MusicBeatState
 			var anim = 'confirm';//default anim
 			if (spr.animConfirm != null && spr.animConfirm.length > 1) anim = spr.animConfirm;
 			if (note.animConfirm != null && note.animConfirm.length > 1) anim = note.animConfirm;
-			spr.playAnim(anim, true, note.isSustainNote, note, true);
+			spr.playAnim(anim, true, note.isSustainNote, note);
 			spr.resetAnim = time;
 		}
 		//old inefficient code(and bad ngl)

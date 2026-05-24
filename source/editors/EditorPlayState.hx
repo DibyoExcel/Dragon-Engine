@@ -871,7 +871,7 @@ class EditorPlayState extends MusicBeatState
 				songHits++;
 			}
 			if (note.strumNote != null) {
-				note.strumNote.playAnim((note.animConfirm.length < 1 ? note.strumNote.animConfirm : note.animConfirm), true, note.isSustainNote, note, true);
+				note.strumNote.playAnim((note.animConfirm.length < 1 ? note.strumNote.animConfirm : note.animConfirm), true, note.isSustainNote, note);
 			}
 
 			if (note.multiPress <= 0) {

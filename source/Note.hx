@@ -321,16 +321,20 @@ class Note extends FlxSprite
 
 	private function set_multSpeed(value:Float):Float
 	{
+		var reload:Bool = false;
 		resizeByRatio(value / multSpeed);
-		if (((multSpeed < 0 && value >= 0) || (multSpeed >= 0 || value < 0)) && downScroll == null) reloadNoteSkin();
+		if (((multSpeed < 0 && value >= 0) || (multSpeed >= 0 || value < 0)) && downScroll == null) {
+			reload = true;
+		}
 		multSpeed = value;
+		if (reload) reloadAnim();
 		// trace('fuck cock');
 		return value;
 	}
 
 	public function resizeByRatio(ratio:Float) // haha funny twitter shit
 	{
-		if (isSustainNote && !animation.curAnim.name.endsWith('end'))
+		if (isSustainNote && !(animation.curAnim.name.endsWith('end') || animation.curAnim.name.endsWith('end_down')))
 		{
 			if (scale.y == 0) {
 				scale.y += ratio;
@@ -471,7 +475,8 @@ class Note extends FlxSprite
 			{ // Doing this 'if' check to fix the warnings on Senpai songs
 			var animToPlay:String = '';
 			animToPlay = colArray[noteData % colArray.length];
-			animation.play(animToPlay + 'Scroll');
+			var animName = animationDownScrollHandle(animToPlay + 'Scroll');
+			animation.play(animName);
 		}
 
 		// trace(prevNote);
@@ -487,8 +492,8 @@ class Note extends FlxSprite
 
 			copyAngle = false;
 			copyFlipY = true;
-
-			animation.play(colArray[noteData % colArray.length] + (tail ? 'holdend': 'hold'));
+			var animName = animationDownScrollHandle(colArray[noteData % colArray.length] + (tail ? 'holdend' : 'hold'));
+			animation.play(animName);
 
 			updateHitbox();
 
@@ -630,7 +635,7 @@ class Note extends FlxSprite
 			scale.y = lastScaleY;
 		}
 		if (animName != null)
-			animation.play(animName, true);
+			animation.play(animationDownScrollHandle(animName), true);
 		
 		updateHitbox();
 
@@ -645,19 +650,14 @@ class Note extends FlxSprite
 	function loadNoteAnims()
 	{
 		for (i in 0...colArray.length) {//i just want it adaptive to when change noteData
-			if (getActualDownscroll()) {
-				//downscroll anim type inspired from Retrospecter Mods(Retro's Poison notes)
-				var addAnimThingy = CoolUtil.addSpecialAnimation;
-				addAnimThingy(this, colArray[i] + 'Scroll', colArray[i] + '_DownScroll0', colArray[i] + '0', true, ClientPrefs.fpsStrumAnim);
-				addAnimThingy(this, 'purpleholdend', 'pruple end hold_DownScroll0', 'pruple end hold0', true, ClientPrefs.fpsStrumAnim);//i know is new but idk why i follow the typos one
-				addAnimThingy(this, colArray[i] + 'holdend', colArray[i] + ' hold end_DownScroll0', colArray[i] + ' hold end0', true, ClientPrefs.fpsStrumAnim);
-				addAnimThingy(this, colArray[i] + 'hold', colArray[i] + ' hold piece_DownScroll0', colArray[i] + ' hold piece0', true, ClientPrefs.fpsStrumAnim);
-			} else {
-				animation.addByPrefix(colArray[i] + 'Scroll', colArray[i] + '0');
-				animation.addByPrefix('purpleholdend', 'pruple end hold0'); // ?????
-				animation.addByPrefix(colArray[i] + 'holdend', colArray[i] + ' hold end0');
-				animation.addByPrefix(colArray[i] + 'hold', colArray[i] + ' hold piece0');
-			}
+			animation.addByPrefix(colArray[i] + 'Scroll', colArray[i] + '0');
+			animation.addByPrefix('purpleholdend', 'pruple end hold0'); // ?????
+			animation.addByPrefix(colArray[i] + 'holdend', colArray[i] + ' hold end0');
+			animation.addByPrefix(colArray[i] + 'hold', colArray[i] + ' hold piece0');
+			animation.addByPrefix(colArray[i] + 'Scroll_down', colArray[i] + '_DownScroll0');
+			animation.addByPrefix('purpleholdend_down', 'pruple end hold_DownScroll0'); // ?????
+			animation.addByPrefix(colArray[i] + 'holdend_down', colArray[i] + ' hold end_DownScroll0');
+			animation.addByPrefix(colArray[i] + 'hold_down', colArray[i] + ' hold piece_DownScroll0');
 		}
 
 	}
@@ -713,7 +713,7 @@ class Note extends FlxSprite
 			if (isSustainNote) {
 				flipY = !flipY;
 			}
-			if (downScroll == null) reloadNoteSkin();
+			if (downScroll == null) reloadAnim();
 		}
 		flipScroll = value;
 		return value;
@@ -802,7 +802,7 @@ class Note extends FlxSprite
 			if (value != null) {
 				flipY = value;
 			}
-			reloadNoteSkin();
+			reloadAnim();
 		}
 		return value;
 	}
@@ -813,9 +813,9 @@ class Note extends FlxSprite
 			if (!isSustainNote) {
 				var animToPlay:String = '';
 				animToPlay = colArray[noteData % colArray.length];
-				animation.play(animToPlay + 'Scroll');
+				animation.play(animationDownScrollHandle(animToPlay + 'Scroll'));
 			} else {
-				animation.play(colArray[noteData % colArray.length] + (sustainTail ? 'holdend': 'hold'));
+				animation.play(animationDownScrollHandle(colArray[noteData % colArray.length] + (sustainTail ? 'holdend': 'hold')));
 			}
 		}
 		return value;
@@ -923,9 +923,10 @@ class Note extends FlxSprite
 			return downScroll;
 		} else {
 			var down = ClientPrefs.downScroll;
-			if (flipScroll) down = !down;
+			if (strumNote != null) down = strumNote.downScroll;
 			if (PlayState.instance != null && PlayState.instance.songSpeed < 0) down = !down;
 			if (multSpeed < 0) down = !down;
+			if (flipScroll) down = !down;
 			return down;
 		}
 	}
@@ -1043,5 +1044,24 @@ class Note extends FlxSprite
 	override function get_cameras():Array<FlxCamera>
 	{
 		return _cameras;
+	}
+
+	private function animationDownScrollHandle(anim:String):String {
+		if (anim == null || anim.length < 1) return '';
+		if (getActualDownscroll() && !anim.endsWith('_down')) {
+			if (animation != null && animation.getByName(anim + '_down') != null) {
+				return anim + '_down';
+			}
+		} else if (!getActualDownscroll() && anim.endsWith('_down')) {
+			return anim = anim.substring(0, anim.length-5);
+		}
+		if (anim.endsWith('_down') && animation.getByName(anim + '_down') == null) anim = anim.substring(0, anim.length-5);
+		return anim;
+	}
+	public function reloadAnim(){
+		if (animation != null && animation.curAnim != null) {
+			var animname:String = animationDownScrollHandle(animation.curAnim.name);
+			animation.play(animname, true);
+		}
 	}
 }

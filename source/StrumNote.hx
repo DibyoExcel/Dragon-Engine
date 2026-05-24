@@ -30,7 +30,6 @@ class StrumNote extends FlxSprite
 	public var resetTime:Float = 0.2;//how time to reset to static anim(<=0 is permanent btw)
 	public var classicAnim:Bool = ClientPrefs.classicAnim;//use classic anim behavior
 	public var isLocked:Bool = false;//strums become unpresseable(affected dpending gamemode)(inspired retrospcter p2 chain notes)
-	public var reloadAnimation:Bool = true;//if false it will not reload anim when playAnim called
 	//fake strum stats (for custom strum, it will use these stats instead of strum stats, if not null)
 	//not anything because kinda odd to put it XD
 	public var fakeStrumX:Null<Float> = null;//override strum stat x to 'this' position x
@@ -98,10 +97,10 @@ class StrumNote extends FlxSprite
 		super.update(elapsed);
 	}
 
-	public function playAnim(anim:String, ?force:Bool = false, sustainNote:Bool = false, ?note:Note = null, reloadAnim:Bool = false) {
-		if (sustainNote && !classicAnim) return;
-		if (reloadAnim && reloadAnimation) {
-			reloadAnims(texture, note);
+	public function playAnim(anim:String, ?force:Bool = false, sustainNote:Bool = false, ?note:Note = null) {
+		if ((note !=null && note.getActualDownscroll())) anim += '_down';
+		if (anim.endsWith('_down') && animation.getByName(anim) == null) {
+			anim = anim.substring(0, anim.length-5);
 		}
 		animation.play(anim, force);
 		centerOrigin();
@@ -161,7 +160,7 @@ class StrumNote extends FlxSprite
 		return super.set_alpha(value);
 	}
 
-	function reloadAnims(image:String, ?note:Note) {
+	function reloadAnims(image:String) {
 		var skin:String = PlayState.SONG.arrowSkin;
 		var skinOpt:String = PlayState.SONG.arrowSkinOpt;
 		var skinSec:String = PlayState.SONG.arrowSkinSec;
@@ -253,53 +252,41 @@ class StrumNote extends FlxSprite
 			{	
 				
 				case 0:
-					if ((note != null && note.getActualDownscroll()) || ClientPrefs.downScroll) {
-						addAnimThingy(this, 'static', 'arrowLEFT_DownScroll0', 'arrowLEFT0', true, ClientPrefs.fpsStrumAnim);
-						addAnimThingy(this, 'pressed', 'left press_DownScroll0', 'left press0', false, ClientPrefs.fpsStrumAnim);
-						addAnimThingy(this, 'confirm', 'left confirm_DownScroll0', 'left confirm0', false, ClientPrefs.fpsStrumAnim);
-						addAnimThingy(this, 'notes', 'purple Downscroll0', 'purple0', false, ClientPrefs.fpsStrumAnim);
-					} else {
-						animation.addByPrefix('static', 'arrowLEFT0');
-						animation.addByPrefix('pressed', 'left press0', ClientPrefs.fpsStrumAnim, false);
-						animation.addByPrefix('confirm', 'left confirm0', ClientPrefs.fpsStrumAnim, false);
-						animation.addByPrefix('notes', 'purple0', ClientPrefs.fpsStrumAnim, false);
-					}
+					animation.addByPrefix('static', 'arrowLEFT0');
+					animation.addByPrefix('pressed', 'left press0', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('confirm', 'left confirm0', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('notes', 'purple0', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('static_down', 'arrowLEFT_DownScroll0');
+					animation.addByPrefix('pressed_down', 'left press_DownScroll0', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('confirm_down', 'left confirm_DownScroll0', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('notes_down', 'purple_DownScroll0', ClientPrefs.fpsStrumAnim, false);
 				case 1:
-					if (note != null && note.getActualDownscroll() || ClientPrefs.downScroll) {
-						addAnimThingy(this, 'static', 'arrowDOWN_DownScroll0', 'arrowDOWN0', true, ClientPrefs.fpsStrumAnim);
-						addAnimThingy(this, 'pressed', 'down press_DownScroll0', 'down press0', false, ClientPrefs.fpsStrumAnim);
-						addAnimThingy(this, 'confirm', 'down confirm_DownScroll0', 'down confirm0', false, ClientPrefs.fpsStrumAnim);
-						addAnimThingy(this, 'notes', 'blue Downscroll0', 'blue0', false, ClientPrefs.fpsStrumAnim);
-					} else {
-						animation.addByPrefix('static', 'arrowDOWN0');
-						animation.addByPrefix('pressed', 'down press0', ClientPrefs.fpsStrumAnim, false);
-						animation.addByPrefix('confirm', 'down confirm0', ClientPrefs.fpsStrumAnim, false);
-						animation.addByPrefix('notes', 'blue0', ClientPrefs.fpsStrumAnim, false);
-					}
+					animation.addByPrefix('static', 'arrowDOWN0');
+					animation.addByPrefix('pressed', 'down press0', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('confirm', 'down confirm0', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('notes', 'blue0', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('static_down', 'arrowDOWN_DownScroll0');
+					animation.addByPrefix('pressed_down', 'down press_DownScroll0', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('confirm_down', 'down confirm_DownScroll0', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('notes_down', 'blue_DownScroll0', ClientPrefs.fpsStrumAnim, false);
 				case 2:
-					if (note != null && note.getActualDownscroll() || ClientPrefs.downScroll) {
-						addAnimThingy(this, 'static', 'arrowUP_DownScroll0', 'arrowUP0', true, ClientPrefs.fpsStrumAnim);
-						addAnimThingy(this, 'pressed', 'up press_DownScroll0', 'up press0', false, ClientPrefs.fpsStrumAnim);
-						addAnimThingy(this, 'confirm', 'up confirm_DownScroll0', 'up confirm0', false, ClientPrefs.fpsStrumAnim);
-						addAnimThingy(this, 'notes', 'green Downscroll0', 'green0', false, ClientPrefs.fpsStrumAnim);
-					} else {
-						animation.addByPrefix('static', 'arrowUP0');
-						animation.addByPrefix('pressed', 'up press0', ClientPrefs.fpsStrumAnim, false);
-						animation.addByPrefix('confirm', 'up confirm0', ClientPrefs.fpsStrumAnim, false);
-						animation.addByPrefix('notes', 'green0', ClientPrefs.fpsStrumAnim, false);
-					}
+					animation.addByPrefix('static', 'arrowUP0');
+					animation.addByPrefix('pressed', 'up press0', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('confirm', 'up confirm0', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('notes', 'green0', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('static_down', 'arrowUP_DownScroll0');
+					animation.addByPrefix('pressed_down', 'up press_DownScroll0', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('confirm_down', 'up confirm_DownScroll0', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('notes_down', 'green_DownScroll0', ClientPrefs.fpsStrumAnim, false);
 				case 3:
-					if (note != null && note.getActualDownscroll() || ClientPrefs.downScroll) {
-						addAnimThingy(this, 'static', 'arrowRIGHT_DownScroll0', 'arrowRIGHT0', true, ClientPrefs.fpsStrumAnim);
-						addAnimThingy(this, 'pressed', 'right press_DownScroll0', 'right press0', false, ClientPrefs.fpsStrumAnim);
-						addAnimThingy(this, 'confirm', 'right confirm_DownScroll0', 'right confirm0', false, ClientPrefs.fpsStrumAnim);
-						addAnimThingy(this, 'notes', 'red Downscroll0', 'red0', false, ClientPrefs.fpsStrumAnim);
-					} else {
-						animation.addByPrefix('static', 'arrowRIGHT0');
-						animation.addByPrefix('pressed', 'right press0', ClientPrefs.fpsStrumAnim, false);
-						animation.addByPrefix('confirm', 'right confirm0', ClientPrefs.fpsStrumAnim, false);
-						animation.addByPrefix('notes', 'red0', ClientPrefs.fpsStrumAnim, false);
-					}
+					animation.addByPrefix('static', 'arrowRIGHT0');
+					animation.addByPrefix('pressed', 'right press0', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('confirm', 'right confirm0', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('notes', 'red0', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('static_down', 'arrowRIGHT_DownScroll0');
+					animation.addByPrefix('pressed_down', 'right press_DownScroll0', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('confirm_down', 'right confirm_DownScroll0', ClientPrefs.fpsStrumAnim, false);
+					animation.addByPrefix('notes_down', 'red_DownScroll0', ClientPrefs.fpsStrumAnim, false);
 			}
 		}
 		updateHitbox();

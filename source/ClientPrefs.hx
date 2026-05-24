@@ -16,7 +16,7 @@ class ClientPrefs {
 	public static var keyPressColor1:String = 'FF00FF';
 	public static var keyPressColor2:String = '00FFFF';
 	public static var keyPressColor3:String = '00FF00';
-	public static var keyPressColor4:String = '0000FF';
+	public static var keyPressColor4:String = 'FF0000';
 	public static var botplayText:String = 'BOTPLAY';
 	public static var classicAnim:Bool = false;//classic animation note and character
 	public static var modchart:Bool = true;//enable modchart
