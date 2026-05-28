@@ -448,7 +448,6 @@ class Note extends FlxSprite
 		if (parent != null) {
 			this.parent = parent;
 		}
-		var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
 		sustainTail = tail;
 
 		if (prevNote == null)
@@ -675,23 +674,6 @@ class Note extends FlxSprite
 	{
 		super.update(elapsed);
 		if (!inEditor) {
-			var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
-			/*if (gamemode != null) {
-				if ((gamemode != "opponent" ? (gamemode == "bothside v2" || gamemode == "bothside" ? true : mustPress) : !mustPress))
-				{
-					// ok river
-				}
-				else
-				{
-					canBeHit = false;
-
-					if (strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * earlyHitMult))
-					{
-						if ((isSustainNote && prevNote.wasGoodHit) || strumTime <= Conductor.songPosition)
-							wasGoodHit = true;
-					}
-				}
-			}*/
 			if ((strumTime + offsetStrumTime) > Conductor.songPosition - (Conductor.safeZoneOffset * lateHitMult)
 				&& (strumTime + offsetStrumTime) < Conductor.songPosition + (Conductor.safeZoneOffset * earlyHitMult))
 				canBeHit = true;
@@ -726,16 +708,10 @@ class Note extends FlxSprite
 		}
 		return value;
 	}
-	public function onChangeSecOpt(value:Bool = false) {
-		if (!mustPress) {
-			var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
-		}
-	}
 
 	private function set_noteScale(value:Float):Float {
 		var ratio = value / noteScale;
 		if (!inEditor) {
-			var gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
 			if (!mustPress) {
 				scale.x *= ratio;
 				if (!isSustainNote) {

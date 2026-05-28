@@ -423,13 +423,13 @@ class PlayState extends MusicBeatState
 	// stores the last combo score objects in an array
 	public static var lastScore:Array<FlxSprite> = [];
 	private var gamemodeMap:Map<String, Int> = [];
+	var isSecOpt:Bool = false;//is not mean to change(it only for game design)
 
-
-	var tempSecOpt = false;
 
 	override public function create()
 	{
 		if (SONG == null) SONG = Song.loadFromJson('tutorial');
+		isSecOpt = PlayState.SONG.secOpt;
 		CacheUtil.clearCache();
 		Paths.clearStoredMemory();
 		//trace('Playback Rate: ' + playbackRate);
@@ -445,7 +445,6 @@ class PlayState extends MusicBeatState
 		debugKeysCharacter = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_2'));
 		PauseSubState.songName = null; //Reset to default
 		playbackRate = ClientPrefs.getGameplaySetting('songspeed', 1);
-		tempSecOpt = PlayState.SONG.secOpt;
 
 		// Gameplay settings
 		healthGain = ClientPrefs.getGameplaySetting('healthgain', 1);
@@ -1262,11 +1261,11 @@ class PlayState extends MusicBeatState
 		if (gf != null) {
 			iconP3 = new HealthIcon(gf.healthIcon, false);
 			iconP3.y = healthBar.y - 75;
-			iconP3.visible = !ClientPrefs.hideHud && PlayState.SONG.secOpt;
+			iconP3.visible = !ClientPrefs.hideHud && isSecOpt;
 			iconP3.alpha = ClientPrefs.healthBarAlpha;
 			add(iconP3);
 		}
-		mergeHealthColor = PlayState.SONG.secOpt;
+		mergeHealthColor = isSecOpt;
 		reloadHealthBarColors();
 
 		scoreTxt = new FlxText(0, healthBarBG.y + 36, FlxG.width, "", 20);
@@ -3083,7 +3082,7 @@ class PlayState extends MusicBeatState
 					babyArrow.alpha = targetAlpha;
 				}
 				opponentStrums.add(babyArrow);
-				if (PlayState.SONG.secOpt) gfStrums.add(babyArrow);
+				if (isSecOpt) gfStrums.add(babyArrow);
 				playerStrums.add(babyArrow);
 				bothStrums.add(babyArrow);
 				strumLineNotes.add(babyArrow);
@@ -3158,7 +3157,7 @@ class PlayState extends MusicBeatState
 						babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
 					}
 					babyArrow.downScroll = ClientPrefs.downScroll;
-					if (PlayState.SONG.secOpt) {
+					if (isSecOpt) {
 						babyArrow.y -= Note.swagWidth/2;
 					}
 					if (!isStoryMode && !skipArrowStartTween && t)
@@ -3187,7 +3186,7 @@ class PlayState extends MusicBeatState
 					strumLineNotes.add(babyArrow);
 					babyArrow.postAddedToGroup();
 				}
-				if (PlayState.SONG.secOpt) {
+				if (isSecOpt) {
 					for (i in 0...4) {
 						var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, 0, true);
 						if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
@@ -4066,7 +4065,7 @@ class PlayState extends MusicBeatState
 					} else {
 						daNote.fieldTarget == '';
 						if(!daNote.mustPress) {
-							if ((daNote.gfNote || daNote.secondOpponent) && PlayState.SONG.secOpt && gamemode != 'bothside') {
+							if ((daNote.gfNote || daNote.secondOpponent) && isSecOpt && !(gamemode == 'bothside' || gamemode == 'opponent')) {
 								strumGroup = gfStrums;
 							} else {
 								strumGroup = opponentStrums;
@@ -6414,7 +6413,6 @@ class PlayState extends MusicBeatState
 	}
 
 	override function destroy() {
-		PlayState.SONG.secOpt = tempSecOpt;//rolled back
 		CacheUtil.clearCache();
 		for (lua in luaArray) {
 			lua.call('onDestroy', []);
@@ -6824,21 +6822,11 @@ class PlayState extends MusicBeatState
 
 	public function changeSecOpt(value:Null<Bool> = null, t:Bool = true, t2:Bool = true):Void {
 		if (value != null) {
-			if (PlayState.SONG.secOpt != value) {
-				PlayState.SONG.secOpt = value;
+			if (isSecOpt != value) {
+				isSecOpt = value;
 				iconP3.visible = value;
 				mergeHealthColor = value;
 				reloadHealthBarColors();
-				for (i in notes) {
-					if (!i.mustPress) {
-						i.onChangeSecOpt(value);
-					}
-				}
-				for (i in unspawnNotes) {
-					if (!i.mustPress) {
-						i.onChangeSecOpt(value);
-					}
-				}
 				while (opponentStrums.length > 0) {
 					var obj= opponentStrums.members[0];
 					obj.kill();

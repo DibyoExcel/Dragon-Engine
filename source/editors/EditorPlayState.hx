@@ -531,7 +531,8 @@ class EditorPlayState extends MusicBeatState
 					daNote.flipY = ClientPrefs.downScroll;
 				}
 				//this kinda shit than PlayState
-				if (!daNote.mustPress && daNote.canBeHit && !daNote.hitByOpponent && (!daNote.ignoreNote && !daNote.canFreeze))
+				var botCanHit = ((daNote.isSustainNote && (daNote.strumTime + daNote.offsetStrumTime) < Conductor.songPosition + (Conductor.safeZoneOffset * daNote.earlyHitMult) && (daNote.parent != null ? daNote.parent.hitByOpponent : true)) || (!daNote.isSustainNote && ((daNote.strumTime + daNote.offsetStrumTime) <= Conductor.songPosition)));//just be sure bot only hit in perfect time :) and also cant miss when lagging like hell.(copy from PlayState.hx)
+				if (!daNote.mustPress && botCanHit && !daNote.hitByOpponent && (!daNote.ignoreNote && !daNote.canFreeze))
 				{
 					var time:Float = 0.15;
 					if(daNote.isSustainNote) {
@@ -1084,89 +1085,52 @@ class EditorPlayState extends MusicBeatState
 
 	private function generateStaticArrows(player:Int, t:Bool = true):Void
 		{
-			if (!PlayState.SONG.secOpt) {
-				for (i in 0...4)
+			//default and all gamemode(design inspired from RetroSpecter P2 mods)
+			if (player == 0) {
+				for (i in 0...4) {
+					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * 0.5 : FlxG.width*0.25)-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, 0);
+					babyArrow.downScroll = ClientPrefs.downScroll;
+					if (PlayState.SONG.secOpt) {
+						babyArrow.y -= Note.swagWidth/2;
+					}
+					if(ClientPrefs.middleScroll)
 					{
-						// FlxG.log.add(i);
-			
-						var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : (player == 1 ? FlxG.width*0.75 : FlxG.width*0.25))-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, player);
-						if (player == 1)
-						{
-							if (gamemode == "bothside") {
-								opponentStrums.add(babyArrow);
-								strumLineNotes.add(babyArrow);//ehhh
-							}
-							playerStrums.add(babyArrow);
-							strumLineNotes.add(babyArrow);
+						if(i > 1) { //Up and Right
+							babyArrow.x += FlxG.width / 4;
+						} else {
+							babyArrow.x -= FlxG.width / 4;
 						}
-						else
+					}
+					opponentStrums.add(babyArrow);
+					strumLineNotes.add(babyArrow);
+					babyArrow.postAddedToGroup();
+				}
+				if (PlayState.SONG.secOpt) {
+					for (i in 0...4) {
+						var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * 0.5 : FlxG.width*0.25)-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, 0, true);
+						babyArrow.downScroll = ClientPrefs.downScroll;
+						babyArrow.y += Note.swagWidth/2;
+						if(ClientPrefs.middleScroll)
 						{
-							if(ClientPrefs.middleScroll)
-							{
-								if(i > 1) { //Up and Right
-									babyArrow.x += FlxG.width / 4;
-								} else {
-									babyArrow.x -= FlxG.width / 4;
-								}
+							if(i > 1) { //Up and Right
+								babyArrow.x += FlxG.width / 4;
+							} else {
+								babyArrow.x -= FlxG.width / 4;
 							}
-							opponentStrums.add(babyArrow);
-							strumLineNotes.add(babyArrow);
 						}
-						babyArrow.postAddedToGroup();	
-				}	
-			} else {
-				// Loop for opponentStrums (8 arrows)
-				if (player == 0) {
-					for (i in 0...8)
-					{
-						var noteSize = Note.swagWidth*(Math.min(0.75, 0.7*(FlxG.width/1280)));
-					var noteSizeSub = Note.swagWidth*(Math.min(0.125, 0.15*(FlxG.width/1280)));
-					var number = (-(noteSize*4))+(noteSize*i);
-					var babyArrow:StrumNote = new StrumNote((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : (FlxG.width*0.25)+(Note.swagWidth/2))+number-noteSizeSub, strumLine.y, i, player, i>3);
-						if (player != 1)
-						{
-							if(ClientPrefs.middleScroll)
-							{
-								if(i > 3) { // Adjust positions for the last 4 arrows
-									babyArrow.x += FlxG.width / 4;
-								} else {
-									babyArrow.x -= FlxG.width / 4;
-								}
-							}
-							if (i > 3) {
-							gfStrums.add(babyArrow);
-							}
-							opponentStrums.add(babyArrow);
-						}
-					
+						gfStrums.add(babyArrow);
 						strumLineNotes.add(babyArrow);
 						babyArrow.postAddedToGroup();
-						}
-					} else {
-				// Loop for playerStrums (only 4 arrows)
-					for (i in 0...8)
-						{
-							if (!(PlayState.SONG.secOpt && gamemode == 'bothside') && i>3) {
-								continue;//stop only 4 spawn
-							}
-							var number = (PlayState.SONG.secOpt && gamemode == 'bothside' ? (-Note.swagWidth*4) : (-(Note.swagWidth)*2))+(Note.swagWidth*i);
-							var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : FlxG.width*0.75)+number), strumLine.y, i, player, i>3);
-						
-							if (player == 1)
-							{
-								playerStrums.add(babyArrow);
-								if (gamemode == 'bothside') {
-									opponentStrums.add(babyArrow);
-									if (PlayState.SONG.secOpt && i > 3) {
-										gfStrums.add(babyArrow);
-									}
-								} 
-							}
-						
-							strumLineNotes.add(babyArrow);
-							babyArrow.postAddedToGroup();
-						}
-				}				
+					}
+				}
+			} else if (player == 1) {
+				for (i in 0...4) {
+					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll ? FlxG.width * 0.5 : FlxG.width*0.75)-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, 1);
+					babyArrow.downScroll = ClientPrefs.downScroll;
+					playerStrums.add(babyArrow);
+					strumLineNotes.add(babyArrow);
+					babyArrow.postAddedToGroup();
+				}
 			}
 		}
 
@@ -1194,8 +1158,7 @@ class EditorPlayState extends MusicBeatState
 	}
 
 	function spawnNoteSplash(x:Float, y:Float, data:Int, ?note:Note = null) {
-		var skin:String = 'noteSplashes';
-		if(PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0) skin = PlayState.SONG.splashSkin;
+		var skin:String = '';
 		
 		var hue:Float = ClientPrefs.arrowHSV[data % 4][0] / 360;
 		var sat:Float = ClientPrefs.arrowHSV[data % 4][1] / 100;
