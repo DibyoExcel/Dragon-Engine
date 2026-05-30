@@ -51,6 +51,7 @@ class StoryMenuState extends MusicBeatState
 	var rightArrow:FlxSprite;
 
 	var loadedWeeks:Array<WeekData> = [];
+	var weekID:Array<Int> = [];//for get actual week id
 	#if mobile
 	private var touch:TouchUtil = new TouchUtil();
 	private var ctrlButton:VirtualButton;
@@ -115,6 +116,7 @@ class StoryMenuState extends MusicBeatState
 				if(!isLocked || !weekFile.hiddenUntilUnlocked)
 				{
 					loadedWeeks.push(weekFile);
+					weekID.push(i);
 					WeekData.setDirectoryFromWeek(weekFile);
 					var weekThing:MenuItem = new MenuItem(0, bgSprite.y + 396, WeekData.weeksList[i]);
 					weekThing.y += ((weekThing.height + 20) * num);
@@ -474,7 +476,7 @@ class StoryMenuState extends MusicBeatState
 			bgSprite.loadGraphic(Paths.image('menubackgrounds/menu_' + assetName));
 			bgSprite.screenCenter(X);
 		}
-		PlayState.storyWeek = curWeek;
+		PlayState.storyWeek = weekID[curWeek];
 
 		CoolUtil.difficulties = CoolUtil.defaultDifficulties.copy();
 		var diffStr:String = WeekData.getCurrentWeek().difficulties;
