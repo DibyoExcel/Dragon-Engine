@@ -47,7 +47,6 @@ class MenuCharacterEditorState extends MusicBeatState
 	private var shiftButton:VirtualButton;
 	private var spaceButton:VirtualButton;
 	#end
-	private static var loadFileName:FlxUIInputText;
 
 	override function create() {
 		characterFile = {
@@ -151,11 +150,6 @@ class MenuCharacterEditorState extends MusicBeatState
 		saveButton.x += 60;
 		add(saveButton);
 
-		#if android
-		loadFileName = new FlxUIInputText(loadButton.x, loadButton.y-25, Std.int(loadButton.width), 'load.json');
-		blockPressWhileTypingOn.push(loadFileName);
-		add(loadFileName);
-		#end
 	}
 
 	var opponentCheckbox:FlxUICheckBox;
@@ -365,12 +359,15 @@ class MenuCharacterEditorState extends MusicBeatState
 	var _file:FileReference = null;
 	function loadCharacter() {
 		#if android
-		if (FileSystem.exists(Paths.externalFilesPath('load/menucharacter/' + loadFileName.text))) {
-			var jsonCode:String = File.getContent(Paths.externalFilesPath('load/menucharacter/' + loadFileName.text));
-			menuCharCode(loadFileName.text, jsonCode);
-		} else {
-			lime.app.Application.current.window.alert('Unable to load. ' + Paths.externalFilesPath('load/menucharacter/' + loadFileName.text) + ' not found', 'Menu Character Editor');
-		}
+		var fileDialog = new dge.states.FilePickerState();
+		fileDialog.callback = function() {
+			var jsonCode:String = File.getContent(fileDialog.filePath);
+			var arrayPath = fileDialog.filePath.split('/');
+			persistentDraw = true;
+			menuCharCode(arrayPath[arrayPath.length-1], jsonCode);
+		};
+		persistentDraw = false;
+		openSubState(fileDialog);
 		#else
 		var jsonFilter:FileFilter = new FileFilter('JSON', 'json');
 		_file = new FileReference();

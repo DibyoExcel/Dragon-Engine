@@ -46,8 +46,8 @@ class WeekEditorState extends MusicBeatState
 	var missingFileText:FlxText;
 
 	var weekFile:WeekFile = null;
+	public static var instance:MusicBeatState;
 
-	private static var loadFileName:FlxUIInputText;
 	public function new(weekFile:WeekFile = null)
 	{
 		super();
@@ -57,6 +57,8 @@ class WeekEditorState extends MusicBeatState
 	}
 
 	override function create() {
+		persistentUpdate = false;
+		instance = this;
 		txtWeekTitle = new FlxText(FlxG.width * 0.7, 10, 0, "", 32);
 		txtWeekTitle.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
 		txtWeekTitle.alpha = 0.7;
@@ -158,11 +160,6 @@ class WeekEditorState extends MusicBeatState
 		saveWeekButton.screenCenter(X);
 		saveWeekButton.x += 120;
 		add(saveWeekButton);
-		#if android
-		loadFileName = new FlxUIInputText(loadWeekButton.x, loadWeekButton.y-25, Std.int(loadWeekButton.width), 'load.json');
-		blockPressWhileTypingOn.push(loadFileName);
-		add(loadFileName);
-		#end
 	}
 
 	var songsInputText:FlxUIInputText;
@@ -480,12 +477,15 @@ class WeekEditorState extends MusicBeatState
 		_file.addEventListener(IOErrorEvent.IO_ERROR, onLoadError);
 		_file.browse([jsonFilter]);
 		#else
-		var fileName:String = loadFileName.text;
-		if (FileSystem.exists(Paths.externalFilesPath('load/weeks/' + fileName))) {
-			var rawJson:String = File.getContent(Paths.externalFilesPath('load/weeks/' + fileName));
-			if (rawJson != null)
-			{
-				loadedWeek = cast Json.parse(rawJson);
+		if (instance != null) {
+
+			var fileDialog = new dge.states.FilePickerState();
+			fileDialog.callback = function() {
+				instance.persistentDraw = true;
+				var jsonCode:String = File.getContent(fileDialog.filePath);
+				var arrayPath = fileDialog.filePath.split('/');
+				var fileName = arrayPath[arrayPath.length-1];
+				loadedWeek = cast Json.parse(jsonCode);
 				if (loadedWeek.weekCharacters != null && loadedWeek.weekName != null) // Make sure it's really a week
 				{
 					var cutName:String = fileName.substr(0, fileName.length - 5);
@@ -493,12 +493,11 @@ class WeekEditorState extends MusicBeatState
 					loadError = false;
 	
 					weekFileName = cutName;
-					_file = null;
 					return;
 				}
-			}
-		} else {
-			lime.app.Application.current.window.alert('Unable to load. ' + Paths.externalFilesPath('load/weeks/' + loadFileName.text) + ' not found', 'Week Editor');
+			};
+			instance.persistentDraw = false;
+			instance.openSubState(fileDialog);
 		}
 		#end
 	}
@@ -615,6 +614,10 @@ class WeekEditorState extends MusicBeatState
 		_file = null;
 		FlxG.log.error("Problem saving file");
 	}
+	override public function destroy() {
+		super.destroy();
+		WeekEditorState.instance = null;
+	}
 }
 
 class WeekEditorFreeplayState extends MusicBeatState
@@ -633,11 +636,11 @@ class WeekEditorFreeplayState extends MusicBeatState
 	var bg:FlxSprite;
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var iconArray:Array<HealthIcon> = [];
-	private static var loadFileName:FlxUIInputText;
 
 	var curSelected = 0;
 
 	override function create() {
+		WeekEditorState.instance = this;
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 
@@ -714,11 +717,6 @@ class WeekEditorFreeplayState extends MusicBeatState
 		saveWeekButton.x += 120;
 		add(saveWeekButton);
 
-		#if android
-		loadFileName = new FlxUIInputText(loadWeekButton.x, loadWeekButton.y-25, Std.int(loadWeekButton.width), 'load.json');
-		blockPressWhileTypingOn.push(loadFileName);
-		add(loadFileName);
-		#end
 	}
 	
 	override function getEvent(id:String, sender:Dynamic, data:Dynamic, ?params:Array<Dynamic>) {
@@ -867,5 +865,9 @@ class WeekEditorFreeplayState extends MusicBeatState
 			if(controls.UI_DOWN_P #if mobile || touch.swipeDown() #end) changeSelection(1);
 		}
 		super.update(elapsed);
+	}
+	override public function destroy() {
+		super.destroy();
+		WeekEditorState.instance = null;
 	}
 }

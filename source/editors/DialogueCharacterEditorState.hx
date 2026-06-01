@@ -94,7 +94,6 @@ class DialogueCharacterEditorState extends MusicBeatState
 	var ghostIdle:DialogueCharacter;
 
 	var curAnim:Int = 0;
-	private static var loadFileName:FlxUIInputText;
 	#if mobile
 	private var touch:TouchUtil = new TouchUtil();
 	private var handButton:ToggleButton;
@@ -285,7 +284,7 @@ class DialogueCharacterEditorState extends MusicBeatState
 			{name: 'Character', label: 'Character'},
 		];
 		UI_mainbox = new FlxUITabMenu(null, tabs, true);
-		UI_mainbox.resize(200, 250 #if android + 25 #end);
+		UI_mainbox.resize(200, 250);
 		UI_mainbox.x = UI_typebox.x + UI_typebox.width;
 		UI_mainbox.y = FlxG.height - UI_mainbox.height - 50;
 		UI_mainbox.scrollFactor.set();
@@ -493,19 +492,12 @@ class DialogueCharacterEditorState extends MusicBeatState
 		var loadButton:FlxButton = new FlxButton(reloadImageButton.x + 100, reloadImageButton.y, "Load Character", function() {
 			loadCharacter();
 		});
-		#if android
-		loadFileName = new FlxUIInputText(loadButton.x, loadButton.y+25, Std.int(loadButton.width), 'load.json');
-		blockPressWhileTypingOn.push(loadFileName);
-		#end
 		var saveButton:FlxButton = new FlxButton(loadButton.x, reloadImageButton.y - 25, "Save Character", function() {
 			saveCharacter();
 		});
 		tab_group.add(reloadImageButton);
 		tab_group.add(loadButton);
 		tab_group.add(saveButton);
-		#if android
-		tab_group.add(loadFileName);
-		#end
 		UI_mainbox.addGroup(tab_group);
 	}
 	
@@ -835,12 +827,15 @@ class DialogueCharacterEditorState extends MusicBeatState
 	var _file:FileReference = null;
 	function loadCharacter() {
 		#if android
-		if (FileSystem.exists(Paths.externalFilesPath('load/dialoguecharacter/' + loadFileName.text))) {
-			var jsonCode:String = File.getContent(Paths.externalFilesPath('load/dialoguecharacter/' + loadFileName.text));
-			charDiagCode(loadFileName.text, jsonCode);
-		} else {
-			lime.app.Application.current.window.alert('Unable to load. ' + Paths.externalFilesPath('load/dialoguecharacter/' + loadFileName.text) + ' not found', 'Dialogue Character Editor');
-		}
+		var fileDialog = new dge.states.FilePickerState();
+		fileDialog.callback = function() {
+			var jsonCode:String = File.getContent(fileDialog.filePath);
+			var arrayPath = fileDialog.filePath.split('/');
+			persistentUpdate = persistentDraw = true;
+			charDiagCode(arrayPath[arrayPath.length-1], jsonCode);
+		};
+		persistentUpdate = persistentDraw = false;
+		openSubState(fileDialog);
 		#else
 		var jsonFilter:FileFilter = new FileFilter('JSON', 'json');
 		_file = new FileReference();

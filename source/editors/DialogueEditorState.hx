@@ -55,7 +55,6 @@ class DialogueEditorState extends MusicBeatState
 	private var pButton:VirtualButton;
 	#end
 
-	private static var loadFileName:FlxUIInputText;
 
 	override function create() {
 		persistentUpdate = persistentDraw = true;
@@ -132,7 +131,7 @@ class DialogueEditorState extends MusicBeatState
 			{name: 'Dialogue Line', label: 'Dialogue Line'},
 		];
 		UI_box = new FlxUITabMenu(null, tabs, true);
-		UI_box.resize(250, 210 #if android + 25 #end);
+		UI_box.resize(250, 210);
 		UI_box.x = FlxG.width - UI_box.width - 10;
 		UI_box.y = 10;
 		UI_box.scrollFactor.set();
@@ -174,9 +173,6 @@ class DialogueEditorState extends MusicBeatState
 		var saveButton:FlxButton = new FlxButton(loadButton.x + 120, loadButton.y, "Save Dialogue", function() {
 			saveDialogue();
 		});
-		#if android
-		loadFileName = new FlxUIInputText(loadButton.x, loadButton.y + 25, Std.int(loadButton.width), 'load.json');
-		#end
 
 		tab_group.add(new FlxText(10, speedStepper.y - 18, 0, 'Interval/Speed (ms):'));
 		tab_group.add(new FlxText(10, characterInputText.y - 18, 0, 'Character:'));
@@ -189,9 +185,6 @@ class DialogueEditorState extends MusicBeatState
 		tab_group.add(lineInputText);
 		tab_group.add(loadButton);
 		tab_group.add(saveButton);
-		#if android
-		tab_group.add(loadFileName);
-		#end
 		UI_box.addGroup(tab_group);
 	}
 
@@ -485,12 +478,15 @@ class DialogueEditorState extends MusicBeatState
 		_file.addEventListener(IOErrorEvent.IO_ERROR, onLoadError);
 		_file.browse([jsonFilter]);
 		#else
-		if (FileSystem.exists(Paths.externalFilesPath('load/dialogue/' + loadFileName.text))) {
-			var jsonCode:String = File.getContent(Paths.externalFilesPath('load/dialogue/' + loadFileName.text));
-			dialogueCode(loadFileName.text, jsonCode);
-		} else {
-			lime.app.Application.current.window.alert('Unable to load. ' + Paths.externalFilesPath('load/dialogue/' + loadFileName.text) + ' not found', 'Dialogue Editor');
-		}
+		var fileDialog = new dge.states.FilePickerState();
+		fileDialog.callback = function() {
+			persistentUpdate = persistentDraw = true;
+			var jsonCode:String = File.getContent(fileDialog.filePath);
+			var arrayPath = fileDialog.filePath.split('/');
+			dialogueCode(arrayPath[arrayPath.length-1], jsonCode);
+		};
+		persistentUpdate = persistentDraw = false;
+		openSubState(fileDialog);
 		#end
 	}
 

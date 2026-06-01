@@ -49,21 +49,6 @@ class DubEnderLoader extends FlxBasePreloader
 			if (!FileSystem.exists(dge.backend.StorageManager.getEngineDir())) {
 				FileSystem.createDirectory(dge.backend.StorageManager.getEngineDir());
 			}
-			var loadData:Array<String> = ['dialogue', 'dialoguecharacter', 'menucharacter', 'weeks'];
-			for (i in 0...loadData.length) {
-				if (!FileSystem.exists(Paths.externalFilesPath('load/'))) {
-					FileSystem.createDirectory(Paths.externalFilesPath('load/'));
-				}
-				if (!FileSystem.exists(Paths.externalFilesPath('load/' + loadData[i] + '/'))) {
-					FileSystem.createDirectory(Paths.externalFilesPath('load/' + loadData[i] + '/'));
-				}
-				if (!FileSystem.exists(Paths.externalFilesPath('load/' + loadData[i] + '/'))) {
-					FileSystem.createDirectory(Paths.externalFilesPath('load/' + loadData[i] + '/'));
-				}
-				if (!FileSystem.exists(Paths.externalFilesPath('load/' + loadData[i] + '/put json file here.txt'))) {
-					File.saveContent(Paths.externalFilesPath('load/' + loadData[i] + '/put json file here.txt'), '');
-				}
-			}
 			if (!FileSystem.exists(Paths.externalFilesPath('mods/'))) {
 				FileSystem.createDirectory(Paths.externalFilesPath('mods/'));
 				File.saveContent(Paths.externalFilesPath('mods/put mods folder here.txt'), 'only mobile have this generated text.');
