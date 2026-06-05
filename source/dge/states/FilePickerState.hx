@@ -1,5 +1,6 @@
 package dge.states;
 //only for android build
+//wish has own name lol, umm maybe KarlExplorer? i think will goofy to use as application name but it sound good for file explorer(hope they didt actual use that because so goofy to me)-Karl
 
 import flixel.util.FlxColor;
 import flixel.text.FlxText;

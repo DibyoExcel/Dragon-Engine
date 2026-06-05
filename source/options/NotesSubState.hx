@@ -103,9 +103,11 @@ class NotesSubState extends MusicBeatSubstate
 		#if mobile
 		leftButton = new VirtualButton(0, FlxG.height-125, 'left');
 		leftButton.visible = false;
+		leftButton.disableInput = true;
 		add(leftButton);
 		rightButton = new VirtualButton(125, FlxG.height-125, 'right');
 		rightButton.visible = false;
+		rightButton.disableInput = true;
 		add(rightButton);
 		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
 		add(enterButton);
@@ -179,6 +181,8 @@ class NotesSubState extends MusicBeatSubstate
 				#if mobile
 				leftButton.visible = true;
 				rightButton.visible = true;
+				leftButton.disableInput = false;
+				rightButton.disableInput = false;
 				#end
 				holdTime = 0;
 				for (i in 0...grpNumbers.length) {
@@ -210,6 +214,8 @@ class NotesSubState extends MusicBeatSubstate
 			#if mobile
 				leftButton.visible = false;
 				rightButton.visible = false;
+				leftButton.disableInput = true;
+				rightButton.disableInput = true;
 			#end
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 		}

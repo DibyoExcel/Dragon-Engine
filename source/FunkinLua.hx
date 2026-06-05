@@ -1698,37 +1698,77 @@ class FunkinLua {
 
 		Lua_helper.add_callback(lua, "keyJustPressed", function(name:String) {
 			var key:Bool = false;
+			var game = PlayState.instance;
+			#if mobile
+			var hitbox = (game != null ? game.hitbox != null ? game.hitbox : null : null);
+			#end
 			switch(name) {
-				case 'left': key = PlayState.instance.getControl('NOTE_LEFT_P');
-				case 'down': key = PlayState.instance.getControl('NOTE_DOWN_P');
-				case 'up': key = PlayState.instance.getControl('NOTE_UP_P');
-				case 'right': key = PlayState.instance.getControl('NOTE_RIGHT_P');
+				case 'left': 
+					key = game.getControl('NOTE_LEFT_P');
+					#if mobile
+					if (!key && hitbox != null && hitbox.length > 0) key = game.hitbox.members[0].justPressed;
+					#end
+				case 'down':
+					key = game.getControl('NOTE_DOWN_P');
+					#if mobile
+					if (!key && game.hitbox != null && hitbox.length > 1) key = game.hitbox.members[1].justPressed;
+					#end
+				case 'up': 
+					key = game.getControl('NOTE_UP_P');
+					#if mobile
+					if (!key && game.hitbox != null && hitbox.length > 2) key = game.hitbox.members[2].justPressed;
+					#end
+				case 'right':
+					key = game.getControl('NOTE_RIGHT_P');
+					#if mobile
+					if (!key && game.hitbox != null && hitbox.length > 3) key = game.hitbox.members[3].justPressed;
+					#end
+				case 'space': 
+					key = FlxG.keys.justPressed.SPACE;//an extra key for convinience
+					#if mobile
+					if (!key && game.hitboxSpace != null) {
+						key = game.hitboxSpace.justPressed;
+					}
+					#end
 				case 'accept': key = PlayState.instance.getControl('ACCEPT');
 				case 'back': key = PlayState.instance.getControl('BACK');
 				case 'pause': key = PlayState.instance.getControl('PAUSE');
 				case 'reset': key = PlayState.instance.getControl('RESET');
-				case 'space': 
-					key = FlxG.keys.justPressed.SPACE;//an extra key for convinience
-					#if mobile
-					if (!key && PlayState.instance.hitboxSpace != null) {
-						key = PlayState.instance.hitboxSpace.justPressed;
-					}
-					#end
 			}
 			return key;
 		});
 		Lua_helper.add_callback(lua, "keyPressed", function(name:String) {
 			var key:Bool = false;
+			var game = PlayState.instance;
+			#if mobile
+			var hitbox = (game != null ? game.hitbox != null ? game.hitbox : null : null);
+			#end
 			switch(name) {
-				case 'left': key = PlayState.instance.getControl('NOTE_LEFT');
-				case 'down': key = PlayState.instance.getControl('NOTE_DOWN');
-				case 'up': key = PlayState.instance.getControl('NOTE_UP');
-				case 'right': key = PlayState.instance.getControl('NOTE_RIGHT');
+				case 'left': 
+					key = game.getControl('NOTE_LEFT');
+					#if mobile
+					if (!key && hitbox != null && hitbox.length > 0) key = game.hitbox.members[0].pressed;
+					#end
+				case 'down':
+					key = game.getControl('NOTE_DOWN');
+					#if mobile
+					if (!key && game.hitbox != null && hitbox.length > 1) key = game.hitbox.members[1].pressed;
+					#end
+				case 'up': 
+					key = game.getControl('NOTE_UP');
+					#if mobile
+					if (!key && game.hitbox != null && hitbox.length > 2) key = game.hitbox.members[2].pressed;
+					#end
+				case 'right':
+					key = game.getControl('NOTE_RIGHT');
+					#if mobile
+					if (!key && game.hitbox != null && hitbox.length > 3) key = game.hitbox.members[3].pressed;
+					#end
 				case 'space': 
 					key = FlxG.keys.pressed.SPACE;//an extra key for convinience
 					#if mobile
-					if (!key && PlayState.instance.hitboxSpace != null) {
-						key = PlayState.instance.hitboxSpace.pressed;
+					if (!key && game.hitboxSpace != null) {
+						key = game.hitboxSpace.pressed;
 					}
 					#end
 			}
@@ -1736,16 +1776,36 @@ class FunkinLua {
 		});
 		Lua_helper.add_callback(lua, "keyReleased", function(name:String) {
 			var key:Bool = false;
+			var game = PlayState.instance;
+			#if mobile
+			var hitbox = (game != null ? game.hitbox != null ? game.hitbox : null : null);
+			#end
 			switch(name) {
-				case 'left': key = PlayState.instance.getControl('NOTE_LEFT_R');
-				case 'down': key = PlayState.instance.getControl('NOTE_DOWN_R');
-				case 'up': key = PlayState.instance.getControl('NOTE_UP_R');
-				case 'right': key = PlayState.instance.getControl('NOTE_RIGHT_R');
+				case 'left': 
+					key = game.getControl('NOTE_LEFT_R');
+					#if mobile
+					if (!key && hitbox != null && hitbox.length > 0) key = game.hitbox.members[0].justReleased;
+					#end
+				case 'down':
+					key = game.getControl('NOTE_DOWN_R');
+					#if mobile
+					if (!key && game.hitbox != null && hitbox.length > 1) key = game.hitbox.members[1].justReleased;
+					#end
+				case 'up': 
+					key = game.getControl('NOTE_UP_R');
+					#if mobile
+					if (!key && game.hitbox != null && hitbox.length > 2) key = game.hitbox.members[2].justReleased;
+					#end
+				case 'right':
+					key = game.getControl('NOTE_RIGHT_R');
+					#if mobile
+					if (!key && game.hitbox != null && hitbox.length > 3) key = game.hitbox.members[3].justReleased;
+					#end
 				case 'space': 
 					key = FlxG.keys.justReleased.SPACE;//an extra key for convinience
 					#if mobile
-					if (!key && PlayState.instance.hitboxSpace != null) {
-						key = PlayState.instance.hitboxSpace.justReleased;
+					if (!key && game.hitboxSpace != null) {
+						key = game.hitboxSpace.justReleased;
 					}
 					#end
 			}

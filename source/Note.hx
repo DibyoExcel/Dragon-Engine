@@ -521,9 +521,6 @@ class Note extends FlxSprite
 		{
 			earlyHitMult = 1;
 		}
-		if (!inEditor) {
-			scrollFactor.set();
-		}
 		hitsound = 'hitsound';
 		this.mustPress = mustPress;
 		this.gfNote = gfSec;

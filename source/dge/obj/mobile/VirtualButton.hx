@@ -1,26 +1,36 @@
 package dge.obj.mobile;
 
-import dge.obj.mobile.FlxButton;
+import dge.obj.mobile.TouchButton;
 
-class VirtualButton extends FlxButton {
+class VirtualButton extends TouchButton {
     public var texture(default, set):String = null;
     override public function new(x:Float, y:Float, image:String = '') {
-        super(x, y, '', function(){});
+        super(x, y);
         this.texture = image;
         alpha = ClientPrefs.virtualButtonAlpha;
         antialiasing = ClientPrefs.globalAntialiasing;
     }
-    override public function update(elapsed:Float):Void {
-        super.update(elapsed);
-        if (justPressed) {
-            loadGraphic(Paths.image('button/' + texture + '-hover'));
-            setGraphicSize(125, 125);
-            updateHitbox();
-        } else if (justReleased) {
-            loadGraphic(Paths.image('button/' + texture));
-            setGraphicSize(125, 125);
-            updateHitbox();
+    override private function set_justPressed(value:Bool):Bool {
+        if (justPressed != value) {
+            justPressed = value;
+                if (value) {
+                    loadGraphic(Paths.image('button/' + texture + '-hover'));
+                    setGraphicSize(125, 125);
+                    updateHitbox();
+                }
         }
+        return super.set_justPressed(value);
+    }
+    override private function set_justReleased(value:Bool):Bool {
+        if (justReleased != value) {
+            justReleased = value;
+                if (value) {
+                    loadGraphic(Paths.image('button/' + texture));
+                    setGraphicSize(125, 125);
+                    updateHitbox();
+                }
+        }
+        return super.set_justReleased(value);
     }
     private function set_texture(value:String):String {
         if (texture != value) {

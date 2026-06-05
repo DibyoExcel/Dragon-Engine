@@ -255,9 +255,11 @@ class DialogueCharacterEditorState extends MusicBeatState
 		add(offsetButtonGroup);
 		for (button in offsetButtonGroup.members) {
 			button.visible = false;
+			button.disableInput = true;
 		}
 		for (button in mainButtonGroup.members) {
 			button.visible = true;
+			button.disableInput = false;
 		}
 		#end
 
@@ -749,11 +751,17 @@ class DialogueCharacterEditorState extends MusicBeatState
 					currentGhosts = 0;
 					#if mobile
 					for (button in mainButtonGroup.members) {
-						if(button != null) button.visible = false;
+						if(button != null) {
+							button.visible = false;
+							button.disableInput = true;
+						}
 					}
 					mainButtonGroup.visible = false;
 					for (button in offsetButtonGroup.members) {
-						if(button != null) button.visible = true;
+						if(button != null) {
+							button.visible = true;
+							button.disableInput = true;
+						}
 					}
 					offsetButtonGroup.visible = true;
 					#end
