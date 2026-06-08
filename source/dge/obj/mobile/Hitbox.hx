@@ -62,6 +62,7 @@ class Hitbox extends TouchButton
          shaderType = 'swap';
          blend = FunkinLua.blendModeFromString(ClientPrefs.hitboxBlend);
          antialiasing = ClientPrefs.globalAntialiasing;
+         stickyInput = ClientPrefs.stickyHitbox;
      }
 
      override public function set_y(value:Float):Float {

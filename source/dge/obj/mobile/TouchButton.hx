@@ -12,6 +12,7 @@ class TouchButton extends FlxSprite{
     public var justReleased(default, set):Bool = false;
     public var pressed:Bool = false;
     public var disableInput = false;
+    public var stickyInput:Bool = false;//make button persist press even button got moved out from finger or finger move out from button(not released) until finger released
 
      public function new(x:Float, y:Float) {
          super(x, y);
@@ -40,7 +41,7 @@ class TouchButton extends FlxSprite{
             for (touch in FlxG.touches.list) {
                 for (cam in cameras) {
                     if (touch != null &&  overlapsPoint(touch.getWorldPosition(cam), true, cam)) {//WTF?Also copy from FlxButton
-                        if (touch.pressed) {
+                        if (stickyInput ? touch.justPressed : touch.pressed) {
                             this.touch = touch;
                             justPressed = true;
                             justReleased = false;
@@ -51,13 +52,15 @@ class TouchButton extends FlxSprite{
                 }
             }
         } else {
-            for (cam in cameras) {
-                if (touch != null &&  !overlapsPoint(touch.getWorldPosition(cam), true, cam)) {
-                    touch = null;
-                    justReleased = true;
-                    pressed = false;
-                    justPressed = false;//just incase
-                    break;
+            if (!stickyInput) {
+                for (cam in cameras) {
+                    if (touch != null &&  !overlapsPoint(touch.getWorldPosition(cam), true, cam)) {
+                        touch = null;
+                        justReleased = true;
+                        pressed = false;
+                        justPressed = false;//just incase
+                        break;
+                    }
                 }
             }
             if (touch != null) {

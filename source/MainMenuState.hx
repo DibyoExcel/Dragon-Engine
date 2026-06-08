@@ -1,6 +1,7 @@
 package;
-
+#if mobile
 import dge.obj.mobile.VirtualButton;
+#end
 #if desktop
 import Discord.DiscordClient;
 #end

@@ -4054,8 +4054,11 @@ class PlayState extends MusicBeatState
 				var fakeCrochet:Float = (60 / SONG.bpm) * 1000;
 				notes.forEachAlive(function(daNote:Note)
 				{
+					//damn implement shifter notes is hard than expected especially with combine all logic and reverse strum logic
 					var strumGroup:FlxTypedGroup<StrumNote> = playerStrums;
+					var strumGroupR:FlxTypedGroup<StrumNote> = playerStrums;
 					var actualStrum:StrumNote;
+					var fakeStrum:StrumNote;
 					if (daNote.fieldTarget != null && daNote.fieldTarget.length > 0) {
 						if (strumGroupMap.exists(daNote.fieldTarget) && notesGroupMap.exists(daNote.fieldTarget)) {
 							strumGroup = strumGroupMap.get(daNote.fieldTarget);//Geometry Dash Group ID reference?!?
@@ -4063,7 +4066,7 @@ class PlayState extends MusicBeatState
 							daNote.fieldTarget = '';//reset if not found
 						}
 					} else {
-						daNote.fieldTarget == '';
+						daNote.fieldTarget = '';
 						if(!daNote.mustPress) {
 							if ((daNote.gfNote || daNote.secondOpponent) && isSecOpt && !(gamemode == 'bothside' || gamemode == 'opponent')) {
 								strumGroup = gfStrums;
@@ -4072,92 +4075,188 @@ class PlayState extends MusicBeatState
 							}
 						}
 					} 
+					if (daNote.startPosShifter != null && daNote.startPosShifter.length > 0) {
+						if (strumGroupMap.exists(daNote.startPosShifter) && notesGroupMap.exists(daNote.startPosShifter)) {
+							strumGroupR = strumGroupMap.get(daNote.startPosShifter);//Geometry Dash Group ID reference?!?
+						} else {
+							daNote.startPosShifter = '';//reset if not found
+						}
+					} else {
+						daNote.startPosShifter = '';
+						if(daNote.mustPress) {
+							if ((daNote.gfNote || daNote.secondOpponent) && isSecOpt && !(gamemode == 'bothside' || gamemode == 'opponent')) {
+								strumGroupR = gfStrums;
+							} else {
+								strumGroupR = opponentStrums;
+							}
+						}
+					} 
 					if (strumGroup != null && (daNote.noteData < strumGroup.length) && daNote.noteData >= 0 && daNote.attachStrum) {//try prevent crash when change gamemode throught script or out ranged noteData:D
 						actualStrum = strumGroup.members[daNote.noteData];
+						if (strumGroupR != null && (daNote.noteData < strumGroupR.length) && daNote.noteData >= 0 && daNote.attachStrum) {
+							fakeStrum = strumGroupR.members[daNote.noteData];
+						} else fakeStrum = null;
 						daNote.strumNote = actualStrum;//fuck strum assign
 						//uh
+						var isShift:Bool = daNote.shifterStrength > 0;
 						var strumX:Float = daNote.fakeStrumX == null ? (actualStrum.fakeStrumX == null ? actualStrum.x : actualStrum.fakeStrumX) : daNote.fakeStrumX;
 						var strumY:Float = daNote.fakeStrumY == null ? (actualStrum.fakeStrumY == null ? actualStrum.y : actualStrum.fakeStrumY) : daNote.fakeStrumY;
 						var strumAngle:Float = daNote.fakeStrumAngle == null ? (actualStrum.fakeStrumAngle == null ? actualStrum.angle : actualStrum.fakeStrumAngle) : daNote.fakeStrumAngle;
 						var strumDirection:Float = daNote.fakeStrumDirection == null ? (actualStrum.fakeStrumDirection == null ? actualStrum.direction : actualStrum.fakeStrumDirection) : daNote.fakeStrumDirection;
 						var strumAlpha:Float = daNote.fakeStrumAlpha == null ? (actualStrum.fakeStrumAlpha == null ? actualStrum.alpha : actualStrum.fakeStrumAlpha) : daNote.fakeStrumAlpha;
-						var strumScroll:Bool = daNote.fakeStrumDownScroll == null ? (actualStrum.fakeStrumDirection == null ? actualStrum.downScroll : actualStrum.fakeStrumDownScroll) : daNote.fakeStrumDownScroll;
+						var strumScroll:Bool = daNote.fakeStrumDownScroll == null ? (actualStrum.fakeStrumDownScroll == null ? actualStrum.downScroll : actualStrum.fakeStrumDownScroll) : daNote.fakeStrumDownScroll;
+						var strumXR:Float = strumX;
+						var strumYR:Float = strumY;
+						var strumAngleR:Float = strumAngle-360;
+						var strumDirectionR:Float = strumDirection;
+						var strumAlphaR:Float = strumAlpha;
+						var strumScrollR:Bool = strumScroll;
+						if (fakeStrum != null) {
+							strumXR = daNote.fakeStrumX == null ? (fakeStrum.fakeStrumX == null ? fakeStrum.x : fakeStrum.fakeStrumX) : daNote.fakeStrumX;
+							strumYR = daNote.fakeStrumY == null ? (fakeStrum.fakeStrumY == null ? fakeStrum.y : fakeStrum.fakeStrumY) : daNote.fakeStrumY;
+							strumAngleR = daNote.fakeStrumAngle == null ? (fakeStrum.fakeStrumAngle == null ? fakeStrum.angle : fakeStrum.fakeStrumAngle) : daNote.fakeStrumAngle;
+							strumDirectionR = daNote.fakeStrumDirection == null ? (fakeStrum.fakeStrumDirection == null ? fakeStrum.direction : fakeStrum.fakeStrumDirection) : daNote.fakeStrumDirection;
+							strumAlphaR = daNote.fakeStrumAlpha == null ? (fakeStrum.fakeStrumAlpha == null ? fakeStrum.alpha : fakeStrum.fakeStrumAlpha) : daNote.fakeStrumAlpha;
+							strumScrollR = daNote.fakeStrumDownScroll == null ? (fakeStrum.fakeStrumDownScroll == null ? fakeStrum.downScroll : fakeStrum.fakeStrumDownScroll) : daNote.fakeStrumDownScroll;
+						}
 						strumDirection += daNote.direction;
+						strumDirectionR += daNote.direction;
 						var angleDir = strumDirection * Math.PI / 180;
+						var angleDirR = strumDirectionR * Math.PI / 180;
 						strumX += daNote.offsetX;
 						strumY += daNote.offsetY;
 						strumAngle += daNote.offsetAngle;
 						strumAlpha *= daNote.multAlpha;
+						strumXR += daNote.offsetX;
+						strumYR += daNote.offsetY;
+						strumAngleR += daNote.offsetAngle;
+						strumAlphaR *= daNote.multAlpha;
 						var longNotesOffset:Float = 0;
+						var longNotesOffsetR:Float = 0;
 						if (songSpeed < 0) {
 							strumScroll = !strumScroll;
+							strumScrollR = !strumScroll;
 						}
 						if (daNote.multSpeed < 0) {
 							strumScroll = !strumScroll;
+							strumScrollR = !strumScroll;
 						}
 						//flip against flipScroll
 						if (daNote.flipScroll) {//idk this effience code?
 							strumScroll = !strumScroll;//just flip the scroll when detect 'flipScroll'
+							strumScrollR = !strumScroll;//just flip the scroll when detect 'flipScroll'
 						}
 						if (daNote.downScroll != null) {//no overwrite downScroll
 							strumScroll = daNote.downScroll;//force downScroll
+							strumScrollR = daNote.downScroll;//force downScroll
 						}
 						if (daNote.isSustainNote && daNote.parent != null) {
 							switch(daNote.alignSustainNote) {
 								case 'left':
 									longNotesOffset += 0;// left the long notes from parent(0 cuz is already left align by default)
+									longNotesOffsetR += 0;// left the long notes from parent(0 cuz is already left align by default)
 								case 'center':
 									longNotesOffset += (daNote.parent.width/2)-(daNote.width/2);//center the long notes from parent
+									longNotesOffsetR += (daNote.parent.width/2)-(daNote.width/2);//center the long notes from parent
 								case 'right':
 									longNotesOffset += (daNote.parent.width)-(daNote.width);//right the long notes from parent
+									longNotesOffsetR += (daNote.parent.width)-(daNote.width);//right the long notes from parent
 								default:
 									longNotesOffset += (daNote.parent.width/2)-(daNote.width/2);//center the long notes from parent
+									longNotesOffsetR += (daNote.parent.width/2)-(daNote.width/2);//center the long notes from parent
 							}
 						}
 						strumX += Math.abs(Math.sin(angleDir) * longNotesOffset);
 						strumY += Math.abs(Math.cos(angleDir) * longNotesOffset);
+						strumXR += Math.abs(Math.sin(angleDir) * longNotesOffsetR);
+						strumYR += Math.abs(Math.cos(angleDir) * longNotesOffsetR);
+						var range =(0.45 * (Conductor.songPosition - daNote.strumTime + daNote.offsetStrumTime) * Math.abs(songSpeed * daNote.multSpeed));//strum range
+						var lerpThing = Math.min(1, Math.max(0, ((-range)-(daNote.shifterEndDistance*daNote.shifterStrength))/(320*daNote.shiferRangeMove)*daNote.shifterStrength));
+						lerpThing = FunkinLua.getFlxEaseByString(daNote.shifterEase)(lerpThing);//tbh i read this kinda curse
+						var rangeF = range;
+						var rangeReal = range;
+						var totalStrumDir = FlxMath.lerp(strumDirection, strumDirectionR, lerpThing);
+						var totalStrumAng = FlxMath.lerp(strumAngle, strumAngleR, lerpThing);
+						var totalAngleDir = FlxMath.lerp(angleDir, angleDirR, lerpThing);
 						if (daNote.updateDistance) {
 							if (strumScroll) //Downscroll
 							{
 								//daNote.y = (strumY + 0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed);
-								daNote.distance = (0.45 * (Conductor.songPosition - daNote.strumTime + daNote.offsetStrumTime) * Math.abs(songSpeed * daNote.multSpeed));
+								rangeReal = range;
 							}
 							else //Upscroll
 							{
 								//daNote.y = (strumY - 0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed);
-								daNote.distance = (-0.45 * (Conductor.songPosition - daNote.strumTime + daNote.offsetStrumTime) * Math.abs(songSpeed * daNote.multSpeed));
+								rangeReal = -range;
 							}
+							if (strumScrollR) //Downscroll
+							{
+								//daNote.y = (strumY + 0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed);
+								rangeF = range;
+							}
+							else //Upscroll
+							{
+								//daNote.y = (strumY - 0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed);
+								rangeF = -range;
+							}
+							daNote.distance = rangeReal;
+							if (isShift && daNote.shifterDownScroll) daNote.distance = FlxMath.lerp(rangeReal, rangeF, lerpThing);
 							daNote.distanceX = Math.cos(angleDir) * daNote.distance;
 							daNote.distanceY = Math.sin(angleDir) * daNote.distance;
+							if (isShift && daNote.shifterDownScroll) {
+								daNote.distanceX = Math.cos(totalAngleDir) * daNote.distance;
+								daNote.distanceY = Math.sin(totalAngleDir) * daNote.distance;
+							}
 						}
 						if (daNote.copyFlipY) {
 							daNote.flipY = strumScroll;
+							if ((isShift && daNote.shifterFlipY) && lerpThing > 0.5) {
+								daNote.flipY = strumScrollR;
+							}
 						}
-
 						if (daNote.copyAngle && daNote.copyDirection) {
 							daNote.angle = strumDirection - 90 + strumAngle;
+							if (isShift && daNote.shifterAngle) daNote.angle = totalStrumDir - 90 + totalStrumAng;
 						} else {
-							if (daNote.copyAngle)
+							if (daNote.copyAngle) {
 								daNote.angle = strumAngle;
+								if (isShift && daNote.shifterAngle) daNote.angle = totalStrumAng;
+							}
 	
-							if (daNote.copyDirection)
+							if (daNote.copyDirection) {
 								daNote.angle = strumDirection - 90;
+								if (isShift && daNote.shifterAngle) daNote.angle = totalStrumDir - 90;
+							}
 						}
 
-						if(daNote.copyAlpha)
+						if(daNote.copyAlpha) {
 							daNote.alpha = strumAlpha;
+							if (isShift && daNote.shifterAlpha) {
+								var totalStrumAlp = FlxMath.lerp(strumAlpha, strumAlphaR, lerpThing);
+								daNote.alpha = totalStrumAlp;
+							}
+						}
 
-						if(daNote.copyX)
+						if(daNote.copyX) {
 							daNote.x = strumX + daNote.distanceX;
+							if (isShift && daNote.shifterX) {
+								var totalStrumX = FlxMath.lerp(strumX, strumXR, lerpThing);
+								daNote.x = totalStrumX + daNote.distanceX;
+							}
+						}
 
 						if(daNote.copyY)
 						{
 							daNote.y = strumY + daNote.distanceY;
+							if (isShift && daNote.shifterY) {
+								var totalStrumY = FlxMath.lerp(strumY, strumYR, lerpThing);
+								daNote.y = totalStrumY + daNote.distanceY;
+							}
 
-							if(strumScroll && daNote.isSustainNote)
+							if(((lerpThing > 0.5 && isShift && daNote.shifterDownScroll) ? strumScrollR : strumScroll) && daNote.isSustainNote)
 							{
-								var angleX:Float = Math.cos(angleDir);
-								var angleY:Float = Math.sin(angleDir);
+								var angleX:Float = Math.cos((isShift) ? totalAngleDir : angleDir);
+								var angleY:Float = Math.sin((isShift) ? totalAngleDir : angleDir);
 								if (daNote.animation.curAnim != null && (daNote.animation.curAnim.name.endsWith('end') || daNote.animation.curAnim.name.endsWith('end_down'))) {
 									daNote.x += (10.5 * (fakeCrochet / 400) * 1.5 * (Math.abs(songSpeed * daNote.multSpeed)) + (46 * ((Math.abs(songSpeed * daNote.multSpeed)) - 1))) * angleX;
 									daNote.y += (10.5 * (fakeCrochet / 400) * 1.5 * (Math.abs(songSpeed * daNote.multSpeed)) + (46 * ((Math.abs(songSpeed * daNote.multSpeed)) - 1))) * angleY;

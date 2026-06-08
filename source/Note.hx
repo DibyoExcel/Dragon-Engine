@@ -277,6 +277,19 @@ class Note extends FlxSprite
 	//idk why i set default to 2000 but it didt affected that much
 	public var distanceX:Float = 2000;
 	public var distanceY:Float = 2000;
+	//shifter(inspired from CN Takeover and Vs Omega V2 mods)
+	public var shifterStrength:Float = 0;//how much strength shifter mult(0=disable, more big value more big value for 'shifterEndDistance' and more lower value to 'shifterRangeMove')
+	public var startPosShifter:String = '';//start pos shifter(for customStrums)
+	public var shifterX:Bool = true;////should x strum will shifter
+	public var shifterY:Bool = true;////should y strums will shifter
+	public var shifterAngle:Bool = true;////should angle will shifter
+	public var shifterDirection:Bool = true;////should direction will shifter
+	public var shifterAlpha:Bool = true;////should alpha will shifter
+	public var shifterDownScroll:Bool = true;//should downScroll/upScroll will shifter
+	public var shifterFlipY:Bool = true;//should flipY will shifter
+	public var shifterEase:String = 'quadInOut';//ease tween type for shifter(same like tweeen in lua)
+	public var shifterEndDistance:Float = 40; //how much distance shifter end before touching strums(more big value more range before hit strum)
+	public var shiferRangeMove:Float=1;//how much movement speed shifter do(more big value more slower it get and more wider)
 	//end dge core
 
 	@:noCompletion
@@ -429,6 +442,8 @@ class Note extends FlxSprite
 					canFreeze = true;
 				case 'Second Opponent'://only work if 2nd opponent mode is active
 					secondOpponent = true;
+				case 'Shifter':
+					shifterStrength = 1;
 			}
 			noteType = value;
 		}

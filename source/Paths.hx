@@ -325,7 +325,7 @@ class Paths
 
 	inline static public function getSparrowAtlas(key:String, ?library:String):FlxAtlasFrames
 	{
-		if (!CacheUtil.cacheAtlas.exists(currentModDirectory + key)) {
+		if (!CacheUtil.cacheAtlas.exists(currentModDirectory + key + darkModeReturn())) {
 			#if MODS_ALLOWED
 			var imageLoaded:FlxGraphic = returnGraphic(key);
 			var xmlExists:Bool = false;
@@ -358,21 +358,21 @@ class Paths
 				}
 			}
 			var atlas = FlxAtlasFrames.fromSparrow((imageLoaded != null ? imageLoaded : image(key, library)), (xmlExists ? File.getContent(pathXml) : file('images/$key.xml', library)));
-			CacheUtil.cacheAtlas.set(currentModDirectory + key, atlas);
+			CacheUtil.cacheAtlas.set(currentModDirectory + key + darkModeReturn(), atlas);
 			return atlas;
 			#else
 			var atlas =  FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
-			CacheUtil.cacheAtlas.set(currentModDirectory + key, atlas);
+			CacheUtil.cacheAtlas.set(currentModDirectory + key + darkModeReturn(), atlas);
 			return atlas;
 			#end
 		}
-		return CacheUtil.cacheAtlas.get(currentModDirectory + key);
+		return CacheUtil.cacheAtlas.get(currentModDirectory + key + darkModeReturn());
 	}
 
 
 	inline static public function getPackerAtlas(key:String, ?library:String)
 	{
-		if (!CacheUtil.cachePackerAtlas.exists(currentModDirectory + key)) {
+		if (!CacheUtil.cachePackerAtlas.exists(currentModDirectory + key + darkModeReturn())) {
 			#if MODS_ALLOWED
 			var imageLoaded:FlxGraphic = returnGraphic(key);
 			var txtExists:Bool = false;
@@ -406,15 +406,15 @@ class Paths
 			}
 	
 			var atlas = FlxAtlasFrames.fromSpriteSheetPacker((imageLoaded != null ? imageLoaded : image(key, library)), (txtExists ? File.getContent(pathTxt) : file('images/$key.txt', library)));
-			CacheUtil.cachePackerAtlas.set(currentModDirectory + key, atlas);
+			CacheUtil.cachePackerAtlas.set(currentModDirectory + key + darkModeReturn(), atlas);
 			return atlas;
 			#else
 			var atlas = FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
-			CacheUtil.cachePackerAtlas.set(currentModDirectory + key, atlas);
+			CacheUtil.cachePackerAtlas.set(currentModDirectory + key + darkModeReturn(), atlas);
 			return atlas;
 			#end
 		}
-		return CacheUtil.cachePackerAtlas.get(currentModDirectory + key);
+		return CacheUtil.cachePackerAtlas.get(currentModDirectory + key + darkModeReturn());
 	}
 
 	inline static public function formatToSongPath(path:String) {
@@ -428,7 +428,7 @@ class Paths
 	// completely rewritten asset loading? fuck!
 	public static var currentTrackedAssets:Map<String, FlxGraphic> = [];
 	public static function returnGraphic(key:String, ?library:String) {
-		if (!CacheUtil.cacheImage.exists(currentModDirectory + key)) {
+		if (!CacheUtil.cacheImage.exists(currentModDirectory + key + darkModeReturn())) {
 			#if MODS_ALLOWED
 			//darkmode integrated
 			if (ClientPrefs.darkmode) {
@@ -441,7 +441,7 @@ class Paths
 						currentTrackedAssets.set(modKey, newGraphic);
 					}
 					localTrackedAssets.push(modKey);
-					CacheUtil.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(modKey));
+					CacheUtil.cacheImage.set(currentModDirectory + key + darkModeReturn(), currentTrackedAssets.get(modKey));
 					return currentTrackedAssets.get(modKey);
 				}
 				//lightmode(fallback)
@@ -454,7 +454,7 @@ class Paths
 						currentTrackedAssets.set(modKey, newGraphic);
 					}
 					localTrackedAssets.push(modKey);
-					CacheUtil.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(modKey));
+					CacheUtil.cacheImage.set(currentModDirectory + key + darkModeReturn(), currentTrackedAssets.get(modKey));
 					return currentTrackedAssets.get(modKey);
 				}
 				var preloadPath:String = externalPreloadPath('images/${key}Dark.png');
@@ -466,7 +466,7 @@ class Paths
 						currentTrackedAssets.set(preloadPath, newGraphic);
 					}
 					localTrackedAssets.push(preloadPath);
-					CacheUtil.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(preloadPath));
+					CacheUtil.cacheImage.set(currentModDirectory + key + darkModeReturn(), currentTrackedAssets.get(preloadPath));
 					return currentTrackedAssets.get(preloadPath);
 				}
 			} else {
@@ -479,7 +479,7 @@ class Paths
 						currentTrackedAssets.set(modKey, newGraphic);
 					}
 					localTrackedAssets.push(modKey);
-					CacheUtil.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(modKey));
+					CacheUtil.cacheImage.set(currentModDirectory + key + darkModeReturn(), currentTrackedAssets.get(modKey));
 					return currentTrackedAssets.get(modKey);
 				}
 			}
@@ -493,7 +493,7 @@ class Paths
 					currentTrackedAssets.set(preloadPath, newGraphic);
 				}
 				localTrackedAssets.push(preloadPath);
-				CacheUtil.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(preloadPath));
+				CacheUtil.cacheImage.set(currentModDirectory + key + darkModeReturn(), currentTrackedAssets.get(preloadPath));
 				return currentTrackedAssets.get(preloadPath);
 			}
 			#end
@@ -507,7 +507,7 @@ class Paths
 						currentTrackedAssets.set(path, newGraphic);
 					}
 					localTrackedAssets.push(path);
-					CacheUtil.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(path));
+					CacheUtil.cacheImage.set(currentModDirectory + key + darkModeReturn(), currentTrackedAssets.get(path));
 					return currentTrackedAssets.get(path);
 				}
 			}
@@ -521,30 +521,60 @@ class Paths
 					currentTrackedAssets.set(path, newGraphic);
 				}
 				localTrackedAssets.push(path);
-				CacheUtil.cacheImage.set(currentModDirectory + key, currentTrackedAssets.get(path));
+				CacheUtil.cacheImage.set(currentModDirectory + key + darkModeReturn(), currentTrackedAssets.get(path));
 				return currentTrackedAssets.get(path);
 			}
 			trace('Missing image asset: ' + key + '. Using Checkerboard placeholder.');
 			var checkBoard = CoolUtil.makeCheckerboardGraphic();
 			checkBoard.persist = true;
-			CacheUtil.cacheImage.set(currentModDirectory + key, checkBoard);
+			CacheUtil.cacheImage.set(currentModDirectory + key + darkModeReturn(), checkBoard);
 			return checkBoard;
 		}
-		return CacheUtil.cacheImage.get(currentModDirectory + key);
+		return CacheUtil.cacheImage.get(currentModDirectory + key + darkModeReturn());
 	}
 
 	public static var currentTrackedSounds:Map<String, Sound> = [];
 	public static function returnSound(path:String, key:String, ?library:String) {
-		if (!CacheUtil.cacheSound.exists('$currentModDirectory$path/$key')) {
+		if (!CacheUtil.cacheSound.exists('$currentModDirectory$path/$key' + darkModeReturn())) {
 			#if MODS_ALLOWED
-			var file:String = modsSounds(path, key);
-			if(FileSystem.exists(file)) {
-				if(!currentTrackedSounds.exists(file)) {
-					currentTrackedSounds.set(file, Sound.fromFile(file));
+			if (ClientPrefs.darkmode) {
+				var file:String = modsSounds(path, key + 'Dark');
+				if(FileSystem.exists(file)) {
+					if(!currentTrackedSounds.exists(file)) {
+						currentTrackedSounds.set(file, Sound.fromFile(file));
+					}
+					localTrackedAssets.push(key);
+					CacheUtil.cacheSound.set('$currentModDirectory$path/$key' + darkModeReturn(), currentTrackedSounds.get(file));
+					return currentTrackedSounds.get(file);
 				}
-				localTrackedAssets.push(key);
-				CacheUtil.cacheSound.set('$currentModDirectory$path/$key', currentTrackedSounds.get(file));
-				return currentTrackedSounds.get(file);
+				var file:String = modsSounds(path, key);
+				if(FileSystem.exists(file)) {
+					if(!currentTrackedSounds.exists(file)) {
+						currentTrackedSounds.set(file, Sound.fromFile(file));
+					}
+					localTrackedAssets.push(key);
+					CacheUtil.cacheSound.set('$currentModDirectory$path/$key' + darkModeReturn(), currentTrackedSounds.get(file));
+					return currentTrackedSounds.get(file);
+				}
+				var external_file:String = externalPreloadPath('images/${key}Dark$SOUND_EXT');
+				if(FileSystem.exists(external_file)) {
+					if(!currentTrackedSounds.exists(external_file)) {
+						currentTrackedSounds.set(external_file, Sound.fromFile(external_file));
+					}
+					localTrackedAssets.push(key);
+					CacheUtil.cacheSound.set('$currentModDirectory$path/$key' + darkModeReturn(), currentTrackedSounds.get(external_file));
+					return currentTrackedSounds.get(external_file);
+				}
+			} else {
+				var file:String = modsSounds(path, key);
+				if(FileSystem.exists(file)) {
+					if(!currentTrackedSounds.exists(file)) {
+						currentTrackedSounds.set(file, Sound.fromFile(file));
+					}
+					localTrackedAssets.push(key);
+					CacheUtil.cacheSound.set('$currentModDirectory$path/$key' + darkModeReturn(), currentTrackedSounds.get(file));
+					return currentTrackedSounds.get(file);
+				}
 			}
 			var external_file:String = externalPreloadPath('images/$key$SOUND_EXT');
 			if(FileSystem.exists(external_file)) {
@@ -552,10 +582,37 @@ class Paths
 					currentTrackedSounds.set(external_file, Sound.fromFile(external_file));
 				}
 				localTrackedAssets.push(key);
-				CacheUtil.cacheSound.set('$currentModDirectory$path/$key', currentTrackedSounds.get(external_file));
+				CacheUtil.cacheSound.set('$currentModDirectory$path/$key' + darkModeReturn(), currentTrackedSounds.get(external_file));
 				return currentTrackedSounds.get(external_file);
 			}
 			#end
+			if (ClientPrefs.darkmode) {
+				var gottenPath:String = getPath('$path/${key}Dark.$SOUND_EXT', SOUND, library);
+				gottenPath = gottenPath.substring(gottenPath.indexOf(':') + 1, gottenPath.length);
+				// trace(gottenPath);
+				if(!currentTrackedSounds.exists(gottenPath))
+				#if MODS_ALLOWED
+					if (FileSystem.exists(externalFilesPath(gottenPath))) {
+						currentTrackedSounds.set(gottenPath, Sound.fromFile(externalFilesPath(gottenPath)));
+					} else if (OpenFlAssets.exists(getPath('$path/$key.$SOUND_EXT', SOUND, library), SOUND)) {
+						var folder:String = '';
+						currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)));
+					} else {
+						trace('Missing sound asset: ' + key + '. Using silence placeholder.');
+						currentTrackedSounds.set(gottenPath, new Sound());
+					}
+				#else
+				{
+					var folder:String = '';
+					if(path == 'songs') folder = 'songs:';
+		
+					currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)));
+				}
+				#end
+				localTrackedAssets.push(gottenPath);
+				CacheUtil.cacheSound.set('$currentModDirectory$path/$key' + darkModeReturn(), currentTrackedSounds.get(gottenPath));
+				return currentTrackedSounds.get(gottenPath);
+			}
 			// I hate this so god damn much
 			var gottenPath:String = getPath('$path/$key.$SOUND_EXT', SOUND, library);
 			gottenPath = gottenPath.substring(gottenPath.indexOf(':') + 1, gottenPath.length);
@@ -580,10 +637,10 @@ class Paths
 			}
 			#end
 			localTrackedAssets.push(gottenPath);
-			CacheUtil.cacheSound.set('$currentModDirectory$path/$key', currentTrackedSounds.get(gottenPath));
+			CacheUtil.cacheSound.set('$currentModDirectory$path/$key' + darkModeReturn(), currentTrackedSounds.get(gottenPath));
 			return currentTrackedSounds.get(gottenPath);
 		}
-		return CacheUtil.cacheSound.get('$currentModDirectory$path/$key');
+		return CacheUtil.cacheSound.get('$currentModDirectory$path/$key' + darkModeReturn());
 	}
 
 	#if MODS_ALLOWED
@@ -709,5 +766,8 @@ class Paths
 	public static function externalFilesPath(file:String = '')
 	{
 		return dge.backend.StorageManager.getEngineDir() + file;
+	}
+	public static function darkModeReturn():String {
+		return ClientPrefs.darkmode ? 'Dark' : '';
 	}
 }

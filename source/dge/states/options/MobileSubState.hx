@@ -122,6 +122,13 @@ class MobileSubState extends BaseOptionsMenu
 			'bool',
 			false);
 		addOption(option);
+
+		var option:Option = new Option('Sticky Hitbox Input',
+			"If Checked, The Hitbox Won't Released Even Hitbox Get Moved Until Finger Released It.",
+			'stickyHitbox',
+			'bool',
+			false);
+		addOption(option);
 		#else
 		lime.app.Application.current.window.alert('what ur doing here lol? you\'re even not in mobile.', 'DubEnderDragon');
 		close();
