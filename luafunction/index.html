@@ -192,6 +192,10 @@
                     <h3>changeNotesHoldCoverV2(targetField:String = 'all', texture:String = '', ?excludeNoteType:Array&lt;String&gt;)(26.9.4+)</h3>
                     <h4>Change Notes Hold Cover Texture.<br>targetField: what note field should use?(allowed value: <code>player</code>, <code>opponent</code>, <code>gf</code>, <code>gf-player</code>, <code>gf-player</code>, <code>all</code>)(use <code>@</code> prefix to use custom field from <code>createCustomStrum()</code>).<br>texture: what hold cover texture should use?<br>excludeNoteType: what notetype should do unchanged?</h4>
                 </div>
+                <div class="dialogue_group">
+                    <h3>setCameraShader(cam:String, shader:Array&lt;String&gt;)(26.10.3+)</h3>
+                    <h4>Sets the shader of some <code>cam</code> to multi <code>shader</code>. (use <code>@</code> to use build in shader. example: <code>{'@invert', 'customshader'}</code>).</h4>
+                </div>
             </div>
             
         </div>
@@ -470,6 +474,12 @@
                 <div class="dialogue_group">
                     <h3>setObjectCamera(obj:String, camera:String)(1.6.2+)</h3>
                     <h4>Changes on which camera should your object be drawn on.<br>obj: Lua Sprite tag or Object variable name.<br>camera: camera to set, like <code>game</code>, <code>hud</code>, <code>other</code> or <code>customCamera</code>(use <code>addCamera()</code>)(Separate with comma. Example: <code>game, hud</code>).</h4>
+                </div>
+                <div class="dialogue_content">
+                    <div class="dialogue_group">
+                        <h3>setSpriteShader(obj:String, shader:String)(26.10.3+)</h3>
+                        <h4>Sets the shader of some <code>obj</code> to <code>shader</code>. (use <code>@</code> to use build in shader. example <code>@invert</code>).</h4>
+                    </div>
                 </div>
             </div>
         </div>
