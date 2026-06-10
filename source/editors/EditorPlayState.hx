@@ -198,8 +198,7 @@ class EditorPlayState extends MusicBeatState
 			var bruh = new Hitbox(i*Std.int(FlxG.width/keysArray.length), 0);
 			bruh.color = colorOrder[i%colorOrder.length];
 			bruh.cameras = [hitboxCam];
-			bruh.sizeWidth = Std.int(FlxG.width/keysArray.length);
-			bruh.sizeHeight = FlxG.height;
+			bruh.setGraphicSize(Std.int(FlxG.width/keysArray.length), FlxG.height);
 			bruh.updateHitbox();
 			hitbox.add(bruh);
 		}

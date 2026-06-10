@@ -13,7 +13,7 @@ class NoteSprite extends FlxSprite
     public function new(x, y, texture, noteData) {
         super(x, y);
         frames = Paths.getSparrowAtlas(texture);
-        shaderType = 'swap';
+        shader = colorSwap.shader;//damn so original code
         animation.addByPrefix("color", arrowCor[noteData] + 0, 24, true);
         animation.play("color");
         setGraphicSize(Std.int(width*0.7), Std.int(height*0.7));

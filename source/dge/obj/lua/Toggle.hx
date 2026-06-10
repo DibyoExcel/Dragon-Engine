@@ -8,9 +8,8 @@ class Toggle extends Button
     {
         super(x, y, image, width, height);
         isOn = initialState;
-        sizeWidth = width;
-        sizeHeight = height;
-        updateGraphic();        
+        setGraphicSize(Std.int(width), Std.int(height));
+        updateGraphic();
         antialiasing = ClientPrefs.globalAntialiasing;
     }
     override public function update(elapsed:Float):Void
@@ -38,8 +37,8 @@ class Toggle extends Button
         {
             loadGraphic(Paths.image('button/' + texture));
         }
-        setGraphicSize(sizeWidth, sizeHeight);
-        updateHitbox();
+        setGraphicSize(Std.int(width), Std.int(height));
+        updateGraphic();
     }
     private function set_isOn(value:Bool):Bool
     {

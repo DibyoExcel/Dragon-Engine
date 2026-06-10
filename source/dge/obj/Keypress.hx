@@ -19,7 +19,7 @@ class Keypress extends FlxSprite
         makeGraphic(50, 50);
         this.colorKey = color;
         this.color = color;
-        shaderType = 'swap';
+        shader = colorSwap.shader;
         alpha = alphaKey;
         antialiasing = ClientPrefs.globalAntialiasing;
     }

@@ -1,16 +1,19 @@
 package dge.shaders;
 import flixel.system.FlxAssets.FlxShader;
+import flixel.math.FlxMath;
 
 class ColorInvert {
     public var shader:ColorInvertShader = new ColorInvertShader();
     public var invertR(default, set):Bool;
     public var invertG(default, set):Bool;
     public var invertB(default, set):Bool;
+    public var mult(default, set):Float;
 
     public function new() {
         invertR = true;
         invertG = true;
         invertB = true;
+        mult = 1;
     }
 
     function set_invertR(value:Bool):Bool {
@@ -34,6 +37,11 @@ class ColorInvert {
         } 
         return value;
     }
+    function set_mult(value:Float):Float {
+        mult = FlxMath.bound(value, 0, 1);
+        shader.mult.value = [mult];
+        return mult;
+    }
 }
 
 class ColorInvertShader extends FlxShader
@@ -43,20 +51,24 @@ class ColorInvertShader extends FlxShader
     uniform bool invertR;
     uniform bool invertG;
     uniform bool invertB;
+    uniform float mult;
     
     void main() {
         vec4 color = flixel_texture2D(bitmap, openfl_TextureCoordv);
         //idk why without this(*= color.a). it turn transparent into white
+        vec4 realColor = color;
+        vec4 invertColor = color;
         if (invertR) {    
-            color.r = (1.0 - color.r) * color.a;
+            invertColor.r = (1.0 - color.r) * color.a;
         }
         if (invertG) {
-            color.g = (1.0 - color.g) * color.a;
+            invertColor.g = (1.0 - color.g) * color.a;
         }
         if (invertB) {
-            color.b = (1.0 - color.b) * color.a;
+            invertColor.b = (1.0 - color.b) * color.a;
         }
-        gl_FragColor = vec4(color.r, color.g, color.b, color.a);
+        vec4 result = mix(realColor, invertColor, mult);
+        gl_FragColor = result;
     }
     ')
     public function new() {

@@ -1016,48 +1016,6 @@ class FlxCamera extends FlxBasic
 		return _blackAndWhite;
 	}
 
-    public var shaderType(default, set):String = null;
-
-    private function set_shaderType(value:String):String {
-        if (shaderType != value) {
-            var shouldUse:Array<String> = [ 'none', 'swap', 'invert', 'single', 'rgbswap', 'pixel', 'posterize', 'rgbpalette', 'grayscale', 'b&w' ];
-			for (i in 0...shouldUse.length) {
-				shouldUse[i] = shouldUse[i].toLowerCase();
-			}
-            if (value == null || value.length < 1) {
-                value = shouldUse[0];
-            }
-            value = value.toLowerCase().trim();
-            if (shouldUse.indexOf(value) == -1) {
-                value = shouldUse[0];
-            }
-            shaderType = value;
-            switch (value) {
-                case 'swap':
-                    setFilters([new ShaderFilter(colorSwap.shader)]);
-                case 'invert':
-                    setFilters([new ShaderFilter(colorInvert.shader)]);
-                case 'single':
-                    setFilters([new ShaderFilter(colorSingle.shader)]);
-				case 'rgbswap':
-					setFilters([new ShaderFilter(colorRGBSwap.shader)]);
-				case 'pixel':
-					setFilters([new ShaderFilter(pixelSprite.shader)]);
-				case 'posterize':
-					setFilters([new ShaderFilter(posterize.shader)]);
-				case 'rgbpalette':
-					setFilters([new ShaderFilter(rgbShader.shader)]);
-				case 'grayscale':
-					setFilters([new ShaderFilter(grayScale.shader)]);
-				case 'b&w':
-					setFilters([new ShaderFilter(blackAndWhite.shader)]);
-                default: 
-                    setFilters([]);
-            }
-        }
-        return value;
-    }
-
 	/**
 	 * Instantiates a new camera at the specified location, with the specified size and zoom level.
 	 *

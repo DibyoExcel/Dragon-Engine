@@ -1,5 +1,6 @@
 package dge.shaders;
 import flixel.system.FlxAssets.FlxShader;
+import flixel.math.FlxMath;
 
 class ColorRGBSwap
 {
@@ -8,10 +9,12 @@ class ColorRGBSwap
     public var swapR(default, set):Int = -1;
     public var swapG(default, set):Int = -1;
     public var swapB(default, set):Int = -1;
+    public var mult(default, set):Float;
     public function new() {
         swapR = 0;
         swapG = 1;
         swapB = 2;
+        mult = 1;
     }
 
     function set_swapR(value:Int):Int {
@@ -44,6 +47,11 @@ class ColorRGBSwap
         }
         return value;
     }
+    function set_mult(value:Float):Float {
+        mult = FlxMath.bound(value, 0, 1);
+        shader.mult.value = [mult];
+        return mult;
+    }
 }
 
 class ColorRGBSwapShader extends FlxShader
@@ -53,6 +61,7 @@ class ColorRGBSwapShader extends FlxShader
     uniform int swapR;
     uniform int swapG;
     uniform int swapB;
+    uniform float mult;
     float rgbSwap(int index, vec4 color) {
         float channels[3];
         channels[0] = color.r;
@@ -62,7 +71,7 @@ class ColorRGBSwapShader extends FlxShader
     }
     void main() {
         vec4 color = flixel_texture2D(bitmap, openfl_TextureCoordv);
-        gl_FragColor = vec4(rgbSwap(swapR, color), rgbSwap(swapG, color), rgbSwap(swapB, color), color.a);
+        gl_FragColor = vec4(mix(color, rgbSwap(swapR, color), mult), mix(color, rgbSwap(swapG, color), mult), mix(color, rgbSwap(swapB, color), mult), color.a);
     }
     ')
     public function new() {

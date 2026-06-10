@@ -58,7 +58,7 @@ class StrumNote extends FlxSprite
 		super(x, y);
 		gfType = gf;
 		texture = '';
-		shaderType = 'swap';
+		shader = colorSwap.shader;
 	}
 
 	public function reloadNote(image:String = '')

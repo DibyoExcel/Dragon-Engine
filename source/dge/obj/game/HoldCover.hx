@@ -35,7 +35,7 @@ class HoldCover extends FlxSprite
         }
 
 		loadAnims(texture);
-        shaderType = 'swap';
+        shader = colorSwap.shader;
 
         setupThis(x, y, 0);
         antialiasing = ClientPrefs.globalAntialiasing;
@@ -121,7 +121,8 @@ class HoldCover extends FlxSprite
         centerOrigin();
 		centerOffsets();
         if (note != null) {
-            shaderType = note.holdCoverShaderType;
+            var shaderType = note.holdCoverShaderType.toLowerCase();
+            shader = FunkinLua.shaderSpriteHandler(this, shaderType);
             if (shaderType == 'swap') {
                 //swap
                 colorSwap.hue = note.holdCoverHue;

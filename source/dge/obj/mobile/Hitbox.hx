@@ -1,25 +1,18 @@
-//better input but sadly cant drag between hitbox without release touch(same touch i mean)
 package dge.obj.mobile;
+//better input
 
-import flixel.input.touch.FlxTouch;
-import flixel.FlxSprite;
-import flixel.FlxG;
 import dge.obj.mobile.TouchButton;
-
-
 
 class Hitbox extends TouchButton
 {
-    public var pressAlpha:Float = ClientPrefs.hitboxPressAlpha;
-    public var unpressAlpha:Float = ClientPrefs.hitboxAlpha;
+    public var pressAlpha(default, set):Float = ClientPrefs.hitboxPressAlpha;
+    public var unpressAlpha(default, set):Float = ClientPrefs.hitboxAlpha;
     public var texture(default, set):String = null;
     //extra variable
     public var snapX:Float = 0;
 	public var snapY:Float = 0;
 	public var snapAngle:Float = 0;
 	public var snapAlpha:Float = 0;
-    public var sizeWidth(default, set):Int = 0;
-    public var sizeHeight(default, set):Int = 0;
     
 
     override private function set_justReleased(value:Bool):Bool {
@@ -56,13 +49,13 @@ class Hitbox extends TouchButton
     }
 
      public function new(x:Float, y:Float) {
-         super(x, y);
-         texture = '';
-         alpha = unpressAlpha;
-         shaderType = 'swap';
-         blend = FunkinLua.blendModeFromString(ClientPrefs.hitboxBlend);
-         antialiasing = ClientPrefs.globalAntialiasing;
-         stickyInput = ClientPrefs.stickyHitbox;
+        super(x, y);
+        texture = '';
+        alpha = unpressAlpha;
+        shader = colorSwap.shader;
+        blend = FunkinLua.blendModeFromString(ClientPrefs.hitboxBlend);
+        antialiasing = ClientPrefs.globalAntialiasing;
+        stickyInput = ClientPrefs.stickyHitbox;
      }
 
      override public function set_y(value:Float):Float {
@@ -101,20 +94,18 @@ class Hitbox extends TouchButton
 		return super.set_alpha(value);
 	}
 
-    private function set_sizeWidth(value:Int):Int {
-        if (sizeWidth != value) {
-            sizeWidth = value;
-            setGraphicSize(value, sizeHeight);
-            updateHitbox();
+    function set_pressAlpha(value:Float):Float {
+        if (pressAlpha != value) {
+            pressAlpha = value;
+            if (pressed) alpha = value;
         }
         return value;
     }
 
-    private function set_sizeHeight(value:Int):Int {
-        if (sizeHeight != value) {
-            sizeHeight = value;
-            setGraphicSize(sizeWidth, value);
-            updateHitbox();
+    function set_unpressAlpha(value:Float):Float {
+        if (unpressAlpha != value) {
+            unpressAlpha = value;
+            if (!pressed) alpha = value;
         }
         return value;
     }

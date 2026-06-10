@@ -39,7 +39,7 @@ class NoteSplash extends FlxSprite
         }
 
 		loadAnims(texture);
-		shaderType = 'swap';
+		shader = colorSwap.shader;
 
 		setupNoteSplash(x, y, note);
 		antialiasing = ClientPrefs.globalAntialiasing;
@@ -96,7 +96,8 @@ class NoteSplash extends FlxSprite
 		if (oriNote != null) {
 			this.note = oriNote;
 			if (oriNote.strumNote != null) this.strum = oriNote.strumNote;
-			shaderType = oriNote.noteSplashShaderType;
+			var shaderType = oriNote.noteSplashShaderType.toLowerCase();
+			shader = FunkinLua.shaderSpriteHandler(this, shaderType);
             if (shaderType == 'swap') {
 				//swap
                 colorSwap.hue = oriNote.noteSplashHue;

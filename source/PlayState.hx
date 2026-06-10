@@ -369,7 +369,9 @@ class PlayState extends MusicBeatState
 	public var keyCount:Int = 4;
 	//hitbox
 	#if mobile
-	public var hitboxCam:FlxCamera;
+	//camera
+	public var hitboxCam:FlxCamera;//this just become ui android not just hitbox
+	//ui group
 	public var hitbox:FlxTypedGroup<Hitbox>;
 	public var hitboxSpace:Hitbox;
 	public var pauseButton:VirtualButton;
@@ -1593,16 +1595,15 @@ class PlayState extends MusicBeatState
 			var bruh = new Hitbox(i*Std.int(FlxG.width/keysArray.length), (ClientPrefs.spaceKeyPosition == 'top' ? 150 : 0));
 			bruh.color = colorOrder[i%colorOrder.length];
 			bruh.cameras = [hitboxCam];
-			bruh.sizeWidth = Std.int(FlxG.width/keysArray.length);
-			bruh.sizeHeight = FlxG.height - (ClientPrefs.spaceKey ? 150 : 0);
+			bruh.setGraphicSize(Std.int(FlxG.width/keysArray.length), FlxG.height - (ClientPrefs.spaceKey ? 150 : 0));
 			bruh.updateHitbox();
 			hitbox.add(bruh);
 		}
 		if (ClientPrefs.spaceKey) {
 			hitboxSpace = new Hitbox(0, (ClientPrefs.spaceKeyPosition == 'top' ? 0 : FlxG.height-150));
 			hitboxSpace.cameras = [hitboxCam];
-			hitboxSpace.sizeWidth = FlxG.width;
-			hitboxSpace.sizeHeight = 150;
+			hitboxSpace.setGraphicSize(FlxG.width, 150);
+			hitboxSpace.updateHitbox();
 			hitboxSpace.color = 0xffff8000;
 			add(hitboxSpace);
 		}

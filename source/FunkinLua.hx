@@ -3,6 +3,7 @@ package;
 //imort custom dge lua
 import flixel.util.FlxStringUtil;
 import dge.obj.lua.*;
+import openfl.filters.ShaderFilter;
 
 import lime.app.Application;
 import lime.system.System;
@@ -396,29 +397,45 @@ class FunkinLua {
 		});
 		
 		Lua_helper.add_callback(lua, "setSpriteShader", function(obj:String, shader:String) {
-			if(!ClientPrefs.shaders) return false;
-
-			#if (!flash && MODS_ALLOWED && sys && !android)
-			if(!PlayState.instance.runtimeShaders.exists(shader) && !initLuaShader(shader))
-			{
-				luaTrace('setSpriteShader: Shader $shader is missing!', false, false, FlxColor.RED);
-				return false;
-			}
-
 			var killMe:Array<String> = obj.split('.');
 			var leObj:FlxSprite = getObjectDirectly(killMe[0]);
 			if(killMe.length > 1) {
 				leObj = getVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1]);
+			}//every start with "!" with disable shader
+			if (shader == null) {
+				shader = '';
 			}
-
-			if(leObj != null) {
-				var arr:Array<String> = PlayState.instance.runtimeShaders.get(shader);
-				leObj.shader = new FlxRuntimeShader(arr[0], arr[1]);
-				return true;
+			if (leObj != null) {
+				if (shader.length < 1) {
+					leObj.shader = null;
+					return true;
+				} else if (shader.startsWith("@")) {
+					shader = shader.substring(1);
+					if (shader.length < 1) {
+						leObj.shader = null;
+						return true;
+					} else {
+						var shaderRe = shaderSpriteHandler(leObj, shader);
+						leObj.shader = shaderRe;
+						return true;
+					}
+				} else {
+					if(!ClientPrefs.shaders) return false;
+					#if (!flash && MODS_ALLOWED && sys && !android)
+					
+					if(!PlayState.instance.runtimeShaders.exists(shader) && !initLuaShader(shader))
+					{
+						luaTrace('setSpriteShader: Shader $shader is missing!', false, false, FlxColor.RED);
+						return false;
+					}
+					var arr:Array<String> = PlayState.instance.runtimeShaders.get(shader);
+					leObj.shader = new FlxRuntimeShader(arr[0], arr[1]);
+					return true;
+					#else
+					luaTrace("setSpriteShader: Platform unsupported for Runtime Shaders!", false, false, FlxColor.RED);
+					#end
+				}
 			}
-			#else
-			luaTrace("setSpriteShader: Platform unsupported for Runtime Shaders!", false, false, FlxColor.RED);
-			#end
 			return false;
 		});
 		Lua_helper.add_callback(lua, "removeSpriteShader", function(obj:String) {
@@ -4331,6 +4348,41 @@ class FunkinLua {
 				}
 			}
 		});
+		Lua_helper.add_callback(lua, "setCameraShader", function(cam:String, shader:Array<String>) {
+			var leObj:FlxCamera = cameraBetterFromString(cam);
+			var shaderFilter:Array<BitmapFilter> = [];
+			if (shader ==  null) shader = [];
+			if (leObj != null) {
+				if (shader.length < 1) {
+					leObj.setFilters([]);
+					return true;
+				} else {
+					for (value in shader) {
+						if (value.length > 0) {
+							if (value.startsWith('@')) {
+								value = value.substring(1);
+								var shaderreturn = shaderCamHandler(leObj, value);
+								if (shaderreturn != null) shaderFilter.push(shaderreturn);
+							} else {
+								#if (!flash && MODS_ALLOWED && sys && !android)
+								if (ClientPrefs.shaders && PlayState.instance.runtimeShaders.exists(value) && initLuaShader(value)) {
+									var arr:Array<String> = PlayState.instance.runtimeShaders.get(value);
+									shaderFilter.push(new ShaderFilter(new FlxRuntimeShader(arr[0], arr[1])));
+								}
+								#end
+							}
+						}
+					}
+					if (shaderFilter.length > 0) {
+						leObj.setFilters(shaderFilter);
+					} else {
+						leObj.setFilters([]);
+					}
+					return true;
+				}
+			}
+			return false;
+		});
 
 		call('onCreate', []);
 		#end
@@ -5111,6 +5163,61 @@ class FunkinLua {
 	{
 		return PlayState.instance.isDead ? GameOverSubstate.instance : PlayState.instance;
 	}
+	//and build in shader here
+	function shaderCamHandler(cam:FlxCamera, name:String):BitmapFilter {
+		if (cam != null && name != null && name.length > 0) {
+			switch(name.toLowerCase()) {
+				case 'swap':
+					return new ShaderFilter(cam.colorSwap.shader);
+				case 'invert':
+					return new ShaderFilter(cam.colorInvert.shader);
+				case 'single':
+					return new ShaderFilter(cam.colorSingle.shader);
+				case 'rgbswap':
+					return new ShaderFilter(cam.colorRGBSwap.shader);
+				case 'pixel':
+					return new ShaderFilter(cam.pixelSprite.shader);
+				case 'posterize':
+					return new ShaderFilter(cam.posterize.shader);
+				case 'rgbpalette':
+					return new ShaderFilter(cam.rgbShader.shader);
+				case 'grayscale':
+					return new ShaderFilter(cam.grayScale.shader);
+				case 'b&w':
+					return new ShaderFilter(cam.blackAndWhite.shader);
+				default: 
+					return null;
+			}
+		}
+		return null;
+	}
+	public static function shaderSpriteHandler(spr:FlxSprite, name:String):FlxShader {
+		if (spr != null && name != null && name.length > 0) {
+			switch(name.toLowerCase()) {
+				case 'swap':
+					return spr.colorSwap.shader;
+				case 'invert':
+					return spr.colorInvert.shader;
+				case 'single':
+					return spr.colorSingle.shader;
+				case 'rgbswap':
+					return spr.colorRGBSwap.shader;
+				case 'pixel':
+					return spr.pixelSprite.shader;
+				case 'posterize':
+					return spr.posterize.shader;
+				case 'rgbpalette':
+					return spr.rgbShader.shader;
+				case 'grayscale':
+					return spr.grayScale.shader;
+				case 'b&w':
+					return spr.blackAndWhite.shader;
+				default: 
+					return null;
+			}
+		}
+		return null;
+	}
 }
 
 class ModchartSprite extends FlxSprite
@@ -5227,7 +5334,7 @@ class HScript
 		#if (!flash && sys && !android)
 		interp.variables.set('FlxRuntimeShader', FlxRuntimeShader);
 		#end
-		interp.variables.set('ShaderFilter', openfl.filters.ShaderFilter);
+		interp.variables.set('ShaderFilter', ShaderFilter);
 		interp.variables.set('StringTools', StringTools);
 
 		interp.variables.set('setVar', function(name:String, value:Dynamic)

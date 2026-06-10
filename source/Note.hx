@@ -482,7 +482,7 @@ class Note extends FlxSprite
 		
 		texture = '';
 		this.noteData = noteData;
-		shaderType = 'swap';
+		shader = colorSwap.shader;
 		
 		x += swagWidth * (noteData);
 		if (!isSustainNote) //i think still need this to prevent crash(idk why)

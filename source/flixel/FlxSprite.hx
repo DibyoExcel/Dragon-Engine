@@ -351,48 +351,6 @@ class FlxSprite extends FlxObject
 		return _blackAndWhite;
 	}
 
-    public var shaderType(default, set):String = null;
-
-    private function set_shaderType(value:String):String {
-        if (shaderType != value) {
-            var shouldUse:Array<String> = [ 'none', 'swap', 'invert', 'single', 'rgbswap', 'pixel', 'posterize', 'rgbpalette', 'grayscale', 'b&w' ];
-			for (i in 0...shouldUse.length) {
-				shouldUse[i] = shouldUse[i].toLowerCase();
-			}
-            if (value == null || value.length < 1) {
-                value = shouldUse[0];
-            }
-            value = value.toLowerCase().trim();
-            if (shouldUse.indexOf(value) == -1) {
-                value = shouldUse[0];
-            }
-            shaderType = value;
-            switch (value) {
-                case 'swap':
-                    shader = colorSwap.shader;
-                case 'invert':
-                    shader = colorInvert.shader;
-                case 'single':
-                    shader = colorSingle.shader;
-				case 'rgbswap':
-					shader = colorRGBSwap.shader;
-				case 'pixel':
-					shader = pixelSprite.shader;
-				case 'posterize':
-					shader = posterize.shader;
-				case 'rgbpalette':
-					shader = rgbShader.shader;
-				case 'grayscale':
-					shader = grayScale.shader;
-				case 'b&w':
-					shader = blackAndWhite.shader;
-                default: 
-                    shader = null;
-            }
-        }
-        return value;
-    }
-
 	/**
 	 * Creates a `FlxSprite` at a specified position with a specified one-frame graphic.
 	 * If none is provided, a 16x16 image of the HaxeFlixel logo is used.
@@ -409,7 +367,6 @@ class FlxSprite extends FlxObject
 		useFramePixels = FlxG.renderBlit;
 		if (SimpleGraphic != null)
 			loadGraphic(SimpleGraphic);
-        shaderType = 'none';
 	}
 
 	@:noCompletion
