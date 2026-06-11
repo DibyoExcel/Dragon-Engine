@@ -59,6 +59,7 @@ class ErrorState extends FlxState
     public function new(errorMessage:String)
     {
         super();
+        PlayState.chartingMode = false;
         var configJson:JsonError = getJsonConfig();
         for (field in Reflect.fields(defaultJson)) {
             if (!Reflect.hasField(configJson, field) || Reflect.field(configJson, field) == null) {

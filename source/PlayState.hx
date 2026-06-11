@@ -70,9 +70,7 @@ import Conductor.Rating;
 import dge.obj.game.HoldCover;
 
 #if !flash 
-#if !android
 import flixel.addons.display.FlxRuntimeShader;
-#end
 import openfl.filters.ShaderFilter;
 #end
 
@@ -1639,7 +1637,7 @@ class PlayState extends MusicBeatState
 		CustomFadeTransition.nextCamera = camOther;
 	}
 
-	#if (!flash && sys && !android)
+	#if (!flash && sys)
 	public var runtimeShaders:Map<String, Array<String>> = new Map<String, Array<String>>();
 	public function createRuntimeShader(name:String):FlxRuntimeShader
 	{
@@ -1660,7 +1658,7 @@ class PlayState extends MusicBeatState
 		#end
 	}
 
-	public function initLuaShader(name:String, ?glslVersion:Int = 120)
+	public function initLuaShader(name:String, ?glslVersion:Int = #if mobile 100 #else 120 #end)
 	{
 		if(!ClientPrefs.shaders) return false;
 
