@@ -387,6 +387,11 @@ class PlayState extends MusicBeatState
 	public var strumPointOpponent:Float = 0.25;
 	public var strumPointPlayer:Float = 0.75;
 	public var strumPointMiddle:Float = 0.5;
+	//strum distance(dont ask why so long name)
+	public var strumMiddleDistancePlayer:Float = 0.0;
+	public var strumMiddleDistanceOpponent:Float = 0.25;
+	public var strumMiddleDistanceGf:Float = 0.25;
+	public var strumYOffsetSecondOpt:Float = Note.swagWidth/2;//is odd to put 0
 
 	#if desktop
 	// Discord RPC variables
@@ -1139,7 +1144,7 @@ class PlayState extends MusicBeatState
 		Conductor.songPosition = -5000 / Conductor.songPosition;
 
 		strumLine = new FlxSprite(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, 50).makeGraphic(FlxG.width, 10);
-		if(ClientPrefs.downScroll) strumLine.y = FlxG.height - 150;
+		if(ClientPrefs.downScroll) strumLine.y = FlxG.height - (150*(ClientPrefs.strumsize/0.7));
 		strumLine.scrollFactor.set();
 
 		var showTime:Bool = (ClientPrefs.timeBarType != 'Disabled');
@@ -1780,7 +1785,7 @@ class PlayState extends MusicBeatState
 					boyfriendMap.set(newCharacter, newBoyfriend);
 					boyfriendGroup.add(newBoyfriend);
 					startCharacterPos(newBoyfriend);
-					newBoyfriend.alpha = 0.00001;
+					newBoyfriend.visible = false;
 					startCharacterLua(newBoyfriend.curCharacter);
 				}
 
@@ -1790,7 +1795,7 @@ class PlayState extends MusicBeatState
 					dadMap.set(newCharacter, newDad);
 					dadGroup.add(newDad);
 					startCharacterPos(newDad, true);
-					newDad.alpha = 0.00001;
+					newDad.visible = false;
 					startCharacterLua(newDad.curCharacter);
 				}
 
@@ -1801,7 +1806,7 @@ class PlayState extends MusicBeatState
 					gfMap.set(newCharacter, newGf);
 					gfGroup.add(newGf);
 					startCharacterPos(newGf);
-					newGf.alpha = 0.00001;
+					newGf.visible = false;
 					startCharacterLua(newGf.curCharacter);
 				}
 		}
@@ -3061,7 +3066,7 @@ class PlayState extends MusicBeatState
 		}
 		if (gamemode == 'bothside') {
 			for (i in 0...4) {
-				var babyArrow:StrumNote = new StrumNote(((FlxG.width * strumPointMiddle)-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, 1);
+				var babyArrow:StrumNote = new StrumNote(((FlxG.width * strumPointMiddle)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 1280)/1280))*i), strumLine.y, i, 1);
 				if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
 					babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
 				}
@@ -3090,7 +3095,7 @@ class PlayState extends MusicBeatState
 		} else if (gamemode == 'opponent') {
 			if (player == 0) {
 				for (i in 0...4) {
-					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, 0);
+					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 1280)/1280))*i), strumLine.y, i, 0);
 					if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
 						babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
 					}
@@ -3112,9 +3117,9 @@ class PlayState extends MusicBeatState
 					if(ClientPrefs.middleScroll)
 					{
 						if(i > 1) { //Up and Right
-							babyArrow.x += FlxG.width / 4;
+							babyArrow.x += FlxG.width * strumMiddleDistanceOpponent;
 						} else {
-							babyArrow.x -= FlxG.width / 4;
+							babyArrow.x -= FlxG.width * strumMiddleDistanceOpponent;
 						}
 					}
 					opponentStrums.add(babyArrow);
@@ -3123,7 +3128,7 @@ class PlayState extends MusicBeatState
 				}
 			} else if (player == 1) {
 				for (i in 0...4) {
-					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointPlayer)-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, 1);
+					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointPlayer)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 1280)/1280))*i), strumLine.y, i, 1);
 					if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
 						babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
 					}
@@ -3141,6 +3146,14 @@ class PlayState extends MusicBeatState
 					else
 					{
 						babyArrow.alpha = targetAlpha;
+					}
+					if(ClientPrefs.middleScroll)
+					{
+						if(i > 1) { //Up and Right
+							babyArrow.x += FlxG.width * strumMiddleDistancePlayer;
+						} else {
+							babyArrow.x -= FlxG.width * strumMiddleDistancePlayer;
+						}
 					}
 					playerStrums.add(babyArrow);
 					strumLineNotes.add(babyArrow);
@@ -3151,13 +3164,13 @@ class PlayState extends MusicBeatState
 			//default and all gamemode(design inspired from RetroSpecter P2 mods)
 			if (player == 0) {
 				for (i in 0...4) {
-					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, 0);
+					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 1280)/1280))*i), strumLine.y, i, 0);
 					if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
 						babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
 					}
 					babyArrow.downScroll = ClientPrefs.downScroll;
 					if (isSecOpt) {
-						babyArrow.y -= Note.swagWidth/2;
+						babyArrow.y -= strumYOffsetSecondOpt;
 					}
 					if (!isStoryMode && !skipArrowStartTween && t)
 					{
@@ -3176,9 +3189,9 @@ class PlayState extends MusicBeatState
 					if(ClientPrefs.middleScroll)
 					{
 						if(i > 1) { //Up and Right
-							babyArrow.x += FlxG.width / 4;
+							babyArrow.x += FlxG.width * strumMiddleDistanceOpponent;
 						} else {
-							babyArrow.x -= FlxG.width / 4;
+							babyArrow.x -= FlxG.width * strumMiddleDistanceOpponent;
 						}
 					}
 					opponentStrums.add(babyArrow);
@@ -3187,12 +3200,12 @@ class PlayState extends MusicBeatState
 				}
 				if (isSecOpt) {
 					for (i in 0...4) {
-						var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, 0, true);
+						var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 1280)/1280))*i), strumLine.y, i, 0, true);
 						if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
 							babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
 						}
 						babyArrow.downScroll = ClientPrefs.downScroll;
-						babyArrow.y += Note.swagWidth/2;
+						babyArrow.y += strumYOffsetSecondOpt;
 						if (!isStoryMode && !skipArrowStartTween && t)
 						{
 							babyArrow.alpha = 0;
@@ -3210,9 +3223,9 @@ class PlayState extends MusicBeatState
 						if(ClientPrefs.middleScroll)
 						{
 							if(i > 1) { //Up and Right
-								babyArrow.x += FlxG.width / 4;
+								babyArrow.x += FlxG.width * strumMiddleDistanceGf;
 							} else {
-								babyArrow.x -= FlxG.width / 4;
+								babyArrow.x -= FlxG.width * strumMiddleDistanceGf;
 							}
 						}
 						gfStrums.add(babyArrow);
@@ -3222,7 +3235,7 @@ class PlayState extends MusicBeatState
 				}
 			} else if (player == 1) {
 				for (i in 0...4) {
-					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointPlayer)-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, 1);
+					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointPlayer)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 1280)/1280))*i), strumLine.y, i, 1);
 					if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
 						babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
 					}
@@ -3240,6 +3253,14 @@ class PlayState extends MusicBeatState
 					else
 					{
 						babyArrow.alpha = targetAlpha;
+					}
+					if(ClientPrefs.middleScroll)
+					{
+						if(i > 1) { //Up and Right
+							babyArrow.x += FlxG.width * strumMiddleDistancePlayer;
+						} else {
+							babyArrow.x -= FlxG.width * strumMiddleDistancePlayer;
+						}
 					}
 					playerStrums.add(babyArrow);
 					strumLineNotes.add(babyArrow);
@@ -4873,10 +4894,10 @@ class PlayState extends MusicBeatState
 								addCharacterToList(value2, charType);
 							}
 
-							var lastAlpha:Float = boyfriend.alpha;
-							boyfriend.alpha = 0.00001;
+							var lastAlpha:Bool = boyfriend.visible;
+							boyfriend.visible = false;
 							boyfriend = boyfriendMap.get(value2);
-							boyfriend.alpha = lastAlpha;
+							boyfriend.visible = lastAlpha;
 							iconP1.changeIcon(boyfriend.healthIcon);
 						}
 						setOnLuas('boyfriendName', boyfriend.curCharacter);
@@ -4888,8 +4909,8 @@ class PlayState extends MusicBeatState
 							}
 
 							var wasGf:Bool = dad.curCharacter.startsWith('gf');
-							var lastAlpha:Float = dad.alpha;
-							dad.alpha = 0.00001;
+							var lastAlpha:Bool = dad.visible;
+							dad.visible = false;
 							dad = dadMap.get(value2);
 							if(!dad.curCharacter.startsWith('gf')) {
 								if(wasGf && gf != null) {
@@ -4898,7 +4919,7 @@ class PlayState extends MusicBeatState
 							} else if(gf != null) {
 								gf.visible = false;
 							}
-							dad.alpha = lastAlpha;
+							dad.visible = lastAlpha;
 							iconP2.changeIcon(dad.healthIcon);
 						}
 						setOnLuas('dadName', dad.curCharacter);
@@ -4913,10 +4934,10 @@ class PlayState extends MusicBeatState
 									addCharacterToList(value2, charType);
 								}
 
-								var lastAlpha:Float = gf.alpha;
-								gf.alpha = 0.00001;
+								var lastAlpha:Bool = gf.visible;
+								gf.visible = false;
 								gf = gfMap.get(value2);
-								gf.alpha = lastAlpha;
+								gf.visible = lastAlpha;
 							}
 							if (iconP3 != null) {
 								iconP3.changeIcon(gf.healthIcon);

@@ -164,7 +164,7 @@ class NoteSplash extends FlxSprite
 			noteSplashOffsetOriginY = oriNote.noteSplashOffsetOriginY;
 		}
 		loadAnims(texture);
-		setGraphicSize(Std.int(width*scale), Std.int(height*scale));
+		setGraphicSize(Std.int(width*(scale*(ClientPrefs.strumsize/0.7))), Std.int(height*(scale*(ClientPrefs.strumsize/0.7))));
 		setPosition((x + (noteWidth/2)-(width/2))+noteSplashOffsetX, (y + (noteHeight/2))-(height/2)+noteSplashOffsetY);
 		//offset.set(10, 10);//what is this?!?
 		

@@ -8,6 +8,7 @@ import Controls;
 
 class ClientPrefs {
 	//dge setting
+	public static var gpuCaching:Bool = false;
 	public static var stickyHitbox:Bool = false;
 	public static var stickyNoteSplash:Bool = false;
 	public static var legacyNoteLayer:Bool = false;//classic note layer
@@ -153,6 +154,7 @@ class ClientPrefs {
 	}
 
 	public static function saveSettings() {
+		FlxG.save.data.gpuCaching = gpuCaching;
 		FlxG.save.data.stickyHitbox = stickyHitbox;
 		FlxG.save.data.stickyNoteSplash = stickyNoteSplash;
 		FlxG.save.data.legacyNoteLayer = legacyNoteLayer;
@@ -247,6 +249,9 @@ class ClientPrefs {
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.gpuCaching != null) {
+			gpuCaching = FlxG.save.data.gpuCaching;
 		}
 		if(FlxG.save.data.stickyHitbox != null) {
 			stickyHitbox = FlxG.save.data.stickyHitbox;

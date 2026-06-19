@@ -436,6 +436,8 @@ class Paths
 				if(FileSystem.exists(modKey)) {
 					if(!currentTrackedAssets.exists(modKey)) {
 						var newBitmap:BitmapData = BitmapData.fromFile(modKey);
+						if (ClientPrefs.gpuCaching) newBitmap.disposeImage();
+						newBitmap.getTexture(FlxG.stage.context3D);
 						var newGraphic:FlxGraphic = FlxGraphic.fromBitmapData(newBitmap, false, modKey);
 						newGraphic.persist = true;
 						currentTrackedAssets.set(modKey, newGraphic);
@@ -449,6 +451,8 @@ class Paths
 				if(FileSystem.exists(modKey)) {
 					if(!currentTrackedAssets.exists(modKey)) {
 						var newBitmap:BitmapData = BitmapData.fromFile(modKey);
+						if (ClientPrefs.gpuCaching) newBitmap.disposeImage();
+						newBitmap.getTexture(FlxG.stage.context3D);
 						var newGraphic:FlxGraphic = FlxGraphic.fromBitmapData(newBitmap, false, modKey);
 						newGraphic.persist = true;
 						currentTrackedAssets.set(modKey, newGraphic);
@@ -461,6 +465,8 @@ class Paths
 				if(FileSystem.exists(preloadPath)) {
 					if(!currentTrackedAssets.exists(preloadPath)) {
 						var newBitmap:BitmapData = BitmapData.fromFile(preloadPath);
+						if (ClientPrefs.gpuCaching) newBitmap.disposeImage();
+						newBitmap.getTexture(FlxG.stage.context3D);
 						var newGraphic:FlxGraphic = FlxGraphic.fromBitmapData(newBitmap, false, preloadPath);
 						newGraphic.persist = true;
 						currentTrackedAssets.set(preloadPath, newGraphic);
@@ -474,6 +480,8 @@ class Paths
 				if(FileSystem.exists(modKey)) {
 					if(!currentTrackedAssets.exists(modKey)) {
 						var newBitmap:BitmapData = BitmapData.fromFile(modKey);
+						if (ClientPrefs.gpuCaching) newBitmap.disposeImage();
+						newBitmap.getTexture(FlxG.stage.context3D);
 						var newGraphic:FlxGraphic = FlxGraphic.fromBitmapData(newBitmap, false, modKey);
 						newGraphic.persist = true;
 						currentTrackedAssets.set(modKey, newGraphic);
@@ -488,6 +496,8 @@ class Paths
 			if(FileSystem.exists(preloadPath)) {
 				if(!currentTrackedAssets.exists(preloadPath)) {
 					var newBitmap:BitmapData = BitmapData.fromFile(preloadPath);
+					if (ClientPrefs.gpuCaching) newBitmap.disposeImage();
+					newBitmap.getTexture(FlxG.stage.context3D);
 					var newGraphic:FlxGraphic = FlxGraphic.fromBitmapData(newBitmap, false, preloadPath);
 					newGraphic.persist = true;
 					currentTrackedAssets.set(preloadPath, newGraphic);

@@ -53,12 +53,18 @@ class MiscSubState extends BaseOptionsMenu
 
 		#if CHECK_FOR_UPDATES
 		var option:Option = new Option('Check for Updates',
-			'Turn this on to check for updates when you start the game.',
-			'checkForUpdates',
-			'bool',
-			true);
+		'Turn this on to check for updates when you start the game.',
+		'checkForUpdates',
+		'bool',
+		true);
 		addOption(option);
 		#end
+		var option:Option = new Option('GPU Caching',
+			'If checked, allows the GPU to be used for caching textures, decreasing RAM usage.\nDon\'t turn this on if you have a shitty Graphics Card.',
+			'gpuCaching',
+			'bool',
+			false);
+		addOption(option);
 		#if !html5
 		/*var option:Option = new Option('Pause Unfocus',
 			"If Checked the game will open pause screen.",

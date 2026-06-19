@@ -144,8 +144,15 @@ class TitleState extends MusicBeatState
 			http.onData = function (data:String)
 			{
 				updateVersion = data.split('\n')[0].trim();
-				var versionInt = updateVersion.split('.').join("");
-				var curVer = Application.current.meta.get('version').split('.').join("");
+				var versionArray = updateVersion.split('.');
+				var curVerArray = Application.current.meta.get('version').split('.');
+				if (versionArray.length > curVerArray.length) {
+					while (curVerArray.length < versionArray.length) curVerArray.push('0');
+				} else if (curVerArray.length > versionArray.length) {
+					while (versionArray.length < curVerArray.length) versionArray.push('0');
+				}
+				var versionInt = versionArray.join("");
+				var curVer = curVerArray.join("");
 				trace('version online: ' + updateVersion + ', your version: ' + Application.current.meta.get('version'));
 				var intVersionInt = Std.parseInt(versionInt);
 				var intCurVer = Std.parseInt(curVer);

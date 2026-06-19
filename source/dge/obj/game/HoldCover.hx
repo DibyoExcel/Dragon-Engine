@@ -105,7 +105,7 @@ class HoldCover extends FlxSprite
             } else {
                 alpha = note.holdCoverAlpha;
             }
-            setGraphicSize(Std.int(width * note.holdCoverScale), Std.int(height * note.holdCoverScale));
+            setGraphicSize(Std.int(width * (note.holdCoverScale*(ClientPrefs.strumsize/0.7))), Std.int(height * (note.holdCoverScale*(ClientPrefs.strumsize/0.7))));
         }
         if (strum != null) {
             setPosition((x+strum.width/2)-(width/2), (y+strum.height/2)-(height/2));

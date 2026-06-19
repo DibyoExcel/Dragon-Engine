@@ -83,6 +83,9 @@ class VisualUISubState extends BaseOptionsMenu
 		option.maxValue = 5;//How The Hell How Much Play Note Size As 5?
 		option.scrollSpeed = 1.6;
 		option.changeValue = 0.1;
+		option.onChange = function() {
+			Note.swagWidth = 160 * ClientPrefs.strumsize;
+		};
 		addOption(option);
 
 		var option:Option = new Option('Dark Mode',
