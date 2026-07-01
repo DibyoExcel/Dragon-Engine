@@ -359,13 +359,12 @@ class MenuCharacterEditorState extends MusicBeatState
 	var _file:FileReference = null;
 	function loadCharacter() {
 		#if android
-		var fileDialog = new dge.states.FilePickerState();
-		fileDialog.callback = function() {
-			var jsonCode:String = File.getContent(fileDialog.filePath);
-			var arrayPath = fileDialog.filePath.split('/');
+		var fileDialog = new dge.states.FilePickerState(function(path:String) {
+			var jsonCode:String = File.getContent(path);
+			var arrayPath = path.split('/');
 			persistentDraw = true;
 			menuCharCode(arrayPath[arrayPath.length-1], jsonCode);
-		};
+		});
 		persistentDraw = false;
 		openSubState(fileDialog);
 		#else

@@ -60,6 +60,7 @@ class HealthIcon extends FlxSprite
 
 	private var iconOffsets:Array<Float> = [0, 0];
 	public function changeIcon(char:String) {
+		if (char == null || char.length < 1) char = 'face';
 		if(this.char != char) {
 			//reset
 			offsetMap = new Map<String, Array<Float>>();

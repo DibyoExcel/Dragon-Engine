@@ -36,7 +36,7 @@ class Alphabet extends FlxSpriteGroup
 	public var scaleY(default, set):Float = 1;
 	public var rows:Int = 0;
 
-	public var distancePerItem:FlxPoint = new FlxPoint(20, 120);
+	public var distancePerItem:FlxPoint = new FlxPoint(25, 110);
 	public var startPosition:FlxPoint = new FlxPoint(0, 0); //for the calculations
 
 
@@ -163,7 +163,7 @@ class Alphabet extends FlxSpriteGroup
 		{
 			var lerpVal:Float = CoolUtil.boundTo(elapsed * 9.6, 0, 1);
 			if(changeX)
-				x = FlxMath.lerp(x, (targetY * distancePerItem.x) + startPosition.x, lerpVal);
+				x = FlxMath.lerp(x, ((-Math.abs(targetY)) * distancePerItem.x) + startPosition.x, lerpVal);
 			if(changeY)
 				y = FlxMath.lerp(y, (targetY * 1.3 * distancePerItem.y) + startPosition.y, lerpVal);
 		}
@@ -175,7 +175,7 @@ class Alphabet extends FlxSpriteGroup
 		if (isMenuItem)
 		{
 			if(changeX)
-				x = (targetY * distancePerItem.x) + startPosition.x;
+				x = ((-Math.abs(targetY)) * distancePerItem.x) + startPosition.x;
 			if(changeY)
 				y = (targetY * 1.3 * distancePerItem.y) + startPosition.y;
 		}

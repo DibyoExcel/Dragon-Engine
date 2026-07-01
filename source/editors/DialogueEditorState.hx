@@ -478,13 +478,12 @@ class DialogueEditorState extends MusicBeatState
 		_file.addEventListener(IOErrorEvent.IO_ERROR, onLoadError);
 		_file.browse([jsonFilter]);
 		#else
-		var fileDialog = new dge.states.FilePickerState();
-		fileDialog.callback = function() {
+		var fileDialog = new dge.states.FilePickerState(function(path:String) {
 			persistentUpdate = persistentDraw = true;
-			var jsonCode:String = File.getContent(fileDialog.filePath);
-			var arrayPath = fileDialog.filePath.split('/');
+			var jsonCode:String = File.getContent(path);
+			var arrayPath = path.split('/');
 			dialogueCode(arrayPath[arrayPath.length-1], jsonCode);
-		};
+		});
 		persistentUpdate = persistentDraw = false;
 		openSubState(fileDialog);
 		#end

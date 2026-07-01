@@ -24,6 +24,7 @@ import WeekData;
 #if MODS_ALLOWED
 import sys.FileSystem;
 #end
+import dge.obj.ui.MenuItem;
 
 using StringTools;
 
@@ -44,10 +45,10 @@ class FreeplayState extends MusicBeatState
 	var intendedScore:Int = 0;
 	var intendedRating:Float = 0;
 
-	private var grpSongs:FlxTypedGroup<Alphabet>;
+	private var grpSongs:FlxTypedGroup<MenuItem>;
 	private var curPlaying:Bool = false;
 
-	private var iconArray:Array<HealthIcon> = [];
+	//private var iconArray:Array<HealthIcon> = [];
 
 	var bg:FlxSprite;
 	var intendedColor:Int;
@@ -100,7 +101,9 @@ class FreeplayState extends MusicBeatState
 				{
 					colors = [146, 113, 253];
 				}
-				addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+				var borderTexture:String = song[3];
+				if (borderTexture == null || borderTexture.length < 1) borderTexture = 'ui/nineslice';
+				addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]), borderTexture);
 			}
 		}
 		WeekData.loadTheFirstEnabledMod();
@@ -121,13 +124,19 @@ class FreeplayState extends MusicBeatState
 		CoolUtil.fitBackground(bg);
 		add(bg);
 	
-		grpSongs = new FlxTypedGroup<Alphabet>();
+		grpSongs = new FlxTypedGroup<MenuItem>();
 		add(grpSongs);
 		if (songs.length > 0) {
 
 			for (i in 0...songs.length)
 			{
-				var songText:Alphabet = new Alphabet(90, 320, songs[i].songName, true);
+				Paths.currentModDirectory = songs[i].folder;
+				var xCenter = (FlxG.width/2)-((150+25+(Std.int(870*(FlxG.width/1280))))/2);
+				var songPanel:MenuItem = new MenuItem(xCenter, (FlxG.height/2)-75, songs[i].songName, songs[i].songCharacter, songs[i].borderTex);
+				songPanel.targetY = i - curSelected;
+				songPanel.snapToPosition();
+				grpSongs.add(songPanel);
+				/*var songText:Alphabet = new Alphabet(90, 320, songs[i].songName, true);
 				songText.isMenuItem = true;
 				songText.targetY = i - curSelected;
 				grpSongs.add(songText);
@@ -139,7 +148,6 @@ class FreeplayState extends MusicBeatState
 				}
 				songText.snapToPosition();
 	
-				Paths.currentModDirectory = songs[i].folder;
 				var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
 				icon.sprTracker = songText;
 	
@@ -149,7 +157,7 @@ class FreeplayState extends MusicBeatState
 	
 				// songText.x += 40;
 				// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-				// songText.screenCenter(X);
+				// songText.screenCenter(X);*/
 			}
 			WeekData.setDirectoryFromWeek();
 	
@@ -253,9 +261,9 @@ class FreeplayState extends MusicBeatState
 		super.closeSubState();
 	}
 
-	public function addSong(songName:String, weekNum:Int, songCharacter:String, color:Int)
+	public function addSong(songName:String, weekNum:Int, songCharacter:String, color:Int, tex:String)
 	{
-		songs.push(new SongMetadata(songName, weekNum, songCharacter, color));
+		songs.push(new SongMetadata(songName, weekNum, songCharacter, color, tex));
 	}
 
 	function weekIsLocked(name:String):Bool {
@@ -537,11 +545,11 @@ class FreeplayState extends MusicBeatState
 
 		var bullShit:Int = 0;
 
-		for (i in 0...iconArray.length)
+		/*for (i in 0...iconArray.length)
 		{
 			iconArray[i].alpha = 0.6;
 		}
-		iconArray[curSelected].alpha = 1;
+		iconArray[curSelected].alpha = 1;*/
 
 		for (item in grpSongs.members)
 		{
@@ -619,8 +627,9 @@ class SongMetadata
 	public var songCharacter:String = "";
 	public var color:Int = -7179779;
 	public var folder:String = "";
+	public var borderTex:String = "";
 
-	public function new(song:String, week:Int, songCharacter:String, color:Int)
+	public function new(song:String, week:Int, songCharacter:String, color:Int, tex:String)
 	{
 		this.songName = song;
 		this.week = week;
@@ -628,5 +637,6 @@ class SongMetadata
 		this.color = color;
 		this.folder = Paths.currentModDirectory;
 		if(this.folder == null) this.folder = '';
+		this.borderTex = tex;
 	}
 }

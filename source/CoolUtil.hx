@@ -19,6 +19,18 @@ import flixel.FlxG;
 
 using StringTools;
 
+enum Align {
+	TOP_LEFT;
+	TOP_RIGHT;
+	TOP_MIDDLE;
+	MIDDLE_LEFT;
+	CENTER;
+	MIDDLE_RIGHT;
+	BOTTOM_LEFT;
+	BOTTOM_MIDDLE;
+	BOTTOM_RIGHT;
+}
+
 class CoolUtil
 {
 	public static var defaultDifficulties:Array<String> = [
@@ -319,5 +331,38 @@ class CoolUtil
 			}
 		}
 		return hasAnim;
+	}
+	public static function alignItem(key:FlxSprite, obj:FlxSprite, alignType:Align = CENTER) {
+		if (key != null && obj != null) {
+			switch(alignType) {
+				case TOP_LEFT:
+					obj.x = key.x;
+					obj.y = key.y;
+				case TOP_MIDDLE:
+					obj.x = (key.x+(key.width/2))-(obj.width/2);
+					obj.y = key.y;	
+				case TOP_RIGHT:
+					obj.x = (key.x+key.width)-obj.width;
+					obj.y = key.y;
+				case MIDDLE_LEFT:
+					obj.x = key.x;
+					obj.y = (key.y+(key.height/2))-(obj.height/2);
+				case MIDDLE_RIGHT:
+					obj.x = (key.x+key.width)-obj.width;
+					obj.y = (key.y+(key.height/2))-(obj.height/2);
+				case BOTTOM_LEFT:
+					obj.x = key.x;
+					obj.y = (key.y+key.height)-obj.height;
+				case BOTTOM_MIDDLE:
+					obj.x = (key.x+(key.width/2))-(obj.width/2);
+					obj.y = (key.y+key.height)-obj.height;
+				case BOTTOM_RIGHT:
+					obj.x = (key.x+key.width)-obj.width;
+					obj.y = (key.y+key.height)-obj.height;
+				default:
+					obj.x = (key.x+(key.width/2))-(obj.width/2);
+					obj.y = (key.y+(key.height/2))-(obj.height/2);
+			}
+		}
 	}
 }

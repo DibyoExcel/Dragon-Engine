@@ -1,14 +1,8 @@
 package;
 
 import editors.ChartingState;
-import flash.display.BitmapData;
-import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.math.FlxMath;
-import flixel.util.FlxColor;
 import flixel.math.FlxRect;
-import flixel.graphics.frames.FlxFrame;
 import flixel.FlxCamera;
 #if sys
 import sys.FileSystem;

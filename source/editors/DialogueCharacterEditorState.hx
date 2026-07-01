@@ -835,13 +835,12 @@ class DialogueCharacterEditorState extends MusicBeatState
 	var _file:FileReference = null;
 	function loadCharacter() {
 		#if android
-		var fileDialog = new dge.states.FilePickerState();
-		fileDialog.callback = function() {
-			var jsonCode:String = File.getContent(fileDialog.filePath);
-			var arrayPath = fileDialog.filePath.split('/');
+		var fileDialog = new dge.states.FilePickerState(function(path:String) {
+			var jsonCode:String = File.getContent(path);
+			var arrayPath = path.split('/');
 			persistentUpdate = persistentDraw = true;
 			charDiagCode(arrayPath[arrayPath.length-1], jsonCode);
-		};
+		});
 		persistentUpdate = persistentDraw = false;
 		openSubState(fileDialog);
 		#else

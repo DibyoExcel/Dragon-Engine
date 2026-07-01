@@ -1,5 +1,5 @@
-//this shit nothing to do
 package dge.obj.button;
+//this shit nothing to do
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxColor;

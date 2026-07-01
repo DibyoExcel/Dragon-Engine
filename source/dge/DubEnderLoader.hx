@@ -37,7 +37,7 @@ class DubEnderLoader extends FlxBasePreloader
 
 	public function new()
 	{
-		super(3); // Optional: minimum display time in seconds
+		super(3); //ugh
 		#if android
 		if (!Permissions.hasPermission(Permissions.WRITE_EXTERNAL_STORAGE))
 		{
@@ -104,7 +104,6 @@ class DubEnderLoader extends FlxBasePreloader
 	{
 		super.update(percent);
 
-		// Update loading bar width
 		if (bar != null) bar.width = Std.int(percent * stage.stageWidth);
 
 		if (loadingText != null) loadingText.text = "Loading... (" + Std.int(percent * 100) + "%)";

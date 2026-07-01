@@ -2,6 +2,7 @@ package dge.obj.mobile;
 
 //better input button
 
+import flixel.FlxCamera;
 import flixel.input.touch.FlxTouch;
 import flixel.FlxSprite;
 import flixel.FlxG;
@@ -39,7 +40,11 @@ class TouchButton extends FlxSprite{
         }
         if (touch == null) {
             for (touch in FlxG.touches.list) {
-                for (cam in cameras) {
+                var cams = cameras;
+                if (cams == null) {
+                    cams = @:privateAccess {FlxCamera._defaultCameras;};
+                }
+                for (cam in cams) {
                     if (touch != null &&  overlapsPoint(touch.getWorldPosition(cam), true, cam)) {//WTF?Also copy from FlxButton
                         if (stickyInput ? touch.justPressed : touch.pressed) {
                             this.touch = touch;
