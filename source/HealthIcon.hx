@@ -1,6 +1,7 @@
 package;
 
 import flixel.FlxSprite;
+import flixel.FlxG;
 import openfl.utils.Assets as OpenFlAssets;
 
 using StringTools;
@@ -33,6 +34,7 @@ class HealthIcon extends FlxSprite
 	public var isCustom:Bool = false;//enable this if you want custom change icon system to your own
 	public var spriteSheet:Bool = false;//becareful set this or else it break icon
 	private var offsetMap:Map<String, Array<Float>> = new Map<String, Array<Float>>();
+	public var danceEveryNumBeats:Int = 2;//dance every 2 beats by default
 
 
 
@@ -122,6 +124,11 @@ class HealthIcon extends FlxSprite
 		changeOffsets();
 	}
 
+	public function updateHitboxNoOffset()//uh i wonfer if i put super.super.updateHitbox() it will work or not(joke)
+	{
+		super.updateHitbox();
+	}
+
 	public function getCharacter():String {
 		return char;
 	}
@@ -172,18 +179,18 @@ class HealthIcon extends FlxSprite
 		if (Data.netral.flipX) {
 			isFlip = !isFlip;
 		}
-		animation.addByPrefix('netral', Data.netral.xmlName, Data.netral.fps, Data.netral.loop, isFlip, Data.netral.flipY);
+		animation.addByPrefix('netral', Data.netral.xmlName, Data.netral.fps, (FlxG.state is PlayState ? Data.netral.loop : true), isFlip, Data.netral.flipY);
 		var isFlip = isPlayer;
 		if (Data.lose.flipX) {
 			isFlip = !isFlip;
 		}
-		animation.addByPrefix('lose', Data.lose.xmlName, Data.lose.fps, Data.lose.loop, isFlip, Data.lose.flipY);
+		animation.addByPrefix('lose', Data.lose.xmlName, Data.lose.fps, (FlxG.state is PlayState ? Data.lose.loop : true), isFlip, Data.lose.flipY);
 		if (Data.win != null) {
 			var isFlip = isPlayer;
 			if (Data.win.flipX) {
 				isFlip = !isFlip;
 			}
-			animation.addByPrefix('win', Data.win.xmlName, Data.win.fps, Data.win.loop, isFlip, Data.win.flipY);
+			animation.addByPrefix('win', Data.win.xmlName, Data.win.fps, (FlxG.state is PlayState ? Data.win.loop : true), isFlip, Data.win.flipY);
 		}
 		updateHitbox();
 	}
@@ -191,7 +198,7 @@ class HealthIcon extends FlxSprite
 		if (spriteSheet && animation != null && animation.curAnim != null && animation.curAnim.name != name || force) {
 			var currentFrame = animation.curAnim.curFrame;//idk this work or not(?)
 			var frameLength = animation.getByName(name) != null ? animation.getByName(name).frames.length : 0;
-			animation.play(name);
+			animation.play(name, true);
 			if (frameLength > 0 && currentFrame <= frameLength-1) {
 				animation.curAnim.curFrame = currentFrame;//prevents animation reset when change anim(i think)
 			} else if (currentFrame > frameLength - 1 && frameLength > 0) {
@@ -215,5 +222,10 @@ class HealthIcon extends FlxSprite
 	private function changeOffsets() {
 		offset.x = iconOffsets[0];
 		offset.y = iconOffsets[1];
+	}
+
+	public function danceIcon(state:String = 'netral') {
+		if (animation == null) return;
+		animation.play(state, false);
 	}
 }

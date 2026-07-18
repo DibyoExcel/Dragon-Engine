@@ -184,6 +184,8 @@ class ChartingState extends MusicBeatState
 	var leftIcon:HealthIcon;
 	var rightIcon:HealthIcon;
 	var gfIcon:HealthIcon;
+	var arrowIcon:FlxSprite;
+	var arrowIconGF:FlxSprite;
 	var eventIcon:FlxSprite;
 
 	var value1InputText:FlxUIInputText;
@@ -319,10 +321,12 @@ class ChartingState extends MusicBeatState
 				while (j.length > 4) {//remove extra data(cuz without it might crash)(cuz i found in Dracobot Chart, bruh)
 					j.remove(j[4]);
 				}
-				if (!Std.isOfType(j[3], String)) {
-					j[3] = noteTypeList[j[3] ? 1 : 0];
-					if (j.length > 3 && (j[3] == null || j[3].length < 1)) {
-						j.remove(j[3]);
+				if (j[3] != null) {
+					if (!Std.isOfType(j[3], String)) {
+						j[3] = noteTypeList[j[3] ? 1 : 0];
+						if (j.length > 3 && (j[3] == null || j[3].length < 1)) {
+							j.remove(j[3]);
+						}
 					}
 				}
 			}
@@ -396,7 +400,7 @@ class ChartingState extends MusicBeatState
 
 		strumLineNotes = new FlxTypedGroup<StrumNote>();
 		for (i in 0...12){
-			var note:StrumNote = new StrumNote(GRID_SIZE * (i+1), strumLine.y, i % 4, 0);
+			var note:StrumNote = new StrumNote(GRID_SIZE * (i+1), strumLine.y, i % 4, (i < 4) ? 1 : 0, i > 7);
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			note.updateHitbox();
 			note.playAnim('static', true);
@@ -411,6 +415,8 @@ class ChartingState extends MusicBeatState
 		dummyArrow = new FlxSprite().makeGraphic(GRID_SIZE, GRID_SIZE);
 		add(dummyArrow);
 		eventIcon = new FlxSprite(0, 0).loadGraphic(Paths.image('eventArrow'));
+		arrowIcon = new FlxSprite().loadGraphic(Paths.image('ui/chart/arrow_icon'));
+		arrowIconGF = new FlxSprite().loadGraphic(Paths.image('ui/chart/arrow_icon'));
 		leftIcon = new HealthIcon('bf');
 		rightIcon = new HealthIcon('dad');
 		gfIcon = new HealthIcon('gf');
@@ -418,12 +424,18 @@ class ChartingState extends MusicBeatState
 		leftIcon.scrollFactor.set(1, 0);
 		gfIcon.scrollFactor.set(1, 0);
 		rightIcon.scrollFactor.set(1, 0);
+		arrowIcon.scrollFactor.set(1, 0);
+		arrowIconGF.scrollFactor.set(1, 0);
 
 		eventIcon.setGraphicSize(0, 30);
+		arrowIcon.setGraphicSize(30, 30);
+		arrowIconGF.setGraphicSize(30, 30);
 		leftIcon.setGraphicSize(0, 45);
 		gfIcon.setGraphicSize(0, 45);
 		rightIcon.setGraphicSize(0, 45);
 		eventIcon.updateHitbox();
+		arrowIcon.updateHitbox();
+		arrowIconGF.updateHitbox();
 		rightIcon.updateHitbox();
 		gfIcon.updateHitbox();
 		leftIcon.updateHitbox();
@@ -439,14 +451,25 @@ class ChartingState extends MusicBeatState
 		add(leftIcon);
 		add(gfIcon);
 		add(rightIcon);
+		add(arrowIcon);
+		add(arrowIconGF);
 		eventIcon.setPosition(((GRID_SIZE/2)-(eventIcon.width/2))-(GRID_SIZE*1), 25);
 		eventIcon.offset.set(0, 0);
+		arrowIcon.offset.set(0, 0);
+		arrowIconGF.offset.set(0, 0);
 		leftIcon.x = eventIcon.x + (GRID_SIZE*2);
 		rightIcon.x = eventIcon.x + (GRID_SIZE*6);
 		gfIcon.x = eventIcon.x + (GRID_SIZE*10);
 		leftIcon.y = eventIcon.y;
 		rightIcon.y = eventIcon.y;
 		gfIcon.y = eventIcon.y;
+		arrowIcon.y = eventIcon.y;
+		arrowIcon.x = eventIcon.x + (GRID_SIZE*2);
+		arrowIcon.x += GRID_SIZE;
+		arrowIconGF.y = eventIcon.y;
+		arrowIconGF.x = eventIcon.x + (GRID_SIZE*10);
+		arrowIconGF.x += GRID_SIZE;
+		arrowIconGF.visible = false;
 		var tabs = [
 			{name: "Song", label: 'Song'},
 			{name: "Section", label: 'Section'},
@@ -513,11 +536,13 @@ class ChartingState extends MusicBeatState
 		optChar = new FlxSprite(0, 0);
 		optChar.frames = Paths.getSparrowAtlas("characters/MintEnderDragon");
 		optChar.animation.addByPrefix("idle", "MintEnderDragon Idle", true);
+		optChar.animation.addByPrefix("idle", "idle", true);
 		for (i in 0...animAssets.length) {
 			optChar.animation.addByPrefix("sing" + animAssets[i].toUpperCase(), "MintEnderDragon " + animAssets[i], false);
+			optChar.animation.addByPrefix("sing" + animAssets[i].toUpperCase(), animAssets[i].toLowerCase(), false);
 		}
 		optChar.animation.play("idle");
-		optChar.scale.set(0.1, 0.1);
+		optChar.scale.set(0.2, 0.2);
 		optChar.updateHitbox();
 		optChar.x = (FlxG.width / 2) + GRID_SIZE / 2;
 		optChar.scrollFactor.set(0, 0);
@@ -525,14 +550,16 @@ class ChartingState extends MusicBeatState
 		plyChar = new FlxSprite(0, 0);
 		plyChar.frames = Paths.getSparrowAtlas("characters/DubEnderDragon");
 		plyChar.animation.addByPrefix("idle", "DubEnderDragon Idle", true);
+		plyChar.animation.addByPrefix("idle", "idle", true);
 		for (i in 0...animAssets.length) {
 			plyChar.animation.addByPrefix("sing" + animAssets[i].toUpperCase(), "DubEnderDragon " + animAssets[i], false);
+			plyChar.animation.addByPrefix("sing" + animAssets[i].toUpperCase(), animAssets[i].toLowerCase(), false);
 		}
 		plyChar.animation.play("idle");
-		plyChar.scale.set(0.1, 0.1);
+		plyChar.scale.set(0.2, 0.2);
 		plyChar.updateHitbox();
 		plyChar.flipX = true;
-		plyChar.x = optChar.x+200;
+		plyChar.x = optChar.x+150;
 		plyChar.scrollFactor.set(0, 0);
 		add(plyChar);
 		optChar.y = (FlxG.height)-(optChar.height);
@@ -876,6 +903,11 @@ class ChartingState extends MusicBeatState
 			_song.arrowSkin = noteSkinInputText.text;
 			_song.arrowSkinOpt = noteSkinInputTextOpt.text;
 			_song.arrowSkinSec = noteSkinInputTextSec.text;
+			for (strum in strumLineNotes.members) {
+				strum.reloadNote();
+				strum.setGraphicSize(GRID_SIZE, GRID_SIZE);
+				strum.updateHitbox();
+			}
 			updateGrid();
 		});
 
@@ -2349,6 +2381,33 @@ class ChartingState extends MusicBeatState
 				note.alpha = 1;
 				if(curSelectedNote != null) {
 					var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
+					if (actualNoteData > -1 && actualNoteData < 12) {
+						if (!_song.notes[curSec].mustHitSection) {
+							if (!_song.notes[curSec].gfSection) {
+								if (actualNoteData > 3 && actualNoteData < 8) {
+									actualNoteData -= 4;
+								} else if (actualNoteData > -1 && actualNoteData < 4) {
+									actualNoteData += 4;
+								}
+							} else {
+								if (actualNoteData > -1 && actualNoteData < 4) {
+									actualNoteData += 4;
+								} else if (actualNoteData > 7 && actualNoteData < 12) {
+									actualNoteData -= 8;
+								} else if (actualNoteData > 3 && actualNoteData < 8) {
+									actualNoteData += 4;
+								}
+							}
+						} else {
+							if (_song.notes[curSec].gfSection) {
+								if (actualNoteData > -1 && actualNoteData < 4) {
+									actualNoteData += 8;
+								} else if (actualNoteData > 7 && actualNoteData < 12) {
+									actualNoteData -= 8;
+								}
+							}
+						}
+					}
 					var noteDataToCheck:Int = actualNoteData;
 	
 					if (curSelectedNote[0] == note.strumTime && ((curSelectedNote[2] == null && noteDataToCheck < 0) || (curSelectedNote[2] != null && curSelectedNote[1] == noteDataToCheck)))
@@ -2403,6 +2462,33 @@ class ChartingState extends MusicBeatState
 				note.alpha = 1;
 				if(curSelectedNote != null) {
 					var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
+					if (actualNoteData > -1 && actualNoteData < 12) {
+						if (!_song.notes[curSec].mustHitSection) {
+							if (!_song.notes[curSec].gfSection) {
+								if (actualNoteData > 3 && actualNoteData < 8) {
+									actualNoteData -= 4;
+								} else if (actualNoteData > -1 && actualNoteData < 4) {
+									actualNoteData += 4;
+								}
+							} else {
+								if (actualNoteData > -1 && actualNoteData < 4) {
+									actualNoteData += 4;
+								} else if (actualNoteData > 7 && actualNoteData < 12) {
+									actualNoteData -= 8;
+								} else if (actualNoteData > 3 && actualNoteData < 8) {
+									actualNoteData += 4;
+								}
+							}
+						} else {
+							if (_song.notes[curSec].gfSection) {
+								if (actualNoteData > -1 && actualNoteData < 4) {
+									actualNoteData += 8;
+								} else if (actualNoteData > 7 && actualNoteData < 12) {
+									actualNoteData -= 8;
+								}
+							}
+						}
+					}
 					var noteDataToCheck:Int = actualNoteData;
 	
 					if (curSelectedNote[0] == note.strumTime && ((curSelectedNote[2] == null && noteDataToCheck < 0) || (curSelectedNote[2] != null && curSelectedNote[1] == noteDataToCheck)))
@@ -2457,6 +2543,33 @@ class ChartingState extends MusicBeatState
 			note.alpha = 1;
 			if(curSelectedNote != null) {
 				var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
+				if (actualNoteData > -1 && actualNoteData < 12) {
+					if (!_song.notes[curSec].mustHitSection) {
+						if (!_song.notes[curSec].gfSection) {
+							if (actualNoteData > 3 && actualNoteData < 8) {
+								actualNoteData -= 4;
+							} else if (actualNoteData > -1 && actualNoteData < 4) {
+								actualNoteData += 4;
+							}
+						} else {
+							if (actualNoteData > -1 && actualNoteData < 4) {
+								actualNoteData += 4;
+							} else if (actualNoteData > 7 && actualNoteData < 12) {
+								actualNoteData -= 8;
+							} else if (actualNoteData > 3 && actualNoteData < 8) {
+								actualNoteData += 4;
+							}
+						}
+					} else {
+						if (_song.notes[curSec].gfSection) {
+							if (actualNoteData > -1 && actualNoteData < 4) {
+								actualNoteData += 8;
+							} else if (actualNoteData > 7 && actualNoteData < 12) {
+								actualNoteData -= 8;
+							}
+						}
+					}
+				}
 				var noteDataToCheck:Int = actualNoteData;
 
 				if (curSelectedNote[0] == note.strumTime && ((curSelectedNote[2] == null && noteDataToCheck < 0) || (curSelectedNote[2] != null && curSelectedNote[1] == noteDataToCheck)))
@@ -2511,6 +2624,33 @@ class ChartingState extends MusicBeatState
 			note.alpha = 1;
 			if(curSelectedNote != null) {
 				var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
+				if (actualNoteData > -1 && actualNoteData < 12) {
+					if (!_song.notes[curSec].mustHitSection) {
+						if (!_song.notes[curSec].gfSection) {
+							if (actualNoteData > 3 && actualNoteData < 8) {
+								actualNoteData -= 4;
+							} else if (actualNoteData > -1 && actualNoteData < 4) {
+								actualNoteData += 4;
+							}
+						} else {
+							if (actualNoteData > -1 && actualNoteData < 4) {
+								actualNoteData += 4;
+							} else if (actualNoteData > 7 && actualNoteData < 12) {
+								actualNoteData -= 8;
+							} else if (actualNoteData > 3 && actualNoteData < 8) {
+								actualNoteData += 4;
+							}
+						}
+					} else {
+						if (_song.notes[curSec].gfSection) {
+							if (actualNoteData > -1 && actualNoteData < 4) {
+								actualNoteData += 8;
+							} else if (actualNoteData > 7 && actualNoteData < 12) {
+								actualNoteData -= 8;
+							}
+						}
+					}
+				}
 				var noteDataToCheck:Int = actualNoteData;
 
 				if (curSelectedNote[0] == note.strumTime && ((curSelectedNote[2] == null && noteDataToCheck < 0) || (curSelectedNote[2] != null && curSelectedNote[1] == noteDataToCheck)))
@@ -3015,10 +3155,20 @@ class ChartingState extends MusicBeatState
 		var healthIconP1:String = loadHealthIconFromCharacter(_song.player1);
 		var healthIconP2:String = loadHealthIconFromCharacter(_song.player2);
 		var healthIconP3:String = loadHealthIconFromCharacter(_song.gfVersion);
-		if (healthIconP3 == null) {
+		if (healthIconP3 == null || healthIconP3.length < 1) {
 			healthIconP3 = 'gf';//backup icon
 		}
-		if (_song.notes[curSec].gfSection) {
+		leftIcon.changeIcon(healthIconP1);
+		rightIcon.changeIcon(healthIconP2);
+		gfIcon.changeIcon(healthIconP3);
+		arrowIconGF.visible = _song.notes[curSec].gfSection;
+		if (_song.notes[curSec].mustHitSection) {
+			arrowIcon.x = eventIcon.x + (GRID_SIZE * 2);
+		} else {
+			arrowIcon.x = eventIcon.x + (GRID_SIZE * 6);
+		}
+		arrowIcon.x += GRID_SIZE;
+		/*if (_song.notes[curSec].gfSection) {
 			if (_song.notes[curSec].mustHitSection) {
 				leftIcon.changeIcon(healthIconP3);
 				rightIcon.changeIcon(healthIconP2);
@@ -3041,7 +3191,7 @@ class ChartingState extends MusicBeatState
 				rightIcon.changeIcon(healthIconP1);
 				gfIcon.changeIcon(healthIconP3);
 			}
-		}
+		}*/
 	}
 
 	function loadHealthIconFromCharacter(char:String) {
@@ -3290,14 +3440,56 @@ class ChartingState extends MusicBeatState
 		var daNoteInfo = i[1];
 		var daStrumTime = i[0];
 		var daSus:Dynamic = i[2];
+		var curSecDec = curSec;
+		if (isPrevSection) {
+			curSecDec--;
+		} else if (isNextSection) {
+			curSecDec++;
+		}
+		if (daNoteInfo > -1 && daNoteInfo < 12) {
+			//math formula is hard
+			if (!_song.notes[curSecDec].mustHitSection) {
+				if (!_song.notes[curSecDec].gfSection) {
+					if (daNoteInfo > 3 && daNoteInfo < 8) {
+						daNoteInfo -= 4;
+					} else if (daNoteInfo > -1 && daNoteInfo < 4) {
+						daNoteInfo += 4;
+					}
+				} else {
+					if (daNoteInfo > -1 && daNoteInfo < 4) {
+						daNoteInfo += 8;
+					} else if (daNoteInfo > 7 && daNoteInfo < 12) {
+						daNoteInfo -= 4;
+					} else if (daNoteInfo > 3 && daNoteInfo < 8) {
+						daNoteInfo -= 4;
+					}
+				}
+			} else {
+				if (_song.notes[curSecDec].gfSection) {
+					if (daNoteInfo > -1 && daNoteInfo < 4) {
+						daNoteInfo += 8;
+					} else if (daNoteInfo > 7 && daNoteInfo < 12) {
+						daNoteInfo -= 8;
+					}
+				}
+			}
+		}
+		//changing become readable
+		var mustHitSec = _song.notes[curSecDec].mustHitSection;
+		var rawNoteType = i[3];
+		if (!Std.isOfType(rawNoteType, String)) rawNoteType = '';
+		var noteType:String = rawNoteType;
+		var gfType = (daNoteInfo > 7 && daNoteInfo < 12);
+		var playerType = (daNoteInfo > -1 && daNoteInfo < 4);
+		if (daNoteInfo > 7 && daNoteInfo < 12) playerType = mustHitSec;
+		if (noteType != null) {
+			if (noteType.indexOf('-player') != -1) playerType = true; else if (noteType.indexOf('-opponent') != -1 || noteType == 'GF Sing Force Opponent') playerType = false;
+			if (noteType.indexOf('-gf') != -1) gfType = true;
+		}
 
-		var gfType = (i[3] != null && (i[3].indexOf('-gf') != -1) ? true : (_song.notes[curSec+(isNextSection ? 1 : isPrevSection ? -1 : 0)].gfSection ? (daNoteInfo > -1 && daNoteInfo < 4) : (daNoteInfo > 7 && daNoteInfo < 12)));
-		var playerType = ((i[3] != null && i[3] == 'GF Sing Force Opponent') || (i[3] != null && i[3].indexOf('-opponent') != -1) ? false : ((i[3] != null && i[3].indexOf('-player') != -1) ? true : _song.notes[curSec+(isNextSection ? 1 : isPrevSection ? -1 : 0)].mustHitSection ? ((daNoteInfo >-1 && daNoteInfo <4) || (daNoteInfo > 7 && daNoteInfo < 12)) : ((daNoteInfo >3 && daNoteInfo <8))));
-
-		var note:Note = new Note(daStrumTime, daNoteInfo % 4, null, null, true, playerType, gfType);
+		var note:Note = new Note(daStrumTime, daNoteInfo % 4, null, null, true, playerType, gfType, noteType);
 		if(daSus != null) { //Common note
 			note.sustainLength = daSus;
-			note.noteType = i[3];
 		} else { //Event note
 			note.loadGraphic(Paths.image('eventArrow'));
 			note.eventName = getEventName(i[1]);
@@ -3312,8 +3504,9 @@ class ChartingState extends MusicBeatState
 		}
 		note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 		note.updateHitbox();
+
 		note.x = (Math.floor(daNoteInfo * GRID_SIZE) + GRID_SIZE);
-		//freaking confused to do
+		/*//freaking confused to do
 		if (isPrevSection) {
 			//so many logic bruhh
 			if (_song.notes[curSec-1].mustHitSection != _song.notes[curSec].mustHitSection) {
@@ -3397,7 +3590,7 @@ class ChartingState extends MusicBeatState
 					}
 				}
 			}
-		}
+		}*/
 
 		var beats:Float = getSectionBeats(isNextSection ? 1 : isPrevSection ? -1 : 0);
 		note.y = getYfromStrumNotes(daStrumTime - sectionStartTime(), beats);
@@ -3454,7 +3647,35 @@ class ChartingState extends MusicBeatState
 	{
 		if (note.isSustainNote) return;
 		var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
+		if (actualNoteData > -1 && actualNoteData < 12) {
+			if (!_song.notes[curSec].mustHitSection) {
+				if (!_song.notes[curSec].gfSection) {
+					if (actualNoteData > 3 && actualNoteData < 8) {
+						actualNoteData -= 4;
+					} else if (actualNoteData > -1 && actualNoteData < 4) {
+						actualNoteData += 4;
+					}
+				} else {
+					if (actualNoteData > -1 && actualNoteData < 4) {
+						actualNoteData += 4;
+					} else if (actualNoteData > 7 && actualNoteData < 12) {
+						actualNoteData -= 8;
+					} else if (actualNoteData > 3 && actualNoteData < 8) {
+						actualNoteData += 4;
+					}
+				}
+			} else {
+				if (_song.notes[curSec].gfSection) {
+					if (actualNoteData > -1 && actualNoteData < 4) {
+						actualNoteData += 8;
+					} else if (actualNoteData > 7 && actualNoteData < 12) {
+						actualNoteData -= 8;
+					}
+				}
+			}
+		}
 		var noteDataToCheck:Int = actualNoteData;
+//		trace(noteDataToCheck);
 
 		if(noteDataToCheck > -1)
 		{
@@ -3489,6 +3710,33 @@ class ChartingState extends MusicBeatState
 	{
 		if (note.isSustainNote) return;//long note tails cant be deleted alone which kinda oddly enough
 		var actualNoteData:Int = (Math.floor(note.x/GRID_SIZE))-1;
+		if (actualNoteData > -1 && actualNoteData < 12) {
+			if (!_song.notes[curSec].mustHitSection) {
+				if (!_song.notes[curSec].gfSection) {
+					if (actualNoteData > 3 && actualNoteData < 8) {
+						actualNoteData -= 4;
+					} else if (actualNoteData > -1 && actualNoteData < 4) {
+						actualNoteData += 4;
+					}
+				} else {
+					if (actualNoteData > -1 && actualNoteData < 4) {
+						actualNoteData += 4;
+					} else if (actualNoteData > 7 && actualNoteData < 12) {
+						actualNoteData -= 8;
+					} else if (actualNoteData > 3 && actualNoteData < 8) {
+						actualNoteData += 4;
+					}
+				}
+			} else {
+				if (_song.notes[curSec].gfSection) {
+					if (actualNoteData > -1 && actualNoteData < 4) {
+						actualNoteData += 8;
+					} else if (actualNoteData > 7 && actualNoteData < 12) {
+						actualNoteData -= 8;
+					}
+				}
+			}
+		}
 		var noteDataToCheck:Int = actualNoteData;
 		trace(noteDataToCheck);
 
@@ -3562,13 +3810,40 @@ class ChartingState extends MusicBeatState
 		//	undos.push(newsong);
 		var noteStrum = getStrumTime(dummyArrow.y * (getSectionBeats() / 4), false) + sectionStartTime();
 		var noteData = Math.floor(((pos) - GRID_SIZE) / GRID_SIZE);
-		trace(noteData);
 		var noteSus = 0;
 		var daAlt = false;
 		var daType = currentType;
-
+		
 		if (strum != null) noteStrum = strum;
 		if (data != null) noteData = data;
+		if (noteData > -1 && noteData < 12) {
+			if (!_song.notes[curSec].mustHitSection) {
+				if (!_song.notes[curSec].gfSection) {
+					if (noteData > 3 && noteData < 8) {
+						noteData -= 4;
+					} else if (noteData > -1 && noteData < 4) {
+						noteData += 4;
+					}
+				} else {
+					if (noteData > -1 && noteData < 4) {
+						noteData += 4;
+					} else if (noteData > 7 && noteData < 12) {
+						noteData -= 8;
+					} else if (noteData > 3 && noteData < 8) {
+						noteData += 4;
+					}
+				}
+			} else {
+				if (_song.notes[curSec].gfSection) {
+					if (noteData > -1 && noteData < 4) {
+						noteData += 8;
+					} else if (noteData > 7 && noteData < 12) {
+						noteData -= 8;
+					}
+				}
+			}
+		}
+		trace(noteData);
 		if (type != null) daType = type;
 
 		if(noteData > -1)

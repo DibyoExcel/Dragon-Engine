@@ -196,9 +196,11 @@ class Song
 	//MORE ANTI CRASH
 		try{
 			var jsonParse = Json.parse(rawJson);
-			var swagShit:SwagSong = cast jsonParse.song;
-			if (jsonParse.format != null && jsonParse.format == 'psych_v1') {//convert psych v1 to psych v0.6.3 chart
-				swagShit = cast jsonParse;
+			var swagShit:SwagSong;
+			if (jsonParse.song == null) {
+				swagShit = cast jsonParse;//psych v1 chart
+			} else {
+				swagShit = cast jsonParse.song;
 			}
 			swagShit.validScore = true;
 			return swagShit;

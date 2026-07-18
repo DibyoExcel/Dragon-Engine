@@ -161,8 +161,9 @@ class Note extends FlxSprite
 	public var animConfirm:String = '';//static, confirm, notes, pressed
 	//end of strum anim when hit
 	//custom field
-	public var customField:Bool = false;
+	public var customField:Bool = false;//info this become unused
 	public var fieldTarget:String = '';//warning if not exist it might set 'customField' to false(hopefully)
+	public var isCustomField(get, null):Bool;//return `true` if `targetField` is not empty or null string or else will `false`
 	//end of custom field
 	//sustain thing
 	public var sustainTail:Bool = false;
@@ -1045,5 +1046,8 @@ class Note extends FlxSprite
 			var animname:String = animationDownScrollHandle(animation.curAnim.name);
 			animation.play(animname, true);
 		}
+	}
+	private function get_isCustomField():Bool {
+		return (fieldTarget != null && fieldTarget.length > 0);
 	}
 }

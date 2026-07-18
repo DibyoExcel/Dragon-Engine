@@ -3820,77 +3820,48 @@ class PlayState extends MusicBeatState
 		if (health > 2) {
 			health = 2;
 		}
-
-		if (healthBar.percent < 20) {
-			if (!iconP1.isCustom) {
-				if (!iconP1.spriteSheet) {
-					iconP1.animation.curAnim.curFrame = 1;
+		var iconList = [ iconP1, iconP2, iconP3 ];
+		var netralIcon:Array<HealthIcon> = [];
+		var loseIcon:Array<HealthIcon> = [];
+		var winIcon:Array<HealthIcon> = [];
+		for (icon in iconList) {
+			if (icon != null) {
+				//very stupid animation array thingy
+				if (healthBar.percent > 80) {
+					if (icon == iconP1) if (icon.winIcon) winIcon.push(icon); else netralIcon.push(icon);
+					if (icon == iconP2 || icon == iconP3) loseIcon.push(icon);
+				} else if (healthBar.percent < 20) {
+					if ((icon == iconP2 || icon == iconP3)) if (icon.winIcon) winIcon.push(icon); else netralIcon.push(icon);
+					if (icon == iconP1) loseIcon.push(icon);
 				} else {
-					iconP1.playAnim('lose');
+					netralIcon.push(icon);
 				}
 			}
-			if (iconP2.winIcon == true && !iconP2.isCustom) {
-				if (!iconP2.spriteSheet) {
-					iconP2.animation.curAnim.curFrame = 2;
+		}
+		if (netralIcon.length > 0) {
+			for (icon in netralIcon) {
+				if (icon.spriteSheet) {
+					icon.playAnim('netral');
 				} else {
-					iconP2.playAnim('win');
+					icon.animation.curAnim.curFrame = 0;
 				}
 			}
-			if (iconP3 != null) {
-				if (iconP3.winIcon == true && !iconP3.isCustom) {
-					if (!iconP3.spriteSheet) {
-						iconP3.animation.curAnim.curFrame = 2;
-					} else {
-						iconP3.playAnim('win');
-					}
-				}
-			}
-		} else if (healthBar.percent > 80) {
-			if (!iconP2.isCustom) {
-				if (!iconP2.spriteSheet) {
-					iconP2.animation.curAnim.curFrame = 1;
+		}
+		if (loseIcon.length > 0) {
+			for (icon in loseIcon) {
+				if (icon.spriteSheet) {
+					icon.playAnim('lose');
 				} else {
-					iconP2.playAnim('lose');
+					icon.animation.curAnim.curFrame = 1;
 				}
 			}
-			if (iconP3 != null) {
-				if (!iconP3.isCustom) {
-					if (!iconP3.spriteSheet) {
-						iconP3.animation.curAnim.curFrame = 1;
-					} else {
-						iconP3.playAnim('lose');
-					}
-				}
-			}
-			if (iconP1.winIcon == true && !iconP1.isCustom) {
-				if (!iconP1.spriteSheet) {
-					iconP1.animation.curAnim.curFrame = 2;
+		}
+		if (winIcon.length > 0) {
+			for (icon in winIcon) {
+				if (icon.spriteSheet) {
+					icon.playAnim('win');
 				} else {
-					iconP1.playAnim('win');
-				}
-			}
-		} else {//bruh rewrite
-			if (!iconP2.isCustom) {
-				if (!iconP2.spriteSheet) {
-					iconP2.animation.curAnim.curFrame = 0;
-				} else {
-					iconP2.playAnim('netral');
-				}
-			}
-			if (iconP3 != null) {
-				if (!iconP3.isCustom) {
-					if (!iconP3.spriteSheet) {
-						iconP3.animation.curAnim.curFrame = 0;
-					} else {
-						iconP3.playAnim('netral');
-					}
-				}
-			}
-			if (!iconP1.isCustom) {
-				if (!iconP1.spriteSheet) {
-					iconP1.animation.curAnim.curFrame = 0;
-				} else {
-					iconP1.playAnim('netral');
+					icon.animation.curAnim.curFrame = 3;
 				}
 			}
 		}
@@ -4423,10 +4394,11 @@ class PlayState extends MusicBeatState
 						if ((gamemode != 'opponent' ? ((gamemode == "bothside") ? true : daNote.mustPress) : !daNote.mustPress) && !cpuControlled && !daNote.ignoreNote && !endingSong && (daNote.tooLate || !daNote.wasGoodHit) && !(daNote.autoPress || (playableField.length < 1 ? daNote.fieldTarget.length > 0 : playableField.indexOf(daNote.fieldTarget) == -1))) {
 							noteMiss(daNote);
 						}
-						destroyNote(daNote);
 						if ((!daNote.hitByOpponent && !daNote.mustPress) || (!daNote.wasGoodHit && daNote.mustPress && daNote.isDad)) {//if opponent lag
 							camZooming = true;
 						}
+						callOnLuas('onDespawnNote', [notes.members.indexOf(daNote), daNote.noteData, daNote.noteType, daNote.isSustainNote]);
+						destroyNote(daNote);
 					}
 				});
 			}
@@ -6041,7 +6013,7 @@ class PlayState extends MusicBeatState
 				if (note.playStrumAnim && !note.fakeNoHit && !ClientPrefs.clsstrum) {
 					StrumPlayAnim(time, note);
 				}
-				if (note.fieldTarget.length > 0) {
+				if (note.fieldTarget != null && note.fieldTarget.length > 0) {
 					callOnLuas('fieldNoteHit', [note.fieldTarget, notes.members.indexOf(note), Math.abs(note.noteData), note.noteType, note.isSustainNote]);
 				} else {
 					callOnLuas((note.mustPress ? 'goodNoteHit' : 'opponentNoteHit'), [notes.members.indexOf(note), Math.abs(note.noteData), note.noteType, note.isSustainNote]);
@@ -6282,7 +6254,7 @@ class PlayState extends MusicBeatState
 			var isSus:Bool = note.isSustainNote; //GET OUT OF MY HEAD, GET OUT OF MY HEAD, GET OUT OF MY HEAD
 			var leData:Int = Math.round(Math.abs(note.noteData));
 			var leType:String = note.noteType;
-			if (note.fieldTarget.length > 0) {
+			if (note.fieldTarget != null && note.fieldTarget.length > 0) {
 				callOnLuas('fieldNoteHit', [note.fieldTarget, notes.members.indexOf(note), leData, leType, isSus]);
 			} else {
 				callOnLuas((!note.mustPress || note.isDad ? 'opponentNoteHit' : 'goodNoteHit'), [notes.members.indexOf(note), leData, leType, isSus]);
@@ -6597,20 +6569,37 @@ class PlayState extends MusicBeatState
 	{
 		super.beatHit();
 
+
 		if(lastBeatHit >= curBeat) {
 			//trace('BEAT HIT: ' + curBeat + ', LAST HIT: ' + lastBeatHit);
 			return;
 		}
-
-		iconP1.scale.set(1.2, 1.2);
-		iconP2.scale.set(1.2, 1.2);
-		if (iconP3 != null) {
-			iconP3.scale.set(1.2, 1.2);
-			iconP3.updateHitbox();
+		var iconList = [ iconP1, iconP2, iconP3 ];
+		var netralIcon:Array<HealthIcon> = [];
+		var loseIcon:Array<HealthIcon> = [];
+		var winIcon:Array<HealthIcon> = [];
+		for (icon in iconList) {
+			if (icon != null) {
+				icon.scale.set(1.2, 1.2);
+				icon.updateHitbox();
+				if (icon.spriteSheet) {
+					//very stupid animation array thingy
+					if (healthBar.percent > 80) {
+						if (icon == iconP1) if (icon.winIcon) winIcon.push(icon); else netralIcon.push(icon);
+						if (icon == iconP2 || icon == iconP3) loseIcon.push(icon);
+					} else if (healthBar.percent < 20) {
+						if ((icon == iconP2 || icon == iconP3)) if (icon.winIcon) winIcon.push(icon); else netralIcon.push(icon);
+						if (icon == iconP1) loseIcon.push(icon);
+					} else {
+						netralIcon.push(icon);
+					}
+				}
+			}
 		}
+		if (netralIcon.length > 0) for (ico in netralIcon) if (curBeat % ico.danceEveryNumBeats == 0 && ico.spriteSheet) ico.danceIcon('netral');
+		if (winIcon.length > 0) for (ico in winIcon) if (curBeat % ico.danceEveryNumBeats == 0 && ico.spriteSheet) ico.danceIcon('win');
+		if (loseIcon.length > 0) for (ico in loseIcon) if (curBeat % ico.danceEveryNumBeats == 0 && ico.spriteSheet) ico.danceIcon('lose');
 
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
 
 		if (gf != null && curBeat % Math.round(gfSpeed * gf.danceEveryNumBeats) == 0 && gf.animation.curAnim != null && !gf.animation.curAnim.name.startsWith("sing") && !gf.stunned)
 		{

@@ -28,9 +28,9 @@ class MenuItem extends FlxSpriteGroup {
         songPanel = new NinesliceSprite(iconPanel.x + iconPanel.width + 25, 0, Std.int(870*(FlxG.width/1280)), 150, texture);
         add(songPanel);
         this.icon = new HealthIcon(icon);
-        CoolUtil.alignItem(iconPanel, this.icon);
         this.icon.setGraphicSize(105, 105);
-        this.icon.updateHitbox();
+        this.icon.updateHitboxNoOffset();
+        CoolUtil.alignItem(iconPanel, this.icon);
         add(this.icon);
         songName = new FlxText(0, 0, 0, title.toUpperCase(), 60);
         songName.setFormat(Paths.font('vcr.ttf'), 60, (ClientPrefs.darkmode ? FlxColor.WHITE : FlxColor.BLACK), LEFT);
@@ -73,9 +73,9 @@ class MenuItem extends FlxSpriteGroup {
     }
     public function changeIcon(char:String) {
         icon.changeIcon(char);
-        CoolUtil.alignItem(iconPanel, icon);
         icon.setGraphicSize(105, 105);
-        icon.updateHitbox();
+        icon.updateHitboxNoOffset();
+        CoolUtil.alignItem(iconPanel, icon);
     }
     public function changeTexture(tex:String) {
         if (iconPanel != null) iconPanel.texture = tex;
