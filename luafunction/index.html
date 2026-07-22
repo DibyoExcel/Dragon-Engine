@@ -196,6 +196,14 @@
                     <h3>setCameraShader(cam:String, shader:Array&lt;String&gt;)(26.10.3+)</h3>
                     <h4>Sets the shader of some <code>cam</code> to multi <code>shader</code>. (use <code>@</code> to use build in shader. example: <code>{'@invert', 'customshader'}</code>).</h4>
                 </div>
+                <div class="dialogue_group">
+                    <h3>reorderCamera(orderCam:Array&lt;String&gt;)(26.12.2+)</h3>
+                    <h4>Reorder Camera to <code>orderCam</code> order(behind-front).</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>setCameraOrder(cam:String, camTarget:String, behind:Bool = true)(26.12.2+)</h3>
+                    <h4>Sets <code>cam</code> camera order to behind/front <code>camTarget'</code> camera.<br>behind: If set <code>false</code> will put <code>cam</code> order to front <code>camTarget</code> camera.</h4>
+                </div>
             </div>
             
         </div>
