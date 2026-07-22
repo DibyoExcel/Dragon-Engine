@@ -44,6 +44,9 @@ class TouchButton extends FlxSprite{
                 if (cams == null) {
                     cams = @:privateAccess {FlxCamera._defaultCameras;};
                 }
+                if (cams == null) {
+                    continue;
+                }
                 for (cam in cams) {
                     if (touch != null &&  overlapsPoint(touch.getWorldPosition(cam), true, cam)) {//WTF?Also copy from FlxButton
                         if (stickyInput ? touch.justPressed : touch.pressed) {

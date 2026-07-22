@@ -774,21 +774,23 @@ class FlxSprite extends FlxObject
 		if (cam == null) {
 			cam = @:privateAccess {FlxCamera._defaultCameras;};
 		}
-		for (camera in cam)
-		{
-			if (!camera.visible || !camera.exists || !isOnScreen(camera))
-				continue;
-
-			getScreenPosition(_point, camera).subtractPoint(offset);
-
-			if (isSimpleRender(camera))
-				drawSimple(camera);
-			else
-				drawComplex(camera);
-
-			#if FLX_DEBUG
-			FlxBasic.visibleCount++;
-			#end
+		if (cam != null) {
+			for (camera in cam)
+			{
+				if (!camera.visible || !camera.exists || !isOnScreen(camera))
+					continue;
+	
+				getScreenPosition(_point, camera).subtractPoint(offset);
+	
+				if (isSimpleRender(camera))
+					drawSimple(camera);
+				else
+					drawComplex(camera);
+	
+				#if FLX_DEBUG
+				FlxBasic.visibleCount++;
+				#end
+			}
 		}
 
 		#if FLX_DEBUG

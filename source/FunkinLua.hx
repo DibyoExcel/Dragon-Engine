@@ -4384,6 +4384,42 @@ class FunkinLua {
 			return false;
 		});
 
+		Lua_helper.add_callback(lua, "reorderCamera", function(orderCam:Array<String>) {
+			if (orderCam == null || orderCam.length < 1) return;//GET OUT
+			for (cam in FlxG.cameras.list) {
+				FlxG.game.removeChild(cam.flashSprite);
+			}
+			@:privateAccess {
+				//i stole from CameraFrontEnd.hx :skull:
+				FlxG.cameras.list = [];//idk this would affected or not
+				for (cam in orderCam) {
+					var leObj:FlxCamera = cameraBetterFromString(cam);
+					FlxG.game.addChildAt(leObj.flashSprite, FlxG.game.getChildIndex(FlxG.game._inputContainer));
+					FlxG.cameras.list.push(leObj);
+					leObj.ID = FlxG.cameras.list.length - 1;
+				}
+			}
+		});
+
+		Lua_helper.add_callback(lua, "setCameraOrder", function(cam:String, camTarget:String, behind:Bool = true) {
+			if (cam == null || cam.length < 1 || camTarget == null || camTarget.length < 1) return;//GET OUT
+			var camObj:FlxCamera = cameraBetterFromString(cam);
+			var camTargetObj:FlxCamera = cameraBetterFromString(camTarget);
+			if (camObj != null && camTargetObj != null) {
+				FlxG.game.removeChild(camObj.flashSprite);
+				FlxG.cameras.list.remove(camObj);
+				var targetIndex:Int = FlxG.game.getChildIndex(camTargetObj.flashSprite);
+				var targetList = FlxG.cameras.list.indexOf(camTargetObj);
+				if (behind) {
+					FlxG.game.addChildAt(camObj.flashSprite, targetIndex);
+					FlxG.cameras.list.insert(targetList, camObj);
+				} else {
+					FlxG.game.addChildAt(camObj.flashSprite, targetIndex + 1);
+					FlxG.cameras.list.insert(targetList + 1, camObj);
+				}
+			}
+		});
+
 		call('onCreate', []);
 		#end
 	}
