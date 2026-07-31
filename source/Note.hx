@@ -285,6 +285,8 @@ class Note extends FlxSprite
 	public var shifterEase:String = 'quadInOut';//ease tween type for shifter(same like tweeen in lua)
 	public var shifterEndDistance:Float = 40; //how much distance shifter end before touching strums(more big value more range before hit strum)
 	public var shiferRangeMove:Float=1;//how much movement speed shifter do(more big value more slower it get and more wider)
+	public var comboTexture(default, set):String = null;//overwrite combo texture
+	public var numTexture(default, set):String = null;//overwrite combo number texture
 	//end dge core
 
 	@:noCompletion
@@ -1049,5 +1051,27 @@ class Note extends FlxSprite
 	}
 	private function get_isCustomField():Bool {
 		return (fieldTarget != null && fieldTarget.length > 0);
+	}
+	private function set_comboTexture(value:String):String {
+		if (value != null && value.length > 0) {
+			try{
+				Paths.getSparrowAtlas(value);
+				comboTexture = value;
+			} catch(e:Dynamic) {
+				value = null;
+			}
+		}
+		return value;
+	}
+	private function set_numTexture(value:String):String {
+		if (value != null && value.length > 0) {
+			try{
+				Paths.getSparrowAtlas(value);
+				numTexture = value;
+			} catch(e:Dynamic) {
+				value = null;
+			}
+		}
+		return value;
 	}
 }

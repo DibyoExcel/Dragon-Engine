@@ -24,6 +24,7 @@ import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import openfl.events.KeyboardEvent;
 import FunkinLua;
+import dge.obj.game.ComboSpr;
 
 using StringTools;
 
@@ -31,7 +32,7 @@ class EditorPlayState extends MusicBeatState
 {
 	// Yes, this is mostly a copy of PlayState, it's kinda dumb to make a direct copy of it but... ehhh
 	private var strumLine:FlxSprite;
-	private var comboGroup:FlxTypedGroup<FlxSprite>;
+	//private var comboGroup:FlxTypedGroup<FlxSprite>;
 	public var strumLineNotes:FlxTypedGroup<StrumNote>;
 	public var opponentStrums:FlxTypedGroup<StrumNote>;
 	public var gfStrums:FlxTypedGroup<StrumNote>;
@@ -57,6 +58,9 @@ class EditorPlayState extends MusicBeatState
 	private var hitboxCam:FlxCamera;
 	#end
 	private var cacheRating:Map<String, FlxGraphic> = new Map();//cache rating(slighty better performance)
+	//group
+	public var ratingGroup:FlxTypedGroup<ComboSpr>;
+	public var numRatingGroup:FlxTypedGroup<ComboSpr>;
 
 	public function new(startPos:Float) {
 		this.startPos = startPos;
@@ -104,8 +108,10 @@ class EditorPlayState extends MusicBeatState
 		if(ClientPrefs.downScroll) strumLine.y = FlxG.height - 150;
 		strumLine.scrollFactor.set();
 		
-		comboGroup = new FlxTypedGroup<FlxSprite>();
-		add(comboGroup);
+		ratingGroup = new FlxTypedGroup<ComboSpr>();
+		numRatingGroup = new FlxTypedGroup<ComboSpr>();
+		add(ratingGroup);
+		add(numRatingGroup);
 
 		strumLineNotes = new FlxTypedGroup<StrumNote>();
 		opponentStrums = new FlxTypedGroup<StrumNote>();
@@ -913,14 +919,7 @@ class EditorPlayState extends MusicBeatState
 				pixelShitPart2 = '-pixel';
 			}
 	
-			var ratingTOCache = ['sick', 'good', 'bad', 'shit', 'combo'];
-			for (i in ratingTOCache) {
-				cacheRating.set(i, Paths.image(pixelShitPart1 + i + pixelShitPart2));
-			}
-			
-			for (i in 0...10) {
-				cacheRating.set(Std.string(i), Paths.image(pixelShitPart1 + 'num' + i + pixelShitPart2));
-			}
+			Paths.getSparrowAtlas(pixelShitPart1 + 'comboAtlas' + pixelShitPart2);
 		}
 
 	private function popUpScore(note:Note = null):Void
@@ -971,8 +970,74 @@ class EditorPlayState extends MusicBeatState
 				daRating = 'bad';
 			*/
 
+		if (!ClientPrefs.comboStacking) {
+			for (i in ratingGroup.members) {
+				if (i != null) {
+					i.kill();
+				}
+			}
+			for (i in numRatingGroup.members) {
+				if (i != null) {
+					i.kill();
+				}
+			}
+		}
+		var pixelShitPart1:String = '';
+		var pixelShitPart2:String = '';
+		if (PlayState.isPixelStage)
+		{
+			pixelShitPart1 = 'pixelUI/';
+			pixelShitPart2 = '-pixel';
+		}
+		var CText = pixelShitPart1 + 'comboSpr' + pixelShitPart2;
+		var NText = pixelShitPart1 + 'numSpr' + pixelShitPart2;
+		var rating:ComboSpr = ratingGroup.recycle(ComboSpr);
+		var coolTextX = FlxG.width * 0.35;
+		rating.setupRating(CText, daRating, 2);
+		rating.screenCenter();
+		rating.x = coolTextX - 40;
+		rating.y -= 60;
+		rating.acceleration.y = 550 * 1 * 1;
+		rating.velocity.y = -FlxG.random.int(140, 175) * 1;
+		rating.velocity.x = -FlxG.random.int(0, 10) * 1;
+		rating.x += ClientPrefs.comboOffset[0];
+		rating.y -= ClientPrefs.comboOffset[1];
+		ratingGroup.remove(rating, true);
+		ratingGroup.add(rating);
+		var seperatedScore:Array<Int> = [];
+		var comboNumSplit:Array<String> = StringTools.lpad(Std.string(Math.abs(combo)), '0', 3).split('');//i think this keep 3 digit minimum for combo number, so it won't look weird when combo is less than 10 or 100
+		for (enter in comboNumSplit) {
+			seperatedScore.push(Std.parseInt(enter));
+		}
 
-		rating.loadGraphic(cacheRating.get(daRating));
+		var daLoop:Int = 0;
+		if (!ClientPrefs.comboStacking) {
+			for (i in numRatingGroup.members) {
+				if (i != null) {
+					i.kill();
+				}
+			}
+		}
+		for (i in seperatedScore)
+			{
+				var numScore:ComboSpr = numRatingGroup.recycle(ComboSpr);
+				numScore.setupRating(NText, 'num' + Std.string(i), 1, (PlayState.isPixelStage ? 0.825 : 0.5));//ignore stupid scale
+				numScore.screenCenter();
+				numScore.x = coolTextX + (43 * daLoop) - 90;
+				numScore.y += 80;
+				numScore.acceleration.y = FlxG.random.int(200, 300) * 1 * 1;
+				numScore.velocity.y = -FlxG.random.int(140, 160) * 1;
+				numScore.velocity.x = FlxG.random.float(-5, 5) * 1;
+	
+				numScore.x += ClientPrefs.comboOffset[2];
+				numScore.y -= ClientPrefs.comboOffset[3];
+
+				numScore.x -= (43 * (seperatedScore.length - 3))/2;//align to center
+				numRatingGroup.remove(numScore, true);
+				numRatingGroup.add(numScore);
+				daLoop++;
+			}
+		/*rating.loadGraphic(cacheRating.get(daRating));
 		rating.screenCenter();
 		rating.x = coolText.x - 40;
 		rating.y -= 60;
@@ -1057,7 +1122,7 @@ class EditorPlayState extends MusicBeatState
 			});
 
 			daLoop++;
-		}
+		}*/
 		/* 
 			trace(combo);
 			trace(seperatedScore);
@@ -1065,21 +1130,6 @@ class EditorPlayState extends MusicBeatState
 
 		coolText.text = Std.string(seperatedScore);
 		// comboGroup.add(coolText);
-
-		FlxTween.tween(rating, {alpha: 0}, 0.2, {
-			startDelay: Conductor.crochet * 0.001
-		});
-
-		FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
-			onComplete: function(tween:FlxTween)
-			{
-				coolText.destroy();
-				comboSpr.destroy();
-
-				rating.destroy();
-			},
-			startDelay: Conductor.crochet * 0.001
-		});
 	}
 
 	private function generateStaticArrows(player:Int, t:Bool = true):Void

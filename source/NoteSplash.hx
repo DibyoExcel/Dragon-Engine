@@ -30,7 +30,7 @@ class NoteSplash extends FlxSprite
             }
             skinSec = skinOpt;
         }
-        if (type == 'bg') {
+        if (type == 'bf') {
             texture = skin;
         } else if (type == 'gf') {
             texture = skinSec;

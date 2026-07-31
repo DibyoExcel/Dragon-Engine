@@ -3564,13 +3564,6 @@ class FunkinLua {
 			return callVarInArray(getInstance(), variable, value);
 		});
 
-		Lua_helper.add_callback(lua, "changeRatingTexture", function(rating:String, path:String) {
-			if (PlayState.instance.cacheRating.exists(rating)) {
-				PlayState.instance.cacheRating.remove(rating);
-			}
-			PlayState.instance.cacheRating.set(rating, Paths.image(path));
-		});
-
 		Lua_helper.add_callback(lua, "resizeGame", function(width:Null<Int> = null, height:Null<Int> = null, resetLayout:Bool = false, duration:Float = 0, ease:String, excludeCam:String = ''/**split by comma**/) {
 			var excludeCame:Array<FlxCamera> = [];
 			if (excludeCam.length > 0) {

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="comboAtlas-pixel.png" width="88" height="83">
+	<SubTexture name="bad0000" x="2" y="62" width="28" height="19" frameX="-0" frameY="-0" frameWidth="28" frameHeight="19"/>
+	<SubTexture name="combo0000" x="2" y="24" width="47" height="18" frameX="-0" frameY="-0" frameWidth="47" frameHeight="18"/>
+	<SubTexture name="good0000" x="2" y="44" width="39" height="16" frameX="-0" frameY="-0" frameWidth="39" frameHeight="16"/>
+	<SubTexture name="num00000" x="32" y="62" width="9" height="12" frameX="-0" frameY="-0" frameWidth="9" frameHeight="12"/>
+	<SubTexture name="num10000" x="51" y="39" width="12" height="9" rotated="true" frameX="-0" frameY="-0" frameWidth="9" frameHeight="12"/>
+	<SubTexture name="num20000" x="65" y="39" width="10" height="12" frameX="-0" frameY="-0" frameWidth="10" frameHeight="12"/>
+	<SubTexture name="num30000" x="43" y="50" width="12" height="10" rotated="true" frameX="-0" frameY="-0" frameWidth="10" frameHeight="12"/>
+	<SubTexture name="num40000" x="57" y="53" width="12" height="10" rotated="true" frameX="-0" frameY="-0" frameWidth="10" frameHeight="12"/>
+	<SubTexture name="num50000" x="43" y="62" width="12" height="10" rotated="true" frameX="-0" frameY="-0" frameWidth="10" frameHeight="12"/>
+	<SubTexture name="num60000" x="57" y="65" width="10" height="12" frameX="-0" frameY="-0" frameWidth="10" frameHeight="12"/>
+	<SubTexture name="num70000" x="77" y="2" width="9" height="12" frameX="-0" frameY="-0" frameWidth="9" frameHeight="12"/>
+	<SubTexture name="num80000" x="77" y="16" width="9" height="12" frameX="-0" frameY="-0" frameWidth="9" frameHeight="12"/>
+	<SubTexture name="num90000" x="77" y="30" width="9" height="12" frameX="-0" frameY="-0" frameWidth="9" frameHeight="12"/>
+	<SubTexture name="shit0000" x="55" y="2" width="20" height="35" rotated="true" frameX="-0" frameY="-0" frameWidth="35" frameHeight="20"/>
+	<SubTexture name="sick0000" x="2" y="2" width="51" height="20" frameX="-0" frameY="-0" frameWidth="51" frameHeight="20"/>
+</TextureAtlas>

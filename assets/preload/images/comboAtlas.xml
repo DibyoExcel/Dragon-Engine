@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="comboAtlas.png" width="587" height="523">
+	<SubTexture name="bad0000" x="2" y="372" width="187" height="123" frameX="-24" frameY="-5" frameWidth="261" frameHeight="131"/>
+	<SubTexture name="combo0000" x="2" y="143" width="316" height="117" frameX="-12" frameY="-16" frameWidth="343" frameHeight="138"/>
+	<SubTexture name="good0000" x="2" y="262" width="260" height="108" frameX="-25" frameY="-8" frameWidth="317" frameHeight="126"/>
+	<SubTexture name="num00000" x="191" y="372" width="91" height="111" frameX="-1" frameY="-2" frameWidth="94" frameHeight="119"/>
+	<SubTexture name="num10000" x="264" y="262" width="111" height="91" rotated="true" frameX="-3" frameY="-1" frameWidth="98" frameHeight="120"/>
+	<SubTexture name="num20000" x="377" y="244" width="111" height="91" rotated="true" frameX="-7" frameY="-8" frameWidth="105" frameHeight="129"/>
+	<SubTexture name="num30000" x="377" y="337" width="111" height="91" rotated="true" frameX="-5" frameY="-8" frameWidth="102" frameHeight="134"/>
+	<SubTexture name="num40000" x="284" y="355" width="91" height="111" frameX="-3" frameY="-11" frameWidth="98" frameHeight="130"/>
+	<SubTexture name="num50000" x="494" y="2" width="91" height="111" frameX="-13" frameY="-14" frameWidth="111" frameHeight="135"/>
+	<SubTexture name="num60000" x="494" y="115" width="91" height="111" frameX="-12" frameY="-10" frameWidth="108" frameHeight="134"/>
+	<SubTexture name="num70000" x="494" y="228" width="91" height="111" frameX="-0" frameY="-0" frameWidth="91" frameHeight="111"/>
+	<SubTexture name="num80000" x="490" y="341" width="90" height="111" frameX="-0" frameY="-0" frameWidth="90" frameHeight="115"/>
+	<SubTexture name="num90000" x="377" y="430" width="111" height="91" rotated="true" frameX="-0" frameY="-1" frameWidth="91" frameHeight="124"/>
+	<SubTexture name="shit0000" x="350" y="2" width="142" height="240" rotated="true" frameX="-13" frameY="-10" frameWidth="285" frameHeight="163"/>
+	<SubTexture name="sick0000" x="2" y="2" width="346" height="139" frameX="-11" frameY="-7" frameWidth="403" frameHeight="152"/>
+</TextureAtlas>
