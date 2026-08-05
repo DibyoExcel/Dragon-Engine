@@ -202,7 +202,15 @@
                 </div>
                 <div class="dialogue_group">
                     <h3>setCameraOrder(cam:String, camTarget:String, behind:Bool = true)(26.12.2+)</h3>
-                    <h4>Sets <code>cam</code> camera order to behind/front <code>camTarget'</code> camera.<br>behind: If set <code>false</code> will put <code>cam</code> order to front <code>camTarget</code> camera.</h4>
+                    <h4>Sets <code>cam</code> camera order to behind/front <code>camTarget'</code> camera.<br>behind: If set to <code>false</code> it will put <code>cam</code> order to front <code>camTarget</code> camera or else will put <code>cam</code> order to behind <code>camTarget</code> camera.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>setCameraMost(cam:String, camTarget:String, bottom:Bool = false)(26.12.5+)</h3>
+                    <h4>Sets <code>cam</code> camera order to bottommost/topmost.<br>bottom: If set to <code>true</code> it will put <code>cam</code> to bottommost or else will put <code>cam</code> to topmost.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>setCameraOrderV2(cam:String, index:Int)(26.12.5+)</h3>
+                    <h4>Sets <code>cam</code> camera order to <code>index</code><br>index:Set camera index between listed camera.</h4>
                 </div>
             </div>
             
@@ -261,6 +269,10 @@
                 <div class="dialogue_group">
                     <h3>colorToGrayscale(color:Int)(26.5.0+)</h3>
                     <h4>return <code>Int</code> or <code>Color Decimal</code> of from color to grayscale(luminance).<br>color: the color decimal to grayscale(use <code>getColorFromHex()</code> or <code>getColorFromRGB()</code> to get int or color decimal).</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>getCameraOrder(cam:String)(26.12.5+)</h3>
+                    <h4>return <code>Int</code> of <code>cam</code> index.</h4>
                 </div>
             </div>
         </div>
