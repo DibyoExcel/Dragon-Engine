@@ -4394,7 +4394,28 @@ class FunkinLua {
 			if (cam == null || cam.length < 1 || camTarget == null || camTarget.length < 1) return;//GET OUT
 			var camObj:FlxCamera = cameraBetterFromString(cam);
 			var camTargetObj:FlxCamera = cameraBetterFromString(camTarget);
-			CameraZOrder.moveCameraOrder(camObj, camTargetObj, behind);
+			CameraZOrder.moveOrderCamera(camObj, camTargetObj, behind);
+		});
+
+		Lua_helper.add_callback(lua, "setCameraMost", function(cam:String, bottom:Bool = false) {
+			if (cam == null || cam.length < 1) return;
+			var camObj:FlxCamera = cameraBetterFromString(cam);
+			if (bottom) {
+				CameraZOrder.moveVeryBehind(camObj);
+			} else {
+				CameraZOrder.moveVeryTop(camObj);
+			}
+		});
+
+		Lua_helper.add_callback(lua, "setCameraOrderV2", function(cam:String, index:Int) {
+			if (cam == null || cam.length < 1) return;
+			var camObj:FlxCamera = cameraBetterFromString(cam);
+			CameraZOrder.setCameraOrder(camObj, index);
+		});
+
+		Lua_helper.add_callback(lua, "getCameraOrder", function(cam:String, order:Int) {
+			var camObj:FlxCamera = cameraBetterFromString(cam);
+			return CameraZOrder.getCameraOrder(camObj);
 		});
 
 		call('onCreate', []);
@@ -4991,6 +5012,9 @@ class FunkinLua {
 
 	public static function cameraFromString(cam:String):FlxCamera {
 		switch(cam.toLowerCase()) {
+			#if mobile
+			case 'hitbox' | 'hitboxcam': return PlayState.instance.hitboxCam;
+			#end
 			case 'camhud' | 'hud': return PlayState.instance.camHUD;
 			case 'camother' | 'other': return PlayState.instance.camOther;
 		}

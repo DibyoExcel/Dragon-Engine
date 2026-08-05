@@ -14,7 +14,7 @@ class ComboSpr extends FlxSprite
     }
 
     public function setupRating(texture:String = '', anim:String = 'shit', startMult:Float = 1, scale:Float = 0.7) {
-        if (texture == null || texture.length < 1) texture = 'comboSpr';
+        if (texture == null || texture.length < 1) texture = 'comboAtlas';
         reset(0, 0);
         alpha = 1;
         loadAnims(texture);

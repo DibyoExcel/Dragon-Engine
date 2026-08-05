@@ -5287,8 +5287,15 @@ class PlayState extends MusicBeatState
 			comboTex = 'pixelUI/' + comboTex + '-pixel';
 			numTex = 'pixelUI/' + numTex + '-pixel';
 		}
-		Paths.getSparrowAtlas(comboTex);
-		Paths.getSparrowAtlas(numTex);
+		var rating:ComboSpr = new ComboSpr(comboTex);
+		rating.alpha = 0;
+		ratingGroup.add(rating);
+		var comboSpr:ComboSpr = new ComboSpr(comboTex, 'combo');
+		comboSpr.alpha = 0;
+		comboGroup.add(comboSpr);
+		var numRating:ComboSpr = new ComboSpr(numTex, 'num0');
+		numRating.alpha = 0;
+		numRatingGroup.add(numRating);
 	}
 	//var ratingTween:FlxTween = null;
 	//var comboTween:FlxTween = null;

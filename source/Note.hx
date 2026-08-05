@@ -1,5 +1,6 @@
 package;
 
+import Type.ValueType;
 import editors.ChartingState;
 import flixel.FlxSprite;
 import flixel.math.FlxRect;
@@ -1003,6 +1004,7 @@ class Note extends FlxSprite
 			if (tikus.startsWith("_")) continue;
 			var beban = tikus.split('.');
 			var val = Reflect.field(jsonRaw, tikus);
+			if (Std.isOfType(val, Dynamic) && Type.typeof(val) == ValueType.TObject) continue;//ignore anonymous
 			if (beban.length <= 1) {
 				try{
 					Reflect.setProperty(this, tikus, val);
