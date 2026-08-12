@@ -117,7 +117,7 @@ class VisualUISubState extends BaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('Classic Strums',
-			"The FNF Classic Strum(Note Splash & Hold Cover Will Disable).",
+			"Switch Strum Into Clasic Strum(Note Splash & Hold Cover Will Disable).",
 			'clsstrum',
 			'bool',
 			false);

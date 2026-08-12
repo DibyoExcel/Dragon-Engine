@@ -147,11 +147,7 @@ class MainMenuState extends MusicBeatState
 		add(debugButton);
 		#end
 		FlxG.camera.follow(camFollowPos, null, 1);
-		var versionShit:FlxText = new FlxText(12, FlxG.height - 56, 0, "Psych Engine v" + psychEngineVersion + "\nDragon Engine v" + Application.current.meta.get('version'), 12);
-		versionShit.scrollFactor.set();
-		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		add(versionShit);
-		var versionShit:FlxText = new FlxText(12, FlxG.height - 24, 0, "Friday Night Funkin' v0.2.8", 12);
+		var versionShit:FlxText = new FlxText(12, FlxG.height - 56, 0, "Psych Engine v" + psychEngineVersion + "\nDragon Engine v" + Application.current.meta.get('version') + "\nFriday Night Funkin' v0.2.8", 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);

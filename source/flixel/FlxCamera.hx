@@ -534,6 +534,19 @@ class FlxCamera extends FlxBasic
 
 	static var renderRect:FlxRect = FlxRect.get();
 
+	//dge variable
+	public var zoomXmult(default, set):Float = 1;
+	public var zoomYmult(default, set):Float = 1;
+
+	//thx codename
+	public var rotateSprite(default, set):Bool = false;//set true for old method angle
+
+	@:noCompletion
+	var _sinAngle:Float = 0;
+
+	@:noCompletion
+	var _cosAngle:Float = 1;
+
 	@:noCompletion
 	public function startQuadBatch(graphic:FlxGraphic, colored:Bool, hasColorOffsets:Bool = false, ?blend:BlendMode, smooth:Bool = false, ?shader:FlxShader)
 	{
@@ -708,11 +721,13 @@ class FlxCamera extends FlxBasic
 			if (_useBlitMatrix)
 			{
 				_helperMatrix.concat(_blitMatrix);
+				if (!rotateSprite && angle != 0) _helperMatrix.rotateWithTrig(_cosAngle, _sinAngle);
 				buffer.draw(pixels, _helperMatrix, null, null, null, (smoothing || antialiasing));
 			}
 			else
 			{
 				_helperMatrix.translate(-viewOffsetX, -viewOffsetY);
+				if (!rotateSprite && angle != 0) _helperMatrix.rotateWithTrig(_cosAngle, _sinAngle);
 				buffer.draw(pixels, _helperMatrix, null, blend, null, (smoothing || antialiasing));
 			}
 		}
@@ -720,6 +735,12 @@ class FlxCamera extends FlxBasic
 		{
 			var isColored = (transform != null && transform.hasRGBMultipliers());
 			var hasColorOffsets:Bool = (transform != null && transform.hasRGBAOffsets());
+			if (!rotateSprite && angle != 0)
+				{
+					matrix.translate(-width / 2, -height / 2);
+					matrix.rotateWithTrig(_cosAngle, _sinAngle);
+					matrix.translate(width / 2, height / 2);
+				}
 
 			#if FLX_RENDER_TRIANGLE
 			var drawItem:FlxDrawTrianglesItem = startTrianglesBatch(frame.parent, smoothing, isColored, blend);
@@ -742,12 +763,14 @@ class FlxCamera extends FlxBasic
 					_helperMatrix.identity();
 					_helperMatrix.translate(destPoint.x, destPoint.y);
 					_helperMatrix.concat(_blitMatrix);
+					if (!rotateSprite && angle != 0) _helperMatrix.rotateWithTrig(_cosAngle, _sinAngle);
 					buffer.draw(pixels, _helperMatrix, null, null, null, (smoothing || antialiasing));
 				}
 				else
 				{
 					_helperPoint.x = destPoint.x - Std.int(viewOffsetX);
 					_helperPoint.y = destPoint.y - Std.int(viewOffsetY);
+					if (!rotateSprite && angle != 0) _helperMatrix.rotateWithTrig(_cosAngle, _sinAngle);
 					buffer.copyPixels(pixels, sourceRect, _helperPoint, null, null, true);
 				}
 			}
@@ -1858,24 +1881,61 @@ class FlxCamera extends FlxBasic
 	 * screen coordinates.
 	 * @since 4.3.0
 	 */
-	public inline function containsPoint(point:FlxPoint, width:Float = 0, height:Float = 0):Bool
+	 public function containsPoint(point:FlxPoint, width:Float = 0, height:Float = 0):Bool
 	{
-		var contained = (point.x + width > viewOffsetX) && (point.x < viewOffsetWidth)
+		if (!rotateSprite) {
+			var cos = _cosAngle;
+			var sin = _sinAngle;
+		
+			//get centered cam
+			var viewCenterX = (viewOffsetX + viewOffsetWidth) / 2;
+			var viewCenterY = (viewOffsetY + viewOffsetHeight) / 2;
+		
+			//  expand box base hitbox(inspired adobe bounding box lol)
+			var camHalfW = (Math.abs((viewOffsetWidth-viewOffsetX) * cos) + Math.abs((viewOffsetHeight-viewOffsetY) * sin)) / 2;
+			var camHalfH = (Math.abs((viewOffsetWidth-viewOffsetX) * sin) + Math.abs((viewOffsetHeight-viewOffsetY) * cos)) / 2;
+		
+			// check the expandable box instead camera box
+			var contained = (point.x + width > viewCenterX - camHalfW) 
+				&& (point.x < viewCenterX + camHalfW)
+				&& (point.y + height > viewCenterY - camHalfH) 
+				&& (point.y < viewCenterY + camHalfH);
+		
+			point.putWeak();
+			return contained;
+		} else {
+			var contained = (point.x + width > viewOffsetX) && (point.x < viewOffsetWidth)
 			&& (point.y + height > viewOffsetY) && (point.y < viewOffsetHeight);
-		point.putWeak();
-		return contained;
+			point.putWeak();
+			return contained;
+		}
 	}
+		
 	
 	/**
 	 * Checks whether this camera contains a given rectangle, in screen coordinates.
 	 * @since 4.11.0
 	 */
-	public inline function containsRect(rect:FlxRect):Bool
+	public function containsRect(rect:FlxRect):Bool
 	{
-		var contained = (rect.right > viewOffsetX) && (rect.x < viewOffsetWidth)
+		if (!rotateSprite) {
+			//fix invisible sprite when extreme angle by expand view box based angle(inpired from adobe's bounding box)
+			var cos = _cosAngle;
+			var sin = _sinAngle;
+			var viewCenterX = (viewOffsetX + viewOffsetWidth) / 2;
+			var viewCenterY = (viewOffsetY + viewOffsetHeight) / 2;
+			var camHalfW = (Math.abs((viewOffsetWidth-viewOffsetX) * cos) + Math.abs((viewOffsetHeight-viewOffsetY) * sin)) / 2;
+			var camHalfH = (Math.abs((viewOffsetWidth-viewOffsetX) * sin) + Math.abs((viewOffsetHeight-viewOffsetY) * cos)) / 2;
+			var contained = (rect.right > viewCenterX-camHalfW) && (rect.x < viewCenterX+camHalfW)
+				&& (rect.bottom > viewCenterY-camHalfH) && (rect.y < viewCenterY+camHalfH);
+			rect.putWeak();
+			return contained;
+		} else {
+			var contained = (rect.right > viewOffsetX) && (rect.x < viewOffsetWidth)
 			&& (rect.bottom > viewOffsetY) && (rect.y < viewOffsetHeight);
-		rect.putWeak();
-		return contained;
+			rect.putWeak();
+			return contained;
+		}
 	}
 
 	function set_followLerp(Value:Float):Float
@@ -1916,8 +1976,20 @@ class FlxCamera extends FlxBasic
 	function set_zoom(Zoom:Float):Float
 	{
 		zoom = (Zoom == 0) ? defaultZoom : Zoom;
-		setScale(zoom, zoom);
+		setScale(initialZoom+((zoom-initialZoom)*zoomXmult), initialZoom+((zoom-initialZoom)*zoomYmult));
 		return zoom;
+	}
+
+	function set_zoomXmult(value:Float):Float {
+		zoomXmult = value;
+		setScale(initialZoom+((zoom-initialZoom)*zoomXmult), initialZoom+((zoom-initialZoom)*zoomYmult));
+		return value;
+	}
+
+	function set_zoomYmult(value:Float):Float {
+		zoomYmult = value;
+		setScale(initialZoom+((zoom-initialZoom)*zoomXmult), initialZoom+((zoom-initialZoom)*zoomYmult));
+		return value;
 	}
 
 	function set_alpha(Alpha:Float):Float
@@ -1937,8 +2009,16 @@ class FlxCamera extends FlxBasic
 	function set_angle(Angle:Float):Float
 	{
 		angle = Angle;
-		flashSprite.rotation = Angle;
+		flashSprite.rotation = (rotateSprite ? Angle : 0);
+		_sinAngle = Math.sin(Angle * Math.PI / 180);
+		_cosAngle = Math.cos(Angle * Math.PI / 180);
 		return Angle;
+	}
+
+	function set_rotateSprite(value:Bool):Bool {
+		rotateSprite = value;
+		set_angle(angle);
+		return value;
 	}
 
 	function set_color(Color:FlxColor):FlxColor

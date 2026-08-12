@@ -204,7 +204,7 @@ class NoteSplash extends FlxSprite
 				alpha = strum.alpha * note.noteSplashAlpha;
 			} 
 		}
-		if(animation.curAnim != null)if(animation.curAnim.finished) kill();
+		if(animation != null && animation.curAnim != null)if(animation.curAnim.finished) kill();
 
 		super.update(elapsed);
 	}
