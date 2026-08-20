@@ -1,5 +1,5 @@
-//got to line 263 to see new code
 package flixel;
+//got to line 263 to see new code
 
 import flash.display.BitmapData;
 import flash.display.BlendMode;
@@ -267,7 +267,7 @@ class FlxSprite extends FlxObject
 	 */
 	@:noCompletion
 	var _facingFlip:Map<FlxDirectionFlags, {x:Bool, y:Bool}> = new Map<FlxDirectionFlags, {x:Bool, y:Bool}>();
-
+	//dge variable
     public var colorSwap(get, never):ColorSwap;
     public var colorInvert(get, never):ColorInvert;
     public var colorSingle(get, never):ColorSingle;
@@ -277,6 +277,7 @@ class FlxSprite extends FlxObject
 	public var rgbShader(get, never):RGBPalette;
 	public var grayScale(get, never):GrayScale;
 	public var blackAndWhite(get, never):BlackAndWhite;
+	public var ignoreCameraAngle:Bool = false;
 	//store object after access
     private var _colorSwap:ColorSwap;
     private var _colorInvert:ColorInvert;
@@ -287,6 +288,7 @@ class FlxSprite extends FlxObject
 	private var _rgbShader:RGBPalette;
 	private var _grayScale:GrayScale;
 	private var _blackAndWhite:BlackAndWhite;
+	
 
 	private function get_colorSwap():ColorSwap {
 		if (_colorSwap == null) {
@@ -833,7 +835,7 @@ class FlxSprite extends FlxObject
 			_matrix.ty = Math.floor(_matrix.ty);
 		}
 
-		camera.drawPixels(_frame, framePixels, _matrix, colorTransform, blend, antialiasing, shader);
+		camera.drawPixels(_frame, framePixels, _matrix, colorTransform, blend, antialiasing, shader, ignoreCameraAngle);
 	}
 
 	/**
@@ -1110,7 +1112,7 @@ class FlxSprite extends FlxObject
 		if (camera == null)
 			camera = FlxG.camera;
 		
-		return camera.containsRect(getScreenBounds(_rect, camera));
+		return camera.containsRect(getScreenBounds(_rect, camera), ignoreCameraAngle);
 	}
 
 	/**

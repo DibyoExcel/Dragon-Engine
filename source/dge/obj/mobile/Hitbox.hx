@@ -56,6 +56,7 @@ class Hitbox extends TouchButton
         blend = FunkinLua.blendModeFromString(ClientPrefs.hitboxBlend);
         antialiasing = ClientPrefs.globalAntialiasing;
         stickyInput = ClientPrefs.stickyHitbox;
+        ignoreCameraAngle = true;
      }
 
      override public function set_y(value:Float):Float {

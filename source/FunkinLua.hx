@@ -4418,6 +4418,31 @@ class FunkinLua {
 			return CameraZOrder.getCameraOrder(camObj);
 		});
 
+		Lua_helper.add_callback(lua, "fitSpriteToScreen", function(obj:String, center:Bool = true, fill:Bool = true) {
+			var spr:FlxSprite = PlayState.instance.getLuaObject(obj);
+
+			if(spr==null){
+				var killMe:Array<String> = obj.split('.');
+				spr = getObjectDirectly(killMe[0]);
+				if(killMe.length > 1) {
+					spr = getVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1]);
+				}
+			}
+
+			if(spr != null)
+			{
+				CoolUtil.fitBackground(spr, center, fill);
+				return;
+			}
+			luaTrace("Fit Sprite: Object " + obj + " doesn't exist!", false, false, FlxColor.RED);
+		});
+
+		Lua_helper.add_callback(lua, "addCameraAt", function(name:String= '', x:Int, y:Int, width:Int, height:Int, zoom:Float = 1, ?sectionZoom:Bool = false, index:Int = -1) {
+			if (name != null && name != '') {
+				PlayState.instance.addCamera(name, x, y, width, height, zoom, sectionZoom, true, index);
+			}
+		});
+
 		call('onCreate', []);
 		#end
 	}

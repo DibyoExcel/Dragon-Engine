@@ -540,6 +540,7 @@ class FlxCamera extends FlxBasic
 
 	//thx codename
 	public var rotateSprite(default, set):Bool = false;//set true for old method angle
+	public var complexObjectVisibility:Bool = true;//checking object visibility complex for `rotateSprite` is `false`(it use for `containsRect()` and `containsPoint()`)
 
 	@:noCompletion
 	var _sinAngle:Float = 0;
@@ -712,7 +713,7 @@ class FlxCamera extends FlxBasic
 	}
 
 	public function drawPixels(?frame:FlxFrame, ?pixels:BitmapData, matrix:FlxMatrix, ?transform:ColorTransform, ?blend:BlendMode, ?smoothing:Bool = false,
-			?shader:FlxShader):Void
+			?shader:FlxShader, ?ignoreAngle:Bool = false):Void
 	{
 		if (FlxG.renderBlit)
 		{
@@ -721,13 +722,23 @@ class FlxCamera extends FlxBasic
 			if (_useBlitMatrix)
 			{
 				_helperMatrix.concat(_blitMatrix);
-				if (!rotateSprite && angle != 0) _helperMatrix.rotateWithTrig(_cosAngle, _sinAngle);
+				if (!rotateSprite && angle != 0 && !ignoreAngle)
+				{
+					_helperMatrix.translate(-width / 2, -height / 2);
+					_helperMatrix.rotateWithTrig(_cosAngle, _sinAngle);
+					_helperMatrix.translate(width / 2, height / 2);
+				}
 				buffer.draw(pixels, _helperMatrix, null, null, null, (smoothing || antialiasing));
 			}
 			else
 			{
 				_helperMatrix.translate(-viewOffsetX, -viewOffsetY);
-				if (!rotateSprite && angle != 0) _helperMatrix.rotateWithTrig(_cosAngle, _sinAngle);
+				if (!rotateSprite && angle != 0 && !ignoreAngle)
+				{
+					_helperMatrix.translate(-width / 2, -height / 2);
+					_helperMatrix.rotateWithTrig(_cosAngle, _sinAngle);
+					_helperMatrix.translate(width / 2, height / 2);
+				}
 				buffer.draw(pixels, _helperMatrix, null, blend, null, (smoothing || antialiasing));
 			}
 		}
@@ -735,7 +746,7 @@ class FlxCamera extends FlxBasic
 		{
 			var isColored = (transform != null && transform.hasRGBMultipliers());
 			var hasColorOffsets:Bool = (transform != null && transform.hasRGBAOffsets());
-			if (!rotateSprite && angle != 0)
+			if (!rotateSprite && angle != 0 && !ignoreAngle)
 				{
 					matrix.translate(-width / 2, -height / 2);
 					matrix.rotateWithTrig(_cosAngle, _sinAngle);
@@ -763,14 +774,24 @@ class FlxCamera extends FlxBasic
 					_helperMatrix.identity();
 					_helperMatrix.translate(destPoint.x, destPoint.y);
 					_helperMatrix.concat(_blitMatrix);
-					if (!rotateSprite && angle != 0) _helperMatrix.rotateWithTrig(_cosAngle, _sinAngle);
+					if (!rotateSprite && angle != 0)
+					{
+						_helperMatrix.translate(-width / 2, -height / 2);
+						_helperMatrix.rotateWithTrig(_cosAngle, _sinAngle);
+						_helperMatrix.translate(width / 2, height / 2);
+					}
 					buffer.draw(pixels, _helperMatrix, null, null, null, (smoothing || antialiasing));
 				}
 				else
 				{
 					_helperPoint.x = destPoint.x - Std.int(viewOffsetX);
 					_helperPoint.y = destPoint.y - Std.int(viewOffsetY);
-					if (!rotateSprite && angle != 0) _helperMatrix.rotateWithTrig(_cosAngle, _sinAngle);
+					if (!rotateSprite && angle != 0)
+					{
+						_helperMatrix.translate(-width / 2, -height / 2);
+						_helperMatrix.rotateWithTrig(_cosAngle, _sinAngle);
+						_helperMatrix.translate(width / 2, height / 2);
+					}
 					buffer.copyPixels(pixels, sourceRect, _helperPoint, null, null, true);
 				}
 			}
@@ -784,6 +805,13 @@ class FlxCamera extends FlxBasic
 		{
 			_helperMatrix.identity();
 			_helperMatrix.translate(destPoint.x + frame.offset.x, destPoint.y + frame.offset.y);
+
+			if (!rotateSprite && angle != 0)
+				{
+					_helperMatrix.translate(-width / 2, -height / 2);
+					_helperMatrix.rotateWithTrig(_cosAngle, _sinAngle);
+					_helperMatrix.translate(width / 2, height / 2);
+				}
 
 			var isColored = (transform != null && transform.hasRGBMultipliers());
 			var hasColorOffsets:Bool = (transform != null && transform.hasRGBAOffsets());
@@ -855,6 +883,13 @@ class FlxCamera extends FlxBasic
 				{
 					_helperMatrix.identity();
 					_helperMatrix.translate(-viewOffsetX, -viewOffsetY);
+				}
+
+				if (!rotateSprite && angle != 0)
+				{
+					_helperMatrix.translate(-width / 2, -height / 2);
+					_helperMatrix.rotateWithTrig(_cosAngle, _sinAngle);
+					_helperMatrix.translate(width / 2, height / 2);
 				}
 
 				buffer.draw(trianglesSprite, _helperMatrix);
@@ -1883,7 +1918,7 @@ class FlxCamera extends FlxBasic
 	 */
 	 public function containsPoint(point:FlxPoint, width:Float = 0, height:Float = 0):Bool
 	{
-		if (!rotateSprite) {
+		if (!rotateSprite && complexObjectVisibility) {
 			var cos = _cosAngle;
 			var sin = _sinAngle;
 		
@@ -1892,8 +1927,9 @@ class FlxCamera extends FlxBasic
 			var viewCenterY = (viewOffsetY + viewOffsetHeight) / 2;
 		
 			//  expand box base hitbox(inspired adobe bounding box lol)
-			var camHalfW = (Math.abs((viewOffsetWidth-viewOffsetX) * cos) + Math.abs((viewOffsetHeight-viewOffsetY) * sin)) / 2;
-			var camHalfH = (Math.abs((viewOffsetWidth-viewOffsetX) * sin) + Math.abs((viewOffsetHeight-viewOffsetY) * cos)) / 2;
+			var camHalf = CoolUtil.AABBHandler(viewOffsetWidth-viewOffsetX, viewOffsetHeight-viewOffsetY, sin, cos);
+			var camHalfW = camHalf[0] / 2;
+			var camHalfH = camHalf[1] / 2;
 		
 			// check the expandable box instead camera box
 			var contained = (point.x + width > viewCenterX - camHalfW) 
@@ -1916,16 +1952,17 @@ class FlxCamera extends FlxBasic
 	 * Checks whether this camera contains a given rectangle, in screen coordinates.
 	 * @since 4.11.0
 	 */
-	public function containsRect(rect:FlxRect):Bool
+	public function containsRect(rect:FlxRect, ?ignoreAngle:Bool = false):Bool
 	{
-		if (!rotateSprite) {
+		if (!rotateSprite && complexObjectVisibility && !ignoreAngle) {
 			//fix invisible sprite when extreme angle by expand view box based angle(inpired from adobe's bounding box)
 			var cos = _cosAngle;
 			var sin = _sinAngle;
 			var viewCenterX = (viewOffsetX + viewOffsetWidth) / 2;
 			var viewCenterY = (viewOffsetY + viewOffsetHeight) / 2;
-			var camHalfW = (Math.abs((viewOffsetWidth-viewOffsetX) * cos) + Math.abs((viewOffsetHeight-viewOffsetY) * sin)) / 2;
-			var camHalfH = (Math.abs((viewOffsetWidth-viewOffsetX) * sin) + Math.abs((viewOffsetHeight-viewOffsetY) * cos)) / 2;
+			var camHalf = CoolUtil.AABBHandler(viewOffsetWidth-viewOffsetX, viewOffsetHeight-viewOffsetY, sin, cos);
+			var camHalfW = camHalf[0] / 2;
+			var camHalfH = camHalf[1] / 2;
 			var contained = (rect.right > viewCenterX-camHalfW) && (rect.x < viewCenterX+camHalfW)
 				&& (rect.bottom > viewCenterY-camHalfH) && (rect.y < viewCenterY+camHalfH);
 			rect.putWeak();

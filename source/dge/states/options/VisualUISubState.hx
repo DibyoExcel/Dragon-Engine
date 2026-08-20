@@ -35,6 +35,7 @@ class VisualUISubState extends BaseOptionsMenu
 {
 
 	var colorKeyPress:Array<String> = ['FF00FF', '00FFFF', '00FF00', 'FF0000'];
+	var mustRestart:Bool = false;
 	public function new()
 	{
 
@@ -94,18 +95,9 @@ class VisualUISubState extends BaseOptionsMenu
 			'bool',
 			false);
 		option.onChange = function() {
-			keyBroker = true;
-			ClientPrefs.saveSettings();
-			//reset
-			TitleState.initialized = false;
-			TitleState.closedState = false;
-			FlxG.sound.music.fadeOut(0.3);
-			if(FreeplayState.vocals != null)
-			{
-				FreeplayState.vocals.fadeOut(0.3);
-				FreeplayState.vocals = null;
-			}
-			FlxG.camera.fade(FlxColor.BLACK, 0.5, false, FlxG.resetGame, false);
+			//keyBroker = true;
+			mustRestart = true;
+			
 		}
 		addOption(option);
 
@@ -221,7 +213,7 @@ class VisualUISubState extends BaseOptionsMenu
 		option.scrollSpeed = 15;
 		option.onChange = function() {
 			if (Main.fpsVar != null) {
-				Main.fpsVar.defaultTextFormat = new TextFormat(Paths.textFormatFont('vcr.ttf'), ClientPrefs.fpsFontSize);
+				Main.fpsVar.setTextSize(ClientPrefs.fpsFontSize);
 			}
 		}
 		addOption(option);
@@ -239,12 +231,54 @@ class VisualUISubState extends BaseOptionsMenu
 			'bool',
 			false);
 		addOption(option);
+		
+		#if !html5
+		var option:Option = new Option('Stretch Screen To Fit',
+			"If Checked, The Screen Will Stretch To Fit " + #if mobile "Mobile Screen" #else "Window" #end + " Size. Warning It Can Causes Distorted.",
+			'fillScreen',
+			'bool',
+			false);
+		option.onChange = function() {
+			dge.frontend.scale.ScreenScaleMode.allowWideScreen = ClientPrefs.fillScreen;
+		}
+		addOption(option);
+
+		var option:Option = new Option('FPS Background Alpha',
+			"FPS Counter Background Alpha.",
+			'fpsBGAlpha',
+			'percent',
+			0.5);
+		option.minValue = 0;
+		option.maxValue = 1;
+		option.scrollSpeed = 1.6;
+		option.changeValue = 0.01;
+		option.decimals = 2;
+		option.onChange = function() {
+			if (Main.fpsVar != null) {
+				Main.fpsVar.backgroundAlpha = ClientPrefs.fpsBGAlpha;
+			}
+		}
+		addOption(option);
+		#end
 
 		super();
 		changeBGColor(0xffff0000);
 	}
 	override public function close():Void {
-		super.close();
+		if (mustRestart) {
+			//reset
+			TitleState.initialized = false;
+			TitleState.closedState = false;
+			FlxG.sound.music.fadeOut(0.3);
+			if(FreeplayState.vocals != null)
+			{
+				FreeplayState.vocals.fadeOut(0.3);
+				FreeplayState.vocals = null;
+			}
+			FlxG.camera.fade(FlxColor.BLACK, 0.5, false, FlxG.resetGame, false);
+		} else {
+			super.close();
+		}
 		ClientPrefs.saveSettings();
 		//trace("setting save!");
 	}

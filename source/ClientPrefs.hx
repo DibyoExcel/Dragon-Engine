@@ -8,6 +8,8 @@ import Controls;
 
 class ClientPrefs {
 	//dge setting
+	public static var fpsBGAlpha:Float = 0.5;
+	public static var fillScreen:Bool = false;
 	public static var gpuCaching:Bool = false;
 	public static var stickyHitbox:Bool = false;
 	public static var stickyNoteSplash:Bool = false;
@@ -154,6 +156,8 @@ class ClientPrefs {
 	}
 
 	public static function saveSettings() {
+		FlxG.save.data.fpsBGAlpha = fpsBGAlpha;
+		FlxG.save.data.fillScreen = fillScreen;
 		FlxG.save.data.gpuCaching = gpuCaching;
 		FlxG.save.data.stickyHitbox = stickyHitbox;
 		FlxG.save.data.stickyNoteSplash = stickyNoteSplash;
@@ -249,6 +253,12 @@ class ClientPrefs {
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.fpsBGAlpha != null) {
+			fpsBGAlpha = FlxG.save.data.fpsBGAlpha;
+		}
+		if(FlxG.save.data.fillScreen != null) {
+			fillScreen = FlxG.save.data.fillScreen;
 		}
 		if(FlxG.save.data.gpuCaching != null) {
 			gpuCaching = FlxG.save.data.gpuCaching;

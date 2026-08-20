@@ -8,6 +8,7 @@ import flixel.FlxState;
 import openfl.Assets;
 import openfl.Lib;
 import openfl.display.FPS;
+import dge.frontend.BetterFPSCounter;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.display.StageScaleMode;
@@ -48,7 +49,8 @@ class Main extends Sprite
 	var framerate:Int = 60; // How many frames per second the game should run at.
 	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
-	public static var fpsVar:FPS;
+	//public static var fpsVar:FPS;
+	public static var fpsVar:BetterFPSCounter;
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
@@ -104,14 +106,19 @@ class Main extends Sprite
 		var targetWidth:Int = Math.round(screenWidth * scale);
 		addChild(new FlxGame(targetWidth, targetHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));*/
 
-		fpsVar = new FPS(15, 15, 0x00FF00);
+		//fpsVar = new FPS(15, 15, 0x00FF00);
+		fpsVar = new BetterFPSCounter(15, 15, 0x00FF00, 0x000000, ClientPrefs.fpsBGAlpha);
 		addChild(fpsVar);
 		if(fpsVar != null) {
 			fpsVar.visible = ClientPrefs.showFPS;
 		}
 		Note.swagWidth = 160 * ClientPrefs.strumsize;
 		Lib.current.stage.align = "tl";
+		#if html5
 		Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
+		#else
+		dge.frontend.scale.ScreenScaleMode.allowWideScreen = ClientPrefs.fillScreen;
+		#end
 		
 		#if html5
 		FlxG.autoPause = false;
@@ -154,7 +161,7 @@ class Main extends Sprite
 					Sys.println(stackItem);
 			}
 		}
-		errMsg += "\nUncaught Error: " + e.error + "\nPlease report this error to the GitHub page: https://github.com/DibyoExcel/Dragon-Engine\n\n> Crash Handler written by: sqirra-rng";
+		errMsg += "\nUncaught Error: " + e.error + "\nPlease report this error to the GitHub page: https://github.com/DibyoExcel/Dragon-Engine or Discord server: https://discord.gg/E3DhsNUxkU\n\n> Crash Handler written by: sqirra-rng";
 
 		if (!FileSystem.exists(Paths.externalFilesPath("crash/")))
 			FileSystem.createDirectory(Paths.externalFilesPath("crash/"));

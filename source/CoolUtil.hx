@@ -259,12 +259,17 @@ class CoolUtil
 		return (Std.int(avgRed) << 16) | (Std.int(avgGreen) << 8) | Std.int(avgBlue);
 	}
 
-	public static function fitBackground(spr:FlxSprite, center:Bool = true) {
+	public static function fitBackground(spr:FlxSprite, center:Bool = true, fill:Bool = true) {
 		if (spr != null) {
 			var scaleX = FlxG.width / spr.width;
 			var scaleY = FlxG.height / spr.height;
-			var biggestScale = Math.max(scaleX, scaleY);
-			spr.scale.set(biggestScale, biggestScale);
+			if (fill) {
+				var biggestScale = Math.max(scaleX, scaleY);
+				spr.scale.set(biggestScale, biggestScale);
+			} else {
+				var smallestScale = Math.min(scaleX, scaleY);
+				spr.scale.set(smallestScale, smallestScale);
+			}
 			spr.updateHitbox();
 			if (center) {
 				spr.screenCenter();
@@ -332,6 +337,7 @@ class CoolUtil
 		}
 		return hasAnim;
 	}
+
 	public static function alignItem(key:FlxSprite, obj:FlxSprite, alignType:Align = CENTER) {
 		if (key != null && obj != null) {
 			switch(alignType) {
@@ -364,5 +370,11 @@ class CoolUtil
 					obj.y = (key.y+(key.height/2))-(obj.height/2);
 			}
 		}
+	}
+
+	public static function AABBHandler(width:Float, height:Float, sin:Float, cos:Float):Array<Float> {
+		var resultSizeW = (Math.abs(width * cos) + Math.abs(height * sin));
+		var resultSizeH = (Math.abs(width * sin) + Math.abs(height * cos));
+		return [resultSizeW, resultSizeH];
 	}
 }

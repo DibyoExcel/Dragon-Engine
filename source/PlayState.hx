@@ -69,6 +69,7 @@ import DialogueBoxPsych;
 import Conductor.Rating;
 import dge.obj.game.HoldCover;
 import dge.obj.game.ComboSpr;
+import dge.frontend.CameraZOrder as CameraRender;
 
 #if !flash 
 import flixel.addons.display.FlxRuntimeShader;
@@ -7285,11 +7286,15 @@ class PlayState extends MusicBeatState
 			'NOTE_RIGHT'
 		];
 	}
-	public function addCamera(name:String = '', x:Int, y:Int, width:Int, height:Int, zoom:Float = 1, ?sectionZoom:Bool = false) {
+	public function addCamera(name:String = '', x:Int, y:Int, width:Int, height:Int, zoom:Float = 1, ?sectionZoom:Bool = false, ?insertMode:Bool = false, ?insertIndex:Int = -1) {
 		if (name != '' && !variables.exists('camera:' + name) && !customCameraMap.exists(name)) {
 			var isTemp:FlxCamera = new FlxCamera(x, y, width, height, zoom);
 			isTemp.bgColor.alpha = 0;
-			FlxG.cameras.add(isTemp, false);
+			if (!insertMode) {
+				FlxG.cameras.add(isTemp, false);
+			} else {
+				CameraRender.insert(isTemp, insertIndex, false);
+			}
 			variables.set('camera:' + name, isTemp);
 			customCameraMap.set(name, isTemp);
 			if (sectionZoom) {
