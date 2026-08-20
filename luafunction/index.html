@@ -212,6 +212,10 @@
                     <h3>setCameraOrderV2(cam:String, index:Int)(26.12.5+)</h3>
                     <h4>Sets <code>cam</code> camera order to <code>index</code>.<br>index:Set camera index between listed camera.</h4>
                 </div>
+                <div class="dialogue_group">
+                    <h3>fitSpriteToScreen(obj:String, center:Bool = true, fill:Bool = true)(26.12.7+)</h3>
+                    <h4>Sets <code>obj</code> scale proportion to fit screen.<br>obj: The object game name.<br>center: Should will center after scaling?<br>fill: If set to <code>false</code> will scale to fit screen without cut sprite.</h4>
+                </div>
             </div>
             
         </div>
@@ -334,6 +338,10 @@
                 <div class="dialogue_group">
                     <h3>removeToggle(tag:String)(26.1.0+)</h3>
                     <h4>Remove toggle object.<br>tag: tag name of toggle.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>addCameraAt(name:String = '', x:Int, y:Int, width:Int, height:Int, zoom:Float = 1, ?sectionZoom:Bool = false, index:Int = -1)(26.12.7+)</h3>
+                    <h4>Same as <code>addCamera()</code> but with order control.<br>index: select order to add camera.</h4>
                 </div>
             </div>
         </div>
