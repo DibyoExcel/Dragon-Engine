@@ -13,6 +13,8 @@ import llua.Lua;
 import llua.State;
 #end
 
+using StringTools;
+
 
 class DiscordClient
 {
@@ -94,6 +96,7 @@ class DiscordClient
 
     public static function changePresence(details:String, state:Null<String>, ?smallImageKey:String, ?hasStartTimestamp:Bool, ?endTimestamp:Float):Void
     {
+        smallImageKey = smallImageKey.toLowerCase();
         var startTimestamp:Float = if (hasStartTimestamp) Date.now().getTime() else 0;
 
         if (endTimestamp > 0)

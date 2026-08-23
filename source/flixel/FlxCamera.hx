@@ -1986,6 +1986,7 @@ class FlxCamera extends FlxBasic
 		{
 			width = Value;
 			if (_flashRect != null) _flashRect.width = width;
+			if (target != null) follow(target, style, followLerp);//reload to be sure target not misalign
 			calcOffsetX();
 			updateFlashOffset();
 			updateScrollRect();
@@ -2002,6 +2003,7 @@ class FlxCamera extends FlxBasic
 		{
 			height = Value;
 			if (_flashRect != null) _flashRect.height = height;
+			if (target != null) follow(target, style, followLerp);//reload to be sure target not misalign
 			calcOffsetY();
 			updateFlashOffset();
 			updateScrollRect();

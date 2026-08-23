@@ -3565,7 +3565,7 @@ class FunkinLua {
 			return callVarInArray(getInstance(), variable, value);
 		});
 
-		Lua_helper.add_callback(lua, "resizeGame", function(width:Null<Int> = null, height:Null<Int> = null, resetLayout:Bool = false, duration:Float = 0, ease:String, excludeCam:String = ''/**split by comma**/) {
+		Lua_helper.add_callback(lua, "resizeGame", function(width:Null<Int> = null, height:Null<Int> = null, resetLayout:Bool = false, duration:Float = 0, ease:String, excludeCam:String = ''/**split by comma**/, ?strum:Bool = true, ?hudUI:Bool = true) {
 			var excludeCame:Array<FlxCamera> = [];
 			if (excludeCam.length > 0) {
 				excludeCame = cameraArrayFromString(excludeCam.split(','));
@@ -3573,56 +3573,6 @@ class FunkinLua {
 			for (keys in resizeGameTween.keys()) {
 				if (resizeGameTween.exists(keys) && resizeGameTween.get(keys) != null) {
 					resizeGameTween.get(keys).cancel();
-				}
-			}
-			if (duration > 0) {
-				if (width != null) {
-					resizeGameTween.set('screenWidth', FlxTween.tween(ScreenScaleMode, {screenWidth: width}, duration, {
-						onUpdate: function(_) {
-							updateSizeLua();
-							if (PlayState.instance != null) {
-								PlayState.instance.updateGameSize();
-								if (resetLayout) {
-									PlayState.instance.updateLayout();
-									PlayState.instance.updateStrumPos();
-								}
-							}
-						},
-						ease: getFlxEaseByString(ease)
-					}));
-				}
-				if (height != null) {
-					resizeGameTween.set('screenHeight', FlxTween.tween(ScreenScaleMode, {screenHeight: height}, duration, {
-						onUpdate: function(_) {
-							updateSizeLua();
-							if (PlayState.instance != null) {
-								PlayState.instance.updateGameSize();
-								if (resetLayout) {
-									PlayState.instance.updateLayout();
-									PlayState.instance.updateStrumPos();
-								}
-							}
-						},
-						ease: getFlxEaseByString(ease)
-					}));
-				}
-			} else {
-				if (width != null) {
-					ScreenScaleMode.screenWidth = width;
-				}
-				if (height != null) {
-					ScreenScaleMode.screenHeight = height;
-				}
-				if ((width != null || height != null)) {
-					//later
-					updateSizeLua();
-					if (PlayState.instance != null) {
-						PlayState.instance.updateGameSize();
-						if (resetLayout) {
-							PlayState.instance.updateLayout();
-							PlayState.instance.updateStrumPos();
-						}
-					}
 				}
 			}
 			for (cam in 0...FlxG.cameras.list.length) {
@@ -3644,6 +3594,56 @@ class FunkinLua {
 				} else {
 					if (width != null) camera.width = width;
 					if (height != null) camera.height = height;
+				}
+			}
+			if (duration > 0) {
+				if (width != null) {
+					resizeGameTween.set('screenWidth', FlxTween.tween(ScreenScaleMode, {screenWidth: width}, duration, {
+						onUpdate: function(_) {
+							updateSizeLua();
+							if (PlayState.instance != null) {
+								PlayState.instance.updateGameSize();
+								if (resetLayout) {
+									if (strum) PlayState.instance.updateStrumPos();
+									if (hudUI) PlayState.instance.updateLayout();
+								}
+							}
+						},
+						ease: getFlxEaseByString(ease)
+					}));
+				}
+				if (height != null) {
+					resizeGameTween.set('screenHeight', FlxTween.tween(ScreenScaleMode, {screenHeight: height}, duration, {
+						onUpdate: function(_) {
+							updateSizeLua();
+							if (PlayState.instance != null) {
+								PlayState.instance.updateGameSize();
+								if (resetLayout) {
+									if (strum) PlayState.instance.updateStrumPos();
+									if (hudUI) PlayState.instance.updateLayout();
+								}
+							}
+						},
+						ease: getFlxEaseByString(ease)
+					}));
+				}
+			} else {
+				if (width != null) {
+					ScreenScaleMode.screenWidth = width;
+				}
+				if (height != null) {
+					ScreenScaleMode.screenHeight = height;
+				}
+				if ((width != null || height != null)) {
+					//later
+					updateSizeLua();
+					if (PlayState.instance != null) {
+						PlayState.instance.updateGameSize();
+						if (resetLayout) {
+							if (strum) PlayState.instance.updateStrumPos();
+							if (hudUI) PlayState.instance.updateLayout();
+						}
+					}
 				}
 			}
 		});
