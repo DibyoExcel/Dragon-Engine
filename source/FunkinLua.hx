@@ -1,10 +1,11 @@
 package;
 
-//imort custom dge lua
+//import custom dge lua
 import flixel.util.FlxStringUtil;
 import dge.obj.lua.*;
 import openfl.filters.ShaderFilter;
 import dge.frontend.CameraZOrder;
+import dge.frontend.scale.ScreenScaleMode;
 
 import lime.app.Application;
 import lime.system.System;
@@ -3575,37 +3576,61 @@ class FunkinLua {
 				}
 			}
 			if (duration > 0) {
-				@:privateAccess{
-					if (width != null) {
-						resizeGameTween.set('FlxGInitiaWidth', FlxTween.tween(FlxG, {initialWidth: width}, duration, {
-							onUpdate: function(_) {
-								updateGameSize();
+				if (width != null) {
+					resizeGameTween.set('screenWidth', FlxTween.tween(ScreenScaleMode, {screenWidth: width}, duration, {
+						onUpdate: function(_) {
+							updateSizeLua();
+							if (PlayState.instance != null) {
+								PlayState.instance.updateGameSize();
 								if (resetLayout) {
-									updateGameLayout();
-									updateStrumLayout();
+									PlayState.instance.updateLayout();
+									PlayState.instance.updateStrumPos();
 								}
-							},
-							ease: getFlxEaseByString(ease)
-						}));
-					}
-					if (height != null) {
-						resizeGameTween.set('FlxGInitiaHeight', FlxTween.tween(FlxG, {initialHeight: height}, duration, {
-							onUpdate: function(_) {
-								updateGameSize();
+							}
+						},
+						ease: getFlxEaseByString(ease)
+					}));
+				}
+				if (height != null) {
+					resizeGameTween.set('screenHeight', FlxTween.tween(ScreenScaleMode, {screenHeight: height}, duration, {
+						onUpdate: function(_) {
+							updateSizeLua();
+							if (PlayState.instance != null) {
+								PlayState.instance.updateGameSize();
 								if (resetLayout) {
-									updateGameLayout();
-									updateStrumLayout();
+									PlayState.instance.updateLayout();
+									PlayState.instance.updateStrumPos();
 								}
-							},
-							ease: getFlxEaseByString(ease)
-						}));
+							}
+						},
+						ease: getFlxEaseByString(ease)
+					}));
+				}
+			} else {
+				if (width != null) {
+					ScreenScaleMode.screenWidth = width;
+				}
+				if (height != null) {
+					ScreenScaleMode.screenHeight = height;
+				}
+				if ((width != null || height != null)) {
+					//later
+					updateSizeLua();
+					if (PlayState.instance != null) {
+						PlayState.instance.updateGameSize();
+						if (resetLayout) {
+							PlayState.instance.updateLayout();
+							PlayState.instance.updateStrumPos();
+						}
 					}
 				}
-				for (cam in 0...FlxG.cameras.list.length) {
-					var camera = FlxG.cameras.list[cam];
-					if (excludeCame.indexOf(camera) != -1) {
-						continue;
-					}
+			}
+			for (cam in 0...FlxG.cameras.list.length) {
+				var camera = FlxG.cameras.list[cam];
+				if (excludeCame.indexOf(camera) != -1) {
+					continue;
+				}
+				if (duration > 0) {
 					if (width != null) {
 						resizeGameTween.set('cam' + cam + 'width', FlxTween.tween(camera, {width: width}, duration, {
 							ease: getFlxEaseByString(ease)
@@ -3616,35 +3641,9 @@ class FunkinLua {
 							ease: getFlxEaseByString(ease)
 						}));
 					}
-				}
-			} else {
-				if (width != null) {
-					@:privateAccess FlxG.initialWidth = width;
-					updateGameSize();
-					if (resetLayout) {
-						updateGameLayout();
-						updateStrumLayout();
-					}
-				}
-				if (height != null) {
-					@:privateAccess FlxG.initialHeight = height;
-					updateGameSize();
-					if (resetLayout) {
-						updateGameLayout();
-						updateStrumLayout();
-					}
-				}
-				for (cam in 0...FlxG.cameras.list.length) {
-					var camera = FlxG.cameras.list[cam];
-					if (excludeCame.indexOf(camera) != -1) {
-						continue;
-					}
-					if (width != null) {
-						camera.width = width;
-					}
-					if (height != null) {
-						camera.height = height;
-					}
+				} else {
+					if (width != null) camera.width = width;
+					if (height != null) camera.height = height;
 				}
 			}
 		});
@@ -4447,99 +4446,11 @@ class FunkinLua {
 		#end
 	}
 
-	function updateGameSize() {
-		var screenWidth:Int = FlxG.stage.stageWidth;
-		var screenHeight:Int = FlxG.stage.stageHeight;
-		@:privateAccess FlxG.game.resizeGame(screenWidth, screenHeight);
-		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
-		var game = PlayState.instance;
-		var camGameMult:Float = Math.max(FlxG.width/1280, FlxG.height/720);
-		game.camGameMult = camGameMult;
-		if (game != null) {
-			//for own lua instance(idk why without this it won't work)
-			set('screenWidth', FlxG.width);
-			set('screenHeight', FlxG.height);
-			set('camGameMult', camGameMult);
-			//for all lua instance in playstate
-			game.setOnLuas('screenWidth', FlxG.width);
-			game.setOnLuas('screenHeight', FlxG.height);
-			game.setOnLuas('camGameMult', camGameMult);
-		}
-	}
-
-	function updateGameLayout() {//this only for game layout. other custom object need manually.
-		var game = PlayState.instance;
-		game.timeBar.screenCenter(X);
-		game.botplayTxt.screenCenter(X);
-		@:privateAccess{
-			game.timeTxt.screenCenter(X);
-			game.timeTxt.y = 19;
-			if (ClientPrefs.downScroll) game.timeTxt.y = FlxG.height - 44;
-			var timeBarY = game.timeTxt.y + (game.timeTxt.height / 4);
-			game.timeBar.y = timeBarY+4;
-			game.botplayTxt.y = timeBarY+55;
-			if (ClientPrefs.downScroll) game.botplayTxt.y = timeBarY - 78;
-		}
-		game.healthBar.screenCenter(X);
-		var helthBARBGY = 0.89 * FlxG.height;
-		if (ClientPrefs.downScroll) helthBARBGY =  (0.11 * FlxG.height);
-		game.healthBar.y =  helthBARBGY + 4;
-		game.iconP1.y = game.healthBar.y - 75;
-		game.iconP2.y = game.healthBar.y - 75;
-		if (game.iconP3 != null) {
-		game.iconP3.y = game.healthBar.y - 75;
-		}
-		game.scoreTxt.screenCenter(X);
-		game.scoreTxt.y =  helthBARBGY + 36;
-	}
-
-	function updateStrumLayout() {
-		var playerStrums = PlayState.instance.playerStrums;
-		var opponentStrums = PlayState.instance.opponentStrums;
-		var gamemode = PlayState.instance.gamemode;
-		var strumLine;
-		@:privateAccess{
-			strumLine = PlayState.instance.strumLine;
-		}
-		strumLine.y = 50;
-		if(ClientPrefs.downScroll) strumLine.y = FlxG.height - 150;
-		for (i in 0...playerStrums.length) {
-			if (gamemode == 'bothside' &&  PlayState.SONG.secOpt) {
-				var noteSize = Note.swagWidth*(Math.min(0.75, 0.7*(FlxG.width/1280)));
-				var number = (PlayState.SONG.secOpt && gamemode == 'bothside' ? (-Note.swagWidth*4) : (-(Note.swagWidth)*2))+(Note.swagWidth*i);
-				playerStrums.members[i].x = (ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : FlxG.width*0.75)+number;
-			} else {
-				playerStrums.members[i].x = ((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : FlxG.width*0.75)-(Note.swagWidth*2))+(Note.swagWidth*i);
-			}
-			playerStrums.members[i].y = strumLine.y;
-		}
-		for (i in 0...opponentStrums.length) {
-			if (PlayState.SONG.secOpt) {
-				var noteSize = Note.swagWidth*(Math.min(0.75, 0.7*(FlxG.width/1280)));
-				var noteSizeSub = Note.swagWidth*(Math.min(0.125, 0.15*(FlxG.width/1280)));
-				var number = (-(noteSize*4))+(noteSize*i);
-				opponentStrums.members[i].x = ((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : FlxG.width*0.25)-(Note.swagWidth*2))+number-noteSizeSub;
-				if(ClientPrefs.middleScroll)
-				{
-					if(i > 3) { // Adjust positions for the last 4 arrows
-						opponentStrums.members[i].x += FlxG.width / 4;
-					} else {
-						opponentStrums.members[i].x -= FlxG.width / 4;
-					}
-				}
-			} else {
-				opponentStrums.members[i].x = ((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width / 2 : FlxG.width*0.25)-(Note.swagWidth*2))+(Note.swagWidth*i);
-				if(ClientPrefs.middleScroll)
-				{
-					if(i > 1) { // Adjust positions for the last 4 arrows
-						opponentStrums.members[i].x += FlxG.width / 4;
-					} else {
-						opponentStrums.members[i].x -= FlxG.width / 4;
-					}
-				}
-			}
-			opponentStrums.members[i].y = strumLine.y;
-		}
+	public function updateSizeLua() {
+		set('screenWidth', FlxG.width);
+		set('screenHeight', FlxG.height);
+		var camGameM:Float = Math.max(FlxG.width/1280, FlxG.height/720);
+		set('camGameMult', camGameM);
 	}
 
 	public static function isOfTypes(value:Any, types:Array<Dynamic>)

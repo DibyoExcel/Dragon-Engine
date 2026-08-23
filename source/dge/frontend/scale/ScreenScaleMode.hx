@@ -6,6 +6,14 @@ import flixel.system.scaleModes.BaseScaleMode;
 class ScreenScaleMode extends BaseScaleMode
 {
     public static var allowWideScreen(default, set):Bool = false;
+    public static var screenWidth(default, set):Int = 960;
+    public static var screenHeight(default, set):Int = 960;
+
+    public function new(W:Int = 1280, H:Int = 720) {
+        screenWidth = W;
+        screenHeight = H;
+        super();
+    }
 
     override function updateGameSize(Width:Int, Height:Int):Void
 	{
@@ -45,7 +53,42 @@ class ScreenScaleMode extends BaseScaleMode
     private static function set_allowWideScreen(value:Bool):Bool
     {
         allowWideScreen = value;
-        FlxG.scaleMode = new ScreenScaleMode();
+        @:privateAccess FlxG.game.resizeGame(FlxG.stage.stageWidth, FlxG.stage.stageHeight);
         return value;
+    }
+
+    private static function set_screenWidth(value:Int):Int {
+        if (screenWidth != value) {
+            screenWidth = value;
+            updateScreenSize();
+        }
+        return value;
+    }
+
+    private static function set_screenHeight(value:Int):Int {
+        if (screenHeight != value) {
+            screenHeight = value;
+            updateScreenSize();
+        }
+        return value;
+    }
+
+    private static function updateScreenSize():Void {
+        @:privateAccess {
+            FlxG.width = screenWidth;
+            FlxG.height = screenHeight;
+            FlxG.game.resizeGame(FlxG.stage.stageWidth, FlxG.stage.stageHeight);
+        }
+    }
+
+    override public function onMeasure(W:Int, H:Int):Void {
+        @:privateAccess {
+            FlxG.width = screenWidth;
+            FlxG.height = screenHeight;
+        }
+        updateGameSize(W, H);
+		updateDeviceSize(W, H);
+		updateScaleOffset();
+		updateGamePosition();
     }
 }

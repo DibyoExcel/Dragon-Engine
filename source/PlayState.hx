@@ -3073,7 +3073,7 @@ class PlayState extends MusicBeatState
 		}
 		if (gamemode == 'bothside') {
 			for (i in 0...4) {
-				var babyArrow:StrumNote = new StrumNote(((FlxG.width * strumPointMiddle)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 1280)/1280))*i), strumLine.y, i, 1);
+				var babyArrow:StrumNote = new StrumNote(((FlxG.width * strumPointMiddle)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*i), strumLine.y, i, 1);
 				if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
 					babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
 				}
@@ -3102,7 +3102,7 @@ class PlayState extends MusicBeatState
 		} else if (gamemode == 'opponent') {
 			if (player == 0) {
 				for (i in 0...4) {
-					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 1280)/1280))*i), strumLine.y, i, 0);
+					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*i), strumLine.y, i, 0);
 					if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
 						babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
 					}
@@ -3135,7 +3135,7 @@ class PlayState extends MusicBeatState
 				}
 			} else if (player == 1) {
 				for (i in 0...4) {
-					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointPlayer)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 1280)/1280))*i), strumLine.y, i, 1);
+					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointPlayer)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*i), strumLine.y, i, 1);
 					if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
 						babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
 					}
@@ -3171,7 +3171,7 @@ class PlayState extends MusicBeatState
 			//default and all gamemode(design inspired from RetroSpecter P2 mods)
 			if (player == 0) {
 				for (i in 0...4) {
-					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 1280)/1280))*i), strumLine.y, i, 0);
+					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*i), strumLine.y, i, 0);
 					if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
 						babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
 					}
@@ -3207,7 +3207,7 @@ class PlayState extends MusicBeatState
 				}
 				if (isSecOpt) {
 					for (i in 0...4) {
-						var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 1280)/1280))*i), strumLine.y, i, 0, true);
+						var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*i), strumLine.y, i, 0, true);
 						if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
 							babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
 						}
@@ -3242,7 +3242,7 @@ class PlayState extends MusicBeatState
 				}
 			} else if (player == 1) {
 				for (i in 0...4) {
-					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointPlayer)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 1280)/1280))*i), strumLine.y, i, 1);
+					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointPlayer)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*i), strumLine.y, i, 1);
 					if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
 						babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
 					}
@@ -7517,6 +7517,151 @@ class PlayState extends MusicBeatState
 			}
 		}
 		return value;
+	}
+	public function updateLayout() {
+		if (timeTxt != null) {
+			timeTxt.screenCenter(X);
+			timeTxt.y = 19;
+			if (ClientPrefs.downScroll) timeTxt.y = FlxG.height - 44;
+			if (timeBar != null) {
+				timeBar.screenCenter(X);
+				var timeBarY = timeTxt.y + (timeTxt.height / 4);
+				timeBar.y = timeBarY+4;
+				if (botplayTxt != null) {
+					botplayTxt.screenCenter(X);
+					botplayTxt.y = timeBarY+55;
+					if (ClientPrefs.downScroll) botplayTxt.y = timeBarY - 78;
+				}
+			}
+		}
+		if (healthBar != null) {
+			healthBar.screenCenter(X);
+			var hBBY = 0.89 * FlxG.height;
+			if (ClientPrefs.downScroll) hBBY =  (0.11 * FlxG.height);
+			healthBar.y =  hBBY + 4;
+			var healthArray = [iconP1, iconP2, iconP3];
+			for (ico in healthArray) {
+				if (ico != null) ico.y = healthBar.y - 75; 
+			}
+			if (scoreTxt != null) {
+				scoreTxt.screenCenter(X);
+				scoreTxt.y = hBBY + 36;
+			}
+		}
+	}
+	public function updateStrumPos() {
+		if (gamemode == 'bothside') {
+			if (strumLineNotes != null) {
+				for (i in 0...strumLineNotes.length) {
+					strumLineNotes.members[i].x = ((FlxG.width * strumPointMiddle)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*i);
+					if (strumLine != null) {
+						strumLineNotes.members[i].y = strumLine.y;
+					}
+				}
+			}
+		} else if (gamemode == 'opponent') {
+			if (opponentStrums != null) {
+				for (i in 0...opponentStrums.length) {
+					opponentStrums.members[i].x = ((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*i);
+					if (strumLine != null) {
+						opponentStrums.members[i].y = strumLine.y;
+					}
+					if(ClientPrefs.middleScroll)
+					{
+						if(i > 1) { //Up and Right
+							opponentStrums.members[i].x += FlxG.width * strumMiddleDistanceOpponent;
+						} else {
+							opponentStrums.members[i].x -= FlxG.width * strumMiddleDistanceOpponent;
+						}
+					}
+				}
+			}
+			if (playerStrums != null) {
+				for (i in 0...playerStrums.length) {
+					playerStrums.members[i].x = ((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointPlayer)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*i);
+					if (strumLine != null) {
+						playerStrums.members[i].y = strumLine.y;
+					}
+					if(ClientPrefs.middleScroll)
+						{
+							if(i > 1) { //Up and Right
+								playerStrums.members[i].x += FlxG.width * strumMiddleDistancePlayer;
+							} else {
+								playerStrums.members[i].x -= FlxG.width * strumMiddleDistancePlayer;
+							}
+						}
+				}
+			}
+		} else {
+			if (opponentStrums != null) {
+				for (i in 0...opponentStrums.length) {
+					opponentStrums.members[i].x = ((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*i);
+					if (strumLine != null) {
+						opponentStrums.members[i].y = strumLine.y;
+					}
+					if (isSecOpt) {
+						opponentStrums.members[i].y -= strumYOffsetSecondOpt;
+					}
+					if(ClientPrefs.middleScroll)
+					{
+						if(i > 1) { //Up and Right
+							opponentStrums.members[i].x += FlxG.width * strumMiddleDistanceOpponent;
+						} else {
+							opponentStrums.members[i].x -= FlxG.width * strumMiddleDistanceOpponent;
+						}
+					}
+				}
+			}
+			if (isSecOpt && gfStrums != null) {
+				for (i in 0...gfStrums.length) {
+					gfStrums.members[i].x = ((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*i);
+					if (strumLine != null) {
+						gfStrums.members[i].y = strumLine.y;
+					}
+					if (isSecOpt) {
+						gfStrums.members[i].y -= strumYOffsetSecondOpt;
+					}
+					if(ClientPrefs.middleScroll)
+					{
+						if(i > 1) { //Up and Right
+							gfStrums.members[i].x += FlxG.width * strumMiddleDistanceGf;
+						} else {
+							gfStrums.members[i].x -= FlxG.width * strumMiddleDistanceGf;
+						}
+					}
+				}
+			}
+			if (playerStrums != null) {
+				for (i in 0...playerStrums.length) {
+					playerStrums.members[i].x = ((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointPlayer)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*i);
+					if (strumLine != null) {
+						playerStrums.members[i].y = strumLine.y;
+					}
+					if(ClientPrefs.middleScroll)
+					{
+						if(i > 1) { //Up and Right
+							playerStrums.members[i].x += FlxG.width * strumMiddleDistancePlayer;
+						} else {
+							playerStrums.members[i].x -= FlxG.width * strumMiddleDistancePlayer;
+						}
+					}
+				}
+			}
+		}
+		if (strumLineNotes != null) {
+			for (i in 0...strumLineNotes.length) {
+				if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
+					strumLineNotes.members[i].y = (FlxG.height/2)-(strumLineNotes.members[i].height/2);
+				}
+			}
+		}
+	}
+	public function updateGameSize() {
+		var camGameM:Float = Math.max(FlxG.width/1280, FlxG.height/720);
+		camGameMult = camGameM;
+		setOnLuas('screenWidth', FlxG.width);
+		setOnLuas('screenHeight', FlxG.height);
+		setOnLuas('camGameMult', camGameM);
 	}
 }
 

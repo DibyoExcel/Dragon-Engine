@@ -27,6 +27,7 @@ import flixel.ui.FlxButton;
 import flixel.FlxBasic;
 import sys.io.File;
 import dge.backend.ModSetting;
+import dge.frontend.scale.ScreenScaleMode;
 /*import haxe.zip.Reader;
 import haxe.zip.Entry;
 import haxe.zip.Uncompress;
@@ -69,9 +70,19 @@ class ModsMenuState extends MusicBeatState
 	#if mobile
 	private var touch:TouchUtil = new TouchUtil();
 	#end
+	var widthC:Int = 1280;
+	var heightC:Int = 720;
 
 	override function create()
 	{
+		widthC = ScreenScaleMode.screenWidth;
+		heightC = ScreenScaleMode.screenHeight;
+		//set to 128-x720 because it break ui when resolution changes
+		ScreenScaleMode.screenWidth = 1280;
+		ScreenScaleMode.screenHeight = 720;
+		for (cam in FlxG.cameras.list) {
+			cam.setSize(1280, 720);
+		}
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
 		WeekData.setDirectoryFromWeek();
@@ -734,6 +745,11 @@ class ModsMenuState extends MusicBeatState
 		canExit = true;
 		trace("Problem loading file");
 	}*/
+	override function destroy() {
+		ScreenScaleMode.screenWidth = widthC;
+		ScreenScaleMode.screenHeight = heightC;
+		super.destroy();
+	}
 }
 
 class ModMetadata

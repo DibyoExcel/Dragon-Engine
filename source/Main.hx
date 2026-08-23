@@ -114,11 +114,12 @@ class Main extends Sprite
 		}
 		Note.swagWidth = 160 * ClientPrefs.strumsize;
 		Lib.current.stage.align = "tl";
-		#if html5
 		Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
-		#else
+		#if !html5
+		FlxG.scaleMode = new dge.frontend.scale.ScreenScaleMode(1280, 720);
 		dge.frontend.scale.ScreenScaleMode.allowWideScreen = ClientPrefs.fillScreen;
 		#end
+		//FlxG.scaleMode = new flixel.system.scaleModes.StageSizeScaleMode();
 		
 		#if html5
 		FlxG.autoPause = false;

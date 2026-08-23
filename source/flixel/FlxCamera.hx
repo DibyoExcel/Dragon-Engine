@@ -1985,6 +1985,7 @@ class FlxCamera extends FlxBasic
 		if (width != Value && Value > 0)
 		{
 			width = Value;
+			if (_flashRect != null) _flashRect.width = width;
 			calcOffsetX();
 			updateFlashOffset();
 			updateScrollRect();
@@ -2000,6 +2001,7 @@ class FlxCamera extends FlxBasic
 		if (height != Value && Value > 0)
 		{
 			height = Value;
+			if (_flashRect != null) _flashRect.height = height;
 			calcOffsetY();
 			updateFlashOffset();
 			updateScrollRect();

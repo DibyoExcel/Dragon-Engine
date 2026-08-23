@@ -69,30 +69,32 @@ class BetterFPSCounter extends Sprite {
 		var currentCount = times.length;
 		currentFPS = Math.round((currentCount + cacheCount) / 2);
 		if (currentFPS > ClientPrefs.framerate) currentFPS = ClientPrefs.framerate;
-        var memoryMegas:Float = 0;
-        var formatMegas:String = '';
-        tf.text = "Dragon Engine";
-        tf.text += "\nFPS: " + currentFPS + " | SPF: " + Math.floor((1/currentFPS)*10000)/10000;
-        #if openfl
-        memoryMegas = Math.abs(System.totalMemory / 1000000);
-        formatMegas = (memoryMegas > 1000 ? Math.floor(memoryMegas / 10) / 100 + ' GB(' + Math.floor(memoryMegas*100)/100 + ' MB)' : Math.floor(memoryMegas*100)/100 + ' MB');
-        tf.text += "\nMemory: " + formatMegas;
-        #end
-        var targetColor = 0xFF00FF00;
-        if (memoryMegas > 3000 || currentFPS <= ClientPrefs.framerate / 4)
-        {
-            targetColor = 0xFFFF0000;
-        } else if (memoryMegas > 1500 || currentFPS <= ClientPrefs.framerate / 2) {
-            targetColor = 0xFFFFFF00;
+        if (currentCount != cacheCount) {
+            var memoryMegas:Float = 0;
+            var formatMegas:String = '';
+            tf.text = "Dragon Engine";
+            tf.text += "\nFPS: " + currentFPS + " | SPF: " + Math.floor((1/currentFPS)*10000)/10000;
+            #if openfl
+            memoryMegas = Math.abs(System.totalMemory / 1000000);
+            formatMegas = (memoryMegas > 1000 ? Math.floor(memoryMegas / 10) / 100 + ' GB(' + Math.floor(memoryMegas*100)/100 + ' MB)' : Math.floor(memoryMegas*100)/100 + ' MB');
+            tf.text += "\nMemory: " + formatMegas;
+            #end
+            var targetColor = 0xFF00FF00;
+            if (memoryMegas > 3000 || currentFPS <= ClientPrefs.framerate / 4)
+            {
+                targetColor = 0xFFFF0000;
+            } else if (memoryMegas > 1500 || currentFPS <= ClientPrefs.framerate / 2) {
+                targetColor = 0xFFFFFF00;
+            }
+            setTextColor(targetColor);
+            
+            #if (gl_stats && !disable_cffi && (!html5 || !canvas))
+            text += "\ntotalDC: " + Context3DStats.totalDrawCalls();
+            text += "\nstageDC: " + Context3DStats.contextDrawCalls(DrawCallContext.STAGE);
+            text += "\nstage3DDC: " + Context3DStats.contextDrawCalls(DrawCallContext.STAGE3D);
+            #end
+            updateBox(targetColor);
         }
-        setTextColor(targetColor);
-        
-        #if (gl_stats && !disable_cffi && (!html5 || !canvas))
-        text += "\ntotalDC: " + Context3DStats.totalDrawCalls();
-        text += "\nstageDC: " + Context3DStats.contextDrawCalls(DrawCallContext.STAGE);
-        text += "\nstage3DDC: " + Context3DStats.contextDrawCalls(DrawCallContext.STAGE3D);
-        #end
-        updateBox(targetColor);
 		cacheCount = currentCount;
 	}
 
