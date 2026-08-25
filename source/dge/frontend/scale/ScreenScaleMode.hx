@@ -8,6 +8,7 @@ class ScreenScaleMode extends BaseScaleMode
     public static var allowWideScreen(default, set):Bool = false;
     public static var screenWidth(default, set):Int = 960;
     public static var screenHeight(default, set):Int = 960;
+    private static var resolutionListener:Array<Int->Int->Void> = [];
 
     public function new(W:Int = 1280, H:Int = 720) {
         screenWidth = W;
@@ -79,6 +80,10 @@ class ScreenScaleMode extends BaseScaleMode
             FlxG.height = screenHeight;
             FlxG.game.resizeGame(FlxG.stage.stageWidth, FlxG.stage.stageHeight);
         }
+        for (l in resolutionListener) {
+            if (l == null) continue;
+            l(screenWidth, screenHeight);
+        }
     }
 
     override public function onMeasure(W:Int, H:Int):Void {
@@ -90,5 +95,14 @@ class ScreenScaleMode extends BaseScaleMode
 		updateDeviceSize(W, H);
 		updateScaleOffset();
 		updateGamePosition();
+    }
+
+    public static function addEventListener(Fn:Int->Int->Void) {
+        if (resolutionListener.indexOf(Fn) == -1 && Fn != null) {
+            resolutionListener.push(Fn);
+        }
+    }
+    public static function removeEventListener(Fn:Int->Int->Void) {
+        resolutionListener.remove(Fn);
     }
 }

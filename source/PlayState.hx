@@ -3,6 +3,7 @@ package;
 import dge.obj.lua.*;
 import dge.backend.PrivateData;
 import dge.obj.Keypress;
+import dge.frontend.scale.ScreenScaleMode;
 #if mobile
 import dge.obj.mobile.Hitbox;
 import dge.obj.mobile.VirtualButton;
@@ -1335,7 +1336,7 @@ class PlayState extends MusicBeatState
 		add(comboGroup);
 		add(numRatingGroup);
 		
-		botplayTxt = new FlxText(400, timeBarBG.y + 55, FlxG.width - 800, (ClientPrefs.dragonW ? "AUTO FLIGHT" : (ClientPrefs.botplayText.trim().length > 0 ? ClientPrefs.botplayText : 'BOTPLAY')), 32);
+		botplayTxt = new FlxText(400, timeBarBG.y + 55, 1280 - 800, (ClientPrefs.dragonW ? "AUTO FLIGHT" : (ClientPrefs.botplayText.trim().length > 0 ? ClientPrefs.botplayText : 'BOTPLAY')), 32);
 		botplayTxt.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		botplayTxt.scrollFactor.set();
 		botplayTxt.screenCenter(X);
@@ -1624,7 +1625,7 @@ class PlayState extends MusicBeatState
 		cachePopUpScore();
 		cacheCountdown();
 		callOnLuas('onCreatePost', []);
-		
+		ScreenScaleMode.addEventListener(resolutionChange);
 
 		super.create();
 		if (ClientPrefs.startPause) {
@@ -6581,6 +6582,7 @@ class PlayState extends MusicBeatState
 		}
 		FlxAnimationController.globalSpeed = 1;
 		FlxG.sound.music.pitch = 1;
+		ScreenScaleMode.removeEventListener(resolutionChange);
 		super.destroy();
 	}
 
@@ -7662,6 +7664,32 @@ class PlayState extends MusicBeatState
 		setOnLuas('screenWidth', FlxG.width);
 		setOnLuas('screenHeight', FlxG.height);
 		setOnLuas('camGameMult', camGameM);
+	}
+	function resolutionChange(W:Int, H:Int) {
+		#if mobile
+		//adapt mobile UI(only mobile because in desktop  not very special)
+		if (hitbox != null) {
+			for (i in 0...hitbox.length) {
+				var bruh = hitbox.members[i];
+				bruh.x = i*Std.int(W/hitbox.length);
+				bruh.y = (ClientPrefs.spaceKeyPosition == 'top' ? 150 : 0);
+				bruh.setGraphicSize(Std.int(W/keysArray.length), H - (ClientPrefs.spaceKey ? 150 : 0));
+				bruh.updateHitbox();
+			}
+		}
+		if (hitboxSpace != null) {
+			if (ClientPrefs.spaceKey) {
+				hitboxSpace.x = 0;
+				hitboxSpace.y = (ClientPrefs.spaceKeyPosition == 'top' ? 0 : H-150);
+				hitboxSpace.setGraphicSize(W, 150);
+				hitboxSpace.updateHitbox();
+			}
+		}
+		if (pauseButton != null) {
+			pauseButton.x = W - 125;
+		}
+		#end
+		callOnLuas('onGameResolutionChange', [W, H]);
 	}
 }
 

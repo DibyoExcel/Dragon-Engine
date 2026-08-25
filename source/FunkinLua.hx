@@ -3568,7 +3568,17 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "resizeGame", function(width:Null<Int> = null, height:Null<Int> = null, resetLayout:Bool = false, duration:Float = 0, ease:String, excludeCam:String = ''/**split by comma**/, ?strum:Bool = true, ?hudUI:Bool = true) {
 			var excludeCame:Array<FlxCamera> = [];
 			if (excludeCam.length > 0) {
-				excludeCame = cameraArrayFromString(excludeCam.split(','));
+				var cameraArray = excludeCam.split(',');
+				#if mobile
+				for (i in 0...cameraArray.length) {
+					if (cameraArray[i] == null || cameraArray[i].length < 1) continue;
+					cameraArray[i] = cameraArray[i].toLowerCase();
+				}
+				//this camera is special not allowed to exclude
+				cameraArray.remove('hitboxcam');
+				cameraArray.remove('hitbox');
+				#end
+				excludeCame = cameraArrayFromString(cameraArray);
 			}
 			for (keys in resizeGameTween.keys()) {
 				if (resizeGameTween.exists(keys) && resizeGameTween.get(keys) != null) {
