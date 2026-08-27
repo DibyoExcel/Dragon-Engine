@@ -7550,8 +7550,15 @@ class PlayState extends MusicBeatState
 				scoreTxt.y = hBBY + 36;
 			}
 		}
+		if (keyPressUI != null && ClientPrefs.extUI) {
+			for (i in 0...keyPressUI.length) {
+				keyPressUI.members[i].y = (FlxG.height/2)+(50*(Math.floor(i/4)));
+			}
+		}
 	}
 	public function updateStrumPos() {
+		strumLine.y = 50;
+		if(ClientPrefs.downScroll) strumLine.y = FlxG.height - (150*(ClientPrefs.strumsize/0.7));
 		if (gamemode == 'bothside') {
 			if (strumLineNotes != null) {
 				for (i in 0...strumLineNotes.length) {
@@ -7658,14 +7665,10 @@ class PlayState extends MusicBeatState
 			}
 		}
 	}
-	public function updateGameSize() {
-		var camGameM:Float = Math.max(FlxG.width/1280, FlxG.height/720);
-		camGameMult = camGameM;
-		setOnLuas('screenWidth', FlxG.width);
-		setOnLuas('screenHeight', FlxG.height);
-		setOnLuas('camGameMult', camGameM);
-	}
+
 	function resolutionChange(W:Int, H:Int) {
+		var camGameM:Float = Math.max(W/1280, H/720);
+		camGameMult = camGameM;
 		#if mobile
 		//adapt mobile UI(only mobile because in desktop  not very special)
 		if (hitbox != null) {
@@ -7677,19 +7680,16 @@ class PlayState extends MusicBeatState
 				bruh.updateHitbox();
 			}
 		}
-		if (hitboxSpace != null) {
-			if (ClientPrefs.spaceKey) {
-				hitboxSpace.x = 0;
-				hitboxSpace.y = (ClientPrefs.spaceKeyPosition == 'top' ? 0 : H-150);
-				hitboxSpace.setGraphicSize(W, 150);
-				hitboxSpace.updateHitbox();
-			}
+		if (hitboxSpace != null && ClientPrefs.spaceKey) {
+			hitboxSpace.x = 0;
+			hitboxSpace.y = (ClientPrefs.spaceKeyPosition == 'top' ? 0 : H-150);
+			hitboxSpace.setGraphicSize(W, 150);
+			hitboxSpace.updateHitbox();
 		}
 		if (pauseButton != null) {
 			pauseButton.x = W - 125;
 		}
 		#end
-		callOnLuas('onGameResolutionChange', [W, H]);
 	}
 }
 

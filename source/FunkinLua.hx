@@ -133,6 +133,7 @@ class FunkinLua {
 		initHaxeModule();
 
 		trace('lua file loaded succesfully:' + script);
+		ScreenScaleMode.addEventListener(updateSizeLua);
 		// Lua shit
 		set('Function_StopLua', Function_StopLua);
 		set('Function_Stop', Function_Stop);
@@ -3609,14 +3610,10 @@ class FunkinLua {
 			if (duration > 0) {
 				if (width != null) {
 					resizeGameTween.set('screenWidth', FlxTween.tween(ScreenScaleMode, {screenWidth: width}, duration, {
-						onUpdate: function(_) {
-							updateSizeLua();
-							if (PlayState.instance != null) {
-								PlayState.instance.updateGameSize();
-								if (resetLayout) {
-									if (strum) PlayState.instance.updateStrumPos();
-									if (hudUI) PlayState.instance.updateLayout();
-								}
+						onUpdate: function(_) {	
+							if (resetLayout && PlayState.instance != null) {
+								if (strum) PlayState.instance.updateStrumPos();
+								if (hudUI) PlayState.instance.updateLayout();
 							}
 						},
 						ease: getFlxEaseByString(ease)
@@ -3624,14 +3621,10 @@ class FunkinLua {
 				}
 				if (height != null) {
 					resizeGameTween.set('screenHeight', FlxTween.tween(ScreenScaleMode, {screenHeight: height}, duration, {
-						onUpdate: function(_) {
-							updateSizeLua();
-							if (PlayState.instance != null) {
-								PlayState.instance.updateGameSize();
-								if (resetLayout) {
-									if (strum) PlayState.instance.updateStrumPos();
-									if (hudUI) PlayState.instance.updateLayout();
-								}
+						onUpdate: function(_) {	
+							if (resetLayout && PlayState.instance != null) {
+								if (strum) PlayState.instance.updateStrumPos();
+								if (hudUI) PlayState.instance.updateLayout();
 							}
 						},
 						ease: getFlxEaseByString(ease)
@@ -3645,14 +3638,9 @@ class FunkinLua {
 					ScreenScaleMode.screenHeight = height;
 				}
 				if ((width != null || height != null)) {
-					//later
-					updateSizeLua();
-					if (PlayState.instance != null) {
-						PlayState.instance.updateGameSize();
-						if (resetLayout) {
-							if (strum) PlayState.instance.updateStrumPos();
-							if (hudUI) PlayState.instance.updateLayout();
-						}
+					if (resetLayout && PlayState.instance != null) {
+						if (strum) PlayState.instance.updateStrumPos();
+						if (hudUI) PlayState.instance.updateLayout();
 					}
 				}
 			}
@@ -4456,11 +4444,12 @@ class FunkinLua {
 		#end
 	}
 
-	public function updateSizeLua() {
-		set('screenWidth', FlxG.width);
-		set('screenHeight', FlxG.height);
-		var camGameM:Float = Math.max(FlxG.width/1280, FlxG.height/720);
+	public function updateSizeLua(W:Int, H:Int) {
+		set('screenWidth', W);
+		set('screenHeight', H);
+		var camGameM:Float = Math.max(W/1280, H/720);
 		set('camGameMult', camGameM);
+		call('onGameResolutionChange', [W, H]);
 	}
 
 	public static function isOfTypes(value:Any, types:Array<Dynamic>)
@@ -5133,6 +5122,7 @@ class FunkinLua {
 
 	public function stop() {
 		#if LUA_ALLOWED
+		ScreenScaleMode.removeEventListener(updateSizeLua);
 		if(lua == null) {
 			return;
 		}

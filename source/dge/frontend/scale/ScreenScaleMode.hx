@@ -59,19 +59,19 @@ class ScreenScaleMode extends BaseScaleMode
     }
 
     private static function set_screenWidth(value:Int):Int {
-        if (screenWidth != value) {
-            screenWidth = value;
+        if (screenWidth != Std.int(Math.abs(value))) {
+            screenWidth = Std.int(Math.abs(value));
             updateScreenSize();
         }
-        return value;
+        return Std.int(Math.abs(value));
     }
 
     private static function set_screenHeight(value:Int):Int {
-        if (screenHeight != value) {
-            screenHeight = value;
+        if (screenHeight != Std.int(Math.abs(value))) {
+            screenHeight = Std.int(Math.abs(value));
             updateScreenSize();
         }
-        return value;
+        return Std.int(Math.abs(value));
     }
 
     private static function updateScreenSize():Void {
