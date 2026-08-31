@@ -546,7 +546,7 @@ class FlxCamera extends FlxBasic
 	public var offset:FlxPoint = new FlxPoint(0, 0);//like x and y but without black bar(also reverse value like offset from FlxSprite)
 	public var zoomPoint:Pointer = new Pointer(0.5, 0.5);//zoom origin pos(inspired from Vs Omega V2 Stormbreaker)
 	public var rotatePoint:FlxPoint = new FlxPoint(0.5, 0.5);//rotate origin pos(only work in non rotateSprite)(inspired from Vs Omega V2 Stormbreaker)
-	public var oldShake(default, set):Bool = false;//set `true` if want use old shake style
+	public var oldShake(default, set):Bool = false;//set 
 	@:allow(flixel.input.FlxPointer)
 	var offsetShake:FlxPoint = new FlxPoint(0, 0);//same like `offset` but for shake
 
@@ -2190,7 +2190,7 @@ class FlxCamera extends FlxBasic
 	inline function calcOffsetY():Void
 	{
 		var pointMath = height * (scaleY - initialZoom) / scaleY;
-		viewOffsetY = zoomPoint.x * pointMath;
+		viewOffsetY = zoomPoint.y * pointMath;
 		viewOffsetHeight = height - ((1-zoomPoint.y) * pointMath);
 		viewHeight = height - 2 * ((1-zoomPoint.y) * pointMath);
 	}
