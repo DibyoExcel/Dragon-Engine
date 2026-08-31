@@ -371,10 +371,4 @@ class CoolUtil
 			}
 		}
 	}
-
-	public static function AABBHandler(width:Float, height:Float, sin:Float, cos:Float):Array<Float> {
-		var resultSizeW = (Math.abs(width * cos) + Math.abs(height * sin));
-		var resultSizeH = (Math.abs(width * sin) + Math.abs(height * cos));
-		return [resultSizeW, resultSizeH];
-	}
 }

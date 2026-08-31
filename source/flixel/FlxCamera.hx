@@ -37,6 +37,8 @@ import dge.shaders.Posterize;
 import dge.shaders.RGBPalette;
 import dge.shaders.GrayScale;
 import dge.shaders.BlackAndWhite;
+import dge.obj.Pointer;
+import dge.frontend.math.BoundHelper as Bound;
 
 using StringTools;
 
@@ -541,6 +543,12 @@ class FlxCamera extends FlxBasic
 	//thx codename
 	public var rotateSprite(default, set):Bool = false;//set true for old method angle
 	public var complexObjectVisibility:Bool = true;//checking object visibility complex for `rotateSprite` is `false`(it use for `containsRect()` and `containsPoint()`)
+	public var offset:FlxPoint = new FlxPoint(0, 0);//like x and y but without black bar(also reverse value like offset from FlxSprite)
+	public var zoomPoint:Pointer = new Pointer(0.5, 0.5);//zoom origin pos(inspired from Vs Omega V2 Stormbreaker)
+	public var rotatePoint:FlxPoint = new FlxPoint(0.5, 0.5);//rotate origin pos(only work in non rotateSprite)(inspired from Vs Omega V2 Stormbreaker)
+	public var oldShake(default, set):Bool = false;//set `true` if want use old shake style
+	@:allow(flixel.input.FlxPointer)
+	var offsetShake:FlxPoint = new FlxPoint(0, 0);//same like `offset` but for shake
 
 	@:noCompletion
 	var _sinAngle:Float = 0;
@@ -715,6 +723,12 @@ class FlxCamera extends FlxBasic
 	public function drawPixels(?frame:FlxFrame, ?pixels:BitmapData, matrix:FlxMatrix, ?transform:ColorTransform, ?blend:BlendMode, ?smoothing:Bool = false,
 			?shader:FlxShader, ?ignoreAngle:Bool = false):Void
 	{
+		var offsetX = -(offset == null ? 0 : offset.x);
+		var offsetY = -(offset == null ? 0 : offset.y);
+		if (!oldShake) {
+			offsetX -=  (offsetShake == null ? 0 : offsetShake.x);
+			offsetY -=  (offsetShake == null ? 0 : offsetShake.y);
+		}
 		if (FlxG.renderBlit)
 		{
 			_helperMatrix.copyFrom(matrix);
@@ -724,21 +738,23 @@ class FlxCamera extends FlxBasic
 				_helperMatrix.concat(_blitMatrix);
 				if (!rotateSprite && angle != 0 && !ignoreAngle)
 				{
-					_helperMatrix.translate(-width / 2, -height / 2);
+					_helperMatrix.translate(-width * rotatePoint.x, -height * rotatePoint.y);
 					_helperMatrix.rotateWithTrig(_cosAngle, _sinAngle);
-					_helperMatrix.translate(width / 2, height / 2);
+					_helperMatrix.translate(width * rotatePoint.x, height * rotatePoint.y);
 				}
+				_helperMatrix.translate(offsetX, offsetY);
 				buffer.draw(pixels, _helperMatrix, null, null, null, (smoothing || antialiasing));
 			}
 			else
 			{
 				_helperMatrix.translate(-viewOffsetX, -viewOffsetY);
 				if (!rotateSprite && angle != 0 && !ignoreAngle)
-				{
-					_helperMatrix.translate(-width / 2, -height / 2);
-					_helperMatrix.rotateWithTrig(_cosAngle, _sinAngle);
-					_helperMatrix.translate(width / 2, height / 2);
-				}
+					{
+						_helperMatrix.translate(-width * rotatePoint.x, -height * rotatePoint.y);
+						_helperMatrix.rotateWithTrig(_cosAngle, _sinAngle);
+						_helperMatrix.translate(width * rotatePoint.x, height * rotatePoint.y);
+					}
+				_helperMatrix.translate(offsetX, offsetY);
 				buffer.draw(pixels, _helperMatrix, null, blend, null, (smoothing || antialiasing));
 			}
 		}
@@ -747,12 +763,12 @@ class FlxCamera extends FlxBasic
 			var isColored = (transform != null && transform.hasRGBMultipliers());
 			var hasColorOffsets:Bool = (transform != null && transform.hasRGBAOffsets());
 			if (!rotateSprite && angle != 0 && !ignoreAngle)
-				{
-					matrix.translate(-width / 2, -height / 2);
-					matrix.rotateWithTrig(_cosAngle, _sinAngle);
-					matrix.translate(width / 2, height / 2);
-				}
-
+			{
+				matrix.translate(-width * rotatePoint.x, -height * rotatePoint.y);
+				matrix.rotateWithTrig(_cosAngle, _sinAngle);
+				matrix.translate(width * rotatePoint.x, height * rotatePoint.y);
+			}	
+			matrix.translate(offsetX, offsetY);
 			#if FLX_RENDER_TRIANGLE
 			var drawItem:FlxDrawTrianglesItem = startTrianglesBatch(frame.parent, smoothing, isColored, blend);
 			#else
@@ -765,21 +781,28 @@ class FlxCamera extends FlxBasic
 	public function copyPixels(?frame:FlxFrame, ?pixels:BitmapData, ?sourceRect:Rectangle, destPoint:Point, ?transform:ColorTransform, ?blend:BlendMode,
 			?smoothing:Bool = false, ?shader:FlxShader):Void
 	{
+		var offsetX = -(offset == null ? 0 : offset.x);
+		var offsetY = -(offset == null ? 0 : offset.y);
+		if (!oldShake) {
+			offsetX -=  (offsetShake == null ? 0 : offsetShake.x);
+			offsetY -=  (offsetShake == null ? 0 : offsetShake.y);
+		}
 		if (FlxG.renderBlit)
 		{
 			if (pixels != null)
-			{
-				if (_useBlitMatrix)
 				{
+				if (_useBlitMatrix)
+					{
 					_helperMatrix.identity();
 					_helperMatrix.translate(destPoint.x, destPoint.y);
 					_helperMatrix.concat(_blitMatrix);
 					if (!rotateSprite && angle != 0)
 					{
-						_helperMatrix.translate(-width / 2, -height / 2);
+						_helperMatrix.translate(-width * rotatePoint.x, -height * rotatePoint.y);
 						_helperMatrix.rotateWithTrig(_cosAngle, _sinAngle);
-						_helperMatrix.translate(width / 2, height / 2);
+						_helperMatrix.translate(width * rotatePoint.x, height * rotatePoint.y);
 					}
+					_helperMatrix.translate(offsetX, offsetY);
 					buffer.draw(pixels, _helperMatrix, null, null, null, (smoothing || antialiasing));
 				}
 				else
@@ -788,10 +811,11 @@ class FlxCamera extends FlxBasic
 					_helperPoint.y = destPoint.y - Std.int(viewOffsetY);
 					if (!rotateSprite && angle != 0)
 					{
-						_helperMatrix.translate(-width / 2, -height / 2);
+						_helperMatrix.translate(-width * rotatePoint.x, -height * rotatePoint.y);
 						_helperMatrix.rotateWithTrig(_cosAngle, _sinAngle);
-						_helperMatrix.translate(width / 2, height / 2);
+						_helperMatrix.translate(width * rotatePoint.x, height * rotatePoint.y);
 					}
+					_helperMatrix.translate(offsetX, offsetY);
 					buffer.copyPixels(pixels, sourceRect, _helperPoint, null, null, true);
 				}
 			}
@@ -808,10 +832,11 @@ class FlxCamera extends FlxBasic
 
 			if (!rotateSprite && angle != 0)
 				{
-					_helperMatrix.translate(-width / 2, -height / 2);
+					_helperMatrix.translate(-width * rotatePoint.x, -height * rotatePoint.y);
 					_helperMatrix.rotateWithTrig(_cosAngle, _sinAngle);
-					_helperMatrix.translate(width / 2, height / 2);
+					_helperMatrix.translate(width * rotatePoint.x, height * rotatePoint.y);
 				}
+			_helperMatrix.translate(offsetX, offsetY);
 
 			var isColored = (transform != null && transform.hasRGBMultipliers());
 			var hasColorOffsets:Bool = (transform != null && transform.hasRGBAOffsets());
@@ -828,6 +853,12 @@ class FlxCamera extends FlxBasic
 	public function drawTriangles(graphic:FlxGraphic, vertices:DrawData<Float>, indices:DrawData<Int>, uvtData:DrawData<Float>, ?colors:DrawData<Int>,
 			?position:FlxPoint, ?blend:BlendMode, repeat:Bool = false, smoothing:Bool = false):Void
 	{
+		var offsetX = -(offset == null ? 0 : offset.x);
+		var offsetY = -(offset == null ? 0 : offset.y);
+		if (!oldShake) {
+			offsetX -=  (offsetShake == null ? 0 : offsetShake.x);
+			offsetY -=  (offsetShake == null ? 0 : offsetShake.y);
+		}
 		if (FlxG.renderBlit)
 		{
 			if (position == null)
@@ -887,10 +918,11 @@ class FlxCamera extends FlxBasic
 
 				if (!rotateSprite && angle != 0)
 				{
-					_helperMatrix.translate(-width / 2, -height / 2);
+					_helperMatrix.translate(-width * rotatePoint.x, -height * rotatePoint.y);
 					_helperMatrix.rotateWithTrig(_cosAngle, _sinAngle);
-					_helperMatrix.translate(width / 2, height / 2);
+					_helperMatrix.translate(width * rotatePoint.x, height * rotatePoint.y);
 				}
+				_helperMatrix.translate(offsetX, offsetY);
 
 				buffer.draw(trianglesSprite, _helperMatrix);
 				#if FLX_DEBUG
@@ -1126,7 +1158,7 @@ class FlxCamera extends FlxBasic
 
 		initialZoom = (Zoom == 0) ? defaultZoom : Zoom;
 		zoom = Zoom; // sets the scale of flash sprite, which in turn loads flashOffset values
-
+		zoomPoint.onChange = onChangePointZoom;
 		updateScrollRect();
 		updateFlashOffset();
 		updateFlashSpritePosition();
@@ -1376,6 +1408,7 @@ class FlxCamera extends FlxBasic
 			_fxShakeDuration -= elapsed;
 			if (_fxShakeDuration <= 0)
 			{
+				offsetShake.set();//reset
 				if (_fxShakeComplete != null)
 				{
 					_fxShakeComplete();
@@ -1385,11 +1418,19 @@ class FlxCamera extends FlxBasic
 			{
 				if (_fxShakeAxes != FlxAxes.Y)
 				{
-					flashSprite.x += FlxG.random.float(-_fxShakeIntensity * width, _fxShakeIntensity * width) * zoom * FlxG.scaleMode.scale.x;
+					if (oldShake) {
+						flashSprite.x = FlxG.random.float(-_fxShakeIntensity * width, _fxShakeIntensity * width) * zoom * FlxG.scaleMode.scale.x;
+					} else {
+						offsetShake.x = FlxG.random.float(-_fxShakeIntensity * width, _fxShakeIntensity * width) * FlxG.scaleMode.scale.x;
+					}
 				}
 				if (_fxShakeAxes != FlxAxes.X)
 				{
-					flashSprite.y += FlxG.random.float(-_fxShakeIntensity * height, _fxShakeIntensity * height) * zoom * FlxG.scaleMode.scale.y;
+					if (oldShake) {
+						flashSprite.y = FlxG.random.float(-_fxShakeIntensity * height, _fxShakeIntensity * height) * zoom * FlxG.scaleMode.scale.y;
+					} else {
+						offsetShake.y = FlxG.random.float(-_fxShakeIntensity * height, _fxShakeIntensity * height) * FlxG.scaleMode.scale.y;
+					}
 				}
 			}
 		}
@@ -1464,8 +1505,8 @@ class FlxCamera extends FlxBasic
 		{
 			if (canvas != null)
 			{
-				canvas.x = -0.5 * width * (scaleX - initialZoom) * FlxG.scaleMode.scale.x;
-				canvas.y = -0.5 * height * (scaleY - initialZoom) * FlxG.scaleMode.scale.y;
+				canvas.x = -zoomPoint.x * width * (scaleX - initialZoom) * FlxG.scaleMode.scale.x;
+				canvas.y = -zoomPoint.y * height * (scaleY - initialZoom) * FlxG.scaleMode.scale.y;
 
 				canvas.scaleX = totalScaleX;
 				canvas.scaleY = totalScaleY;
@@ -1918,30 +1959,34 @@ class FlxCamera extends FlxBasic
 	 */
 	 public function containsPoint(point:FlxPoint, width:Float = 0, height:Float = 0):Bool
 	{
+		var offsetX = (offset == null ? 0 : offset.x);
+		var offsetY = (offset == null ? 0 : offset.y);
+		if (!oldShake) {
+			offsetX +=  (offsetShake == null ? 0 : offsetShake.x);
+			offsetY +=  (offsetShake == null ? 0 : offsetShake.y);
+		}
 		if (!rotateSprite && complexObjectVisibility) {
+			var rotX = (rotatePoint == null ? 0.5 : rotatePoint.x);
 			var cos = _cosAngle;
 			var sin = _sinAngle;
-		
-			//get centered cam
-			var viewCenterX = (viewOffsetX + viewOffsetWidth) / 2;
-			var viewCenterY = (viewOffsetY + viewOffsetHeight) / 2;
-		
-			//  expand box base hitbox(inspired adobe bounding box lol)
-			var camHalf = CoolUtil.AABBHandler(viewOffsetWidth-viewOffsetX, viewOffsetHeight-viewOffsetY, sin, cos);
-			var camHalfW = camHalf[0] / 2;
-			var camHalfH = camHalf[1] / 2;
+			var offsetC = [
+				(offsetX * cos) + (offsetY * sin),
+				(offsetX * sin) + (offsetY * cos)
+			];
+			var rotY = (rotatePoint == null ? 0.5 : rotatePoint.y);
+			var bound = Bound.computeAABB(viewOffsetX, viewOffsetY, (viewOffsetWidth-viewOffsetX), (viewOffsetHeight-viewOffsetY), angle, rotX, rotY);
 		
 			// check the expandable box instead camera box
-			var contained = (point.x + width > viewCenterX - camHalfW) 
-				&& (point.x < viewCenterX + camHalfW)
-				&& (point.y + height > viewCenterY - camHalfH) 
-				&& (point.y < viewCenterY + camHalfH);
+			var contained = (point.x + width > bound.minX+offsetC[0]) 
+				&& (point.x < bound.maxX+offsetC[0])
+				&& (point.y + height > bound.minY+offsetC[1]) 
+				&& (point.y < bound.maxY+offsetC[1]);
 		
 			point.putWeak();
 			return contained;
 		} else {
-			var contained = (point.x + width > viewOffsetX) && (point.x < viewOffsetWidth)
-			&& (point.y + height > viewOffsetY) && (point.y < viewOffsetHeight);
+			var contained = (point.x + width > viewOffsetX+offsetX) && (point.x < viewOffsetWidth+offsetX)
+			&& (point.y + height > viewOffsetY+offsetY) && (point.y < viewOffsetHeight+offsetY);
 			point.putWeak();
 			return contained;
 		}
@@ -1954,22 +1999,27 @@ class FlxCamera extends FlxBasic
 	 */
 	public function containsRect(rect:FlxRect, ?ignoreAngle:Bool = false):Bool
 	{
+		var offsetX = (offset == null ? 0 : offset.x);
+		var offsetY = (offset == null ? 0 : offset.y);
+		offsetX +=  (offsetShake == null ? 0 : offsetShake.x);
+		offsetY +=  (offsetShake == null ? 0 : offsetShake.y);
 		if (!rotateSprite && complexObjectVisibility && !ignoreAngle) {
-			//fix invisible sprite when extreme angle by expand view box based angle(inpired from adobe's bounding box)
+			var rotX = (rotatePoint == null ? 0.5 : rotatePoint.x);
 			var cos = _cosAngle;
 			var sin = _sinAngle;
-			var viewCenterX = (viewOffsetX + viewOffsetWidth) / 2;
-			var viewCenterY = (viewOffsetY + viewOffsetHeight) / 2;
-			var camHalf = CoolUtil.AABBHandler(viewOffsetWidth-viewOffsetX, viewOffsetHeight-viewOffsetY, sin, cos);
-			var camHalfW = camHalf[0] / 2;
-			var camHalfH = camHalf[1] / 2;
-			var contained = (rect.right > viewCenterX-camHalfW) && (rect.x < viewCenterX+camHalfW)
-				&& (rect.bottom > viewCenterY-camHalfH) && (rect.y < viewCenterY+camHalfH);
+			var offsetC = [
+				(offsetX * cos) + (offsetY * sin),
+				(offsetX * sin) + (offsetY * cos)
+			];
+			var rotY = (rotatePoint == null ? 0.5 : rotatePoint.y);
+			var bound = Bound.computeAABB(viewOffsetX, viewOffsetY, (viewOffsetWidth-viewOffsetX), (viewOffsetHeight-viewOffsetY), angle, rotX, rotY);
+			var contained = (rect.right > bound.minX+offsetC[0]) && (rect.x < bound.maxX+offsetC[0])
+				&& (rect.bottom > bound.minY+offsetC[1]) && (rect.y < bound.maxY+offsetC[1]);
 			rect.putWeak();
 			return contained;
 		} else {
-			var contained = (rect.right > viewOffsetX) && (rect.x < viewOffsetWidth)
-			&& (rect.bottom > viewOffsetY) && (rect.y < viewOffsetHeight);
+			var contained = (rect.right > viewOffsetX+offsetX) && (rect.x < viewOffsetWidth+offsetX)
+			&& (rect.bottom > viewOffsetY+offsetY) && (rect.y < viewOffsetHeight+offsetY);
 			rect.putWeak();
 			return contained;
 		}
@@ -2131,16 +2181,18 @@ class FlxCamera extends FlxBasic
 
 	inline function calcOffsetX():Void
 	{
-		viewOffsetX = 0.5 * width * (scaleX - initialZoom) / scaleX;
-		viewOffsetWidth = width - viewOffsetX;
-		viewWidth = width - 2 * viewOffsetX;
+		var pointMath = width * (scaleX - initialZoom) / scaleX;
+		viewOffsetX = zoomPoint.x * pointMath;//64
+		viewOffsetWidth = width - ((1-zoomPoint.x) * pointMath);
+		viewWidth = width - 2 * ((1-zoomPoint.x) * pointMath);
 	}
 
 	inline function calcOffsetY():Void
 	{
-		viewOffsetY = 0.5 * height * (scaleY - initialZoom) / scaleY;
-		viewOffsetHeight = height - viewOffsetY;
-		viewHeight = height - 2 * viewOffsetY;
+		var pointMath = height * (scaleY - initialZoom) / scaleY;
+		viewOffsetY = zoomPoint.x * pointMath;
+		viewOffsetHeight = height - ((1-zoomPoint.y) * pointMath);
+		viewHeight = height - 2 * ((1-zoomPoint.y) * pointMath);
 	}
 	
 	static inline function get_defaultCameras():Array<FlxCamera>
@@ -2151,6 +2203,21 @@ class FlxCamera extends FlxBasic
 	static inline function set_defaultCameras(value:Array<FlxCamera>):Array<FlxCamera>
 	{
 		return _defaultCameras = value;
+	}
+
+	function set_oldShake(v:Bool):Bool {
+		if (v != oldShake) {
+			oldShake = v;
+			if (!v) {
+				offsetShake.set();
+			}
+		}
+		return v;
+	}
+	function onChangePointZoom(x:Float, y:Float) {
+		calcOffsetX();
+		calcOffsetY();
+		updateInternalSpritePositions();
 	}
 }
 
