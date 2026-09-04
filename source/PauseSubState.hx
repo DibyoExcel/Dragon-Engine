@@ -56,7 +56,6 @@ class PauseSubState extends MusicBeatSubstate
 			menuItemsOG = ['Resume', 'Restart Song', 'Change Difficulty'  #if mobile , 'Chart Editor' #end, 'Exit to menu'];
 		}
 		if(CoolUtil.difficulties.length < 2) menuItemsOG.remove((ClientPrefs.dragonW ? 'Scale Challenge' : 'Change Difficulty')); //No need to change difficulty if there is only one!
-
 		if(PlayState.chartingMode)
 		{
 			menuItemsOG.insert(2, (ClientPrefs.dragonW ? 'Left Forge' : 'Leave Charting Mode'));

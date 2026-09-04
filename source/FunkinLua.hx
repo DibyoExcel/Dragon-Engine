@@ -6,6 +6,8 @@ import dge.obj.lua.*;
 import openfl.filters.ShaderFilter;
 import dge.frontend.CameraZOrder;
 import dge.frontend.scale.ScreenScaleMode;
+import dge.obj.game.VideoSprite;
+import dge.frontend.MP4Order as VideoOrder;
 
 import lime.app.Application;
 import lime.system.System;
@@ -4439,6 +4441,84 @@ class FunkinLua {
 				PlayState.instance.addCamera(name, x, y, width, height, zoom, sectionZoom, true, index);
 			}
 		});
+		//precache trick(idk from who but found from FNF:Dancin Dungeon lua file(VideoSpriteHandler.lua))
+		Lua_helper.add_callback(lua, "precacheVideo", function(path:String) {
+			#if VIDEOS_ALLOWED
+			var videoPath = Paths.video(path);
+			if (FileSystem.exists(videoPath) || Assets.exists(videoPath)) {
+				var precacheVideo = new vlc.MP4Handler();
+				precacheVideo.playVideo(videoPath);
+				precacheVideo.finishVideo();
+				return true;
+			}
+			#end
+			return false;
+		});
+		Lua_helper.add_callback(lua, "addVideoSprite", function(tag:String, x:Float, y:Float, path:String, camera:String = 'other', hasVolume:Bool = true, front:Bool = true) {
+			#if VIDEOS_ALLOWED
+			var videoPath = Paths.video(path);
+			if ((FileSystem.exists(videoPath) || Assets.exists(videoPath)) && (PlayState.instance != null && !PlayState.instance.modchartVideo.exists(tag))) {
+				var videoSprite = new VideoSprite(x, y, videoPath, camera, hasVolume);
+				videoSprite.finishCallback = function() {
+					if (PlayState.instance != null) {
+						PlayState.instance.remove(PlayState.instance.getLuaObject(tag), true);
+						PlayState.instance.modchartVideo.remove(tag);
+						PlayState.instance.callOnLuas('onVideoFinished', [tag]);
+					}
+				};
+				PlayState.instance.modchartVideo.set(tag, videoSprite);
+				if(front) {
+					getInstance().add(videoSprite);
+				} else {
+					if(PlayState.instance.isDead)
+						{
+							GameOverSubstate.instance.insert(GameOverSubstate.instance.members.indexOf(GameOverSubstate.instance.boyfriend), videoSprite);
+						}
+						else
+						{
+							var position:Int = PlayState.instance.members.indexOf(PlayState.instance.gfGroup);
+							if(PlayState.instance.members.indexOf(PlayState.instance.boyfriendGroup) < position) {
+								position = PlayState.instance.members.indexOf(PlayState.instance.boyfriendGroup);
+							} else if(PlayState.instance.members.indexOf(PlayState.instance.dadGroup) < position) {
+								position = PlayState.instance.members.indexOf(PlayState.instance.dadGroup);
+							}
+							PlayState.instance.insert(position, videoSprite);
+						}
+				}
+				return true;
+			} else {
+				return false;
+			}
+			#end
+			return false;
+		});
+		Lua_helper.add_callback(lua, "moveVideoOrder", function(camera:String, behind:Bool = true) {
+			#if VIDEOS_ALLOWED
+			var camObj:FlxCamera = cameraBetterFromString(camera);
+			if (camObj != null && PlayState.instance != null && PlayState.instance.videoSprite != null) {
+				VideoOrder.moveVideoOrder(PlayState.instance.videoSprite, camObj, behind);
+			}
+			#end
+		});
+
+		Lua_helper.add_callback(lua, "setVideoMost", function(bottom:Bool = false) {
+			#if VIDEOS_ALLOWED
+			if (PlayState.instance != null && PlayState.instance.videoSprite != null) {
+				if (bottom) {
+					VideoOrder.moveVeryBehind(PlayState.instance.videoSprite);
+				} else {
+					VideoOrder.moveVeryTop(PlayState.instance.videoSprite);
+				}
+			}
+			#end
+		});
+		Lua_helper.add_callback(lua, "setVideoOrder", function(index:Int) {
+			#if VIDEOS_ALLOWED
+			if (PlayState.instance != null && PlayState.instance.videoSprite != null) {
+				VideoOrder.setVideoOrder(PlayState.instance.videoSprite, index);
+			}
+			#end
+		});
 
 		call('onCreate', []);
 		#end
@@ -5205,6 +5285,8 @@ class ModchartSprite extends FlxSprite
 		antialiasing = ClientPrefs.globalAntialiasing;
 	}
 }
+
+
 
 class ModchartText extends FlxText
 {

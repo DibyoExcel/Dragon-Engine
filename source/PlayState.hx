@@ -1,9 +1,5 @@
 package;
 
-import dge.obj.lua.*;
-import dge.backend.PrivateData;
-import dge.obj.Keypress;
-import dge.frontend.scale.ScreenScaleMode;
 #if mobile
 import dge.obj.mobile.Hitbox;
 import dge.obj.mobile.VirtualButton;
@@ -68,9 +64,14 @@ import StageData;
 import FunkinLua;
 import DialogueBoxPsych;
 import Conductor.Rating;
+import dge.backend.PrivateData;
+import dge.obj.lua.*;
+import dge.obj.Keypress;
 import dge.obj.game.HoldCover;
 import dge.obj.game.ComboSpr;
+import dge.obj.game.VideoSprite;
 import dge.frontend.CameraZOrder as CameraRender;
+import dge.frontend.scale.ScreenScaleMode;
 
 #if !flash 
 import flixel.addons.display.FlxRuntimeShader;
@@ -131,6 +132,7 @@ class PlayState extends MusicBeatState
 	public var modchartSounds:Map<String, FlxSound> = new Map<String, FlxSound>();
 	public var modchartTexts:Map<String, ModchartText> = new Map<String, ModchartText>();
 	public var modchartSaves:Map<String, FlxSave> = new Map<String, FlxSave>();
+	public var modchartVideo:Map<String, VideoSprite> = new Map<String, VideoSprite>();
 	#else
 	public var boyfriendMap:Map<String, Boyfriend> = new Map<String, Boyfriend>();
 	public var dadMap:Map<String, Character> = new Map<String, Character>();
@@ -142,6 +144,7 @@ class PlayState extends MusicBeatState
 	public var modchartSounds:Map<String, FlxSound> = new Map();
 	public var modchartTexts:Map<String, ModchartText> = new Map();
 	public var modchartSaves:Map<String, FlxSave> = new Map();
+	public var modchartVideo:Map<String, FunkinLua.VideoSprite> = new Map();
 	#end
 	//map
 	public var strumGroupMap:Map<String, FlxTypedGroup<StrumNote>> = new Map();
@@ -283,6 +286,7 @@ class PlayState extends MusicBeatState
 	public var camGame:FlxCamera;
 	public var camOther:FlxCamera;
 	public var cameraSpeed:Float = 1;
+	public var videoSprite:MP4Handler;
 
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 	var dialogueJson:DialogueFile = null;
@@ -1854,6 +1858,7 @@ class PlayState extends MusicBeatState
 	}
 
 	public function getLuaObject(tag:String, text:Bool=true):FlxSprite {
+		if (modchartVideo.exists(tag)) return modchartVideo.get(tag);
 		if(modchartSprites.exists(tag)) return modchartSprites.get(tag);
 		if(text && modchartTexts.exists(tag)) return modchartTexts.get(tag);
 		if(variables.exists(tag)) return variables.get(tag);
@@ -1870,7 +1875,7 @@ class PlayState extends MusicBeatState
 		char.y += char.positionArray[1];
 	}
 
-	public function startVideo(name:String)
+	public function startVideo(name:String, ?newType:Bool = false /*set old as default for compability reason*/)
 	{
 		#if VIDEOS_ALLOWED
 		inCutscene = true;
@@ -1886,12 +1891,14 @@ class PlayState extends MusicBeatState
 			startAndEnd();
 			return;
 		}
-
-		var video:MP4Handler = new MP4Handler();
-		video.playVideo(filepath);
-		video.finishCallback = function()
-		{
+		if (videoSprite != null) {
+			videoSprite.finishVideo();
+		}
+		videoSprite = new MP4Handler();
+		videoSprite.playVideo(filepath);
+		videoSprite.finishCallback = function() {
 			startAndEnd();
+			videoSprite = null;
 			return;
 		}
 		#else
@@ -1901,7 +1908,7 @@ class PlayState extends MusicBeatState
 		#end
 	}
 
-	function startAndEnd()
+	public function startAndEnd()
 	{
 		if(endingSong)
 			endSong();
@@ -3418,7 +3425,7 @@ class PlayState extends MusicBeatState
 			if (FlxG.sound.music != null)
 			{
 				FlxG.sound.music.pause();
-				vocals.pause();
+				if (vocals != null) vocals.pause();
 			}
 
 			if (startTimer != null && !startTimer.finished)
@@ -3463,6 +3470,10 @@ class PlayState extends MusicBeatState
 					tween.active = false;
 				}
 			}
+			for (i in modchartVideo) {
+				if (i != null) i.pause();
+			}
+			if (videoSprite != null) videoSprite.pause();
 			if (FunkinLua.tSongSpeed != null) {
 				FunkinLua.tSongSpeed.active = false;
 			}
@@ -3522,6 +3533,10 @@ class PlayState extends MusicBeatState
 					tween.active = true;
 				}
 			}
+			for (i in modchartVideo) {
+				if (i != null) i.resume();
+			}
+			if (videoSprite != null) videoSprite.resume();
 			if (FunkinLua.tSongSpeed != null) {
 				FunkinLua.tSongSpeed.active = true;
 			}
@@ -3558,6 +3573,10 @@ class PlayState extends MusicBeatState
 			}
 		}
 		#end
+		for (i in modchartVideo) {
+			if (i != null && !paused) i.resume();
+		}
+		if (videoSprite != null && !paused) videoSprite.resume();
 
 		super.onFocus();
 	}
@@ -3566,11 +3585,14 @@ class PlayState extends MusicBeatState
 	{
 		#if desktop
 		if (health > 0 && !paused)
-			{
-				DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
-			}
-			#end
-			
+		{
+			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
+		}
+		#end
+		for (i in modchartVideo) {
+			if (i != null && !paused) i.pause();
+		}
+		if (videoSprite != null && !paused) videoSprite.pause();
 		super.onFocusLost();
 		/*if (ClientPrefs.pauseUnFocus && startedCountdown && canPause && !paused) {
 			openPauseMenu();
@@ -3591,7 +3613,7 @@ class PlayState extends MusicBeatState
 			vocals.time = Conductor.songPosition;
 			vocals.pitch = playbackRate;
 		}
-		vocals.play();
+		if (vocals != null) vocals.play();
 	}
 
 	public var paused:Bool = false;
