@@ -3034,6 +3034,7 @@ class PlayState extends MusicBeatState
 		if(!eventPushedMap.exists(event.event)) {
 			eventPushedMap.set(event.event, true);
 		}
+		callOnLuas('onEventPushed', [event.event, event.value1, event.value2]);
 	}
 
 	public function eventNoteEarlyTrigger(event:EventNote):Float {
@@ -4272,15 +4273,14 @@ class PlayState extends MusicBeatState
 					var botCanHit = ((daNote.isSustainNote && (daNote.strumTime + daNote.offsetStrumTime) < Conductor.songPosition + (Conductor.safeZoneOffset * daNote.earlyHitMult) && (daNote.parent != null ? daNote.parent.wasGoodHit : true)) || (!daNote.isSustainNote && ((daNote.strumTime + daNote.offsetStrumTime) <= Conductor.songPosition))) && ((daNote.strumNote != null && !daNote.strumNote.isLocked) || daNote.strumNote == null);//just be sure bot only hit in perfect time :) and also cant miss when lagging like hell.
 					var noteField = (daNote.fieldTarget != null ? daNote.fieldTarget : '');
 					var fieldCheck = ((playableField.length > 0 && noteField.length > 0) ? playableField.indexOf(daNote.fieldTarget) != -1 : true);
-					var fieldCheckO = ((playableField.length > 0 && noteField.length > 0) ? playableField.indexOf(daNote.fieldTarget) == -1 : true);
 					var botP = daNote.mustPress && !daNote.blockHit && !daNote.ignoreNote && !daNote.canFreeze && fieldCheck;
-					var botO = !daNote.mustPress && !daNote.ignoreNote && !daNote.canFreeze && fieldCheckO;
+					var botO =( !daNote.mustPress || !fieldCheck) && !daNote.ignoreNote && !daNote.canFreeze;
 					if (gamemode == 'opponent') {
-						botO = daNote.mustPress && !daNote.blockHit && !daNote.ignoreNote && !daNote.canFreeze && fieldCheckO;
-						botP = !daNote.mustPress && !daNote.ignoreNote && !daNote.canFreeze && fieldCheck;
+						botO = daNote.mustPress && !daNote.blockHit && !daNote.ignoreNote && !daNote.canFreeze;
+						botP =(!daNote.mustPress || !fieldCheck) && !daNote.ignoreNote && !daNote.canFreeze && fieldCheck;
 					} else if (gamemode == 'bothside') {
 						botO = false;
-						botP = (!daNote.ignoreNote && fieldCheck && daNote.canFreeze) && ((daNote.mustPress && !daNote.blockHit) || !daNote.mustPress);
+						botP = (!daNote.ignoreNote && daNote.canFreeze) && ((daNote.mustPress && !daNote.blockHit) || !daNote.mustPress);
 					}
 					var botplayHit = botP && cpuControlled;
 					if (botO && botCanHit)
