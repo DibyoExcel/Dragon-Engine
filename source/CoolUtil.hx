@@ -371,4 +371,15 @@ class CoolUtil
 			}
 		}
 	}
+	public static function arrayFallback<T>(arr:Array<T>, backupArr:Array<T>):Array<T> {
+		var newArray:Array<T> = [];
+		for (i in 0...backupArr.length) {
+			if (arr != null && i < arr.length && arr[i] != null) {
+				newArray.push(arr[i]);
+			} else {
+				newArray.push(backupArr[i]);
+			}
+		}
+		return newArray;
+	}
 }

@@ -161,33 +161,37 @@ class StrumNote extends FlxSprite
 	}
 
 	function reloadAnims(image:String) {
-		var skin:String = PlayState.SONG.arrowSkin;
+		var skin:String = image;
+		var skinOG:String = PlayState.SONG.arrowSkin;
 		var skinOpt:String = PlayState.SONG.arrowSkinOpt;
 		var skinSec:String = PlayState.SONG.arrowSkinSec;
 		if (skin == null || skin.length < 1) {
-			skin = ClientPrefs.dflnoteskin;
-		}
-		//if opponent notes didt iput it ill use player skin/default. if sec opt not set texture it ill use opponent texture. bruh idk how to explain this
-		if(skinOpt == null || skinOpt.length < 1) {
-			skinOpt = skin;
-		}
-		if(skinSec == null || skinSec.length < 1) {
-			if(skinOpt == null || skinOpt.length < 1) {
-				skinOpt = skin;
-			}
-			skinSec = skinOpt;
-		}
-		if (image == '' || image.length < 1) {
 			if (player == 1) {
-				image = skin;
+				skin = skinOG;
 			} else {
 				if (gfType) {
-					image = skinSec;
+					if (skinSec == null || skinSec.length < 1) {
+						if (skinOpt == null || skinOpt.length < 1) {
+							skin = skinOG;
+						} else {
+							skin = skinOpt;
+						}
+					} else {
+						skin = skinSec;
+					}
 				} else {
-					image = skinOpt;
+					if (skinOpt == null || skinOpt.length < 1) {
+						skin = skinOG;
+					} else {
+						skin = skinOpt;
+					}
 				}
 			}
 		}
+		if (skin == null || skin.length < 1) {
+			skin = ClientPrefs.dflnoteskin;
+		}
+		image = skin;
 		if(PlayState.isPixelStage)
 		{
 			loadGraphic(Paths.image('pixelUI/' + image));

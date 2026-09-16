@@ -26,7 +26,7 @@ class HoldCover extends FlxSprite
             }
             skinSec = skinOpt;
         }
-        if (type == 'bg') {
+        if (type == 'bf') {
             texture = skin;
         } else if (type == 'gf') {
             texture = skinSec;
@@ -88,15 +88,14 @@ class HoldCover extends FlxSprite
 			}
             if (note != null) {
                 if (note.mustPress) {
-					texture = skin;
-				} else if (note.gfNote) {
-					texture = skinSec;
-				} else {
-					texture = skinOpt;
-				}
-            } else {
-                texture = 'holdCover';
-            }
+                    texture = skin;
+                } else if (note.gfNote) {
+                    texture = skinSec;
+                } else {
+                    texture = skinOpt;
+                }
+			}
+			if (texture == null || texture.length < 1) texture = 'holdCover';
         }
         if (note != null) {
             timer = ((note.sustainLength+((note.strumTime+note.offsetStrumTime)-Conductor.songPosition))/1000)+note.holdCoverDelaySplash;
@@ -197,7 +196,8 @@ class HoldCover extends FlxSprite
             setPosition(((strum.x+strum.width/2)-(width/2))+offsetX, ((strum.y+strum.height/2)-(height/2))+offsetY);
         }
         if (timer > 0) {
-            timer -= elapsed;
+            var speed = (PlayState.instance != null ? PlayState.instance.playbackRate : 1);
+            timer -= elapsed * speed;
             if (timer <= 0) {
                 if (note != null) {
                     playAnim('end' + (note.noteData%4));

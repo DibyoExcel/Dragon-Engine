@@ -584,7 +584,6 @@ class Note extends FlxSprite
 					}
 				}
 			}
-			
 			if (skin == null || skin.length < 1)
 			{
 				skin = ClientPrefs.dflnoteskin;

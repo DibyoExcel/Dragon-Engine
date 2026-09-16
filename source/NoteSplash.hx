@@ -72,9 +72,8 @@ class NoteSplash extends FlxSprite
 				} else {
 					texture = skinOpt;
 				}
-			} else {
-				texture = 'noteSplashes';
 			}
+			if (texture == null || texture.length < 1) texture = 'noteSplashes';
 		}
 		if (cam != null && cam != '') {
 			var camArray:Array<String> = cam.split(',');

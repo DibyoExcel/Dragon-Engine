@@ -398,9 +398,13 @@ class PlayState extends MusicBeatState
 	public var strumMiddleDistanceOpponent:Float = 0.25;
 	public var strumMiddleDistanceGf:Float = 0.25;
 	public var strumYOffsetSecondOpt:Float = Note.swagWidth/2;//is odd to put 0
-	//combo textures
+	//game textures(can use for lua too recommended change in `onCreate()`)
+	//combo texture
 	public var comboTexture:String = 'comboAtlas';
 	public var numTexture:String = 'comboAtlas';
+	//countdown texture
+	public var countdownTexture:Array<String> = ['ready', 'set', 'go'];
+	public var countdownTexturePixel:Array<String> = ['pixelUI/ready-pixel', 'pixelUI/set-pixel', 'pixelUI/date-pixel'];
 
 	#if desktop
 	// Discord RPC variables
@@ -444,6 +448,7 @@ class PlayState extends MusicBeatState
 	{
 		if (SONG == null) SONG = Song.loadFromJson('tutorial');
 		isSecOpt = PlayState.SONG.secOpt;
+		ScreenScaleMode.addEventListener(resolutionChange);//set to lower priority so can modified from lua
 		CacheUtil.clearCache();
 		Paths.clearStoredMemory();
 		//trace('Playback Rate: ' + playbackRate);
@@ -609,7 +614,6 @@ class PlayState extends MusicBeatState
 		GF_Y = stageData.girlfriend[1];
 		DAD_X = stageData.opponent[0];
 		DAD_Y = stageData.opponent[1];
-
 		if(stageData.camera_speed != null)
 			cameraSpeed = stageData.camera_speed;
 
@@ -1272,13 +1276,11 @@ class PlayState extends MusicBeatState
 		iconP2.visible = !ClientPrefs.hideHud;
 		iconP2.alpha = ClientPrefs.healthBarAlpha;
 		add(iconP2);
-		if (gf != null) {
-			iconP3 = new HealthIcon(gf.healthIcon, false);
-			iconP3.y = healthBar.y - 75;
-			iconP3.visible = !ClientPrefs.hideHud && isSecOpt;
-			iconP3.alpha = ClientPrefs.healthBarAlpha;
-			add(iconP3);
-		}
+		iconP3 = new HealthIcon((gf != null ? gf.healthIcon : 'gf')/**default icon**/, false);
+		iconP3.y = healthBar.y - 75;
+		iconP3.visible = !ClientPrefs.hideHud && isSecOpt;
+		iconP3.alpha = ClientPrefs.healthBarAlpha;
+		add(iconP3);
 		mergeHealthColor = isSecOpt;
 		reloadHealthBarColors();
 
@@ -1629,7 +1631,6 @@ class PlayState extends MusicBeatState
 		cachePopUpScore();
 		cacheCountdown();
 		callOnLuas('onCreatePost', []);
-		ScreenScaleMode.addEventListener(resolutionChange);
 
 		super.create();
 		if (ClientPrefs.startPause) {
@@ -1875,7 +1876,7 @@ class PlayState extends MusicBeatState
 		char.y += char.positionArray[1];
 	}
 
-	public function startVideo(name:String, ?newType:Bool = false /*set old as default for compability reason*/)
+	public function startVideo(name:String)
 	{
 		#if VIDEOS_ALLOWED
 		inCutscene = true;
@@ -2346,8 +2347,9 @@ class PlayState extends MusicBeatState
 	function cacheCountdown()
 	{
 		var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
-		introAssets.set('default', ['ready', 'set', 'go']);
-		introAssets.set('pixel', ['pixelUI/ready-pixel', 'pixelUI/set-pixel', 'pixelUI/date-pixel']);
+		var func = CoolUtil.arrayFallback;
+		introAssets.set('default', func(countdownTexture, ['ready', 'set', 'go']));
+		introAssets.set('pixel', func(countdownTexturePixel, ['pixelUI/ready-pixel', 'pixelUI/set-pixel', 'pixelUI/date-pixel']));
 
 		var introAlts:Array<String> = introAssets.get('default');
 		if (isPixelStage) introAlts = introAssets.get('pixel');
@@ -2433,8 +2435,9 @@ class PlayState extends MusicBeatState
 				}
 
 				var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
-				introAssets.set('default', ['ready', 'set', 'go']);
-				introAssets.set('pixel', ['pixelUI/ready-pixel', 'pixelUI/set-pixel', 'pixelUI/date-pixel']);
+				var func = CoolUtil.arrayFallback;
+				introAssets.set('default', func(countdownTexture, ['ready', 'set', 'go']));
+				introAssets.set('pixel', func(countdownTexturePixel, ['pixelUI/ready-pixel', 'pixelUI/set-pixel', 'pixelUI/date-pixel']));
 
 				var introAlts:Array<String> = introAssets.get('default');
 				var antialias:Bool = ClientPrefs.globalAntialiasing;
@@ -2948,7 +2951,7 @@ class PlayState extends MusicBeatState
 	function set_mergeHealthColor(value:Bool):Bool {
 		if (mergeHealthColor != value) {
 			mergeHealthColor = value;
-			iconP3.visible = value;
+			if (iconP3 != null) iconP3.visible = value;
 			reloadHealthBarColors();
 		}
 		return value;
@@ -3283,139 +3286,6 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
-		/*if (!PlayState.SONG.secOpt) {
-			for (i in 0...4)
-				{
-					// FlxG.log.add(i);
-		
-					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : (player == 1 ? FlxG.width*strumPointPlayer : FlxG.width*strumPointOpponent))-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, player);
-					if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
-						babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
-					}
-					babyArrow.downScroll = ClientPrefs.downScroll;
-					if (!isStoryMode && !skipArrowStartTween && t)
-					{
-						babyArrow.alpha = 0;
-						if (oldTransitionNotes) {
-							babyArrow.y += 20;
-							FlxTween.tween(babyArrow, {y: babyArrow.y - 20, alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
-						} else {
-							FlxTween.tween(babyArrow, {alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
-						}
-					}
-					else
-					{
-						babyArrow.alpha = targetAlpha;
-					}
-		
-					if (player == 1)
-					{
-						if (gamemode == "bothside") {
-							opponentStrums.add(babyArrow);
-							strumLineNotes.add(babyArrow);//ehhh
-						}
-						playerStrums.add(babyArrow);
-						strumLineNotes.add(babyArrow);
-					}
-					else
-					{
-						if(ClientPrefs.middleScroll)
-						{
-							if(i > 1) { //Up and Right
-								babyArrow.x += FlxG.width / 4;
-							} else {
-								babyArrow.x -= FlxG.width / 4;
-							}
-						}
-						opponentStrums.add(babyArrow);
-						strumLineNotes.add(babyArrow);
-					}
-					babyArrow.postAddedToGroup();	
-			}	
-		} else {
-			// Loop for opponentStrums (8 arrows)
-			if (player == 0) {
-				for (i in 0...8)
-				{
-					var noteSize = Note.swagWidth*(Math.min(0.75, 0.7*(FlxG.width/1280)));
-					var noteSizeSub = Note.swagWidth*(Math.min(0.125, 0.15*(FlxG.width/1280)));
-					var number = (-(noteSize*4))+(noteSize*i);
-					var babyArrow:StrumNote = new StrumNote((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : (FlxG.width*strumPointOpponent)+(Note.swagWidth/2))+number-noteSizeSub, strumLine.y, i, player, i>3);
-					babyArrow.downScroll = ClientPrefs.downScroll;
-					if (gamemode == "bothside") {
-						babyArrow.visible = false;
-					}
-					if (!isStoryMode && !skipArrowStartTween && t)
-					{
-						babyArrow.alpha = 0;
-						if (oldTransitionNotes) {
-							babyArrow.y += 20;
-							FlxTween.tween(babyArrow, {y: babyArrow.y - 20, alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * (i/2))});
-						} else {
-							FlxTween.tween(babyArrow, {alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * (i/2))});
-						}
-					}
-					else
-					{
-						babyArrow.alpha = targetAlpha;
-					}
-					if(ClientPrefs.middleScroll)
-					{
-						if(i > 3) { // Adjust positions for the last 4 arrows
-							babyArrow.x += FlxG.width / 5;
-						} else {
-							babyArrow.x -= FlxG.width / 5;
-						}
-					}
-					opponentStrums.add(babyArrow);
-					if ( i > 3) {
-						gfStrums.add(babyArrow);
-					}
-					strumLineNotes.add(babyArrow);
-					babyArrow.postAddedToGroup();
-					}
-				} else {
-			// Loop for playerStrums (only 4 arrows if not bothside with 2nd strums)
-				for (i in 0...8)
-					{
-						if (!(PlayState.SONG.secOpt && gamemode == 'bothside') && i>3) {
-							continue;//stop only 4 spawn
-						}
-						var number = (PlayState.SONG.secOpt && gamemode == 'bothside' ? (-Note.swagWidth*4) : (-(Note.swagWidth)*2))+(Note.swagWidth*i);
-						var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointPlayer)+number), strumLine.y, i, player, i>3);
-						babyArrow.downScroll = ClientPrefs.downScroll;
-						if (!isStoryMode && !skipArrowStartTween && t)
-						{
-							babyArrow.alpha = 0;
-							if (oldTransitionNotes) {
-								babyArrow.y += 20;
-								FlxTween.tween(babyArrow, {y: babyArrow.y - 20, alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * (i/(PlayState.SONG.secOpt && gamemode == 'bothside' ? 2 : 1)))});
-							} else {
-								FlxTween.tween(babyArrow, {alpha: targetAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * (i/(PlayState.SONG.secOpt && gamemode == 'bothside' ? 2 : 1)))});
-							}
-						}
-						else
-						{
-							babyArrow.alpha = targetAlpha;
-						}
-					
-						if (player == 1)
-						{
-							playerStrums.add(babyArrow);
-						}
-					
-						strumLineNotes.add(babyArrow);
-						if (gamemode == "bothside") {
-							opponentStrums.add(babyArrow);
-							if (i > 3) {
-								gfStrums.add(babyArrow);
-							}
-							strumLineNotes.add(babyArrow);//ehhh
-						}
-						babyArrow.postAddedToGroup();
-					}
-			}				
-		}*/
 	}
 
 	override function openSubState(SubState:FlxSubState)
@@ -4398,22 +4268,26 @@ class PlayState extends MusicBeatState
 							}
 						}
 					}
+					//fully rewrite bot's hit :eyes:
 					var botCanHit = ((daNote.isSustainNote && (daNote.strumTime + daNote.offsetStrumTime) < Conductor.songPosition + (Conductor.safeZoneOffset * daNote.earlyHitMult) && (daNote.parent != null ? daNote.parent.wasGoodHit : true)) || (!daNote.isSustainNote && ((daNote.strumTime + daNote.offsetStrumTime) <= Conductor.songPosition))) && ((daNote.strumNote != null && !daNote.strumNote.isLocked) || daNote.strumNote == null);//just be sure bot only hit in perfect time :) and also cant miss when lagging like hell.
-					if ((gamemode == 'opponent' ? (!daNote.blockHit && !daNote.canFreeze) && daNote.mustPress : !daNote.mustPress) && (!daNote.ignoreNote && !daNote.canFreeze) && daNote.fieldTarget.length < 1 && !(gamemode == "bothside") && botCanHit)
+					var noteField = (daNote.fieldTarget != null ? daNote.fieldTarget : '');
+					var fieldCheck = ((playableField.length > 0 && noteField.length > 0) ? playableField.indexOf(daNote.fieldTarget) != -1 : true);
+					var fieldCheckO = ((playableField.length > 0 && noteField.length > 0) ? playableField.indexOf(daNote.fieldTarget) == -1 : true);
+					var botP = daNote.mustPress && !daNote.blockHit && !daNote.ignoreNote && !daNote.canFreeze && fieldCheck;
+					var botO = !daNote.mustPress && !daNote.ignoreNote && !daNote.canFreeze && fieldCheckO;
+					if (gamemode == 'opponent') {
+						botO = daNote.mustPress && !daNote.blockHit && !daNote.ignoreNote && !daNote.canFreeze && fieldCheckO;
+						botP = !daNote.mustPress && !daNote.ignoreNote && !daNote.canFreeze && fieldCheck;
+					} else if (gamemode == 'bothside') {
+						botO = false;
+						botP = (!daNote.ignoreNote && fieldCheck && daNote.canFreeze) && ((daNote.mustPress && !daNote.blockHit) || !daNote.mustPress);
+					}
+					var botplayHit = botP && cpuControlled;
+					if (botO && botCanHit)
 					{
 						opponentNoteHit(daNote);
 					}
-					//custom field use opponent(FD BOT)
-					if ((gamemode == 'opponent' ? (!daNote.blockHit && !daNote.canFreeze) && daNote.mustPress : !daNote.mustPress) && (!daNote.ignoreNote && !daNote.canFreeze) && daNote.fieldTarget.length > 0 && botCanHit)
-					{
-						opponentNoteHit(daNote);
-					}
-
-					if((gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" ? true : daNote.mustPress) : !daNote.mustPress) && cpuControlled && !(daNote.autoPress || (playableField.length < 1 ? daNote.fieldTarget.length > 0 : playableField.indexOf(daNote.fieldTarget) == -1)) && botCanHit) {
-						goodNoteHit(daNote);
-					}
-					//custom field player(FD BOT)
-					if((gamemode != "opponent" ? (!daNote.blockHit && !daNote.canFreeze) && (gamemode == "bothside" ? true : daNote.mustPress) : !daNote.mustPress) && (daNote.autoPress || (playableField.length < 1 ? daNote.fieldTarget.length > 0 : playableField.indexOf(daNote.fieldTarget) == -1)) && botCanHit) {
+					if(botplayHit && botCanHit) {
 						goodNoteHit(daNote);
 					}
 
@@ -5661,6 +5535,38 @@ class PlayState extends MusicBeatState
 		//trace('pressed: ' + controlArray);
 	}
 
+	public function canHitNote(daNote:Note):Bool {
+		function allowedPressHandler(daNote:Note) {
+			if (daNote != null) {
+				var noteField = (daNote.fieldTarget != null ? daNote.fieldTarget : '');
+				if ((((daNote.mustPress || (playableField.length > 0 && noteField.length > 0 && (playableField.indexOf(daNote.fieldTarget) != -1))) && !daNote.blockHit) || (!daNote.mustPress && !daNote.ignoreNote))) return true;
+			}
+			return false;
+		}
+		var noteField = (daNote.fieldTarget != null ? daNote.fieldTarget : '');
+        var basicChecks:Bool =
+            daNote.canBeHit &&
+            !daNote.tooLate &&
+            !daNote.wasGoodHit &&
+            allowedPressHandler(daNote) &&
+            !daNote.canFreeze &&
+            !daNote.autoPress;
+
+        var gamemodeCheck:Bool =
+            if (playableField.length > 0 && (playableField.indexOf(daNote.fieldTarget) != -1) && noteField.length > 0) {
+                true;
+            } else gamemodeManager(daNote);
+
+        var fieldCheck:Bool =
+            if (playableField.length < 1 && noteField.length < 1) {
+                true;
+            } else {
+                playableField.indexOf(daNote.fieldTarget) != -1;
+            }
+        var strumCheck:Bool = (daNote.strumNote == null) || !daNote.strumNote.isLocked;
+        return basicChecks && gamemodeCheck && fieldCheck && strumCheck;
+    }
+
 	private function customKeyPress(key:Int, keyCheck:Bool) {
 		if (!cpuControlled && startedCountdown && !paused && key > -1 && (keyCheck || ClientPrefs.controllerMode))
 		{
@@ -5706,7 +5612,7 @@ class PlayState extends MusicBeatState
 				var sortedNotesList:Array<Note> = [];
 				notes.forEachAlive(function(daNote:Note)
 				{
-					if (strumsBlocked[daNote.noteData] != true && (daNote.canBeHit && (((gamemode == 'opponent')) ? !daNote.mustPress : (gamemode == "bothside" ? true : daNote.mustPress)) && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote && (gamemode == "opponent"  ? (!daNote.ignoreNote && !daNote.canFreeze) : (!daNote.blockHit && !daNote.canFreeze)) && !daNote.autoPress) && !((playableField.length < 1 ? daNote.fieldTarget.length > 0 : playableField.indexOf(daNote.fieldTarget) == -1)) && ((daNote.strumNote != null && !daNote.strumNote.isLocked) || daNote.strumNote == null))//when player play as opponent the player cant press ignore note(based opponent itself), you cant press autoPress notes,notes only can hit if attach strums and not has been locked
+					if (strumsBlocked[daNote.noteData] != true && !daNote.isSustainNote && canHitNote(daNote))//when player play as opponent the player cant press ignore note(based opponent itself), you cant press autoPress notes,notes only can hit if attach strums and not has been locked
 					{
 						if(daNote.noteData == key)
 						{
@@ -5866,11 +5772,8 @@ class PlayState extends MusicBeatState
 			notes.forEachAlive(function(daNote:Note)
 			{
 				// hold note functions
-				if (strumsBlocked[daNote.noteData] != true && daNote.isSustainNote && parsedHoldArray[daNote.noteData] && daNote.canBeHit
-				&& (gamemode != 'opponent' ? (gamemode == "bothside" ? true : daNote.mustPress) : !daNote.mustPress) && !daNote.tooLate && !daNote.wasGoodHit && (gamemode == 'opponent' || ((gamemode == "bothside") && !daNote.mustPress) ? (!daNote.ignoreNote && !daNote.canFreeze) : (!daNote.blockHit && !daNote.canFreeze))) {
-					if (((daNote.strumNote != null && !daNote.strumNote.isLocked) || daNote.strumNote == null)) {
-						goodNoteHit(daNote);
-					}
+				if (strumsBlocked[daNote.noteData] != true && daNote.isSustainNote && parsedHoldArray[daNote.noteData] && canHitNote(daNote)) {
+					goodNoteHit(daNote);
 				}
 			});
 
@@ -5956,18 +5859,21 @@ class PlayState extends MusicBeatState
 
 		totalPlayed++;
 		RecalculateRating(true);
-		var char:Character = (((gamemode == "bothside") && !daNote.mustPress) || daNote.isDad || gamemode == 'opponent' ? dad : boyfriend);
-			if(daNote.gfNote) {
-				char = gf;
-			}
+		var char:Character = boyfriend;
+		if (!daNote.mustPress || daNote.isDad) char = dad;
+		if (daNote.gfNote) char = gf;
 
-			if(char != null && !daNote.noMissAnimation && char.hasMissAnimations)
-			{
-				var animToPlay:String = singAnimations[Std.int(Math.abs(daNote.noteData))] + 'miss' + daNote.animSuffix;
-				char.playAnim(animToPlay, true);
-			}
-		callOnLuas((gamemode == 'opponent' || ((gamemode == "bothside" && !daNote.mustPress))  ? 'opponentNoteMiss' : 'noteMiss'), [notes.members.indexOf(daNote), daNote.noteData, daNote.noteType, daNote.isSustainNote]);
-		if (daNote.isSustainNote && daNote.parent != null && daNote.parent.holdCover != null) {
+		if(char != null && !daNote.noMissAnimation && char.hasMissAnimations)
+		{
+			var animToPlay:String = singAnimations[Std.int(Math.abs(daNote.noteData))] + 'miss' + daNote.animSuffix;
+			char.playAnim(animToPlay, true);
+		}
+		callOnLuas(!daNote.mustPress  ? 'opponentNoteMiss' : 'noteMiss', [notes.members.indexOf(daNote), daNote.noteData, daNote.noteType, daNote.isSustainNote]);
+		if ((!daNote.isSustainNote && daNote.holdCover != null)) {
+			daNote.holdCover.kill();
+			daNote.holdCover = null;
+		}
+		if ((daNote.isSustainNote && daNote.parent != null && daNote.parent.holdCover != null)) {
 			daNote.parent.holdCover.kill();
 			daNote.parent.holdCover = null;
 		}
@@ -5976,7 +5882,8 @@ class PlayState extends MusicBeatState
 	function noteMissPress(direction:Int = 1):Void //You pressed a key when there was no notes to press for this key
 	{
 		if(ClientPrefs.ghostTapping) return; //fuck it
-
+		var char:Character = boyfriend;
+		if (gamemode == 'opponent') char = dad;
 		if (!boyfriend.stunned)
 		{
 			health -= 0.05 * healthLoss;
@@ -5986,7 +5893,7 @@ class PlayState extends MusicBeatState
 				doDeathCheck(true);
 			}
 
-			if (combo > 5 && gf != null && gf.animOffsets.exists('sad'))
+			if (combo > 5 && gf != null && gf.animOffsets.exists('sad') && char == boyfriend)//imagine if gf sada because dad be like it creepy me out
 			{
 				gf.playAnim('sad');
 			}
@@ -6010,8 +5917,8 @@ class PlayState extends MusicBeatState
 			{
 				boyfriend.stunned = false;
 			});*/
-			if(boyfriend.hasMissAnimations) {
-				boyfriend.playAnim(singAnimations[Std.int(Math.abs(direction))] + 'miss', true);
+			if(char.hasMissAnimations) {
+				char.playAnim(singAnimations[Std.int(Math.abs(direction))] + 'miss', true);
 			}
 			vocals.volume = 0;
 		}
@@ -6044,31 +5951,48 @@ class PlayState extends MusicBeatState
 				}
 				if (Paths.formatToSongPath(SONG.song) != 'tutorial' && (!note.mustPress || (note.mustPress && note.isDad)))
 					camZooming = true;
-		
-				if(note.noteType == 'Hey!' && dad.animOffsets.exists('hey')) {
-					dad.playAnim('hey', true);
-					dad.specialAnim = true;
-					dad.heyTimer = 0.6;
-				} else if(!note.noAnimation) {
-					var altAnim:String = note.animSuffix;
-		
+				if (!note.noAnimation) {
+					var animToPlay:String = singAnimations[Std.int(Math.abs(note.noteData))];
+					var animSuffix = note.animSuffix;
 					if (SONG.notes[curSection] != null)
 					{
 						if (SONG.notes[curSection].altAnim && !SONG.notes[curSection].gfSection) {
-							altAnim = '-alt';
+							animSuffix = '-alt';
 						}
 					}
-		
-					var char:Character = (gamemode == "opponent" ? boyfriend : dad);
-					var animToPlay:String = singAnimations[Std.int(Math.abs(note.noteData))] + altAnim;
-					if(note.gfNote) {
-						char = gf;
+					if (note.gfNote) {
+						if (gf != null) {
+							gf.playAnim(animToPlay + animSuffix, true, false, 0, note.isSustainNote);
+							gf.holdTimer = 0;
+						}
+					} else {
+						if (!note.mustPress) {
+							dad.playAnim(animToPlay + animSuffix, true, false, 0, note.isSustainNote);
+							dad.holdTimer = 0;
+						} else {
+							boyfriend.playAnim(animToPlay + animSuffix, true, false, 0, note.isSustainNote);
+							boyfriend.holdTimer = 0;
+						}
 					}
-		
-					if(char != null)
-					{
-						char.playAnim(animToPlay, true, false, 0, note.isSustainNote);
-						char.holdTimer = 0;
+					if (note.noteType == 'Hey!') {
+						if (note.mustPress) {
+							if (boyfriend.animOffsets.exists('hey')) {
+								boyfriend.playAnim('hey', true, false, 0, note.isSustainNote);
+								boyfriend.specialAnim = true;
+								boyfriend.heyTimer = 0.6;
+							}
+							if(gf != null && gf.animOffsets.exists('cheer')) {
+								gf.playAnim('cheer', true);
+								gf.specialAnim = true;
+								gf.heyTimer = 0.6;
+							}
+						} else {
+							if (dad.animOffsets.exists('hey')) {
+								dad.playAnim('hey', true, false, 0, note.isSustainNote);
+								dad.specialAnim = true;
+								dad.heyTimer = 0.6;
+							}
+						}
 					}
 				}
 		
@@ -6233,7 +6157,6 @@ class PlayState extends MusicBeatState
 
 			if(!note.noAnimation) {
 				var animToPlay:String = singAnimations[Std.int(Math.abs(note.noteData))];
-
 				if(note.gfNote)
 				{
 					if(gf != null)
@@ -6265,18 +6188,17 @@ class PlayState extends MusicBeatState
 							boyfriend.specialAnim = true;
 							boyfriend.heyTimer = 0.6;
 						}
+						if(gf != null && gf.animOffsets.exists('cheer')) {
+							gf.playAnim('cheer', true);
+							gf.specialAnim = true;
+							gf.heyTimer = 0.6;
+						}
 					} else {
 						if(dad.animOffsets.exists('hey')) {
 							dad.playAnim('hey', true);
 							dad.specialAnim = true;
 							dad.heyTimer = 0.6;
 						}
-					}
-
-					if(gf != null && gf.animOffsets.exists('cheer')) {
-						gf.playAnim('cheer', true);
-						gf.specialAnim = true;
-						gf.heyTimer = 0.6;
 					}
 				}
 			}
@@ -7170,7 +7092,7 @@ class PlayState extends MusicBeatState
 				
 				//trace("create strums:", tag);
 				for (i in 0...data) {
-					var babyArrow:StrumNote = new StrumNote(0+(i*Note.swagWidth), strumLine.y, i, (player ? 1 : 0), gf);
+					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*2))+((Note.swagWidth*(Math.min(FlxG.width, 960)/960))*i), strumLine.y, i, (player ? 1 : 0), gf);
 					babyArrow.scrollFactor.set(sfX, sfY);
 					babyArrow.downScroll = downScroll;
 					babyArrow.postAddedToGroup();
@@ -7713,5 +7635,13 @@ class PlayState extends MusicBeatState
 		}
 		#end
 	}
+	function bfIndex(name:String):String {
+		var num = Std.parseInt(name);
+		if (Math.isNaN(num)) {
+			return 'bf';
+		} else if (num > 2) {
+			return '2';
+		}
+		return name;
+	}
 }
-
