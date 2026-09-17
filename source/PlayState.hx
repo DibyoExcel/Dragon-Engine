@@ -3951,9 +3951,10 @@ class PlayState extends MusicBeatState
 					var strumGroupR:FlxTypedGroup<StrumNote> = playerStrums;
 					var actualStrum:StrumNote;
 					var fakeStrum:StrumNote;
-					if (daNote.fieldTarget != null && daNote.fieldTarget.length > 0) {
-						if (strumGroupMap.exists(daNote.fieldTarget) && notesGroupMap.exists(daNote.fieldTarget)) {
-							strumGroup = strumGroupMap.get(daNote.fieldTarget);//Geometry Dash Group ID reference?!?
+					var noteField = (daNote.fieldTarget != null ? daNote.fieldTarget : '');
+					if (noteField.length > 0) {
+						if (strumGroupMap.exists(noteField) && notesGroupMap.exists(noteField)) {
+							strumGroup = strumGroupMap.get(noteField);//Geometry Dash Group ID reference?!?
 						} else {
 							daNote.fieldTarget = '';//reset if not found
 						}
@@ -4229,7 +4230,8 @@ class PlayState extends MusicBeatState
 					}
 					//OH HELL NAH
 					if (daNote != null) {//auto move to group in specific variable
-						if (daNote.fieldTarget != null && daNote.fieldTarget.length > 0 && notesGroupMap.exists(daNote.fieldTarget)) {
+						var noteField = (daNote.fieldTarget != null ? daNote.fieldTarget : '');
+						if (noteField.length > 0 && notesGroupMap.exists(noteField)) {
 							var specialGroup = [opponentNotes, playerNotes, gfNotes];
 							for (group in specialGroup) {
 								if (group.members.contains(daNote)) {
@@ -4238,7 +4240,7 @@ class PlayState extends MusicBeatState
 							}
 							for (i in notesGroupMap.keys()) {
 								var getS = notesGroupMap.get(i);//get the group
-								if (daNote.fieldTarget == i) {
+								if (noteField == i) {
 									if (!getS.members.contains(daNote)) {
 										getS.insert(0, daNote);
 									}
@@ -4270,32 +4272,38 @@ class PlayState extends MusicBeatState
 						}
 					}
 					//fully rewrite bot's hit :eyes:
+					//bruh how many this getting bug :skull:
+					//epic progammer XD
 					var botCanHit = ((daNote.isSustainNote && (daNote.strumTime + daNote.offsetStrumTime) < Conductor.songPosition + (Conductor.safeZoneOffset * daNote.earlyHitMult) && (daNote.parent != null ? daNote.parent.wasGoodHit : true)) || (!daNote.isSustainNote && ((daNote.strumTime + daNote.offsetStrumTime) <= Conductor.songPosition))) && ((daNote.strumNote != null && !daNote.strumNote.isLocked) || daNote.strumNote == null);//just be sure bot only hit in perfect time :) and also cant miss when lagging like hell.
 					var noteField = (daNote.fieldTarget != null ? daNote.fieldTarget : '');
-					var fieldCheck = ((playableField.length > 0 && noteField.length > 0) ? playableField.indexOf(daNote.fieldTarget) != -1 : true);
-					var botP = daNote.mustPress && !daNote.blockHit && !daNote.ignoreNote && !daNote.canFreeze && fieldCheck;
-					var botO =( !daNote.mustPress || !fieldCheck) && !daNote.ignoreNote && !daNote.canFreeze;
+					var fieldCheck = (noteField.length > 0 ? (playableField.length > 0 && playableField.indexOf(noteField) != -1) : gamemodeManager(daNote));
+					var blockHitField = (noteField.length > 0 ? !daNote.blockHit : true);
+					var botP = fieldCheck && !daNote.blockHit;
+					var botO = !fieldCheck && blockHitField;
 					if (gamemode == 'opponent') {
-						botO = daNote.mustPress && !daNote.blockHit && !daNote.ignoreNote && !daNote.canFreeze;
-						botP =(!daNote.mustPress || !fieldCheck) && !daNote.ignoreNote && !daNote.canFreeze && fieldCheck;
+						botO = !fieldCheck && !daNote.blockHit;
+						botP = fieldCheck && blockHitField;
 					} else if (gamemode == 'bothside') {
-						botO = false;
-						botP = (!daNote.ignoreNote && daNote.canFreeze) && ((daNote.mustPress && !daNote.blockHit) || !daNote.mustPress);
+						botO = !fieldCheck && blockHitField;
+						botP = ((fieldCheck && !daNote.blockHit) || !daNote.mustPress);
 					}
 					var botplayHit = botP && cpuControlled;
-					if (botO && botCanHit)
-					{
-						opponentNoteHit(daNote);
-					}
-					if(botplayHit && botCanHit) {
-						goodNoteHit(daNote);
+					if (!daNote.ignoreNote && !daNote.canFreeze && botCanHit) {
+						if (botO)
+						{
+							opponentNoteHit(daNote);
+						}
+						if(botplayHit) {
+							goodNoteHit(daNote);
+						}
 					}
 
 					// Kill extremely late notes and cause misses
 					if (Conductor.songPosition > (noteKillOffset / (Math.abs(songSpeed * daNote.multSpeed)))/**GET OUT**/ + (daNote.strumTime + daNote.offsetStrumTime))
 					{
 						//if (daNote.canFreeze) return;
-						if ((gamemode != 'opponent' ? ((gamemode == "bothside") ? true : daNote.mustPress) : !daNote.mustPress) && !cpuControlled && !daNote.ignoreNote && !endingSong && (daNote.tooLate || !daNote.wasGoodHit) && !(daNote.autoPress || (playableField.length < 1 ? daNote.fieldTarget.length > 0 : playableField.indexOf(daNote.fieldTarget) == -1))) {
+						var shouldMiss = !cpuControlled && !daNote.ignoreNote && !endingSong && (!daNote.wasGoodHit || daNote.tooLate) && !daNote.autoPress && !daNote.canFreeze;
+						if (shouldMiss && fieldCheck) {
 							noteMiss(daNote);
 						}
 						if ((!daNote.hitByOpponent && !daNote.mustPress) || (!daNote.wasGoodHit && daNote.mustPress && daNote.isDad)) {//if opponent lag
@@ -5487,7 +5495,8 @@ class PlayState extends MusicBeatState
 		
 		//tryna do MS based judgment due to popular demand
 		var daRating:Rating = Conductor.judgeNote(note, noteDiff / playbackRate);
-		var isPlayer = (!note.autoPress && !(playableField.length > 0 ? playableField.indexOf(note.fieldTarget) == -1 : note.fieldTarget.length > 0));//just add this for managing what should do
+		var noteField = (note.fieldTarget != null ? note.fieldTarget : '');
+		var isPlayer = (!note.autoPress && ((playableField.length > 0 || noteField.length > 0) ? playableField.indexOf(noteField) != -1 : true));//just add this for managing what should do
 		note.ratingMod = daRating.ratingMod;
 		if(!note.ratingDisabled && isPlayer && !cpuControlled) daRating.increase();
 		note.rating = daRating.name;
@@ -5536,35 +5545,25 @@ class PlayState extends MusicBeatState
 	}
 
 	public function canHitNote(daNote:Note):Bool {
-		function allowedPressHandler(daNote:Note) {
-			if (daNote != null) {
-				var noteField = (daNote.fieldTarget != null ? daNote.fieldTarget : '');
-				if ((((daNote.mustPress || (playableField.length > 0 && noteField.length > 0 && (playableField.indexOf(daNote.fieldTarget) != -1))) && !daNote.blockHit) || (!daNote.mustPress && !daNote.ignoreNote))) return true;
-			}
-			return false;
-		}
+		if (daNote == null) return false;
+		
 		var noteField = (daNote.fieldTarget != null ? daNote.fieldTarget : '');
+		var fieldCheck:Bool = noteField.length > 0 ? (playableField.length > 0 && playableField.indexOf(noteField) != -1) : gamemodeManager(daNote);
+		var allowedPress = fieldCheck && !daNote.blockHit;
+		if (!daNote.mustPress && noteField.length < 1) allowedPress = fieldCheck && !daNote.ignoreNote;//epic coder
+
         var basicChecks:Bool =
             daNote.canBeHit &&
             !daNote.tooLate &&
             !daNote.wasGoodHit &&
-            allowedPressHandler(daNote) &&
+            allowedPress &&
             !daNote.canFreeze &&
             !daNote.autoPress;
-
-        var gamemodeCheck:Bool =
-            if (playableField.length > 0 && (playableField.indexOf(daNote.fieldTarget) != -1) && noteField.length > 0) {
-                true;
-            } else gamemodeManager(daNote);
-
-        var fieldCheck:Bool =
-            if (playableField.length < 1 && noteField.length < 1) {
-                true;
-            } else {
-                playableField.indexOf(daNote.fieldTarget) != -1;
-            }
-        var strumCheck:Bool = (daNote.strumNote == null) || !daNote.strumNote.isLocked;
-        return basicChecks && gamemodeCheck && fieldCheck && strumCheck;
+        
+        
+		var strumCheck:Bool = (daNote.strumNote == null) || !daNote.strumNote.isLocked;
+        
+		return basicChecks && fieldCheck && strumCheck;
     }
 
 	private function customKeyPress(key:Int, keyCheck:Bool) {
@@ -6019,8 +6018,9 @@ class PlayState extends MusicBeatState
 				if (note.playStrumAnim && !note.fakeNoHit && !ClientPrefs.clsstrum) {
 					StrumPlayAnim(time, note);
 				}
-				if (note.fieldTarget != null && note.fieldTarget.length > 0) {
-					callOnLuas('fieldNoteHit', [note.fieldTarget, notes.members.indexOf(note), Math.abs(note.noteData), note.noteType, note.isSustainNote]);
+				var noteField = (note.fieldTarget != null ? note.fieldTarget : '');
+				if (noteField.length > 0) {
+					callOnLuas('fieldNoteHit', [noteField, notes.members.indexOf(note), Math.abs(note.noteData), note.noteType, note.isSustainNote]);
 				} else {
 					callOnLuas((note.mustPress ? 'goodNoteHit' : 'opponentNoteHit'), [notes.members.indexOf(note), Math.abs(note.noteData), note.noteType, note.isSustainNote]);
 				}
@@ -6045,8 +6045,9 @@ class PlayState extends MusicBeatState
 		if (note != null && !ClientPrefs.clsstrum) {
 			if (!note.isSustainNote && ((note.sustainLength+((note.strumTime+note.offsetStrumTime)-Conductor.songPosition))/1000)+note.holdCoverDelaySplash > 0 && (note.tail != null && note.tail.length > 0)) {
 				var groupTarget = grpHoldCover;
-				if (note.fieldTarget != null && note.fieldTarget.length > 0 && holdCoverGroupMap.exists(note.fieldTarget)) {
-					groupTarget = holdCoverGroupMap.get(note.fieldTarget);
+				var noteField = (note.fieldTarget != null ? note.fieldTarget : '');
+				if (noteField.length > 0 && holdCoverGroupMap.exists(noteField)) {
+					groupTarget = holdCoverGroupMap.get(noteField);
 				} else if (!note.mustPress) {
 					groupTarget = grpHoldCoverOpt;
 	
@@ -6078,7 +6079,8 @@ class PlayState extends MusicBeatState
 	{
 		if (!note.wasGoodHit)
 		{
-			if((cpuControlled || note.autoPress/**forgot autoPress to ignore the deadlist note**/ || (playableField.length < 1 ? note.fieldTarget.length > 0 : playableField.indexOf(note.fieldTarget) == -1)) && ((note.ignoreNote || note.canFreeze) || note.hitCausesMiss)) return;
+			var noteField = (note.fieldTarget != null ? note.fieldTarget : '');
+			if((cpuControlled || note.autoPress/**forgot autoPress to ignore the deadlist note**/ || (playableField.length < 1 ? noteField.length > 0 : playableField.indexOf(noteField) == -1)) && ((note.ignoreNote || note.canFreeze) || note.hitCausesMiss)) return;
 
 			if ((ClientPrefs.hitsoundVolume > 0 && !note.hitsoundDisabled) || note.forceHitsound)
 			{
@@ -6224,7 +6226,7 @@ class PlayState extends MusicBeatState
 					StrumPlayAnim(time, note);
 				}
 			} else {
-				if (note.autoPress || (playableField.length < 1 ? note.fieldTarget.length > 0 : playableField.indexOf(note.fieldTarget) == -1)) {
+				if (note.autoPress || (playableField.length < 1 ? noteField.length > 0 : playableField.indexOf(noteField) == -1)) {
 					var time:Float = 0.2;
 					if (note.strumNote != null) {
 						time = note.strumNote.resetTime;
@@ -6258,8 +6260,8 @@ class PlayState extends MusicBeatState
 			var isSus:Bool = note.isSustainNote; //GET OUT OF MY HEAD, GET OUT OF MY HEAD, GET OUT OF MY HEAD
 			var leData:Int = Math.round(Math.abs(note.noteData));
 			var leType:String = note.noteType;
-			if (note.fieldTarget != null && note.fieldTarget.length > 0) {
-				callOnLuas('fieldNoteHit', [note.fieldTarget, notes.members.indexOf(note), leData, leType, isSus]);
+			if (noteField.length > 0) {
+				callOnLuas('fieldNoteHit', [noteField, notes.members.indexOf(note), leData, leType, isSus]);
 			} else {
 				callOnLuas((!note.mustPress || note.isDad ? 'opponentNoteHit' : 'goodNoteHit'), [notes.members.indexOf(note), leData, leType, isSus]);
 			}
@@ -6312,9 +6314,10 @@ class PlayState extends MusicBeatState
 			}
 		}
 		if (note != null) {
+			var noteField = (note.fieldTarget != null ? note.fieldTarget : '');
 			var groupTarget = grpNoteSplashes;
-			if (note.fieldTarget != null && note.fieldTarget.length > 0 && noteSplashGroupMap.exists(note.fieldTarget)) {
-				groupTarget = noteSplashGroupMap.get(note.fieldTarget);
+			if (noteField.length > 0 && noteSplashGroupMap.exists(noteField)) {
+				groupTarget = noteSplashGroupMap.get(noteField);
 			} else if (!note.mustPress) {//opps forgot add to notesplash opponent group lmao
 				groupTarget = grpNoteSplashesOpt;
 			} else if (note.gfNote || note.secondOpponent) {
@@ -7377,10 +7380,7 @@ class PlayState extends MusicBeatState
 		note.destroy();
 	}
 	private function set_fieldNameAsPlayer(value:String):String {//for compatible purpose
-		if (fieldNameAsPlayer != value) {
-			fieldNameAsPlayer = value;
-			playableField = [value];//compatible mode BECAUSE THIS OLD VERSION OF FUNCTION IS USED IN A LOT OF PLACE IN CODE, and this function is only for change fieldNameAsPlayer so it should be fine(sorry caps lock lol)
-		}
+		playableField = [value];//compatible mode BECAUSE THIS OLD VERSION OF FUNCTION IS USED IN A LOT OF PLACE IN CODE, and this function is only for change fieldNameAsPlayer so it should be fine(sorry caps lock lol)
 		return value;
 	}
 	
