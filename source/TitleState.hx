@@ -163,22 +163,6 @@ class TitleState extends MusicBeatState
 					trace('i wonder where you get this unrelease version come from... or... are you Dev?');//joke when people get unexisted or too new that official not even release version yet, lol
 					confusedLOL = true;
 				}
-				/*updateVersion = getMJMNGit[0] + "." + getMJMNGit[1] + ".X";
-				var splitVersion = Application.current.meta.get('version').split('.');
-				var getMinotAndMajor = splitVersion[0] + "." + splitVersion[1] + '.X';
-				var curVersion:String = getMinotAndMajor;
-				trace('version online: ' + updateVersion + ', your version: ' + curVersion);
-				var localMajor = splitVersion[0];
-				var localMinor = splitVersion[1];
-				var onlineMajor = getMJMNGit[0];
-				var onlineMinor = getMJMNGit[1];
-				if (localMajor < onlineMajor || (localMajor == onlineMajor && localMinor < onlineMinor) ) {
-					trace('version aret matching');
-					mustUpdate = true;
-				} else if (localMajor > onlineMajor || (localMajor == onlineMajor && localMinor > onlineMinor) ) {//when dev joke even though impossible to happen
-					trace('i wonder where you get this unrelease version come from... or... are you Dev?');//joke when people get unexisted or too new that official not even release version yet, lol
-					confusedLOL = true;
-				}*/
 			}
 
 			http.onError = function (error) {

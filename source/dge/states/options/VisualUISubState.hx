@@ -218,8 +218,8 @@ class VisualUISubState extends BaseOptionsMenu
 		}
 		addOption(option);
 
-		var option:Option = new Option('Legacy Note Layer',
-			"Use legacy Note Layer.",
+		var option:Option = new Option('Legacy Long Note Layer',
+			"Use legacy Long Note Layer Instead Modern Version.",
 			'legacyNoteLayer',
 			'bool',
 			false);

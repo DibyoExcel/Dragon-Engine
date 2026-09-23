@@ -537,16 +537,15 @@ class FlxCamera extends FlxBasic
 	static var renderRect:FlxRect = FlxRect.get();
 
 	//dge variable
-	public var zoomXmult(default, set):Float = 1;
-	public var zoomYmult(default, set):Float = 1;
 
 	//thx codename
 	public var rotateSprite(default, set):Bool = false;//set true for old method angle
 	public var complexObjectVisibility:Bool = true;//checking object visibility complex for `rotateSprite` is `false`(it use for `containsRect()` and `containsPoint()`)
 	public var offset:FlxPoint = new FlxPoint(0, 0);//like x and y but without black bar(also reverse value like offset from FlxSprite)
 	public var zoomPoint:Pointer = new Pointer(0.5, 0.5);//zoom origin pos(inspired from Vs Omega V2 Stormbreaker)
-	public var rotatePoint:FlxPoint = new FlxPoint(0.5, 0.5);//rotate origin pos(only work in non rotateSprite)(inspired from Vs Omega V2 Stormbreaker)
-	public var oldShake(default, set):Bool = false;//set 
+	public var rotatePoint:Pointer = new Pointer(0.5, 0.5);//rotate origin pos(only work in non rotateSprite)(inspired from Vs Omega V2 Stormbreaker)
+	public var oldShake(default, set):Bool = false;//if set to 'true' it will use old/default haxeflixel shake
+	public var zoomMult:Pointer = new Pointer(1, 1);
 	@:allow(flixel.input.FlxPointer)
 	var offsetShake:FlxPoint = new FlxPoint(0, 0);//same like `offset` but for shake
 
@@ -1159,6 +1158,7 @@ class FlxCamera extends FlxBasic
 		initialZoom = (Zoom == 0) ? defaultZoom : Zoom;
 		zoom = Zoom; // sets the scale of flash sprite, which in turn loads flashOffset values
 		zoomPoint.onChange = onChangePointZoom;
+		zoomMult.onChange = onChangeZoomMult;
 		updateScrollRect();
 		updateFlashOffset();
 		updateFlashSpritePosition();
@@ -2067,20 +2067,11 @@ class FlxCamera extends FlxBasic
 	function set_zoom(Zoom:Float):Float
 	{
 		zoom = (Zoom == 0) ? defaultZoom : Zoom;
-		setScale(initialZoom+((zoom-initialZoom)*zoomXmult), initialZoom+((zoom-initialZoom)*zoomYmult));
+		setScale(initialZoom+((zoom-initialZoom)*zoomMult.x), initialZoom+((zoom-initialZoom)*zoomMult.y));
 		return zoom;
 	}
-
-	function set_zoomXmult(value:Float):Float {
-		zoomXmult = value;
-		setScale(initialZoom+((zoom-initialZoom)*zoomXmult), initialZoom+((zoom-initialZoom)*zoomYmult));
-		return value;
-	}
-
-	function set_zoomYmult(value:Float):Float {
-		zoomYmult = value;
-		setScale(initialZoom+((zoom-initialZoom)*zoomXmult), initialZoom+((zoom-initialZoom)*zoomYmult));
-		return value;
+	function onChangeZoomMult(x:Float, y:Float) {
+		setScale(initialZoom+((zoom-initialZoom)*x), initialZoom+((zoom-initialZoom)*y));
 	}
 
 	function set_alpha(Alpha:Float):Float
@@ -2218,6 +2209,39 @@ class FlxCamera extends FlxBasic
 		calcOffsetX();
 		calcOffsetY();
 		updateInternalSpritePositions();
+	}
+
+	/**
+	 * Do not use the following fields! They only exists because FlxCamera extends FlxBasic,
+	 * we're hiding them because they've only caused confusion.
+	 * from cne-flixel
+	*/
+	@:deprecated("don't reference camera.camera")
+	@:noCompletion
+	override function get_camera():FlxCamera {
+		trace('don\'t reference camera.camera');
+		return this;
+	}
+	
+	@:deprecated("don't reference camera.camera")
+	@:noCompletion
+	override function set_camera(value:FlxCamera):FlxCamera {
+		trace('don\'t reference camera.camera');
+		return this;
+	}
+	
+	@:deprecated("don't reference camera.cameras")
+	@:noCompletion
+	override function get_cameras():Array<FlxCamera> {
+		trace('don\'t reference camera.cameras');
+		return [this];
+	}
+	
+	@:deprecated("don't reference camera.cameras")
+	@:noCompletion
+	override function set_cameras(value:Array<FlxCamera>):Array<FlxCamera> {
+		trace('don\'t reference camera.cameras');
+		return [this];
 	}
 }
 

@@ -3051,18 +3051,46 @@ class PlayState extends MusicBeatState
 	}
 
 	function sortNoteLayer(Order:Int, Obj1:Note, Obj2:Note):Int {
-		//i know will broken if multSpeed different but normally most just 1 unless is modchart
-		if (Obj1 == null || Obj2 == null) return 0;//nah GET OUT
-		if ((!Obj1.topLayer && Obj2.topLayer) || (!Obj1.attachStrum && Obj2.attachStrum)) {
-			return -1;
-		} else if ((Obj1.topLayer && !Obj2.topLayer) || (Obj1.attachStrum && !Obj2.attachStrum)) {
-			return 1;
-		}
-		//over engineer go brrrrr
-		var time1:Float = (Obj1.isSustainNote && Obj1.parent != null && Obj1.parent.multSpeed == Obj1.multSpeed && !ClientPrefs.legacyNoteLayer ? Obj1.parent.strumTime + ((Obj1.strumTime - Obj1.parent.strumTime)*0.001 /**Who ever play 0.001 scroll speed to see break long notes**/) : Obj1.strumTime) + Obj1.offsetStrumTime;
-		var time2:Float = (Obj2.isSustainNote && Obj2.parent != null && Obj2.parent.multSpeed == Obj2.multSpeed && !ClientPrefs.legacyNoteLayer ? Obj2.parent.strumTime + ((Obj2.strumTime - Obj2.parent.strumTime)*0.001 /**Who ever play 0.001 scroll speed to see break long notes**/) : Obj2.strumTime) + Obj2.offsetStrumTime;
+		if (Obj1 == null || Obj2 == null) return 0;
+
+		if (Obj1.topLayer != Obj2.topLayer) return Obj1.topLayer ? 1 : -1;
+		if (Obj1.attachStrum != Obj2.attachStrum) return Obj1.attachStrum ? 1 : -1;
+
+		var groupParent1:Note = getParentObject(Obj1);
+		var groupParent2:Note = getParentObject(Obj2);
+		var groupTime1:Float = getGroupTime(Obj1);
+		var groupTime2:Float = getGroupTime(Obj2);
 	
-		return FlxSort.byValues(Order, time1 * Obj1.multSpeed, time2 * Obj2.multSpeed);
+		if (groupParent1 != groupParent2) {
+			return FlxSort.byValues(Order, groupTime1, groupTime2);
+		}
+
+		return FlxSort.byValues(Order, getSubLayerPriority(Obj1), getSubLayerPriority(Obj2));
+	}
+
+	inline function getGroupTime(note:Note):Float {
+		var obj = getParentObject(note);
+		return obj.strumTime + obj.offsetStrumTime;
+	}
+	
+	inline function getParentObject(note:Note):Note {
+		if (note.isSustainNote && note.parent != null && !ClientPrefs.legacyNoteLayer) {
+			return note.parent;
+		}
+		return note;
+	}
+
+	inline function getSubLayerPriority(note:Note):Int {
+		if (!note.isSustainNote) {
+			return 0; // top render for main notes
+		}
+		//long notes under parent notes
+		var longNI = 1;
+		if (note.parent != null && note.parent.tail != null && note.parent.tail.length > 0) {
+			var id =  note.parent.tail.indexOf(note);	
+			if (id != -1) longNI += id;
+		} 
+		return longNI; 
 	}
 	
 	function sortByShit(Obj1:Note, Obj2:Note):Int
@@ -4287,7 +4315,7 @@ class PlayState extends MusicBeatState
 						botO = !fieldCheck && blockHitField;
 						botP = ((fieldCheck && !daNote.blockHit) || !daNote.mustPress);
 					}
-					var botplayHit = botP && cpuControlled;
+					var botplayHit = botP && (cpuControlled || daNote.autoPress);
 					if (!daNote.ignoreNote && !daNote.canFreeze && botCanHit) {
 						if (botO)
 						{
@@ -6782,21 +6810,6 @@ class PlayState extends MusicBeatState
 			spr.playAnim(anim, true, note.isSustainNote, note);
 			spr.resetAnim = time;
 		}
-		//old inefficient code(and bad ngl)
-		/*if(isDad) {
-			spr = (custom ? strumGroupMap.get(ft).members[id] : ((note.gfNote || note.secondOpponent) && PlayState.SONG.secOpt ? gfStrums.members[id] : opponentStrums.members[id]));
-			if(spr != null) {
-				spr.playAnim(note.animConfirm == null || note.animConfirm.length < 1 ? (spr.animConfirm == null || spr.animConfirm.length < 1 ? 'confirm' : spr.animConfirm) : note.animConfirm, true);
-				spr.resetAnim = time;
-			}
-		} else {
-			spr = (custom ? strumGroupMap.get(ft).members[id] : playerStrums.members[id]);
-			if(spr != null) {
-				spr.playAnim(note.animConfirm == null || note.animConfirm.length < 1 ? (spr.animConfirm == null || spr.animConfirm.length < 1 ? 'confirm' : spr.animConfirm) : note.animConfirm, true);
-				spr.resetAnim = time;
-			}
-		}*/
-
 	}
 
 	public var ratingName:String = '?';
