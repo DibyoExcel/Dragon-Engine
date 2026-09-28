@@ -160,6 +160,8 @@ class PlayState extends MusicBeatState
 	//.custom button
 	public var customButtonMap:Map<String, Button> = new Map();
 	public var customToggleMap:Map<String, Toggle> = new Map();
+	//custom stage data
+	public var customStageMap:Map<String, StageLua> = new Map();
 	//private stuff
 	//pause setting
 	public var bgPauseColor:Int = 0xFF000000;

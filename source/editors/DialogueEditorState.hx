@@ -559,12 +559,12 @@ class DialogueEditorState extends MusicBeatState
 			File.saveContent(Paths.externalFilesPath('saves/dialogue/dialogue.json'), data);
 			lime.app.Application.current.window.alert('Dialogue has been save in ' + Paths.externalFilesPath('saves/dialogue/dialogue.json'), 'Dialogue Editor');
 			#else
+			_file = new FileReference();
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 			_file.save(data, "dialogue.json");
 			#end
-			_file = new FileReference();
 		}
 	}
 
