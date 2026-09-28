@@ -228,8 +228,11 @@
                     <h3>setVideoOrder(index:Int)(26.12.14+)</h3>
                     <h4>Sets video object(from <code>startVideo()</code>) order to camera <code>index</code>.<br>index:Index number of listed camera.</h4>
                 </div>
+                <div class="dialogue_group">
+                    <h3>changeStage(stage:String)(26.13.0+)</h3>
+                    <h4>Change current stage to <code>stage</code>.</h4>
+                </div>
             </div>
-            
         </div>
         <div class="dialogue" id="getfunc">
             <div class="dialogue_title">
@@ -363,6 +366,22 @@
                     <h3>addVideoSprite(tag:String, x:Float, y:Float, path:String, camera:String = 'other', hasVolume:Bool = true, front:Bool = true)(26.12.14+)</h3>
                     <h4>Add Video as sprite.<br>tag: Tag of video sprite(can use for <code>getProperty()</code> and <code>setProperty()</code>).<br>x: X sprite position.<br>y: Y sprite position.<br>path: Video path to play(inside <code>videos/</code> folder).<br>camera: Initial video sprite camera.<br>hasVolume: Does video sprite has video sound?<br>front: Should created topmost sprite?</h4>
                 </div>
+                <div class="dialogue_group">
+                    <h3>addStageData(tag:String, defaultZoom:Float = 1, boyfriendX:Float = 770, boyfriendY:Float = 100, opponentX:Float = 100, opponentY:Float = 100, girlfriendX:Float = 400, girlfriendY:Float = 130, camera_boyfriendX:Float = 0, camera_boyfriendY:Float = 0, camera_opponentX:Float = 0, camera_opponentY:Float = 0, camera_girlfriendX:Float = 0, camera_girlfriendY:Float = 0, cameraSpeed:Float = 1)(26.13.0+)</h3>
+                    <h4>Add Stage Data.<br>tag: Tag of Stage Data.<br>defaultZoom: Default zoom.<br>boyfriendX: Boyfriend X position.<br>boyfriendY: Boyfriend Y position.<br>opponentX: Opponent X position.<br>opponentY: Opponent Y position.<br>girlfriendX: Girlfriend X Position.<br>girlfriendY: Girlfriend Y position.<br>camera_boyfriendX: Boyfriend camera X Offset.<br>camera_boyfriendY: Boyfriend camera Y offset.<br>camera_opponentX: Opponent camera X offset.<br>camera_opponentY: Opponent camera Y offset.<br>camera_girlfriendX: Girlfriend camera X offset.<br>camera_girlfriendY: Girlfriend camera Y offset.<br>cameraSpeed: Camera speed multiplier.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>removeStageData(tag:String)(26.13.0+)</h3>
+                    <h4>Remove Stage Data.<br>tag: Tag of Stage Data.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>addSpriteToStage(tag:String, obj:String)(26.13.0+)</h3>
+                    <h4>Add sprite to Stage Data list.<br>tag: Tag of Stage Data.<br>obj: Lua Sprite Tag or Object variable name.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>removeSpriteFromStage(tag:String, obj:String)(26.13.0+)</h3>
+                    <h4>Remove sprite from Stage Data list.<br>tag: Tag of Stage Data.<br>obj: Lua Sprite Tag or Object variable name.</h4>
+                </div>
             </div>
         </div>
         <div class="dialogue" id="callfunc">
@@ -423,6 +442,10 @@
                 <div class="dialogue_group">
                     <h3>onVideoFinished(tag:String)(26.12.14+)</h3>
                     <h4>Function called when video sprite finished(from <code>addVideoSprite()</code>).<br>tag: Video <code>tag</code> name just finished.</h4>
+                </div>
+                <div class="dialogue_group">
+                    <h3>onChangeStage(stage:String)(26.13.0+)</h3>
+                    <h4>Function called when change stage from <code>changeStage()</code>.<br>stage: New Stage name.</h4>
                 </div>
             </div>
         </div>
