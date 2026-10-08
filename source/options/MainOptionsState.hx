@@ -26,12 +26,12 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
-import Controls;
 #if MODS_ALLOWED
 import sys.io.File;
 import sys.FileSystem;
 import dge.backend.ModSetting;
 #end
+
 
 using StringTools;
 

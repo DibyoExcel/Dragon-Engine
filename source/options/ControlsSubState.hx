@@ -23,12 +23,13 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
-import Controls;
+
+import dge.input.device.KeyboardControls;
 
 using StringTools;
 
 class ControlsSubState extends MusicBeatSubstate {
-	private static var curSelected:Int = 1;
+	private static var curSelected:Int = 2;
 	private static var curAlt:Bool = false;
 
 	private static var defaultKey:String = 'Reset to Default Keys';
@@ -39,10 +40,68 @@ class ControlsSubState extends MusicBeatSubstate {
 
 	var optionShit:Array<Dynamic> = [
 		['NOTES'],
+		['4 KEY'],
 		['Left', 'note_left'],
 		['Down', 'note_down'],
 		['Up', 'note_up'],
 		['Right', 'note_right'],
+		[''],
+		['1 KEY'],
+		['Center', 'note_1K_space'],
+		[''],
+		['2 KEY'],
+		['Left', 'note_2K_left'],
+		['Right', 'note_2K_right'],
+		[''],
+		['3 KEY'],
+		['Left', 'note_3K_left'],
+		['Center', 'note_3K_space'],
+		['Right', 'note_3K_right'],
+		[''],
+		['5 KEY'],
+		['Left', 'note_5K_left'],
+		['Down', 'note_5K_down'],
+		['Center', 'note_5K_space'],
+		['Up', 'note_5K_up'],
+		['Right', 'note_5K_right'],
+		[''],
+		['6 KEY'],
+		['Left', 'note_6K_left'],
+		['Down', 'note_6K_down'],
+		['Right', 'note_6K_right'],
+		['Left 2', 'note_6K_left2'],
+		['Up', 'note_6K_up'],
+		['Right 2', 'note_6K_right2'],
+		[''],
+		['7 KEY'],
+		['Left', 'note_7K_left'],
+		['Down', 'note_7K_down'],
+		['Right', 'note_7K_right'],
+		['Center', 'note_7K_space'],
+		['Left 2', 'note_7K_left2'],
+		['Up', 'note_7K_up'],
+		['Right 2', 'note_7K_right2'],
+		[''],
+		['8 KEY'],
+		['Left', 'note_8K_left'],
+		['Down', 'note_8K_down'],
+		['Up', 'note_8K_up'],
+		['Right', 'note_8K_right'],
+		['Left 2', 'note_8K_left2'],
+		['Down 2', 'note_8K_down2'],
+		['Up 2', 'note_8K_up2'],
+		['Right 2', 'note_8K_right2'],
+		[''],
+		['9 KEY'],
+		['Left', 'note_9K_left'],
+		['Down', 'note_9K_down'],
+		['Up', 'note_9K_up'],
+		['Right', 'note_9K_right'],
+		['Center', 'note_9K_space'],
+		['Left 2', 'note_9K_left2'],
+		['Down 2', 'note_9K_down2'],
+		['Up 2', 'note_9K_up2'],
+		['Right 2', 'note_9K_right2'],
 		[''],
 		['UI'],
 		['Left', 'ui_left'],
@@ -93,7 +152,7 @@ class ControlsSubState extends MusicBeatSubstate {
 				isCentered = true;
 			}
 
-			var optionText:Alphabet = new Alphabet(200 + (CoolUtil.getXFrom1280P()), 300, optionShit[i][0], (!isCentered || isDefaultKey));
+			var optionText:Alphabet = new Alphabet(125 + (CoolUtil.getXFrom1280P()), 300, optionShit[i][0], (!isCentered || isDefaultKey));
 			optionText.isMenuItem = true;
 			if(isCentered) {
 				optionText.screenCenter(X);
@@ -130,14 +189,15 @@ class ControlsSubState extends MusicBeatSubstate {
 			}
 
 			if (controls.BACK #if android || FlxG.android.justPressed.BACK #end) {
-				ClientPrefs.reloadControls();
+				KeyboardControls.reloadControls();
+				KeyboardControls.saveKeybind();
 				close();
 				FlxG.sound.play(Paths.sound('cancelMenu'));
 			}
 
 			if(controls.ACCEPT && nextAccept <= 0) {
 				if(optionShit[curSelected][0] == defaultKey) {
-					ClientPrefs.keyBinds = ClientPrefs.defaultKeys.copy();
+					KeyboardControls.keyBinds = KeyboardControls.defaultKeys.copy();
 					reloadKeys();
 					changeSelection();
 					FlxG.sound.play(Paths.sound('confirmMenu'));
@@ -155,14 +215,14 @@ class ControlsSubState extends MusicBeatSubstate {
 		} else {
 			var keyPressed:Int = FlxG.keys.firstJustPressed();
 			if (keyPressed > -1) {
-				var keysArray:Array<FlxKey> = ClientPrefs.keyBinds.get(optionShit[curSelected][1]);
-				keysArray[curAlt ? 1 : 0] = keyPressed;
+				var keysArrayNew:Array<FlxKey> = KeyboardControls.keyBinds.get(optionShit[curSelected][1]);
+				keysArrayNew[curAlt ? 1 : 0] = keyPressed;
 
 				var opposite:Int = (curAlt ? 0 : 1);
-				if(keysArray[opposite] == keysArray[1 - opposite]) {
-					keysArray[opposite] = NONE;
+				if(keysArrayNew[opposite] == keysArrayNew[1 - opposite]) {
+					keysArrayNew[opposite] = NONE;
 				}
-				ClientPrefs.keyBinds.set(optionShit[curSelected][1], keysArray);
+				KeyboardControls.keyBinds.set(optionShit[curSelected][1], keysArrayNew);
 
 				reloadKeys();
 				FlxG.sound.play(Paths.sound('confirmMenu'));
@@ -276,15 +336,15 @@ class ControlsSubState extends MusicBeatSubstate {
 	}
 
 	private function addBindTexts(optionText:Alphabet, num:Int) {
-		var keys:Array<Dynamic> = ClientPrefs.keyBinds.get(optionShit[num][1]);
+		var keys:Array<Dynamic> = KeyboardControls.keyBinds.get(optionShit[num][1]);
 		var text1 = new AttachedText(InputFormatter.getKeyName(keys[0]), 400, -55);
 		text1.setPosition(optionText.x + 400, optionText.y - 55);
 		text1.sprTracker = optionText;
 		grpInputs.push(text1);
 		add(text1);
 
-		var text2 = new AttachedText(InputFormatter.getKeyName(keys[1]), 650, -55);
-		text2.setPosition(optionText.x + 650, optionText.y - 55);
+		var text2 = new AttachedText(InputFormatter.getKeyName(keys[1]), 800, -55);
+		text2.setPosition(optionText.x + 800, optionText.y - 55);
 		text2.sprTracker = optionText;
 		grpInputsAlt.push(text2);
 		add(text2);
@@ -304,7 +364,7 @@ class ControlsSubState extends MusicBeatSubstate {
 			item.destroy();
 		}
 
-		trace('Reloaded keys: ' + ClientPrefs.keyBinds);
+		// trace('Reloaded keys: ' + KeyboardControls.keyBinds);
 
 		for (i in 0...grpOptions.length) {
 			if(!unselectableCheck(i, true)) {

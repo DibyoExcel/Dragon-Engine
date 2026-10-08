@@ -18,6 +18,7 @@ import sys.FileSystem;
 import sys.io.File;
 #end
 import openfl.utils.Assets;
+import dge.input.Controls;
 
 using StringTools;
 
@@ -310,10 +311,11 @@ class DialogueBoxPsych extends FlxSpriteGroup
 		if(!dialogueEnded) {
 			bgFade.alpha += 0.5 * elapsed;
 			if(bgFade.alpha > 0.5) bgFade.alpha = 0.5;
-			var keyTrigger = PlayerSettings.player1.controls.ACCEPT;
+			var keyTrigger = Controls.instance.ACCEPT;
 			for (i in FlxG.touches.list) {
 				if (i.justPressed) {
 					keyTrigger = true;
+					break;
 				}
 			}
 			if(keyTrigger) {

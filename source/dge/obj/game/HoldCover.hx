@@ -2,6 +2,7 @@ package dge.obj.game;
 
 import flixel.FlxSprite;
 using StringTools;
+import dge.backend.EKUtil;
 
 class HoldCover extends FlxSprite
 {
@@ -46,7 +47,7 @@ class HoldCover extends FlxSprite
         } catch (e:Dynamic) {
             frames = Paths.getSparrowAtlas('holdCover');
         }
-        var colors = [ 'purple', 'blue', 'green', 'red' ];
+        var colors = EKUtil.colArray;
         for (i in 0...colors.length) {
             var nameColor = colors[i];
             if (note != null && note.getActualDownscroll()) {
@@ -104,14 +105,18 @@ class HoldCover extends FlxSprite
             } else {
                 alpha = note.holdCoverAlpha;
             }
-            setGraphicSize(Std.int(width * (note.holdCoverScale*(ClientPrefs.strumsize/0.7))), Std.int(height * (note.holdCoverScale*(ClientPrefs.strumsize/0.7))));
+            setGraphicSize(Std.int(width * (note.holdCoverScale*(ClientPrefs.strumsize*(EKUtil.getNoteScale(EKUtil.getCurrentMania()))))), Std.int(height * (note.holdCoverScale*(ClientPrefs.strumsize*(EKUtil.getNoteScale(EKUtil.getCurrentMania()))))));
         }
         if (strum != null) {
             setPosition((x+strum.width/2)-(width/2), (y+strum.height/2)-(height/2));
             //trace('test');
         }
         loadAnims(texture);
-        playAnim("hold" + (noteData % 4));
+        var mania = EKUtil.getCurrentMania();
+        var indexTarget = EKUtil.noteAnimIndex[mania-1];
+        var animIndex = indexTarget[noteData % indexTarget.length];
+        // trace(animIndex);
+        playAnim("hold" + (animIndex % 9));
     }
     public function playAnim(anim:String) {
         //trace(anim);
@@ -200,7 +205,10 @@ class HoldCover extends FlxSprite
             timer -= elapsed * speed;
             if (timer <= 0) {
                 if (note != null) {
-                    playAnim('end' + (note.noteData%4));
+                    var mania = EKUtil.getCurrentMania();
+                    var indexTarget = EKUtil.noteAnimIndex[mania-1];
+                    var animIndex = indexTarget[note.noteData % indexTarget.length];
+                    playAnim('end' + (animIndex%9));
                 }
                 timer = 0;
             }

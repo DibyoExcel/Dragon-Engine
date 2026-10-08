@@ -3,7 +3,6 @@ package;
 #if mobile
 import dge.obj.mobile.VirtualButton;
 #end
-import Controls.Control;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
@@ -18,6 +17,7 @@ import flixel.util.FlxColor;
 import flixel.FlxCamera;
 import flixel.util.FlxStringUtil;
 using StringTools;
+
 
 class PauseSubState extends MusicBeatSubstate
 {

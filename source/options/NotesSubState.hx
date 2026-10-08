@@ -7,6 +7,7 @@ import dge.obj.mobile.VirtualButton;
 import Discord.DiscordClient;
 #end
 import flash.text.TextField;
+import flixel.text.FlxText;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
@@ -26,11 +27,13 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
-import Controls;
+import flixel.input.gamepad.FlxGamepad;
+import dge.backend.EKUtil;
 
 using StringTools;
 
 import dge.shaders.ColorSwap;
+
 
 class NotesSubState extends MusicBeatSubstate
 {
@@ -53,17 +56,21 @@ class NotesSubState extends MusicBeatSubstate
 	private var rightButton:VirtualButton;
 	private var enterButton:VirtualButton;
 	private var resetButton:VirtualButton;
+	private var xButton:VirtualButton;
 	#end
+	private var currentMania:Int = 4;
 	public function new() {
 		super();
 		
+		var indexTarget = EKUtil.noteAnimIndex[currentMania-1];
+		var scale = EKUtil.getNoteScale(currentMania, 4);
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.color = 0xFFea71fd;
 		CoolUtil.fitBackground(bg);
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		add(bg);
 		
-		blackBG = new FlxSprite(posX - 25).makeGraphic(870, 200, FlxColor.BLACK);
+		blackBG = new FlxSprite(posX - 25).makeGraphic(870, Std.int(200*scale), FlxColor.BLACK);
 		blackBG.alpha = 0.4;
 		add(blackBG);
 
@@ -71,27 +78,30 @@ class NotesSubState extends MusicBeatSubstate
 		add(grpNotes);
 		grpNumbers = new FlxTypedGroup<Alphabet>();
 		add(grpNumbers);
-
-		for (i in 0...ClientPrefs.arrowHSV.length) {
-			var yPos:Float = (165 * i) + 35;
+		
+		var animations:Array<String> = ['purple0', 'blue0', 'green0', 'red0', 'space0', 'yellow0', 'purplealt0', 'redalt0', 'bluealt0'];
+		for (i in 0...currentMania) {
+			var animIndex = indexTarget[i % indexTarget.length];
+			var yPos:Float = ((165*scale) * i) + 35;
 			for (j in 0...3) {
-				var optionText:Alphabet = new Alphabet(posX + (225 * j) + 250, yPos + 60, Std.string(ClientPrefs.arrowHSV[i][j]), true);
+				var optionText:Alphabet = new Alphabet(posX + (225 * j) + 250, yPos + (50*scale), Std.string(ClientPrefs.arrowHSV[currentMania][i][j]), true);
 				grpNumbers.add(optionText);
 			}
 
 			var note:FlxSprite = new FlxSprite(posX, yPos);
 			note.frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
-			var animations:Array<String> = ['purple0', 'blue0', 'green0', 'red0'];
-			note.animation.addByPrefix('idle', animations[i]);
+			note.animation.addByPrefix('idle', animations[animIndex]);
 			note.animation.play('idle');
 			note.antialiasing = ClientPrefs.globalAntialiasing;
+			note.scale.set(scale, scale);
+			note.updateHitbox();
 			grpNotes.add(note);
 
 			var newShader:ColorSwap = new ColorSwap();
 			note.shader = newShader.shader;
-			newShader.hue = ClientPrefs.arrowHSV[i][0] / 360;
-			newShader.saturation = ClientPrefs.arrowHSV[i][1] / 100;
-			newShader.brightness = ClientPrefs.arrowHSV[i][2] / 100;
+			newShader.hue = ClientPrefs.arrowHSV[currentMania-1][i][0] / 360;
+			newShader.saturation = ClientPrefs.arrowHSV[currentMania-1][i][1] / 100;
+			newShader.brightness = ClientPrefs.arrowHSV[currentMania-1][i][2] / 100;
 			shaderArray.push(newShader);
 		}
 
@@ -101,19 +111,31 @@ class NotesSubState extends MusicBeatSubstate
 		add(hsbText);
 
 		#if mobile
-		leftButton = new VirtualButton(0, FlxG.height-125, 'left');
+		leftButton = new VirtualButton(0, FlxG.height-151, 'left');
 		leftButton.visible = false;
 		leftButton.disableInput = true;
 		add(leftButton);
-		rightButton = new VirtualButton(125, FlxG.height-125, 'right');
+		rightButton = new VirtualButton(125, FlxG.height-151, 'right');
 		rightButton.visible = false;
 		rightButton.disableInput = true;
 		add(rightButton);
-		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
+		enterButton = new VirtualButton(FlxG.width-151, FlxG.height-125, 'enter');
 		add(enterButton);
-		resetButton = new VirtualButton(0, FlxG.height-250, 'r');
+		resetButton = new VirtualButton(0, FlxG.height-276, 'r');
 		add(resetButton);
+		xButton = new VirtualButton(125, FlxG.height-276, 'x');
+		add(xButton);
 		#end
+
+		var textBG:FlxSprite = new FlxSprite(0, FlxG.height - 26).makeGraphic(FlxG.width, 26, 0xFF000000);
+		textBG.alpha = 0.6;
+		add(textBG);
+		var leText:String = "Press X to change Key Count.";
+		var size:Int = 18;
+		var text:FlxText = new FlxText(textBG.x, textBG.y + 4, FlxG.width, leText, size);
+		text.setFormat(Paths.font("vcr.ttf"), size, FlxColor.WHITE, RIGHT);
+		text.scrollFactor.set();
+		add(text);
 
 		changeSelection();
 	}
@@ -153,6 +175,12 @@ class NotesSubState extends MusicBeatSubstate
 				}
 			}
 		} else {
+			var gamepad = FlxG.gamepads.lastActive;
+			if (FlxG.keys.justPressed.X || (gamepad != null && gamepad.justPressed.X) #if mobile || xButton.justPressed #end) {
+				currentMania += 1;
+				if (currentMania >= 10) currentMania = 1;
+				reloadUI();
+			}
 			if (controls.UI_UP_P #if mobile || touch.swipeUp() #end) {
 				changeSelection(-1);
 				FlxG.sound.play(Paths.sound('scrollMenu'));
@@ -229,11 +257,11 @@ class NotesSubState extends MusicBeatSubstate
 	function changeSelection(change:Int = 0) {
 		curSelected += change;
 		if (curSelected < 0)
-			curSelected = ClientPrefs.arrowHSV.length-1;
-		if (curSelected >= ClientPrefs.arrowHSV.length)
+			curSelected = currentMania-1;
+		if (curSelected >= currentMania)
 			curSelected = 0;
 
-		curValue = ClientPrefs.arrowHSV[curSelected][typeSelected];
+		curValue = ClientPrefs.arrowHSV[currentMania-1][curSelected][typeSelected];
 		updateValue();
 
 		for (i in 0...grpNumbers.length) {
@@ -246,12 +274,13 @@ class NotesSubState extends MusicBeatSubstate
 		for (i in 0...grpNotes.length) {
 			var item = grpNotes.members[i];
 			item.alpha = 0.6;
-			item.scale.set(0.75, 0.75);
+			var scale = EKUtil.getNoteScale(currentMania, 4);
+			item.scale.set(0.75*scale, 0.75*scale);
 			if (curSelected == i) {
 				item.alpha = 1;
-				item.scale.set(1, 1);
-				hsbText.y = item.y - 70;
-				blackBG.y = item.y - 20;
+				item.scale.set(1*scale, 1*scale);
+				hsbText.y = item.y - 85;
+				blackBG.y = item.y - (25*scale);
 			}
 		}
 		FlxG.sound.play(Paths.sound('scrollMenu'));
@@ -264,7 +293,7 @@ class NotesSubState extends MusicBeatSubstate
 		if (typeSelected > 2)
 			typeSelected = 0;
 
-		curValue = ClientPrefs.arrowHSV[curSelected][typeSelected];
+		curValue = ClientPrefs.arrowHSV[currentMania-1][curSelected][typeSelected];
 		updateValue();
 
 		for (i in 0...grpNumbers.length) {
@@ -278,7 +307,7 @@ class NotesSubState extends MusicBeatSubstate
 
 	function resetValue(selected:Int, type:Int) {
 		curValue = 0;
-		ClientPrefs.arrowHSV[selected][type] = 0;
+		ClientPrefs.arrowHSV[currentMania-1][selected][type] = 0;
 		switch(type) {
 			case 0: shaderArray[selected].hue = 0;
 			case 1: shaderArray[selected].saturation = 0;
@@ -308,7 +337,7 @@ class NotesSubState extends MusicBeatSubstate
 			curValue = max;
 		}
 		roundedValue = Math.round(curValue);
-		ClientPrefs.arrowHSV[curSelected][typeSelected] = roundedValue;
+		ClientPrefs.arrowHSV[currentMania-1][curSelected][typeSelected] = roundedValue;
 
 		switch(typeSelected) {
 			case 0: shaderArray[curSelected].hue = roundedValue / 360;
@@ -325,5 +354,55 @@ class NotesSubState extends MusicBeatSubstate
 			letter.offset.x += add;
 			if(roundedValue < 0) letter.offset.x += 10;
 		}
+	}
+	function reloadUI() {
+		//clear ui
+		if (blackBG != null) {
+			remove(blackBG);
+			blackBG.destroy();
+		}
+		while(grpNumbers.members.length > 0) {
+			var item = grpNumbers.members[0];
+			grpNumbers.remove(item, true);
+			item.destroy();
+		}
+		while(grpNotes.members.length > 0) {
+			var item = grpNotes.members[0];
+			grpNotes.remove(item, true);
+			item.destroy();
+		}
+		shaderArray = [];
+		//readded
+		var indexTarget = EKUtil.noteAnimIndex[currentMania-1];
+		var scale = EKUtil.getNoteScale(currentMania, 4);
+		blackBG = new FlxSprite(posX - 25).makeGraphic(870, Std.int(200*scale), FlxColor.BLACK);
+		blackBG.alpha = 0.4;
+		add(blackBG);
+		var animations:Array<String> = ['purple0', 'blue0', 'green0', 'red0', 'space0', 'yellow0', 'purplealt0', 'redalt0', 'bluealt0'];
+		for (i in 0...currentMania) {
+			var animIndex = indexTarget[i % indexTarget.length];
+			var yPos:Float = ((165*scale) * i) + 35;
+			for (j in 0...3) {
+				var optionText:Alphabet = new Alphabet(posX + (225 * j) + 250, yPos + (50*scale), Std.string(ClientPrefs.arrowHSV[currentMania-1][i][j]), true);
+				grpNumbers.add(optionText);
+			}
+
+			var note:FlxSprite = new FlxSprite(posX, yPos);
+			note.frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
+			note.animation.addByPrefix('idle', animations[animIndex]);
+			note.animation.play('idle');
+			note.antialiasing = ClientPrefs.globalAntialiasing;
+			note.scale.set(scale, scale);
+			note.updateHitbox();
+			grpNotes.add(note);
+
+			var newShader:ColorSwap = new ColorSwap();
+			note.shader = newShader.shader;
+			newShader.hue = ClientPrefs.arrowHSV[currentMania-1][i][0] / 360;
+			newShader.saturation = ClientPrefs.arrowHSV[currentMania-1][i][1] / 100;
+			newShader.brightness = ClientPrefs.arrowHSV[currentMania-1][i][2] / 100;
+			shaderArray.push(newShader);
+		}
+		changeSelection();
 	}
 }

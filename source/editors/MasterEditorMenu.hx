@@ -19,6 +19,7 @@ import flixel.system.FlxSound;
 import sys.FileSystem;
 #end
 
+
 using StringTools;
 
 class MasterEditorMenu extends MusicBeatState

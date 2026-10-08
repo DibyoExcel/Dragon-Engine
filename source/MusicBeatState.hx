@@ -14,6 +14,7 @@ import flixel.util.FlxGradient;
 import flixel.FlxState;
 import flixel.FlxCamera;
 import flixel.FlxBasic;
+import dge.input.Controls;
 
 class MusicBeatState extends FlxUIState
 {
@@ -28,9 +29,9 @@ class MusicBeatState extends FlxUIState
 	private var controls(get, never):Controls;
 
 	public static var camBeat:FlxCamera;
-
-	inline function get_controls():Controls
-		return PlayerSettings.player1.controls;
+	inline function get_controls():Controls {
+		return Controls.instance;
+	}
 
 	override function create() {
 		camBeat = FlxG.camera;

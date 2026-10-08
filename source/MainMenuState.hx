@@ -24,6 +24,9 @@ import Achievements;
 import editors.MasterEditorMenu;
 import flixel.input.keyboard.FlxKey;
 
+import dge.input.device.KeyboardControls;
+import dge.input.device.GamepadControls;
+
 using StringTools;
 
 class MainMenuState extends MusicBeatState
@@ -55,7 +58,6 @@ class MainMenuState extends MusicBeatState
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
 	var camFollowPos:FlxObject;
-	var debugKeys:Array<FlxKey>;
 
 	override function create()
 	{
@@ -68,7 +70,6 @@ class MainMenuState extends MusicBeatState
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end
-		debugKeys = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_1'));
 
 		camGame = new FlxCamera();
 		camAchievement = new FlxCamera();
@@ -281,8 +282,7 @@ class MainMenuState extends MusicBeatState
 				}
 			}
 			#if (desktop || mobile)
-			else if (FlxG.keys.anyJustPressed(debugKeys) #if mobile ||  debugButton.justPressed #end)
-			{
+			else if ((FlxG.gamepads.lastActive != null && GamepadControls.checkButton('debug_1')) #if mobile ||  debugButton.justPressed #end || KeyboardControls.checkKey('debug_1')) {
 				selectedSomethin = true;
 				MusicBeatState.switchState(new MasterEditorMenu());
 			}

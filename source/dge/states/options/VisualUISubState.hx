@@ -23,7 +23,6 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
-import Controls;
 import options.BaseOptionsMenu;
 import options.Option;
 import flixel.util.FlxColor;
@@ -85,7 +84,7 @@ class VisualUISubState extends BaseOptionsMenu
 		option.scrollSpeed = 1.6;
 		option.changeValue = 0.1;
 		option.onChange = function() {
-			Note.swagWidth = 160 * ClientPrefs.strumsize;
+			Note.swagWidth = (160*0.7) * ClientPrefs.strumsize;
 		};
 		addOption(option);
 

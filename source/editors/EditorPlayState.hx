@@ -1,4 +1,7 @@
 package editors;
+import dge.input.device.KeyboardControls;
+import dge.input.device.GamepadControls;
+import dge.backend.EKUtil;
 #if mobile
 import dge.obj.mobile.Hitbox;
 #end
@@ -25,6 +28,9 @@ import flixel.input.keyboard.FlxKey;
 import openfl.events.KeyboardEvent;
 import FunkinLua;
 import dge.obj.game.ComboSpr;
+import dge.input.Controls;
+import flixel.input.gamepad.FlxGamepad;
+import flixel.input.gamepad.FlxGamepadInputID;
 
 using StringTools;
 
@@ -80,7 +86,8 @@ class EditorPlayState extends MusicBeatState
 	private var noteTypeMap:Map<String, Bool> = new Map<String, Bool>();
 	
 	// Less laggy controls
-	private var keysArray:Array<Dynamic>;
+	private var keysArray:Array<Array<FlxKey>>;
+	private var bindArray:Array<Array<FlxGamepadInputID>>;
 
 	public static var instance:EditorPlayState;
 
@@ -97,12 +104,8 @@ class EditorPlayState extends MusicBeatState
 		add(bg);
 
 		gamemode = ClientPrefs.getGameplaySetting('gamemode', "none");
-		keysArray = [
-			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')),
-			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_down')),
-			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_up')),
-			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_right'))
-		];
+		keysArray = EKUtil.getKeybind();
+		bindArray = EKUtil.getButtonbind();
 		
 		strumLine = new FlxSprite(ClientPrefs.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL : PlayState.STRUM_X, 50).makeGraphic(FlxG.width, 10);
 		if(ClientPrefs.downScroll) strumLine.y = FlxG.height - 150;
@@ -200,7 +203,7 @@ class EditorPlayState extends MusicBeatState
 		hitboxCam.bgColor.alpha = 0;
 		FlxG.cameras.add(hitboxCam, false);
 		//hitbox.cameras = [hitboxCam];
-		for (i in 0...keysArray.length) {
+		for (i in 0...EKUtil.getCurrentMania()) {
 			var bruh = new Hitbox(i*Std.int(FlxG.width/keysArray.length), 0);
 			bruh.color = colorOrder[i%colorOrder.length];
 			bruh.cameras = [hitboxCam];
@@ -259,7 +262,7 @@ class EditorPlayState extends MusicBeatState
 		var playerCounter:Int = 0;
 
 		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
-
+		var maniaCount = EKUtil.getCurrentMania();
 		for (section in noteData)
 		{
 			for (songNotes in section.sectionNotes)
@@ -267,11 +270,11 @@ class EditorPlayState extends MusicBeatState
 				if(songNotes[1] > -1) { //Real notes
 					var daStrumTime:Float = songNotes[0];
 					if(daStrumTime >= startPos) {
-						var daNoteData:Int = Std.int(songNotes[1] % 4);
+						var daNoteData:Int = Std.int(songNotes[1] % maniaCount);
 
 						var gottaHitNote:Bool = section.mustHitSection;
 
-						if (songNotes[1] > 3 && songNotes[1] < 8)
+						if (songNotes[1] >= maniaCount && songNotes[1] < maniaCount*2)
 						{
 							gottaHitNote = !section.mustHitSection;
 						}
@@ -601,16 +604,6 @@ class EditorPlayState extends MusicBeatState
 		sectionTxt.text = 'Beat: ' + curSection;
 		beatTxt.text = 'Beat: ' + curBeat;
 		stepTxt.text = 'Step: ' + curStep;
-		#if mobile
-		for (i in 0...hitbox.length) {
-			if (hitbox.members[i].justPressed) {
-				customKeyPress(i, true);
-			}
-			if (hitbox.members[i].justReleased) {
-				customKeyRelease(i);
-			}
-		}
-		#end
 		super.update(elapsed);
 	}
 	
@@ -670,7 +663,7 @@ class EditorPlayState extends MusicBeatState
 		{
 			if(generatedMusic)
 				{
-					var spr:StrumNote = playerStrums.members[key];
+					var spr:StrumNote = playerStrums.members[key%playerStrums.length];
 				if(spr != null)
 				{
 					spr.playAnim('pressed');
@@ -756,7 +749,7 @@ class EditorPlayState extends MusicBeatState
 	private function customKeyRelease(key:Int) {
 		if(key > -1)
 		{
-			var spr:StrumNote = playerStrums.members[key];
+			var spr:StrumNote = playerStrums.members[key%playerStrums.length];
 			if(spr != null)
 			{
 				spr.playAnim('static');
@@ -783,35 +776,80 @@ class EditorPlayState extends MusicBeatState
 		return -1;
 	}
 
+	private function parseKeys(?suffix:String = ''):Array<Bool>
+		{
+			var ret:Array<Bool> = [];
+			//uh this gonna shit
+			if (!ClientPrefs.controllerMode) {
+				for (i in 0...keysArray.length)
+				{
+					for (j in 0...keysArray[i].length) {
+						if (!ret[i]) {
+							ret[i] = FlxG.keys.checkStatus(keysArray[i][j], (suffix != '_P' ? (suffix == '_R' ? JUST_RELEASED : PRESSED) : JUST_PRESSED));
+						}
+					}
+					#if mobile
+					if (!ret[i] && i < hitbox.length) {
+						ret[i] = switch(suffix) {
+							case '_P':
+								hitbox.members[i].justPressed;
+							
+							case '_R':
+								hitbox.members[i].justReleased;
+		
+							default:
+								hitbox.members[i].pressed;
+						}
+					}
+					#end
+				}
+			} else {
+				var gamepad = FlxG.gamepads.lastActive;
+				if (gamepad != null) {
+					for (i in 0...bindArray.length) {
+						for (j in 0...bindArray[i].length) {
+							if (!ret[i]) {
+								ret[i] = gamepad.checkStatus(bindArray[i][j], (suffix != '_P' ? (suffix == '_R' ? JUST_RELEASED : PRESSED) : JUST_PRESSED));
+							}
+						}
+					}
+				}
+			}
+			return ret;
+		}
+
 	private function keyShit():Void
 	{
 		// HOLDING
-		var up = controls.NOTE_UP;
-		var right = controls.NOTE_RIGHT;
-		var down = controls.NOTE_DOWN;
-		var left = controls.NOTE_LEFT;
-		var controlHoldArray:Array<Bool> = [left, down, up, right];
-		#if mobile
-		for (i in 0...hitbox.length) {
-			if (!controlHoldArray[i]) {
-				controlHoldArray[i] = hitbox.members[i].pressed;
-			}
-		}
-		#end
+		var parseHoldArray:Array<Bool> = parseKeys();
+		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 		
 		// TO DO: Find a better way to handle controller inputs, this should work for now
-		if(ClientPrefs.controllerMode)
+		if(ClientPrefs.controllerMode && gamepad != null)
 		{
-			var controlArray:Array<Bool> = [controls.NOTE_LEFT_P, controls.NOTE_DOWN_P, controls.NOTE_UP_P, controls.NOTE_RIGHT_P];
+			var controlArray:Array<Bool> = [];
+			for (i in 0...bindArray.length) {
+				for (j in 0...bindArray[i].length) {
+					if (!controlArray[i]) {
+						controlArray[i] = gamepad.checkStatus(bindArray[i][j], JUST_PRESSED);
+					}
+				}
+			}
 			if(controlArray.contains(true))
 			{
 				for (i in 0...controlArray.length)
 				{
-					if(controlArray[i])
-						onKeyPress(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, keysArray[i][0]));
+					customKeyPress(i, controlArray[i]);
 				}
 			}
 		}
+		#if mobile
+		for (i in 0...hitbox.length) {
+			if (hitbox.members[i].justPressed) {
+				customKeyPress(i, true);
+			}
+		}
+		#end
 
 		// FlxG.watch.addQuick('asdfa', upP);
 		if (generatedMusic)
@@ -820,7 +858,7 @@ class EditorPlayState extends MusicBeatState
 			notes.forEachAlive(function(daNote:Note)
 			{
 				// hold note functions
-				if (daNote.isSustainNote && controlHoldArray[daNote.noteData] && daNote.canBeHit 
+				if (daNote.isSustainNote && parseHoldArray[daNote.noteData] && daNote.canBeHit 
 				&& daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit) {
 					goodNoteHit(daNote);
 				}
@@ -828,18 +866,31 @@ class EditorPlayState extends MusicBeatState
 		}
 
 		// TO DO: Find a better way to handle controller inputs, this should work for now
-		if(ClientPrefs.controllerMode)
+		if(ClientPrefs.controllerMode && gamepad != null)
 		{
-			var controlArray:Array<Bool> = [controls.NOTE_LEFT_R, controls.NOTE_DOWN_R, controls.NOTE_UP_R, controls.NOTE_RIGHT_R];
-			if(controlArray.contains(true))
-			{
-				for (i in 0...controlArray.length)
-				{
-					if(controlArray[i])
-						onKeyRelease(new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, -1, keysArray[i][0]));
+			var controlArray:Array<Bool> = [];
+			for (i in 0...bindArray.length) {
+				for (j in 0...bindArray[i].length) {
+					if (!controlArray[i]) {
+						controlArray[i] = gamepad.checkStatus(bindArray[i][j], JUST_RELEASED);
+					}
 				}
 			}
+			if(controlArray.contains(true))
+				{
+					for (i in 0...controlArray.length)
+					{
+						customKeyRelease(i);
+					}
+				}
 		}
+		#if mobile
+		for (i in 0...hitbox.length) {
+			if (hitbox.members[i].justReleased) {
+				customKeyRelease(i);
+			}
+		}
+		#end
 	}
 
 	var combo:Int = 0;
@@ -1135,16 +1186,19 @@ class EditorPlayState extends MusicBeatState
 	private function generateStaticArrows(player:Int, t:Bool = true):Void
 		{
 			//default and all gamemode(design inspired from RetroSpecter P2 mods)
+			var maniaCount = EKUtil.getCurrentMania();
+			var maniaScale = EKUtil.getNoteScale(maniaCount);
+			var swagWidth = Note.swagWidth * maniaScale;
 			if (player == 0) {
-				for (i in 0...4) {
-					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * 0.5 : FlxG.width*0.25)-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, 0);
+				for (i in 0...maniaCount) {
+					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * 0.5 : FlxG.width*0.25)-(swagWidth*(maniaCount/2)))+(swagWidth*i), strumLine.y, i, 0);
 					babyArrow.downScroll = ClientPrefs.downScroll;
 					if (PlayState.SONG.secOpt) {
 						babyArrow.y -= Note.swagWidth/2;
 					}
 					if(ClientPrefs.middleScroll)
 					{
-						if(i > 1) { //Up and Right
+						if(i >= maniaCount/2) { //Up and Right
 							babyArrow.x += FlxG.width / 4;
 						} else {
 							babyArrow.x -= FlxG.width / 4;
@@ -1155,13 +1209,13 @@ class EditorPlayState extends MusicBeatState
 					babyArrow.postAddedToGroup();
 				}
 				if (PlayState.SONG.secOpt) {
-					for (i in 0...4) {
-						var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * 0.5 : FlxG.width*0.25)-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, 0, true);
+					for (i in 0...maniaCount) {
+						var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * 0.5 : FlxG.width*0.25)-(swagWidth*(maniaCount/2)))+(swagWidth*i), strumLine.y, i, 0, true);
 						babyArrow.downScroll = ClientPrefs.downScroll;
 						babyArrow.y += Note.swagWidth/2;
 						if(ClientPrefs.middleScroll)
 						{
-							if(i > 1) { //Up and Right
+							if(i >= maniaCount/2) { //Up and Right
 								babyArrow.x += FlxG.width / 4;
 							} else {
 								babyArrow.x -= FlxG.width / 4;
@@ -1173,8 +1227,8 @@ class EditorPlayState extends MusicBeatState
 					}
 				}
 			} else if (player == 1) {
-				for (i in 0...4) {
-					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll ? FlxG.width * 0.5 : FlxG.width*0.75)-(Note.swagWidth*2))+(Note.swagWidth*i), strumLine.y, i, 1);
+				for (i in 0...maniaCount) {
+					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll ? FlxG.width * 0.5 : FlxG.width*0.75)-(swagWidth*(maniaCount/2)))+(swagWidth*i), strumLine.y, i, 1);
 					babyArrow.downScroll = ClientPrefs.downScroll;
 					playerStrums.add(babyArrow);
 					strumLineNotes.add(babyArrow);
@@ -1209,9 +1263,9 @@ class EditorPlayState extends MusicBeatState
 	function spawnNoteSplash(x:Float, y:Float, data:Int, ?note:Note = null) {
 		var skin:String = '';
 		
-		var hue:Float = ClientPrefs.arrowHSV[data % 4][0] / 360;
-		var sat:Float = ClientPrefs.arrowHSV[data % 4][1] / 100;
-		var brt:Float = ClientPrefs.arrowHSV[data % 4][2] / 100;
+		var hue:Float = ClientPrefs.arrowHSV[EKUtil.getCurrentMania()][data % 4][0] / 360;
+		var sat:Float = ClientPrefs.arrowHSV[EKUtil.getCurrentMania()][data % 4][1] / 100;
+		var brt:Float = ClientPrefs.arrowHSV[EKUtil.getCurrentMania()][data % 4][2] / 100;
 		if(note != null) {
 			skin = note.noteSplashTexture;
 			hue = note.noteSplashHue;

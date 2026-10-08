@@ -178,7 +178,7 @@ class DialogueBox extends FlxSpriteGroup
 			dialogueStarted = true;
 		}
 
-		if(PlayerSettings.player1.controls.ACCEPT)
+		if(dge.input.Controls.instance.ACCEPT)
 		{
 			if (dialogueEnded)
 			{

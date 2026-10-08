@@ -1,87 +1,95 @@
 package dge.obj.mobile;
 
-//better input button
-
 import flixel.FlxCamera;
-import flixel.input.touch.FlxTouch;
-import flixel.FlxSprite;
 import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.input.touch.FlxTouch;
+import flixel.math.FlxPoint;
 
-class TouchButton extends FlxSprite{
-    private var touch:FlxTouch = null;
+class TouchButton extends FlxSprite {
+    //button state
     public var justPressed(default, set):Bool = false;
     public var justReleased(default, set):Bool = false;
     public var pressed:Bool = false;
-    public var disableInput = false;
-    public var stickyInput:Bool = false;//make button persist press even button got moved out from finger or finger move out from button(not released) until finger released
+    
+    public var disableInput:Bool = false;
+    public var stickyInput:Bool = false; //prevent button from releasing when the touch moves off the button
+    
+    private var touch:FlxTouch = null;
+    private static var _touchPoint:FlxPoint = new FlxPoint();//prevent GC stress
 
-     public function new(x:Float, y:Float) {
-         super(x, y);
-         scrollFactor.set();
-     }
-
-    //can ovveride this senter if want detect
-    private function set_justReleased(value:Bool):Bool {
-        return value;
+    public function new(x:Float = 0, y:Float = 0) {
+        super(x, y);
+        scrollFactor.set();
+        ignoreCameraAngle = true;
     }
 
-    private function set_justPressed(value:Bool):Bool {
-        return value;
-    }
-    override public function update(e:Float):Void {
-        //reimplement custom FlxButton because FlxButton so broken when multi touch:v
-        super.update(e);
+    override public function update(elapsed:Float):Void {
+        super.update(elapsed);
+
+        // Reset button state
         justPressed = false;
         justReleased = false;
         pressed = false;
+
         if (disableInput) {
             touch = null;
             return;
         }
+
         if (touch == null) {
-            for (touch in FlxG.touches.list) {
-                var cams = cameras;
-                if (cams == null) {
-                    cams = @:privateAccess {FlxCamera._defaultCameras;};
-                }
-                if (cams == null) {
-                    continue;
-                }
-                for (cam in cams) {
-                    if (touch != null &&  overlapsPoint(touch.getWorldPosition(cam), true, cam)) {//WTF?Also copy from FlxButton
-                        if (stickyInput ? touch.justPressed : touch.pressed) {
-                            this.touch = touch;
-                            justPressed = true;
-                            justReleased = false;
-                            pressed = true;
-                        }
+            for (t in FlxG.touches.list) {
+                if (t != null && checkTouchOverlap(t)) {
+                    var isValidPress = stickyInput ? t.justPressed : t.pressed;
+                    if (isValidPress) {
+                        touch = t;
+                        justPressed = true;
+                        pressed = true;
                         break;
                     }
                 }
             }
         } else {
-            if (!stickyInput) {
-                for (cam in cameras) {
-                    if (touch != null &&  !overlapsPoint(touch.getWorldPosition(cam), true, cam)) {
-                        touch = null;
-                        justReleased = true;
-                        pressed = false;
-                        justPressed = false;//just incase
-                        break;
-                    }
-                }
+            if (!stickyInput && !checkTouchOverlap(touch)) {
+                touch = null;
+                justReleased = true;
+                return;
             }
             if (touch != null) {
-                if (touch.pressed) {
-                    pressed = true;
-                }
                 if (touch.justReleased) {
                     touch = null;
                     justReleased = true;
-                    pressed = false;
-                    justPressed = false;//just incase
+                } else if (touch.pressed) {
+                    pressed = true;
                 }
             }
         }
-     }
+    }
+    private function checkTouchOverlap(t:FlxTouch):Bool {
+        var cams = (cameras != null) ? cameras : @:privateAccess FlxCamera._defaultCameras;
+        if (cams == null) return false;
+
+        for (cam in cams) {
+            if (cam != null) {
+                t.getWorldPosition(cam, _touchPoint);
+                if (overlapsPoint(_touchPoint, true, cam)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    override public function destroy():Void {
+        touch = null;
+        super.destroy();
+    }
+
+    private function set_justReleased(value:Bool):Bool {
+        return justReleased = value;
+    }
+
+    private function set_justPressed(value:Bool):Bool {
+        return justPressed = value;
+    }
 }

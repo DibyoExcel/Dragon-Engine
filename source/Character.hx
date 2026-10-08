@@ -99,59 +99,43 @@ class Character extends FlxSprite
 
 			default:
 				var characterPath:String = 'characters/' + curCharacter + '.json';
-				var characterPathDark:String = 'characters/' + curCharacter + 'Dark.json';
-
-				#if MODS_ALLOWED
-				//damn implement character darkmode type is harder than i thought
-				//i could imagine character has ability change darkmode/lightmode version self idk what character follow user preference(this become unique character)
-				//also idk why i make this but kinda very cool if character can change his outfit by changing theme lightmode/darkmode
-				//it has been exist but only could do in image assets only
-				//what should name character?maybe adaptive character?
-				//lmao so many msg that not related to code and more rather to chaarcter theme ability
-				//meta character that know user preference(unless not have own darkmode)
+				var characterDefault:String = 'characters/' + curCharacter + '.json';
 				var path:String = '';
-				if (ClientPrefs.darkmode) {
-					//order matter
-					path = Paths.modFolders(characterPathDark);
-					if (!FileSystem.exists(path)) {
-						path = Paths.modFolders(characterPath);
-					}
-					if (!FileSystem.exists(path)) {
-						path = Paths.externalPreloadPath(characterPathDark);
-					}
-					if (!FileSystem.exists(path)) {
-						path = Paths.externalPreloadPath(characterPath);
-					}
-				} else {
-					path = Paths.modFolders(characterPath);
-					if (!FileSystem.exists(path)) {
-						path = Paths.externalPreloadPath(characterPath);
-					}
-				}
-
-				if (!FileSystem.exists(path))
-				#else
-				var path:String = Paths.getPreloadPath(characterPathDark);
-				if (!Assets.exists(path)) {
-					path = Paths.getPreloadPath(characterPath);
-				}
-				if (!Assets.exists(path))
-				#end
-				{
-					path = #if MODS_ALLOWED dge.backend.StorageManager.getEngineDir() + #end Paths.getPreloadPath('characters/' + DEFAULT_CHARACTER + '.json'); //If a character couldn't be found, change him to BF just to prevent a crash(imagine default bf has darkmode version it just ridiculous lol)
-				}
 				var rawJson:String = null;
 				#if MODS_ALLOWED
-				if (FileSystem.exists(path)) {
-					rawJson = File.getContent(path);
-				} else if (ClientPrefs.darkmode && Assets.exists(Paths.getPreloadPath(characterPathDark))) {
-					rawJson = Assets.getText(Paths.getPreloadPath(characterPathDark));
-				} else if (Assets.exists(Paths.getPreloadPath(characterPath))) {
-					rawJson = Assets.getText(Paths.getPreloadPath(characterPath));
-				} else {
-					rawJson = Assets.getText(Paths.getPreloadPath('characters/' + DEFAULT_CHARACTER + '.json'));
+				var found:Bool = false;
+				var pathsToTryE:Array<String> = [
+					Paths.modFolders(characterPath),
+					Paths.externalPreloadPath(characterPath),
+				];
+				var pathsToTryA:Array<String> = [
+					Paths.getPreloadPath(characterPath),
+					Paths.getPreloadPath(characterDefault)
+				];
+				
+				for (p in pathsToTryE) {
+					if (FileSystem.exists(p)) {
+						path = p;
+						found = true;
+						rawJson = File.getContent(path);
+						break;
+					}
+				}
+				if (!found) {
+					for (p in pathsToTryA) {
+						if (Assets.exists(p)) {
+							path = p;
+							found = true;
+							rawJson = Assets.getText(path);
+							break;
+						}
+					}
 				}
 				#else
+				path = Paths.getPreloadPath(characterPath);
+				if (!Assets.exists(path)) {
+					path = Paths.getPreloadPath(characterDefault);
+				}
 				rawJson = Assets.getText(path);
 				#end
 

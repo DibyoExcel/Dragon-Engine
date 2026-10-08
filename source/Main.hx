@@ -83,8 +83,9 @@ class Main extends Sprite
 
 	private function setupGame():Void
 	{
-		ClientPrefs.loadDefaultKeys();
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, 1, framerate, framerate, skipSplash, startFullscreen));
+		dge.input.device.KeyboardControls.init();
+		dge.input.device.GamepadControls.init();
 		//still in beta test
 		/*var screenWidth:Int = Lib.current.stage.stageWidth;
 		var screenHeight:Int = Lib.current.stage.stageHeight;
@@ -99,7 +100,7 @@ class Main extends Sprite
 		if(fpsVar != null) {
 			fpsVar.visible = ClientPrefs.showFPS;
 		}
-		Note.swagWidth = 160 * ClientPrefs.strumsize;
+		Note.swagWidth = (160*0.7) * ClientPrefs.strumsize;
 		Lib.current.stage.align = "tl";
 		Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
 		#if !html5

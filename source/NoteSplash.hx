@@ -3,6 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 using StringTools;
+import dge.backend.EKUtil;
 
 class NoteSplash extends FlxSprite
 {
@@ -163,13 +164,16 @@ class NoteSplash extends FlxSprite
 			noteSplashOffsetOriginY = oriNote.noteSplashOffsetOriginY;
 		}
 		loadAnims(texture);
-		setGraphicSize(Std.int(width*(scale*(ClientPrefs.strumsize/0.7))), Std.int(height*(scale*(ClientPrefs.strumsize/0.7))));
+		var mania = EKUtil.getCurrentMania();
+		var indexTarget = EKUtil.noteAnimIndex[mania-1];
+		var animIndex = indexTarget[note % indexTarget.length];
+		setGraphicSize(Std.int(width*(scale*(ClientPrefs.strumsize*EKUtil.getNoteScale(mania)))), Std.int(height*(scale*(ClientPrefs.strumsize*EKUtil.getNoteScale(mania)))));
 		setPosition((x + (noteWidth/2)-(width/2))+noteSplashOffsetX, (y + (noteHeight/2))-(height/2)+noteSplashOffsetY);
 		//offset.set(10, 10);//what is this?!?
 		
 		var animNum:Int = FlxG.random.int(1, 2);
-		animation.play('note' + (note % 4) + '-' + animNum, true);
-		if(animation.curAnim != null)animation.curAnim.frameRate = ClientPrefs.fpsStrumAnim + FlxG.random.int(-2, 2);
+		animation.play('note' + (animIndex % 9) + '-' + animNum, true);
+		if(animation.curAnim != null) animation.curAnim.frameRate = ClientPrefs.fpsStrumAnim + FlxG.random.int(-2, 2);
 		centerOrigin();
 		origin.x += noteSplashOffsetOriginX;
 		origin.y += noteSplashOffsetOriginY;
@@ -182,7 +186,7 @@ class NoteSplash extends FlxSprite
 		catch(e:Dynamic) {
 			frames = Paths.getSparrowAtlas('noteSplashes');
 		}
-		var col = [ 'purple', 'blue', 'green', 'red' ];
+		var col = EKUtil.colArray;
 		for (color in 0...col.length) {
 			for (i in 1...3) {
 				if (note != null && note.getActualDownscroll()) {

@@ -40,6 +40,7 @@ typedef SwagSong =
 	var holdCoverSkin:String;
 	var holdCoverSkinOpt:String;
 	var holdCoverSkinSec:String;
+	var mania:Null<Int>;
 }
 
 class Song
@@ -86,6 +87,13 @@ class Song
 		if (songJson.secOpt == null)
 		{
 			songJson.secOpt = false;
+		}
+		if (songJson.mania == null) {
+			songJson.mania = 4;
+		} else if (songJson.mania < 1) {
+			songJson.mania = 0;
+		} else if (songJson.mania > 9) {
+			songJson.mania = 9;//only support at max 9
 		}
 		if(songJson.gfVersion == null)
 		{

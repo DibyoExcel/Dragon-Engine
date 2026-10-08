@@ -12,6 +12,7 @@ import sys.io.File;
 import dge.obj.game.HoldCover;
 
 using StringTools;
+import dge.backend.EKUtil;
 
 typedef NoteJson = {
 	noteData:Null<NoteSide>
@@ -79,10 +80,10 @@ class Note extends FlxSprite
 	public var lateHitMult:Float = 1;
 	public var lowPriority:Bool = false;
 
-	public static var swagWidth:Float = 160 * ClientPrefs.strumsize;
+	public static var swagWidth:Float = (160*0.7) * ClientPrefs.strumsize;
 
-	private var colArray:Array<String> = ['purple', 'blue', 'green', 'red'];
-	private var pixelInt:Array<Int> = [0, 1, 2, 3];
+	// private var EKutil.colArray:Array<String> = ['purple', 'blue', 'green', 'red', 'space', 'yellow', 'purplealt', 'redalt', 'bluealt'];
+	// private var EKUtil.pixelInt:Array<Int> = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
 	// Lua shit
 	public var noteSplashDisabled:Bool = false;
@@ -371,11 +372,13 @@ class Note extends FlxSprite
 
 	private function set_noteType(value:String):String
 	{
-		if (noteData > -1 && noteData < ClientPrefs.arrowHSV.length)
+		if (noteData > -1)
 		{
-			colorSwap.hue = ClientPrefs.arrowHSV[noteData & 4][0] / 360;
-			colorSwap.saturation = ClientPrefs.arrowHSV[noteData & 4][1] / 100;
-			colorSwap.brightness = ClientPrefs.arrowHSV[noteData & 4][2] / 100;
+			var getColorMania = ClientPrefs.arrowHSV[EKUtil.getCurrentMania() % ClientPrefs.arrowHSV.length];
+			var colroNoteData = getColorMania[noteData % getColorMania.length];
+			colorSwap.hue = colroNoteData[0] / 360;
+			colorSwap.saturation = colroNoteData[1] / 100;
+			colorSwap.brightness = colroNoteData[2] / 100;
 		}
 
 		if (noteData > -1 && noteType != value)
@@ -486,7 +489,9 @@ class Note extends FlxSprite
 		if (!isSustainNote) //i think still need this to prevent crash(idk why)
 			{ // Doing this 'if' check to fix the warnings on Senpai songs
 			var animToPlay:String = '';
-			animToPlay = colArray[noteData % colArray.length];
+			var mania = EKUtil.getCurrentMania();
+			var indexTarget = EKUtil.noteAnimIndex[mania-1];
+			animToPlay = EKUtil.colArray[indexTarget[noteData % indexTarget.length] % EKUtil.colArray.length];
 			var animName = animationDownScrollHandle(animToPlay + 'Scroll');
 			animation.play(animName);
 		}
@@ -504,7 +509,10 @@ class Note extends FlxSprite
 
 			copyAngle = false;
 			copyFlipY = true;
-			var animName = animationDownScrollHandle(colArray[noteData % colArray.length] + (tail ? 'holdend' : 'hold'));
+			var mania = EKUtil.getCurrentMania();
+			var indexTarget = EKUtil.noteAnimIndex[mania-1];
+			var animToPlay = EKUtil.colArray[indexTarget[noteData % indexTarget.length] % EKUtil.colArray.length];
+			var animName = animationDownScrollHandle(animToPlay + (tail ? 'holdend' : 'hold'));
 			animation.play(animName);
 
 			updateHitbox();
@@ -606,7 +614,7 @@ class Note extends FlxSprite
 			if (isSustainNote)
 				{
 				loadGraphic(Paths.image('pixelUI/' + blahblah + 'ENDS'));
-				width = width / 4;
+				width = width / 9;
 				height = height / 2;
 				originalHeightForCalcs = height;
 				loadGraphic(Paths.image('pixelUI/' + blahblah + 'ENDS'), true, Math.floor(width), Math.floor(height));
@@ -614,11 +622,11 @@ class Note extends FlxSprite
 			else
 			{
 				loadGraphic(Paths.image('pixelUI/' + blahblah));
-				width = width / 4;
+				width = width / 9;
 				height = height / 5;
 				loadGraphic(Paths.image('pixelUI/' + blahblah), true, Math.floor(width), Math.floor(height));
 			}
-			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+			setGraphicSize(Std.int((width * PlayState.daPixelZoom * ClientPrefs.strumsize)*EKUtil.getNoteScale(EKUtil.getCurrentMania())));
 			loadPixelNoteAnims();
 			antialiasing = false;
 
@@ -635,7 +643,7 @@ class Note extends FlxSprite
 				}
 			}
 			loadNoteAnims();
-			setGraphicSize(Std.int(width * ClientPrefs.strumsize));
+			setGraphicSize(Std.int(((width*0.7) * ClientPrefs.strumsize)*EKUtil.getNoteScale(EKUtil.getCurrentMania())));
 			antialiasing = ClientPrefs.globalAntialiasing;
 		}
 		if (isSustainNote)
@@ -657,25 +665,25 @@ class Note extends FlxSprite
 
 	function loadNoteAnims()
 	{
-		for (i in 0...colArray.length) {//i just want it adaptive to when change noteData
-			animation.addByPrefix(colArray[i] + 'Scroll', colArray[i] + '0');
+		for (i in 0...EKUtil.colArray.length) {//i just want it adaptive to when change noteData
+			animation.addByPrefix(EKUtil.colArray[i] + 'Scroll', EKUtil.colArray[i] + '0');
 			animation.addByPrefix('purpleholdend', 'pruple end hold0'); // ?????
-			animation.addByPrefix(colArray[i] + 'holdend', colArray[i] + ' hold end0');
-			animation.addByPrefix(colArray[i] + 'hold', colArray[i] + ' hold piece0');
-			animation.addByPrefix(colArray[i] + 'Scroll_down', colArray[i] + '_DownScroll0');
+			animation.addByPrefix(EKUtil.colArray[i] + 'holdend', EKUtil.colArray[i] + ' hold end0');
+			animation.addByPrefix(EKUtil.colArray[i] + 'hold', EKUtil.colArray[i] + ' hold piece0');
+			animation.addByPrefix(EKUtil.colArray[i] + 'Scroll_down', EKUtil.colArray[i] + '_DownScroll0');
 			animation.addByPrefix('purpleholdend_down', 'pruple end hold_DownScroll0'); // ?????
-			animation.addByPrefix(colArray[i] + 'holdend_down', colArray[i] + ' hold end_DownScroll0');
-			animation.addByPrefix(colArray[i] + 'hold_down', colArray[i] + ' hold piece_DownScroll0');
+			animation.addByPrefix(EKUtil.colArray[i] + 'holdend_down', EKUtil.colArray[i] + ' hold end_DownScroll0');
+			animation.addByPrefix(EKUtil.colArray[i] + 'hold_down', EKUtil.colArray[i] + ' hold piece_DownScroll0');
 		}
 
 	}
 
 	function loadPixelNoteAnims()
 	{
-		for (i in 0...colArray.length) {//i just want it adaptive to when change noteData
-			animation.add(colArray[i % colArray.length] + 'Scroll', [pixelInt[i % pixelInt.length] + 4]);
-			animation.add(colArray[i % colArray.length] + 'holdend', [pixelInt[i % pixelInt.length] + 4]);
-			animation.add(colArray[i % colArray.length] + 'hold', [pixelInt[i % pixelInt.length]]);
+		for (i in 0...EKUtil.colArray.length) {//i just want it adaptive to when change noteData
+			animation.add(EKUtil.colArray[i % EKUtil.colArray.length] + 'Scroll', [EKUtil.pixelInt[i % EKUtil.pixelInt.length] + 9]);
+			animation.add(EKUtil.colArray[i % EKUtil.colArray.length] + 'holdend', [EKUtil.pixelInt[i % EKUtil.pixelInt.length] + 9]);
+			animation.add(EKUtil.colArray[i % EKUtil.colArray.length] + 'hold', [EKUtil.pixelInt[i % EKUtil.pixelInt.length]]);
 		}
 	}
 
@@ -795,12 +803,14 @@ class Note extends FlxSprite
 		if (noteData != value) {
 			noteData = value;
 			//info: the color swap not work when change noteData midgame, so dont blame at me, lol
+			var animToPlay:String = '';
+			var mania = EKUtil.getCurrentMania();
+			var indexTarget = EKUtil.noteAnimIndex[mania-1];
+			animToPlay = EKUtil.colArray[indexTarget[noteData % indexTarget.length] % EKUtil.colArray.length];
 			if (!isSustainNote) {
-				var animToPlay:String = '';
-				animToPlay = colArray[noteData % colArray.length];
 				animation.play(animationDownScrollHandle(animToPlay + 'Scroll'));
 			} else {
-				animation.play(animationDownScrollHandle(colArray[noteData % colArray.length] + (sustainTail ? 'holdend': 'hold')));
+				animation.play(animationDownScrollHandle(animToPlay + (sustainTail ? 'holdend': 'hold')));
 			}
 		}
 		return value;

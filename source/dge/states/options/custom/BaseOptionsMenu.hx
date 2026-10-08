@@ -26,7 +26,9 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
-import Controls;
+
+import dge.input.device.KeyboardControls;
+import dge.input.device.GamepadControls;
 import dge.states.options.custom.TypedValueSubState;
 
 using StringTools;
@@ -201,14 +203,14 @@ class BaseOptionsMenu extends MusicBeatSubstate
 	var holdValue:Float = 0;
 	override function update(elapsed:Float)
 	{
-		var leftN = controls.NOTE_LEFT;
-		var downN = controls.NOTE_DOWN;
-		var upN = controls.NOTE_UP;
-		var rightN = controls.NOTE_RIGHT;
-		var leftNR = controls.NOTE_LEFT_R;
-		var downNR = controls.NOTE_DOWN_R;
-		var upNR = controls.NOTE_UP_R;
-		var rightNR = controls.NOTE_RIGHT_R;
+		var leftN = KeyboardControls.checkKey('note_left', P) || GamepadControls.checkButton('note_left', P);
+		var downN = KeyboardControls.checkKey('note_down', P) || GamepadControls.checkButton('note_down', P);
+		var upN = KeyboardControls.checkKey('note_up', P) || GamepadControls.checkButton('note_up', P);
+		var rightN = KeyboardControls.checkKey('note_right', P) || GamepadControls.checkButton('note_right', P);
+		var leftNR = KeyboardControls.checkKey('note_left', JR) || GamepadControls.checkButton('note_left', JR);
+		var downNR = KeyboardControls.checkKey('note_down', JR) || GamepadControls.checkButton('note_down', JR);
+		var upNR = KeyboardControls.checkKey('note_up', JR) || GamepadControls.checkButton('note_up', JR);
+		var rightNR = KeyboardControls.checkKey('note_right', JR) || GamepadControls.checkButton('note_right', JR);
 		if (spriteNote != null && spriteNote.length > 3) {
 			if (spriteNote[0] != null) {
 				if (leftN) {

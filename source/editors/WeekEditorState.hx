@@ -36,6 +36,7 @@ import WeekData;
 using StringTools;
 import dge.obj.ui.MenuItem as ListMenu;
 
+
 class WeekEditorState extends MusicBeatState
 {
 	var txtWeekTitle:FlxText;

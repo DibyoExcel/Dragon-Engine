@@ -12,20 +12,18 @@ class ToggleButton extends VirtualButton//it should could nested?
     }
    override private function set_justPressed(value:Bool):Bool {
         if (justPressed != value) {
-            justPressed = value;
             if (value) {
                 enable = !enable;
             }
             updateGraphic();
         }
-        return value;
+        return super.set_justPressed(value);
     }
     override private function set_justReleased(value:Bool):Bool {
         if (justReleased != value) {
-            justReleased = value;
             updateGraphic();
         }
-        return value;
+        return super.set_justReleased(value);
     }
     override function set_texture(value:String):String {
         if (texture != value) {

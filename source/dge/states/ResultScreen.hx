@@ -6,8 +6,8 @@ import flixel.FlxG;
 import flixel.FlxSubState;
 import flixel.FlxSprite;
 import Alphabet;
-import Controls;
 import haxe.Timer;
+
 
 class ResultScreen extends MusicBeatState
 {

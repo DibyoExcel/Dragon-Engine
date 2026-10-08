@@ -16,6 +16,8 @@ import openfl.utils.Assets;
 #end
 import flixel.FlxSprite;
 import flixel.FlxG;
+import flixel.input.keyboard.FlxKey;
+import flixel.input.gamepad.FlxGamepadInputID;
 
 using StringTools;
 
@@ -381,5 +383,14 @@ class CoolUtil
 			}
 		}
 		return newArray;
+	}
+
+	public static function stringToFlxKey(key:String):FlxKey {
+		var keyEnum:FlxKey = FlxKey.fromString(key.toUpperCase());
+		return keyEnum;
+	}
+	public static function stringToGamepadInputId(key:String):FlxGamepadInputID {
+		var inputIdEnum:FlxGamepadInputID = FlxGamepadInputID.fromString(key.toUpperCase());
+		return inputIdEnum;
 	}
 }

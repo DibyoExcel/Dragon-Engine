@@ -23,7 +23,6 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
-import Controls;
 import options.BaseOptionsMenu;
 import options.Option;
 
@@ -61,6 +60,19 @@ class MobileSubState extends BaseOptionsMenu
 		option.changeValue = 0.01;
 		option.decimals = 2;
 		addOption(option);
+		
+		var option:Option = new Option('Hitbox Hint Transparency',
+			'How much transparent should the Hitbox Hint be.',
+			'hitboxHintAlpha',
+			'percent',
+			0.5);
+		option.scrollSpeed = 1.6;
+		option.minValue = 0.15;
+		option.maxValue = 1;
+		option.changeValue = 0.01;
+		option.decimals = 2;
+		addOption(option);
+
 		var option:Option = new Option('Virtual Button Transparency',
 			'How much transparent should the Virtul Button be.',
 			'virtualButtonAlpha',

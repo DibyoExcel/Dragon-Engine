@@ -26,13 +26,13 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
-import Controls;
+
 
 using StringTools;
 
 class PsychOptionsState extends MusicBeatState
 {
-	var options:Array<String> = ['Note Colors', 'Controls', 'Adjust Delay and Combo', 'Graphics', 'Visuals and UI', 'Gameplay',];
+	var options:Array<String> = ['Note Colors', 'Controls', 'Controls(Gamepad)', 'Adjust Delay and Combo', 'Graphics', 'Visuals and UI', 'Gameplay',];
 	private var grpOptions:FlxTypedGroup<Alphabet>;
 	private static var curSelected:Int = 0;
 	public static var menuBG:FlxSprite;
@@ -47,6 +47,8 @@ class PsychOptionsState extends MusicBeatState
 				openSubState(new options.NotesSubState());
 			case 'Controls':
 				openSubState(new options.ControlsSubState());
+			case 'Controls(Gamepad)':
+				openSubState(new dge.states.options.GamepadControlsSubState());
 			case 'Graphics':
 				openSubState(new options.GraphicsSettingsSubState());
 			case 'Visuals and UI':

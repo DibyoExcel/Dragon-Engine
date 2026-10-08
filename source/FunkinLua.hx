@@ -8,6 +8,8 @@ import dge.frontend.CameraZOrder;
 import dge.frontend.scale.ScreenScaleMode;
 import dge.obj.game.VideoSprite;
 import dge.frontend.MP4Order as VideoOrder;
+import dge.input.device.*;
+import dge.backend.EKUtil;
 
 import lime.app.Application;
 import lime.system.System;
@@ -23,6 +25,7 @@ import animateatlas.AtlasFrameMaker;
 import flixel.FlxG;
 import flixel.addons.effects.FlxTrail;
 import flixel.input.keyboard.FlxKey;
+import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.text.FlxText;
@@ -59,7 +62,6 @@ import sys.io.Process;
 #end
 
 import Type.ValueType;
-import Controls;
 import DialogueBoxPsych;
 
 #if hscript
@@ -219,19 +221,13 @@ class FunkinLua {
 		set('practice', PlayState.instance.practiceMode);
 		set('healthDrainMult', PlayState.instance.healthDrainMult);
 
-		for (i in 0...4) {
+		for (i in 0...9) {
 			set('defaultPlayerStrumX' + i, 0);
 			set('defaultPlayerStrumY' + i, 0);
-			if (!PlayState.SONG.secOpt) {
-				set('defaultOpponentStrumX' + i, 0);
-				set('defaultOpponentStrumY' + i, 0);	
-			}
-		}
-		for (i in 0...8) {
-			if (PlayState.SONG.secOpt) {
-				set('defaultOpponentStrumX' + i, 0);
-				set('defaultOpponentStrumY' + i, 0);	
-			}
+			set('defaultOpponentStrumX' + i, 0);
+			set('defaultOpponentStrumY' + i, 0);	
+			set('defaultGfStrumX' + i, 0);
+			set('defaultGfStrumY' + i, 0);	
 		}
 
 		// Default character positions woooo
@@ -4587,7 +4583,7 @@ class FunkinLua {
 				for (stageList in stageMap.keys()) {
 					var mapInvisible = stageMap.get(stageList).spriteList;
 					for (sprite in mapInvisible) {
-						var spr:FlxSprite = PlayState.instance.getLuaObject(sprite);
+						var spr:FlxBasic = PlayState.instance.getLuaObject(sprite);
 						if (spr == null) {
 							spr = Reflect.getProperty(getInstance(), sprite);
 						}
@@ -4599,7 +4595,7 @@ class FunkinLua {
 				var stageTarget = stageMap.get(stage);
 				var mapVisible = stageTarget.spriteList;
 				for (sprite in mapVisible) {
-					var spr:FlxSprite = PlayState.instance.getLuaObject(sprite);
+					var spr:FlxBasic = PlayState.instance.getLuaObject(sprite);
 					if (spr == null) {
 						spr = Reflect.getProperty(getInstance(), sprite);
 					}
@@ -4655,6 +4651,36 @@ class FunkinLua {
 			}
 		});
 
+		Lua_helper.add_callback(lua, "changeKeyboardKeybind", function(keyBind:Array<String>) {
+			var game = PlayState.instance;
+			if (game != null) {
+				if (keyBind == null || keyBind.length < 1) {
+					//reset
+					game.keysArray = EKUtil.getKeybind();
+				} else {
+					var flxKey:Array<Array<FlxKey>> = [];
+					for (key in keyBind) {
+						flxKey.push([CoolUtil.stringToFlxKey(key)]);
+					}
+					game.keysArray = flxKey;
+				}
+			}
+		});
+		Lua_helper.add_callback(lua, "changeGamepadKeybind", function(buttonBind:Array<String>) {
+			var game = PlayState.instance;
+			if (game != null) {
+				if (buttonBind == null || buttonBind.length < 1) {
+					//reset
+					game.bindArray = EKUtil.getButtonbind();
+				} else {
+					var flxKey:Array<Array<FlxGamepadInputID>> = [];
+					for (key in buttonBind) {
+						flxKey.push([CoolUtil.stringToGamepadInputId(key)]);
+					}
+					game.bindArray = flxKey;
+				}
+			}
+		});
 		call('onCreate', []);
 		#end
 	}

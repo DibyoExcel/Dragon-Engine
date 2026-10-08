@@ -36,6 +36,7 @@ import dge.shaders.Posterize;
 import dge.shaders.RGBPalette;
 import dge.shaders.GrayScale;
 import dge.shaders.BlackAndWhite;
+import dge.obj.Pointer;
 
 // TODO: add updateSizeFromFrame bool which will tell sprite whether to update it's size to frame's size (when frame setter is called) or not (useful for sprites with adjusted hitbox)
 // And don't forget about sprites with clipped frames: what i should do with their size in this case?
@@ -278,15 +279,29 @@ class FlxSprite extends FlxObject
 	public var grayScale(get, never):GrayScale;
 	public var blackAndWhite(get, never):BlackAndWhite;
 	public var ignoreCameraAngle:Bool = false;
+	//drop shadow
+	public var enableShadow:Bool = false;//is too obvious(why you need enable by default bruh)
+	public var shadowOffsets:Pointer = new Pointer(5, 5);
+	public var shadowColor:FlxColor = 0xFF000000;
+	public var shadowAlphaMult:Float = 0.5;
 	//store object after access
+	@:noCompletion
     private var _colorSwap:ColorSwap;
+	@:noCompletion
     private var _colorInvert:ColorInvert;
+	@:noCompletion
     private var _colorSingle:ColorSingle;
+	@:noCompletion
 	private var _colorRGBSwap:ColorRGBSwap;
+	@:noCompletion
 	private var _pixelSprite:PixelSprite;
+	@:noCompletion
 	private var _posterize:Posterize;
+	@:noCompletion
 	private var _rgbShader:RGBPalette;
+	@:noCompletion
 	private var _grayScale:GrayScale;
+	@:noCompletion
 	private var _blackAndWhite:BlackAndWhite;
 	
 
@@ -756,8 +771,10 @@ class FlxSprite extends FlxObject
 	@:noCompletion
 	function checkEmptyFrame()
 	{
-		if (_frame == null)
-			loadGraphic("flixel/images/logo/default.png");
+		if (_frame == null) {
+			var checkBoard = CoolUtil.makeCheckerboardGraphic();//replace flixel icon to checkerboard instead
+			loadGraphic(checkBoard);
+		}
 	}
 
 	/**
@@ -765,8 +782,27 @@ class FlxSprite extends FlxObject
 	 */
 	override public function draw():Void
 	{
+		
+		if (enableShadow && shadowAlphaMult > 0) {
+			var origX = this.x;
+			var origY = this.y;
+			var origColor = this.color;
+			var origAlpha = this.alpha;
+			x += shadowOffsets.x;
+			y += shadowOffsets.y;
+			alpha *= shadowAlphaMult;
+			color = shadowColor;
+			drawObj();
+			x = origX;
+			y = origY;
+			alpha = origAlpha;
+			color = origColor;
+		}
+		drawObj();
+	}
+	
+	function drawObj() {
 		checkEmptyFrame();
-
 		if (alpha == 0 || _frame.type == FlxFrameType.EMPTY)
 			return;
 

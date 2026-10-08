@@ -12,23 +12,21 @@ class VirtualButton extends TouchButton {
     }
     override private function set_justPressed(value:Bool):Bool {
         if (justPressed != value) {
-            justPressed = value;
-                if (value) {
-                    loadGraphic(Paths.image('button/' + texture + '-hover'));
-                    setGraphicSize(125, 125);
-                    updateHitbox();
-                }
+            if (value) {
+                loadGraphic(Paths.image('button/' + texture + '-hover'));
+                setGraphicSize(125, 125);
+                updateHitbox();
+            }
         }
         return super.set_justPressed(value);
     }
     override private function set_justReleased(value:Bool):Bool {
         if (justReleased != value) {
-            justReleased = value;
-                if (value) {
-                    loadGraphic(Paths.image('button/' + texture));
-                    setGraphicSize(125, 125);
-                    updateHitbox();
-                }
+            if (value) {
+                loadGraphic(Paths.image('button/' + texture));
+                setGraphicSize(125, 125);
+                updateHitbox();
+            }
         }
         return super.set_justReleased(value);
     }

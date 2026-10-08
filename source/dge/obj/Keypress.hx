@@ -1,6 +1,7 @@
 package dge.obj;
 
 import flixel.FlxSprite;
+import dge.backend.EKUtil;
 
 class Keypress extends FlxSprite
 {
@@ -16,7 +17,8 @@ class Keypress extends FlxSprite
 
     public function new(x:Float, y:Float, color:Int) {
         super(x, y);
-        makeGraphic(50, 50);
+        var size = Std.int(50*EKUtil.getNoteScale(EKUtil.getCurrentMania()-1));
+        makeGraphic(size, size);
         this.colorKey = color;
         this.color = color;
         shader = colorSwap.shader;

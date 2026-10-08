@@ -26,7 +26,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
-import Controls;
+
 
 #if sys
 import flash.media.Sound;
@@ -114,17 +114,6 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 		var option:GameplayOption = new GameplayOption('Botplay', 'botplay', 'bool', false);
 		optionsArray.push(option);
 		
-		
-		var option:GameplayOption = new GameplayOption('Note Key', //Name
-			'notekey', //Save data variable name
-			'int', //Variable type
-			4); //Default value
-			option.displayFormat = '%vK';
-			option.minValue = 1;
-			option.maxValue = 4;
-			option.scrollSpeed = 1;
-			optionsArray.push(option);
-
 		var option:GameplayOption = new GameplayOption('Health Drain', 'healthdrain', 'bool', false);//My favorite build in mechanic
 		optionsArray.push(option);
 
@@ -164,9 +153,6 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 		var option:GameplayOption = new GameplayOption('Disable Lua Event', 'disableLuaEvent', 'bool', false);//Dis lua Event
 		optionsArray.push(option);
 		#end
-		
-		var option:GameplayOption = new GameplayOption('Randomized Note Placement', 'randomNote', 'bool', false);
-		optionsArray.push(option);
 	}
 
 	public function getOptionByName(name:String)

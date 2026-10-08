@@ -4,10 +4,11 @@ import flixel.FlxG;
 import flixel.util.FlxSave;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
-import Controls;
+import dge.input.device.KeyboardControls;
 
 class ClientPrefs {
 	//dge setting
+	public static var hitboxHintAlpha:Float = 0.75;
 	public static var fpsBGAlpha:Float = 0.5;
 	public static var fillScreen:Bool = false;
 	public static var gpuCaching:Bool = false;
@@ -42,7 +43,7 @@ class ClientPrefs {
 	public static var darkmode:Bool = false;
 	public static var dflnoteskin:String = 'NOTE_assets';
 	public static var longNoteAlpha:Float = 0.6;
-	public static var strumsize:Float = 0.7;
+	public static var strumsize:Float = 1;
 	public static var clsstrum:Bool = false;
 	public static var fpsStrumAnim:Int = 24;
 	public static var noteSplashAlpha:Float = 0.6;
@@ -73,7 +74,18 @@ class ClientPrefs {
 	public static var camZooms:Bool = true;
 	public static var hideHud:Bool = false;
 	public static var noteOffset:Int = 0;
-	public static var arrowHSV:Array<Array<Int>> = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
+	//oh shi-
+	public static var arrowHSV:Array<Array<Array<Int>>> = [
+		[[0, 0, 0]],
+		[[0, 0, 0], [0, 0, 0]],
+		[[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+		[[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]],
+		[[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]],
+		[[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]],
+		[[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]],
+		[[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]],
+		[[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
+	];
 	public static var ghostTapping:Bool = true;
 	public static var timeBarType:String = 'Time Left';
 	public static var scoreZoom:Bool = true;
@@ -103,7 +115,6 @@ class ClientPrefs {
 		'practice' => false,
 		'botplay' => false,
 		'opponentplay' => false,
-		'notekey' => 4,
 		'multNote' => 1,
 		'gamemode' => 'none',
 		'modcharttype' => 'none',
@@ -112,7 +123,6 @@ class ClientPrefs {
 	 	'disableLuaStage' => false,//Stage lua
 		'disableLuaEvent' => false,
 		'opponent' => false,
-		'randomNote' => false,
 		'healthDrainMult' => 1.0
 	];
 
@@ -123,39 +133,8 @@ class ClientPrefs {
 	public static var badWindow:Int = 135;
 	public static var safeFrames:Float = 10;
 
-	//Every key has two binds, add your key bind down here and then add your control on options/ControlsSubState.hx and Controls.hx
-	public static var keyBinds:Map<String, Array<FlxKey>> = [
-		//Key Bind, Name for ControlsSubState
-		'note_left'		=> [A, LEFT],
-		'note_down'		=> [S, DOWN],
-		'note_up'		=> [W, UP],
-		'note_right'	=> [D, RIGHT],
-
-		'ui_left'		=> [A, LEFT],
-		'ui_down'		=> [S, DOWN],
-		'ui_up'			=> [W, UP],
-		'ui_right'		=> [D, RIGHT],
-		
-		'accept'		=> [SPACE, ENTER],
-		'back'			=> [BACKSPACE, ESCAPE],
-		'pause'			=> [ENTER, ESCAPE],
-		'reset'			=> [R, NONE],
-		
-		'volume_mute'	=> [ZERO, NONE],
-		'volume_up'		=> [NUMPADPLUS, PLUS],
-		'volume_down'	=> [NUMPADMINUS, MINUS],
-		
-		'debug_1'		=> [SEVEN, NONE],
-		'debug_2'		=> [EIGHT, NONE]
-	];
-	public static var defaultKeys:Map<String, Array<FlxKey>> = null;
-
-	public static function loadDefaultKeys() {
-		defaultKeys = keyBinds.copy();
-		//trace(defaultKeys);
-	}
-
 	public static function saveSettings() {
+		FlxG.save.data.hitboxHintAlpha = hitboxHintAlpha;
 		FlxG.save.data.fpsBGAlpha = fpsBGAlpha;
 		FlxG.save.data.fillScreen = fillScreen;
 		FlxG.save.data.gpuCaching = gpuCaching;
@@ -197,7 +176,7 @@ class ClientPrefs {
 		FlxG.save.data.extUI = extUI;
 		FlxG.save.data.darkmode = darkmode;
 		FlxG.save.data.dragonW = dragonW;
-		FlxG.save.data.strumsize = strumsize;
+		FlxG.save.data.strumsizenew = strumsize;
 		FlxG.save.data.dflnoteskin = dflnoteskin;
 		FlxG.save.data.clsstrum = clsstrum;
 		FlxG.save.data.longNoteAlpha = longNoteAlpha;
@@ -219,7 +198,7 @@ class ClientPrefs {
 		FlxG.save.data.camZooms = camZooms;
 		FlxG.save.data.noteOffset = noteOffset;
 		FlxG.save.data.hideHud = hideHud;
-		FlxG.save.data.arrowHSV = arrowHSV;
+		FlxG.save.data.arrowHSVEK = arrowHSV;
 		FlxG.save.data.ghostTapping = ghostTapping;
 		FlxG.save.data.timeBarType = timeBarType;
 		FlxG.save.data.scoreZoom = scoreZoom;
@@ -242,17 +221,14 @@ class ClientPrefs {
 		FlxG.save.data.comboStacking = comboStacking;
 	
 		FlxG.save.flush();
-
-		var save:FlxSave = new FlxSave();
-		save.bind('controls_v2', 'ninjamuffin99'); //Placing this in a separate save so that it can be manually deleted without removing your Score and stuff
-		save.data.customControls = keyBinds;
-		save.flush();
-		FlxG.log.add("Settings saved!");
 	}
 
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.hitboxHintAlpha != null) {
+			hitboxHintAlpha = FlxG.save.data.hitboxHintAlpha;
 		}
 		if(FlxG.save.data.fpsBGAlpha != null) {
 			fpsBGAlpha = FlxG.save.data.fpsBGAlpha;
@@ -374,8 +350,8 @@ class ClientPrefs {
 		if(FlxG.save.data.dflnoteskin != null) {
 			dflnoteskin = FlxG.save.data.dflnoteskin;
 		}
-		if(FlxG.save.data.strumsize != null) {
-			strumsize = FlxG.save.data.strumsize;
+		if(FlxG.save.data.strumsizenew != null) {
+			strumsize = FlxG.save.data.strumsizenew;
 		}
 		if(FlxG.save.data.longNoteAlpha != null) {
 			longNoteAlpha = FlxG.save.data.longNoteAlpha;
@@ -444,8 +420,8 @@ class ClientPrefs {
 		if(FlxG.save.data.noteOffset != null) {
 			noteOffset = FlxG.save.data.noteOffset;
 		}
-		if(FlxG.save.data.arrowHSV != null) {
-			arrowHSV = FlxG.save.data.arrowHSV;
+		if(FlxG.save.data.arrowHSVEK != null) {
+			arrowHSV = FlxG.save.data.arrowHSVEK;
 		}
 		if(FlxG.save.data.ghostTapping != null) {
 			ghostTapping = FlxG.save.data.ghostTapping;
@@ -512,33 +488,12 @@ class ClientPrefs {
 		{
 			checkForUpdates = FlxG.save.data.checkForUpdates;
 		}
-		if (FlxG.save.data.comboStacking != null)
-			comboStacking = FlxG.save.data.comboStacking;
-
-		var save:FlxSave = new FlxSave();
-		save.bind('controls_v2', 'ninjamuffin99');
-		if(save != null && save.data.customControls != null) {
-			var loadedControls:Map<String, Array<FlxKey>> = save.data.customControls;
-			for (control => keys in loadedControls) {
-				keyBinds.set(control, keys);
-			}
-			reloadControls();
-		}
+		if (FlxG.save.data.comboStacking != null) {
+			comboStacking = FlxG.save.data.comboStacking;}
 	}
 
 	inline public static function getGameplaySetting(name:String, defaultValue:Dynamic):Dynamic {
 		return /*PlayState.isStoryMode ? defaultValue : */ (gameplaySettings.exists(name) ? gameplaySettings.get(name) : defaultValue);
-	}
-
-	public static function reloadControls() {
-		PlayerSettings.player1.controls.setKeyboardScheme(KeyboardScheme.Solo);
-
-		TitleState.muteKeys = copyKey(keyBinds.get('volume_mute'));
-		TitleState.volumeDownKeys = copyKey(keyBinds.get('volume_down'));
-		TitleState.volumeUpKeys = copyKey(keyBinds.get('volume_up'));
-		FlxG.sound.muteKeys = TitleState.muteKeys;
-		FlxG.sound.volumeDownKeys = TitleState.volumeDownKeys;
-		FlxG.sound.volumeUpKeys = TitleState.volumeUpKeys;
 	}
 	public static function copyKey(arrayToCopy:Array<FlxKey>):Array<FlxKey> {
 		var copiedArray:Array<FlxKey> = arrayToCopy.copy();

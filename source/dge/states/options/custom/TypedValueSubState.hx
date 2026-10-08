@@ -10,6 +10,7 @@ import dge.obj.mobile.VirtualButton;
 #end
 using StringTools;
 
+
 class TypedValueSubState extends MusicBeatSubstate
 {
     private var optionObject:Option;

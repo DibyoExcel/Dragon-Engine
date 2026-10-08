@@ -534,11 +534,9 @@ class Paths
 				CacheUtil.cacheImage.set(currentModDirectory + key + darkModeReturn(), currentTrackedAssets.get(path));
 				return currentTrackedAssets.get(path);
 			}
-			trace('Missing image asset: ' + key + '. Using Checkerboard placeholder.');
-			var checkBoard = CoolUtil.makeCheckerboardGraphic();
-			checkBoard.persist = true;
-			CacheUtil.cacheImage.set(currentModDirectory + key + darkModeReturn(), checkBoard);
-			return checkBoard;
+			trace('Missing image asset: ' + key + '.');
+			CacheUtil.cacheImage.set(currentModDirectory + key + darkModeReturn(), null);
+			return null;
 		}
 		return CacheUtil.cacheImage.get(currentModDirectory + key + darkModeReturn());
 	}

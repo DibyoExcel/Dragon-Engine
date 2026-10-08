@@ -1,6 +1,8 @@
 package dge.obj.mobile;
 //better input
 
+import flixel.FlxCamera;
+import flixel.FlxSprite;
 import dge.obj.mobile.TouchButton;
 
 class Hitbox extends TouchButton
@@ -13,26 +15,27 @@ class Hitbox extends TouchButton
 	public var snapY:Float = 0;
 	public var snapAngle:Float = 0;
 	public var snapAlpha:Float = 0;
+    //hint hitbox
+    public var hitboxHint:FlxSprite = null;
+    public var hintTexture(default, set):String = null;
     
 
     override private function set_justReleased(value:Bool):Bool {
         if (justReleased != value) {
-            justReleased = value;
             if (value) {
                 alpha = unpressAlpha;
             }
         }
-        return value;
+        return super.set_justReleased(value);
     }
 
     override private function set_justPressed(value:Bool):Bool {
         if (justPressed != value) {
-            justPressed = value;
             if (value) {
                 alpha = pressAlpha;
             }
         }
-        return value;
+        return super.set_justPressed(value);
     }
 
     private function set_texture(value:String):String {
@@ -42,7 +45,12 @@ class Hitbox extends TouchButton
             }
             texture = value;
             var lastColor = this.color;
+            var lastSize = [Std.int(width), Std.int(height)];
             loadGraphic(Paths.image(value));
+            if (lastSize[0] > 0 && lastSize[1] > 0) {
+                setGraphicSize(lastSize[0], lastSize[1]);
+                updateHitbox();
+            }
             this.color = lastColor;
         }
         return value;
@@ -56,7 +64,10 @@ class Hitbox extends TouchButton
         blend = FunkinLua.blendModeFromString(ClientPrefs.hitboxBlend);
         antialiasing = ClientPrefs.globalAntialiasing;
         stickyInput = ClientPrefs.stickyHitbox;
-        ignoreCameraAngle = true;
+        hitboxHint = new FlxSprite();
+        hitboxHint.alpha = ClientPrefs.hitboxHintAlpha;
+        hitboxHint.antialiasing = ClientPrefs.globalAntialiasing;
+        hintTexture = '';
      }
 
      override public function set_y(value:Float):Float {
@@ -109,5 +120,62 @@ class Hitbox extends TouchButton
             if (!pressed) alpha = value;
         }
         return value;
+    }
+
+    function set_hintTexture(value:String):String {
+        if (hintTexture != value) {
+            hintTexture = value;
+            if (hintTexture == null || hintTexture.length < 1) {
+                hintTexture = 'hitbox-hint';
+            }
+            if (hitboxHint != null) {
+                hitboxHint.loadGraphic(Paths.image(hintTexture));
+                hitboxHint.color = this.color;
+                fitHintToHitbox();
+            }
+        }
+        return value;
+    }
+
+    override function destroy():Void {
+        super.destroy();
+        if (hitboxHint != null) {
+            hitboxHint.destroy();
+            hitboxHint = null;
+        }
+    }
+
+    override function updateHitbox():Void {
+        super.updateHitbox();
+        fitHintToHitbox();
+    }
+
+    override function draw():Void {
+        super.draw();
+        if (hitboxHint != null && hitboxHint.visible && hitboxHint.alpha > 0) {
+            CoolUtil.alignItem(this, hitboxHint, BOTTOM_MIDDLE);
+            var offsetMax = 100;
+            var centerOffset = (height - hitboxHint.height) / 2;
+            hitboxHint.y -= Math.min(centerOffset, offsetMax);
+            hitboxHint.color = this.color;
+            hitboxHint.cameras = this.cameras;
+            hitboxHint.draw();
+        }
+    }
+
+    function fitHintToHitbox() {
+        if (hitboxHint != null && hitboxHint.graphic != null && hitboxHint.frameWidth > 0 && hitboxHint.frameHeight > 0) {
+            var scaleX = width / hitboxHint.frameWidth;
+            var scaleY = height / hitboxHint.frameHeight;
+            var scale = Math.min(scaleX, scaleY) * 0.35;
+            
+            hitboxHint.scale.set(scale, scale);
+            hitboxHint.updateHitbox();
+            
+            CoolUtil.alignItem(this, hitboxHint, BOTTOM_MIDDLE);
+            var offsetMax = 50;
+            var centerOffset = (height - hitboxHint.height) / 2;
+            hitboxHint.y -= Math.min(centerOffset, offsetMax);//so it will center if hitbox small
+        }
     }
 }
