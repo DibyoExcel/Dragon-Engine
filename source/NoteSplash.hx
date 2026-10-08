@@ -172,7 +172,7 @@ class NoteSplash extends FlxSprite
 		//offset.set(10, 10);//what is this?!?
 		
 		var animNum:Int = FlxG.random.int(1, 2);
-		animation.play('note' + (animIndex % 9) + '-' + animNum, true);
+		animation.play('note' + animIndex + '-' + animNum, true);
 		if(animation.curAnim != null) animation.curAnim.frameRate = ClientPrefs.fpsStrumAnim + FlxG.random.int(-2, 2);
 		centerOrigin();
 		origin.x += noteSplashOffsetOriginX;

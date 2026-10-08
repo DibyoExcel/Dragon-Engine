@@ -8,16 +8,16 @@ import dge.input.device.GamepadControls;
 
 //extra keys
 class EKUtil {
-    public static var colArray:Array<String>= ['purple', 'blue', 'green', 'red', 'space', 'yellow', 'purplealt', 'redalt', 'bluealt'];
-    public static var pixelInt:Array<Int> = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+    public static var colArray:Array<String> = ['purple', 'blue', 'green', 'red', 'space', 'yellow', 'purplealt', 'redalt', 'bluealt'];//for color notes
+    public static var direction:Array<String> = ['left', 'down', 'up', 'right', 'space', 'leftalt', 'downalt', 'upalt', 'rightalt'];//for direection xml
     public static var noteAnimIndex:Array<Array<Int>> = [
         [4],
         [0, 3],
         [0, 4, 3],
         [0, 1, 2, 3],
         [0, 1, 4, 2, 3],
-        [0, 1, 3, 5, 2, 8],
-        [0, 1, 3, 4, 5, 2, 8],
+        [0, 2, 3, 5, 1, 8],
+        [0, 2, 3, 4, 5, 1, 8],
         [0, 1, 2, 3, 5, 6, 7, 8],
         [0, 1, 2, 3, 4, 5, 6, 7, 8]
     ];
@@ -27,8 +27,8 @@ class EKUtil {
         ['singLEFT', 'singUP', 'singRIGHT'],
         ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT'],
         ['singLEFT', 'singDOWN', 'singUP', 'singUP', 'singRIGHT'],
-        ['singLEFT', 'singDOWN', 'singRIGHT', 'singLEFT', 'singUP', 'singRIGHT'],
-        ['singLEFT', 'singDOWN', 'singRIGHT', 'singUP', 'singLEFT', 'singUP', 'singRIGHT'],
+        ['singLEFT', 'singUP', 'singRIGHT', 'singLEFT', 'singDOWN', 'singRIGHT'],
+        ['singLEFT', 'singUP', 'singRIGHT', 'singUP', 'singLEFT', 'singDOWN', 'singRIGHT'],
         ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT', 'singLEFT', 'singDOWN', 'singUP', 'singRIGHT'],
         ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT', 'singUP', 'singLEFT', 'singDOWN', 'singUP', 'singRIGHT']
     ];
@@ -49,8 +49,8 @@ class EKUtil {
         [0xFFFF00FF, 0xFFCCCCCC, 0xFFFF0000],
         [0xFFFF00FF, 0xFF00FFFF, 0xFF00FF00, 0xFFFF0000],
         [0xFFFF00FF, 0xFF00FFFF, 0xFFCCCCCC, 0xFF00FF00, 0xFFFF0000],
-        [0xFFFF00FF, 0xFF00FFFF, 0xFFFF0000, 0xFFFFFF00, 0xFF00FF00, 0xFF0000FF],
-        [0xFFFF00FF, 0xFF00FFFF, 0xFFFF0000, 0xFFCCCCCC, 0xFFFFFF00, 0xFF00FF00, 0xFF0000FF],
+        [0xFFFF00FF, 0xFF00FF00, 0xFFFF0000, 0xFFFFFF00, 0xFF00FFFF, 0xFF0000FF],
+        [0xFFFF00FF, 0xFF00FF00, 0xFFFF0000, 0xFFCCCCCC, 0xFFFFFF00, 0xFF00FFFF, 0xFF0000FF],
         [0xFFFF00FF, 0xFF00FFFF, 0xFF00FF00, 0xFFFF0000, 0xFFFFFF00, 0xFF8000FF, 0xFFFF0000, 0xFF0000FF],
         [0xFFFF00FF, 0xFF00FFFF, 0xFF00FF00, 0xFFFF0000, 0xFFCCCCCC, 0xFFFFFF00, 0xFF8000FF, 0xFFFF0000, 0xFF0000FF]
     ];
@@ -67,12 +67,12 @@ class EKUtil {
         return 4;
     }
     public static function getAnimArray():Array<String> {
-        return animIndex[getCurrentMania()-1];
+        return animIndex[getCurrentMania()-1 % animIndex.length];
     }
 
     public static function getKeybind():Array<Array<FlxKey>> {
         var copyArray:Array<Array<FlxKey>>=[];
-        for (key in controlMap[getCurrentMania()-1]) {
+        for (key in controlMap[getCurrentMania()-1 % controlMap.length]) {
             copyArray.push(KeyboardControls.getKeybind(key));
         }
         return copyArray;

@@ -6143,7 +6143,7 @@ class PlayState extends MusicBeatState
 						var mania = EKUtil.getCurrentMania();
 						var indexTarget = EKUtil.noteAnimIndex[mania-1];
 						var animIndex = indexTarget[note.noteData % indexTarget.length];
-						holdCover.playAnim("hold" + (animIndex%9));
+						holdCover.playAnim("hold" + animIndex);
 					}
 				}
 			}

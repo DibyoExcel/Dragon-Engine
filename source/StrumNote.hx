@@ -193,6 +193,10 @@ class StrumNote extends FlxSprite
 			skin = ClientPrefs.dflnoteskin;
 		}
 		image = skin;
+		var mania = EKUtil.getCurrentMania();
+		var indexTarget = EKUtil.noteAnimIndex[mania-1];
+		var animIndex = indexTarget[noteData % indexTarget.length];
+		var spriteCount = EKUtil.colArray.length;
 		if(PlayState.isPixelStage)
 		{
 			loadGraphic(Paths.image('pixelUI/' + image));
@@ -203,65 +207,13 @@ class StrumNote extends FlxSprite
 			antialiasing = false;
 			setGraphicSize(Std.int(((width * PlayState.daPixelZoom)*ClientPrefs.strumsize)*EKUtil.getNoteScale(EKUtil.getCurrentMania())));
 
-			animation.add('green', [11]);
-			animation.add('red', [12]);
-			animation.add('blue', [10]);
-			animation.add('purple', [9]);
-			animation.add('green', [11]);
-			animation.add('red', [12]);
-			animation.add('blue', [10]);
-			animation.add('purple', [9]);
-			var mania = EKUtil.getCurrentMania();
-			var indexTarget = EKUtil.noteAnimIndex[mania-1];
-			var animIndex = indexTarget[noteData % indexTarget.length];
-			switch (animIndex)
-			{
-				case 0:
-					animation.add('static', [0]);
-					animation.add('pressed', [9, 18], (ClientPrefs.fpsStrumAnim)/2, false);
-					animation.add('notes', [9]);
-					animation.add('confirm', [18, 27], ClientPrefs.fpsStrumAnim, false);
-				case 1:
-					animation.add('static', [1]);
-					animation.add('pressed', [10, 19], (ClientPrefs.fpsStrumAnim)/2, false);
-					animation.add('notes', [10]);
-					animation.add('confirm', [19, 28], ClientPrefs.fpsStrumAnim, false);
-				case 2:
-					animation.add('static', [2]);
-					animation.add('pressed', [11, 20], (ClientPrefs.fpsStrumAnim)/2, false);
-					animation.add('notes', [11]);
-					animation.add('confirm', [20, 29], (ClientPrefs.fpsStrumAnim)/2, false);
-				case 3:
-					animation.add('static', [3]);
-					animation.add('pressed', [12, 21], (ClientPrefs.fpsStrumAnim)/2, false);
-					animation.add('notes', [12]);
-					animation.add('confirm', [21, 30], ClientPrefs.fpsStrumAnim, false);
-				case 4:
-					animation.add('static', [4]);
-					animation.add('pressed', [13, 22], (ClientPrefs.fpsStrumAnim)/2, false);
-					animation.add('notes', [13]);
-					animation.add('confirm', [22, 31], ClientPrefs.fpsStrumAnim, false);
-				case 5:
-					animation.add('static', [5]);
-					animation.add('pressed', [14, 23], (ClientPrefs.fpsStrumAnim)/2, false);
-					animation.add('notes', [14]);
-					animation.add('confirm', [23, 32], ClientPrefs.fpsStrumAnim, false);
-				case 6:
-					animation.add('static', [6]);
-					animation.add('pressed', [15, 24], (ClientPrefs.fpsStrumAnim)/2, false);
-					animation.add('notes', [15]);
-					animation.add('confirm', [24, 33], ClientPrefs.fpsStrumAnim, false);
-				case 7:
-					animation.add('static', [7]);
-					animation.add('pressed', [16, 25], (ClientPrefs.fpsStrumAnim)/2, false);
-					animation.add('notes', [16]);
-					animation.add('confirm', [25, 34], ClientPrefs.fpsStrumAnim, false);
-				case 8:
-					animation.add('static', [8]);
-					animation.add('pressed', [17, 26], (ClientPrefs.fpsStrumAnim)/2, false);
-					animation.add('notes', [17]);
-					animation.add('confirm', [26, 35], ClientPrefs.fpsStrumAnim, false);
+			for (i in 0...spriteCount) {
+				animation.add(EKUtil.colArray[i], [i+spriteCount]);
 			}
+			animation.add('static', [animIndex]);
+			animation.add('pressed', [animIndex+spriteCount, animIndex+(spriteCount*2)], (ClientPrefs.fpsStrumAnim)/2, false);
+			animation.add('notes', [animIndex, spriteCount]);
+			animation.add('confirm', [animIndex+(spriteCount*2), animIndex+(spriteCount*3)], ClientPrefs.fpsStrumAnim, false);
 		}
 		else
 		{
@@ -274,111 +226,30 @@ class StrumNote extends FlxSprite
 					frames = Paths.getSparrowAtlas('NOTE_assets');
 				}
 			}
-			animation.addByPrefix('green', 'arrowUP');
-			animation.addByPrefix('blue', 'arrowDOWN');
-			animation.addByPrefix('purple', 'arrowLEFT');
-			animation.addByPrefix('red', 'arrowRIGHT');
-			animation.addByPrefix('space', 'arrowSPACE');
-			animation.addByPrefix('yellow', 'arrowUPALT');
-			animation.addByPrefix('altpurple', 'arrowDOWNALT');
-			animation.addByPrefix('altred', 'arrowLEFTALT');
-			animation.addByPrefix('altblue', 'arrowRIGHTALT');
+			var direct = EKUtil.direction;
+			for (i in 0...spriteCount) {
+				animation.addByPrefix(EKUtil.colArray[i], 'arrow' + direct[i%direct.length].toUpperCase());
+			}
 			
 			
 			setGraphicSize(Std.int(((width*0.7) * ClientPrefs.strumsize)*EKUtil.getNoteScale(EKUtil.getCurrentMania())));
 			antialiasing = ClientPrefs.globalAntialiasing;
 			
 
-			var addAnimThingy = CoolUtil.addSpecialAnimation;
 			var mania = EKUtil.getCurrentMania();
 			var indexTarget = EKUtil.noteAnimIndex[mania-1];
 			var animIndex = indexTarget[noteData % indexTarget.length];
-			switch (animIndex)
-			{	
-				
-				case 0:
-					animation.addByPrefix('static', 'arrowLEFT0');
-					animation.addByPrefix('pressed', 'left press0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm', 'left confirm0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes', 'purple0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('static_down', 'arrowLEFT_DownScroll0');
-					animation.addByPrefix('pressed_down', 'left press_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm_down', 'left confirm_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes_down', 'purple_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-				case 1:
-					animation.addByPrefix('static', 'arrowDOWN0');
-					animation.addByPrefix('pressed', 'down press0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm', 'down confirm0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes', 'blue0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('static_down', 'arrowDOWN_DownScroll0');
-					animation.addByPrefix('pressed_down', 'down press_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm_down', 'down confirm_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes_down', 'blue_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-				case 2:
-					animation.addByPrefix('static', 'arrowUP0');
-					animation.addByPrefix('pressed', 'up press0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm', 'up confirm0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes', 'green0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('static_down', 'arrowUP_DownScroll0');
-					animation.addByPrefix('pressed_down', 'up press_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm_down', 'up confirm_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes_down', 'green_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-				case 3:
-					animation.addByPrefix('static', 'arrowRIGHT0');
-					animation.addByPrefix('pressed', 'right press0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm', 'right confirm0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes', 'red0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('static_down', 'arrowRIGHT_DownScroll0');
-					animation.addByPrefix('pressed_down', 'right press_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm_down', 'right confirm_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes_down', 'red_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-				//ek
-				case 4:
-					animation.addByPrefix('static', 'arrowSPACE0');
-					animation.addByPrefix('pressed', 'space press0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm', 'space confirm0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes', 'space0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('static_down', 'arrowSPACE_DownScroll0');
-					animation.addByPrefix('pressed_down', 'space press_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm_down', 'space confirm_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes_down', 'space_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-				case 5:
-					animation.addByPrefix('static', 'arrowLEFTALT0');
-					animation.addByPrefix('pressed', 'leftalt press0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm', 'leftalt confirm0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes', 'yellow0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('static_down', 'arrowLEFTALT_DownScroll0');
-					animation.addByPrefix('pressed_down', 'leftalt press_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm_down', 'leftalt confirm_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes_down', 'yellow_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-				case 6:
-					animation.addByPrefix('static', 'arrowDOWNALT0');
-					animation.addByPrefix('pressed', 'downalt press0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm', 'downalt confirm0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes', 'purplealt0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('static_down', 'arrowDOWNALT_DownScroll0');
-					animation.addByPrefix('pressed_down', 'downalt press_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm_down', 'downalt confirm_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes_down', 'purplealt_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-				case 7:
-					animation.addByPrefix('static', 'arrowUPALT0');
-					animation.addByPrefix('pressed', 'upalt press0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm', 'upalt confirm0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes', 'redalt0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('static_down', 'arrowUPALT_DownScroll0');
-					animation.addByPrefix('pressed_down', 'upalt press_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm_down', 'upalt confirm_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes_down', 'redalt_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-				case 8:
-					animation.addByPrefix('static', 'arrowRIGHTALT0');
-					animation.addByPrefix('pressed', 'rightalt press0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm', 'rightalt confirm0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes', 'bluealt0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('static_down', 'arrowRIGHTALT_DownScroll0');
-					animation.addByPrefix('pressed_down', 'rightalt press_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('confirm_down', 'rightalt confirm_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-					animation.addByPrefix('notes_down', 'bluealt_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-			}
+			var directName = direct[animIndex % direct.length].toLowerCase();
+			var xmlName = 'arrow' + directName.toUpperCase();
+			var colorName = EKUtil.colArray[animIndex & EKUtil.colArray.length];
+			animation.addByPrefix('static', xmlName + '0');
+			animation.addByPrefix('pressed', directName + ' press0', ClientPrefs.fpsStrumAnim, false);
+			animation.addByPrefix('confirm', directName + ' confirm0', ClientPrefs.fpsStrumAnim, false);
+			animation.addByPrefix('notes', colorName + '0', ClientPrefs.fpsStrumAnim, false);
+			animation.addByPrefix('static_down', xmlName + '_DownScroll0');
+			animation.addByPrefix('pressed_down', directName + ' press_DownScroll0', ClientPrefs.fpsStrumAnim, false);
+			animation.addByPrefix('confirm_down', directName + ' confirm_DownScroll0', ClientPrefs.fpsStrumAnim, false);
+			animation.addByPrefix('notes_down', colorName + '_DownScroll0', ClientPrefs.fpsStrumAnim, false);
 		}
 		updateHitbox();
 	}

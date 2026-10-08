@@ -680,10 +680,11 @@ class Note extends FlxSprite
 
 	function loadPixelNoteAnims()
 	{
-		for (i in 0...EKUtil.colArray.length) {//i just want it adaptive to when change noteData
-			animation.add(EKUtil.colArray[i % EKUtil.colArray.length] + 'Scroll', [EKUtil.pixelInt[i % EKUtil.pixelInt.length] + 9]);
-			animation.add(EKUtil.colArray[i % EKUtil.colArray.length] + 'holdend', [EKUtil.pixelInt[i % EKUtil.pixelInt.length] + 9]);
-			animation.add(EKUtil.colArray[i % EKUtil.colArray.length] + 'hold', [EKUtil.pixelInt[i % EKUtil.pixelInt.length]]);
+		var keyCount = EKUtil.colArray.length;
+		for (i in 0...keyCount) {//i just want it adaptive to when change noteData
+			animation.add(EKUtil.colArray[i] + 'Scroll', [i + keyCount]);
+			animation.add(EKUtil.colArray[i] + 'holdend', [i + keyCount]);
+			animation.add(EKUtil.colArray[i] + 'hold', [i]);
 		}
 	}
 

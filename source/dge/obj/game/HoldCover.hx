@@ -208,7 +208,7 @@ class HoldCover extends FlxSprite
                     var mania = EKUtil.getCurrentMania();
                     var indexTarget = EKUtil.noteAnimIndex[mania-1];
                     var animIndex = indexTarget[note.noteData % indexTarget.length];
-                    playAnim('end' + (animIndex%9));
+                    playAnim('end' + animIndex);
                 }
                 timer = 0;
             }
