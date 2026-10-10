@@ -1050,7 +1050,8 @@ class ChartingState extends MusicBeatState
 			for (i in 0..._song.notes[curSec].sectionNotes.length)
 			{
 				var note:Array<Dynamic> = _song.notes[curSec].sectionNotes[i];
-				note[1] = (note[1] + 4) % 12;
+				var keyCount = EKUtil.getCurrentMania();
+				note[1] = (note[1] + keyCount) % (keyCount*3);
 				_song.notes[curSec].sectionNotes[i] = note;
 			}
 			updateGrid();
@@ -2403,29 +2404,30 @@ class ChartingState extends MusicBeatState
 				note.alpha = 1;
 				if(curSelectedNote != null) {
 					var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
-					if (actualNoteData > -1 && actualNoteData < 12) {
+					var keyCount = EKUtil.getCurrentMania();
+					if (actualNoteData > -1 && actualNoteData < (keyCount*3)) {
 						if (!_song.notes[curSec].mustHitSection) {
 							if (!_song.notes[curSec].gfSection) {
-								if (actualNoteData > 3 && actualNoteData < 8) {
-									actualNoteData -= 4;
-								} else if (actualNoteData > -1 && actualNoteData < 4) {
-									actualNoteData += 4;
+								if (actualNoteData >= keyCount && actualNoteData < keyCount*2) {
+									actualNoteData -= keyCount;
+								} else if (actualNoteData > -1 && actualNoteData < keyCount) {
+									actualNoteData += keyCount;
 								}
 							} else {
-								if (actualNoteData > -1 && actualNoteData < 4) {
-									actualNoteData += 4;
-								} else if (actualNoteData > 7 && actualNoteData < 12) {
-									actualNoteData -= 8;
-								} else if (actualNoteData > 3 && actualNoteData < 8) {
-									actualNoteData += 4;
+								if (actualNoteData > -1 && actualNoteData < keyCount) {
+									actualNoteData += keyCount;
+								} else if (actualNoteData >= keyCount*2 && actualNoteData < keyCount*3) {
+									actualNoteData -= keyCount*2;
+								} else if (actualNoteData >= keyCount && actualNoteData < keyCount*2) {
+									actualNoteData += keyCount;
 								}
 							}
 						} else {
 							if (_song.notes[curSec].gfSection) {
-								if (actualNoteData > -1 && actualNoteData < 4) {
-									actualNoteData += 8;
-								} else if (actualNoteData > 7 && actualNoteData < 12) {
-									actualNoteData -= 8;
+								if (actualNoteData > -1 && actualNoteData < keyCount) {
+									actualNoteData += keyCount*2;
+								} else if (actualNoteData >= keyCount*2 && actualNoteData < keyCount*3) {
+									actualNoteData -= keyCount*2;
 								}
 							}
 						}
@@ -2485,29 +2487,30 @@ class ChartingState extends MusicBeatState
 				note.alpha = 1;
 				if(curSelectedNote != null) {
 					var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
-					if (actualNoteData > -1 && actualNoteData < 12) {
+					var keyCount = EKUtil.getCurrentMania();
+					if (actualNoteData > -1 && actualNoteData < (keyCount*3)) {
 						if (!_song.notes[curSec].mustHitSection) {
 							if (!_song.notes[curSec].gfSection) {
-								if (actualNoteData > 3 && actualNoteData < 8) {
-									actualNoteData -= 4;
-								} else if (actualNoteData > -1 && actualNoteData < 4) {
-									actualNoteData += 4;
+								if (actualNoteData >= keyCount && actualNoteData < keyCount*2) {
+									actualNoteData -= keyCount;
+								} else if (actualNoteData > -1 && actualNoteData < keyCount) {
+									actualNoteData += keyCount;
 								}
 							} else {
-								if (actualNoteData > -1 && actualNoteData < 4) {
-									actualNoteData += 4;
-								} else if (actualNoteData > 7 && actualNoteData < 12) {
-									actualNoteData -= 8;
-								} else if (actualNoteData > 3 && actualNoteData < 8) {
-									actualNoteData += 4;
+								if (actualNoteData > -1 && actualNoteData < keyCount) {
+									actualNoteData += keyCount;
+								} else if (actualNoteData >= keyCount*2 && actualNoteData < keyCount*3) {
+									actualNoteData -= keyCount*2;
+								} else if (actualNoteData >= keyCount && actualNoteData < keyCount*2) {
+									actualNoteData += keyCount;
 								}
 							}
 						} else {
 							if (_song.notes[curSec].gfSection) {
-								if (actualNoteData > -1 && actualNoteData < 4) {
-									actualNoteData += 8;
-								} else if (actualNoteData > 7 && actualNoteData < 12) {
-									actualNoteData -= 8;
+								if (actualNoteData > -1 && actualNoteData < keyCount) {
+									actualNoteData += keyCount*2;
+								} else if (actualNoteData >= keyCount*2 && actualNoteData < keyCount*3) {
+									actualNoteData -= keyCount*2;
 								}
 							}
 						}
@@ -2567,29 +2570,30 @@ class ChartingState extends MusicBeatState
 			note.alpha = 1;
 			if(curSelectedNote != null) {
 				var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
-				if (actualNoteData > -1 && actualNoteData < 12) {
+				var keyCount = EKUtil.getCurrentMania();
+				if (actualNoteData > -1 && actualNoteData < (keyCount*3)) {
 					if (!_song.notes[curSec].mustHitSection) {
 						if (!_song.notes[curSec].gfSection) {
-							if (actualNoteData > 3 && actualNoteData < 8) {
-								actualNoteData -= 4;
-							} else if (actualNoteData > -1 && actualNoteData < 4) {
-								actualNoteData += 4;
+							if (actualNoteData >= keyCount && actualNoteData < keyCount*2) {
+								actualNoteData -= keyCount;
+							} else if (actualNoteData > -1 && actualNoteData < keyCount) {
+								actualNoteData += keyCount;
 							}
 						} else {
-							if (actualNoteData > -1 && actualNoteData < 4) {
-								actualNoteData += 4;
-							} else if (actualNoteData > 7 && actualNoteData < 12) {
-								actualNoteData -= 8;
-							} else if (actualNoteData > 3 && actualNoteData < 8) {
-								actualNoteData += 4;
+							if (actualNoteData > -1 && actualNoteData < keyCount) {
+								actualNoteData += keyCount;
+							} else if (actualNoteData >= keyCount*2 && actualNoteData < keyCount*3) {
+								actualNoteData -= keyCount*2;
+							} else if (actualNoteData >= keyCount && actualNoteData < keyCount*2) {
+								actualNoteData += keyCount;
 							}
 						}
 					} else {
 						if (_song.notes[curSec].gfSection) {
-							if (actualNoteData > -1 && actualNoteData < 4) {
-								actualNoteData += 8;
-							} else if (actualNoteData > 7 && actualNoteData < 12) {
-								actualNoteData -= 8;
+							if (actualNoteData > -1 && actualNoteData < keyCount) {
+								actualNoteData += keyCount*2;
+							} else if (actualNoteData >= keyCount*2 && actualNoteData < keyCount*3) {
+								actualNoteData -= keyCount*2;
 							}
 						}
 					}
@@ -2649,29 +2653,30 @@ class ChartingState extends MusicBeatState
 			note.alpha = 1;
 			if(curSelectedNote != null) {
 				var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
-				if (actualNoteData > -1 && actualNoteData < 12) {
+				var keyCount = EKUtil.getCurrentMania();
+				if (actualNoteData > -1 && actualNoteData < (keyCount*3)) {
 					if (!_song.notes[curSec].mustHitSection) {
 						if (!_song.notes[curSec].gfSection) {
-							if (actualNoteData > 3 && actualNoteData < 8) {
-								actualNoteData -= 4;
-							} else if (actualNoteData > -1 && actualNoteData < 4) {
-								actualNoteData += 4;
+							if (actualNoteData >= keyCount && actualNoteData < keyCount*2) {
+								actualNoteData -= keyCount;
+							} else if (actualNoteData > -1 && actualNoteData < keyCount) {
+								actualNoteData += keyCount;
 							}
 						} else {
-							if (actualNoteData > -1 && actualNoteData < 4) {
-								actualNoteData += 4;
-							} else if (actualNoteData > 7 && actualNoteData < 12) {
-								actualNoteData -= 8;
-							} else if (actualNoteData > 3 && actualNoteData < 8) {
-								actualNoteData += 4;
+							if (actualNoteData > -1 && actualNoteData < keyCount) {
+								actualNoteData += keyCount;
+							} else if (actualNoteData >= keyCount*2 && actualNoteData < keyCount*3) {
+								actualNoteData -= keyCount*2;
+							} else if (actualNoteData >= keyCount && actualNoteData < keyCount*2) {
+								actualNoteData += keyCount;
 							}
 						}
 					} else {
 						if (_song.notes[curSec].gfSection) {
-							if (actualNoteData > -1 && actualNoteData < 4) {
-								actualNoteData += 8;
-							} else if (actualNoteData > 7 && actualNoteData < 12) {
-								actualNoteData -= 8;
+							if (actualNoteData > -1 && actualNoteData < keyCount) {
+								actualNoteData += keyCount*2;
+							} else if (actualNoteData >= keyCount*2 && actualNoteData < keyCount*3) {
+								actualNoteData -= keyCount*2;
 							}
 						}
 					}
@@ -3594,29 +3599,30 @@ class ChartingState extends MusicBeatState
 	{
 		if (note.isSustainNote) return;
 		var actualNoteData:Int = Math.floor(note.x/GRID_SIZE)-1;
-		if (actualNoteData > -1 && actualNoteData < 12) {
+		var keyCount = EKUtil.getCurrentMania();
+		if (actualNoteData > -1 && actualNoteData < keyCount*3) {
 			if (!_song.notes[curSec].mustHitSection) {
 				if (!_song.notes[curSec].gfSection) {
-					if (actualNoteData > 3 && actualNoteData < 8) {
-						actualNoteData -= 4;
-					} else if (actualNoteData > -1 && actualNoteData < 4) {
-						actualNoteData += 4;
+					if (actualNoteData >= keyCount && actualNoteData < keyCount*2) {
+						actualNoteData -= keyCount;
+					} else if (actualNoteData > -1 && actualNoteData < keyCount) {
+						actualNoteData += keyCount;
 					}
 				} else {
-					if (actualNoteData > -1 && actualNoteData < 4) {
-						actualNoteData += 4;
-					} else if (actualNoteData > 7 && actualNoteData < 12) {
-						actualNoteData -= 8;
-					} else if (actualNoteData > 3 && actualNoteData < 8) {
-						actualNoteData += 4;
+					if (actualNoteData > -1 && actualNoteData < keyCount) {
+						actualNoteData += keyCount;
+					} else if (actualNoteData > 7 && actualNoteData < keyCount*3) {
+						actualNoteData -= keyCount*2;
+					} else if (actualNoteData >= keyCount && actualNoteData < keyCount*2) {
+						actualNoteData += keyCount;
 					}
 				}
 			} else {
 				if (_song.notes[curSec].gfSection) {
-					if (actualNoteData > -1 && actualNoteData < 4) {
-						actualNoteData += 8;
-					} else if (actualNoteData > 7 && actualNoteData < 12) {
-						actualNoteData -= 8;
+					if (actualNoteData > -1 && actualNoteData < keyCount) {
+						actualNoteData += keyCount*2;
+					} else if (actualNoteData >= keyCount*2 && actualNoteData < keyCount*3) {
+						actualNoteData -= keyCount*2;
 					}
 				}
 			}
@@ -3656,30 +3662,31 @@ class ChartingState extends MusicBeatState
 	function deleteNote(note:Note):Void
 	{
 		if (note.isSustainNote) return;//long note tails cant be deleted alone which kinda oddly enough
+		var keyCount = EKUtil.getCurrentMania();
 		var actualNoteData:Int = (Math.floor(note.x/GRID_SIZE))-1;
-		if (actualNoteData > -1 && actualNoteData < 12) {
+		if (actualNoteData > -1 && actualNoteData < keyCount*3) {
 			if (!_song.notes[curSec].mustHitSection) {
 				if (!_song.notes[curSec].gfSection) {
-					if (actualNoteData > 3 && actualNoteData < 8) {
-						actualNoteData -= 4;
-					} else if (actualNoteData > -1 && actualNoteData < 4) {
-						actualNoteData += 4;
+					if (actualNoteData >= keyCount && actualNoteData < keyCount*2) {
+						actualNoteData -= keyCount;
+					} else if (actualNoteData > -1 && actualNoteData < keyCount) {
+						actualNoteData += keyCount;
 					}
 				} else {
-					if (actualNoteData > -1 && actualNoteData < 4) {
-						actualNoteData += 4;
-					} else if (actualNoteData > 7 && actualNoteData < 12) {
-						actualNoteData -= 8;
-					} else if (actualNoteData > 3 && actualNoteData < 8) {
-						actualNoteData += 4;
+					if (actualNoteData > -1 && actualNoteData < keyCount) {
+						actualNoteData += keyCount;
+					} else if (actualNoteData >= keyCount*2 && actualNoteData < keyCount*3) {
+						actualNoteData -= keyCount*2;
+					} else if (actualNoteData >= keyCount && actualNoteData < keyCount*2) {
+						actualNoteData += keyCount;
 					}
 				}
 			} else {
 				if (_song.notes[curSec].gfSection) {
-					if (actualNoteData > -1 && actualNoteData < 4) {
-						actualNoteData += 8;
-					} else if (actualNoteData > 7 && actualNoteData < 12) {
-						actualNoteData -= 8;
+					if (actualNoteData > -1 && actualNoteData < keyCount) {
+						actualNoteData += keyCount*2;
+					} else if (actualNoteData >= keyCount*2 && actualNoteData < keyCount*3) {
+						actualNoteData -= keyCount*2;
 					}
 				}
 			}
@@ -3763,29 +3770,30 @@ class ChartingState extends MusicBeatState
 		
 		if (strum != null) noteStrum = strum;
 		if (data != null) noteData = data;
-		if (noteData > -1 && noteData < 12) {
+		var keyCount = EKUtil.getCurrentMania();
+		if (noteData > -1 && noteData < keyCount*3) {
 			if (!_song.notes[curSec].mustHitSection) {
 				if (!_song.notes[curSec].gfSection) {
-					if (noteData > 3 && noteData < 8) {
-						noteData -= 4;
-					} else if (noteData > -1 && noteData < 4) {
-						noteData += 4;
+					if (noteData >= keyCount && noteData < keyCount*2) {
+						noteData -= keyCount;
+					} else if (noteData > -1 && noteData < keyCount) {
+						noteData += keyCount;
 					}
 				} else {
-					if (noteData > -1 && noteData < 4) {
-						noteData += 4;
-					} else if (noteData > 7 && noteData < 12) {
-						noteData -= 8;
-					} else if (noteData > 3 && noteData < 8) {
-						noteData += 4;
+					if (noteData > -1 && noteData < keyCount) {
+						noteData += keyCount;
+					} else if (noteData >= keyCount*2 && noteData < keyCount*3) {
+						noteData -= keyCount*2;
+					} else if (noteData >= keyCount && noteData < keyCount*2) {
+						noteData += keyCount;
 					}
 				}
 			} else {
 				if (_song.notes[curSec].gfSection) {
-					if (noteData > -1 && noteData < 4) {
-						noteData += 8;
-					} else if (noteData > 7 && noteData < 12) {
-						noteData -= 8;
+					if (noteData > -1 && noteData < keyCount) {
+						noteData += keyCount*2;
+					} else if (noteData >= keyCount*2 && noteData < keyCount*3) {
+						noteData -= keyCount*2;
 					}
 				}
 			}
@@ -3811,7 +3819,8 @@ class ChartingState extends MusicBeatState
 
 		if (((FlxG.keys.pressed.CONTROL #if mobile || ctrlButton.pressed #end) && !(FlxG.keys.pressed.ALT #if mobile || altButton.pressed #end)) && noteData > -1)//prevent both place when hold alt
 		{
-			_song.notes[curSec].sectionNotes.push([noteStrum, (noteData + 4) % 12, noteSus, noteTypeIntMap.get(daType)]);
+			var keyCount = EKUtil.getCurrentMania();
+			_song.notes[curSec].sectionNotes.push([noteStrum, (noteData + keyCount) % keyCount*3, noteSus, noteTypeIntMap.get(daType)]);
 		}
 
 		//trace(noteData + ', ' + noteStrum + ', ' + curSec);
