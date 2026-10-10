@@ -316,24 +316,11 @@ class CoolUtil
 	}
 
 	public static function addSpecialAnimation(sprite:FlxSprite, anim:String, xmlName:String, defaultXmlName:String, loop:Bool = true, framerate:Int = 24):Bool {
-		var hasAnim = false;
-		if (sprite != null && anim.length > 0 && xmlName.length > 0 && defaultXmlName.length > 0) {
-			var hasFound = false;
-			if (sprite.frames.frames != null) {//get this from addByPrefix() lololol
-				for (frame in sprite.frames.frames) {
-					if (frame.name != null && frame.name.startsWith(xmlName)) {
-						hasFound = true;
-						hasAnim = true;
-						break;
-					}
-				}
-				/*sprite.animation.addByPrefix(anim, xmlName, framerate, loop);
-				if (sprite.animation.getByName(anim) == null) {
-					}*/
-			}
-			if (hasFound) {
-				sprite.animation.addByPrefix(anim, xmlName, framerate, loop);
-			} else {
+		var hasAnim = true;
+		if (sprite != null && sprite.animation != null && anim.length > 0 && xmlName.length > 0 && defaultXmlName.length > 0) {
+			sprite.animation.addByPrefix(anim, xmlName, framerate, loop);
+			if (sprite.animation.getByName(anim) == null) {
+				hasAnim = false;
 				sprite.animation.addByPrefix(anim, defaultXmlName, framerate, loop);
 			}
 		}

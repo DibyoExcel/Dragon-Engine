@@ -242,14 +242,18 @@ class StrumNote extends FlxSprite
 			var directName = direct[animIndex % direct.length].toLowerCase();
 			var xmlName = 'arrow' + directName.toUpperCase();
 			var colorName = EKUtil.colArray[animIndex & EKUtil.colArray.length];
-			animation.addByPrefix('static', xmlName + '0');
-			animation.addByPrefix('pressed', directName + ' press0', ClientPrefs.fpsStrumAnim, false);
-			animation.addByPrefix('confirm', directName + ' confirm0', ClientPrefs.fpsStrumAnim, false);
-			animation.addByPrefix('notes', colorName + '0', ClientPrefs.fpsStrumAnim, false);
-			animation.addByPrefix('static_down', xmlName + '_DownScroll0');
-			animation.addByPrefix('pressed_down', directName + ' press_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-			animation.addByPrefix('confirm_down', directName + ' confirm_DownScroll0', ClientPrefs.fpsStrumAnim, false);
-			animation.addByPrefix('notes_down', colorName + '_DownScroll0', ClientPrefs.fpsStrumAnim, false);
+			var addAnim = CoolUtil.addSpecialAnimation;
+			var defaultColor = EKUtil.defaultCol.toLowerCase();
+			var defaultDirection = EKUtil.defaultDirection.toLowerCase();
+			var staticXMLDef = 'arrow' + defaultDirection;
+			addAnim(this, 'static', xmlName + '0',staticXMLDef + '0');
+			addAnim(this, 'pressed', directName + ' press0', defaultDirection + ' press0', false, ClientPrefs.fpsStrumAnim);
+			addAnim(this, 'confirm', directName + ' confirm0', defaultDirection + ' confirm0', false, ClientPrefs.fpsStrumAnim);
+			addAnim(this, 'notes', colorName + '0', defaultColor + '0', true, ClientPrefs.fpsStrumAnim);
+			addAnim(this, 'static_down', xmlName + '_DownScroll0', staticXMLDef + '_DownScroll0');
+			addAnim(this, 'pressed_down', directName + ' press_DownScroll0', defaultDirection + ' press_DownScroll0', false, ClientPrefs.fpsStrumAnim);
+			addAnim(this, 'confirm_down', directName + ' confirm_DownScroll0', defaultDirection + ' confirm_DownScroll0', false, ClientPrefs.fpsStrumAnim);
+			addAnim(this, 'notes_down', colorName + '_DownScroll0', defaultColor + '_DownScroll0', true, ClientPrefs.fpsStrumAnim);
 		}
 		updateHitbox();
 	}

@@ -37,19 +37,19 @@ class KeyboardControls {
 
         //6K
         'note_6K_left'  => [S, NONE],
-        'note_6K_down'  => [D, NONE],
+        'note_6K_up'    => [D, NONE],
         'note_6K_right' => [F, NONE],
         'note_6K_left2' => [J, NONE],
-        'note_6K_up'    => [K, NONE],
+        'note_6K_down'  => [K, NONE],
         'note_6K_right2'=> [L, NONE],
 
         //7K
         'note_7K_left'  => [S, NONE],
-        'note_7K_down'  => [D, NONE],
+        'note_7K_up'    => [D, NONE],
         'note_7K_right' => [F, NONE],
         'note_7K_space' => [SPACE, NONE],
         'note_7K_left2' => [J, NONE],
-        'note_7K_up'    => [K, NONE],
+        'note_7K_down'  => [K, NONE],
         'note_7K_right2'=> [L, NONE],
 
         //8K

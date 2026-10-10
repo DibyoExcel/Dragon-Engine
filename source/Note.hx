@@ -609,12 +609,13 @@ class Note extends FlxSprite
 
 		var lastScaleY:Float = scale.y;
 		var blahblah:String = arraySkin.join('/');
+		var keyCount = EKUtil.colArray.length;
 		if (PlayState.isPixelStage)
 		{
 			if (isSustainNote)
 				{
 				loadGraphic(Paths.image('pixelUI/' + blahblah + 'ENDS'));
-				width = width / 9;
+				width = width / keyCount;
 				height = height / 2;
 				originalHeightForCalcs = height;
 				loadGraphic(Paths.image('pixelUI/' + blahblah + 'ENDS'), true, Math.floor(width), Math.floor(height));
@@ -622,7 +623,7 @@ class Note extends FlxSprite
 			else
 			{
 				loadGraphic(Paths.image('pixelUI/' + blahblah));
-				width = width / 9;
+				width = width / keyCount;
 				height = height / 5;
 				loadGraphic(Paths.image('pixelUI/' + blahblah), true, Math.floor(width), Math.floor(height));
 			}
@@ -665,15 +666,17 @@ class Note extends FlxSprite
 
 	function loadNoteAnims()
 	{
+		var specialAnim = CoolUtil.addSpecialAnimation;
 		for (i in 0...EKUtil.colArray.length) {//i just want it adaptive to when change noteData
-			animation.addByPrefix(EKUtil.colArray[i] + 'Scroll', EKUtil.colArray[i] + '0');
-			animation.addByPrefix('purpleholdend', 'pruple end hold0'); // ?????
-			animation.addByPrefix(EKUtil.colArray[i] + 'holdend', EKUtil.colArray[i] + ' hold end0');
-			animation.addByPrefix(EKUtil.colArray[i] + 'hold', EKUtil.colArray[i] + ' hold piece0');
-			animation.addByPrefix(EKUtil.colArray[i] + 'Scroll_down', EKUtil.colArray[i] + '_DownScroll0');
-			animation.addByPrefix('purpleholdend_down', 'pruple end hold_DownScroll0'); // ?????
-			animation.addByPrefix(EKUtil.colArray[i] + 'holdend_down', EKUtil.colArray[i] + ' hold end_DownScroll0');
-			animation.addByPrefix(EKUtil.colArray[i] + 'hold_down', EKUtil.colArray[i] + ' hold piece_DownScroll0');
+			var colorDef = EKUtil.defaultCol.toLowerCase();
+			specialAnim(this, EKUtil.colArray[i] + 'Scroll', EKUtil.colArray[i] + '0', colorDef + '0');
+			specialAnim(this, 'purpleholdend', 'pruple end hold0', colorDef + ' hold end0'); // ?????
+			specialAnim(this, EKUtil.colArray[i] + 'holdend', EKUtil.colArray[i] + ' hold end0', colorDef + ' hold end0');
+			specialAnim(this, EKUtil.colArray[i] + 'hold', EKUtil.colArray[i] + ' hold piece0', colorDef + ' hold piece0');
+			specialAnim(this, EKUtil.colArray[i] + 'Scroll_down', EKUtil.colArray[i] + '_DownScroll0', colorDef + '_DownScroll0');
+			specialAnim(this, 'purpleholdend_down', 'pruple end hold_DownScroll0', colorDef + ' hold end_DownScroll0'); // ?????
+			specialAnim(this, EKUtil.colArray[i] + 'holdend_down', EKUtil.colArray[i] + ' hold end_DownScroll0', colorDef + ' hold end_DownScroll0');
+			specialAnim(this, EKUtil.colArray[i] + 'hold_down', EKUtil.colArray[i] + ' hold piece_DownScroll0', colorDef + ' hold piece_DownScroll0');
 		}
 
 	}

@@ -50,13 +50,17 @@ class HoldCover extends FlxSprite
         var colors = EKUtil.colArray;
         for (i in 0...colors.length) {
             var nameColor = colors[i];
+            var specialAnim = CoolUtil.addSpecialAnimation;
+            var defaultColor = EKUtil.defaultCol.toLowerCase();
             if (note != null && note.getActualDownscroll()) {
-                var specialAnim = CoolUtil.addSpecialAnimation;
                 specialAnim(this, "hold" + i, "hold cover " + nameColor + '_DownScroll0', "hold cover " + nameColor + '0', false, ClientPrefs.fpsStrumAnim);
                 specialAnim(this, "end" + i, "hold cover " + nameColor + ' end_DownScroll0', "hold cover " + nameColor + ' end0', false, ClientPrefs.fpsStrumAnim);
+                if (animation != null && animation.getByName("hold") == null) {
+                    animation.addByPrefix('hold', "hold cover " + defaultColor + '0', ClientPrefs.fpsStrumAnim);
+                }
             } else {
-                animation.addByPrefix("hold" + i, "hold cover " + nameColor + '0', ClientPrefs.fpsStrumAnim, false);
-                animation.addByPrefix("end" + i, "hold cover " + nameColor + ' end0', ClientPrefs.fpsStrumAnim, false);
+                specialAnim(this, "hold" + i, "hold cover " + nameColor + '0', "hold cover " + defaultColor + '0', false, ClientPrefs.fpsStrumAnim);
+                specialAnim(this, "end" + i, "hold cover " + nameColor + ' end0', "hold cover " + defaultColor + ' end0', false, ClientPrefs.fpsStrumAnim);
             }
         }
     }

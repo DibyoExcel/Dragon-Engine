@@ -8,8 +8,11 @@ import dge.input.device.GamepadControls;
 
 //extra keys
 class EKUtil {
-    public static var colArray:Array<String> = ['purple', 'blue', 'green', 'red', 'space', 'yellow', 'purplealt', 'redalt', 'bluealt'];//for color notes
+    public static var colArray(default, set):Array<String> = ['purple', 'blue', 'green', 'red', 'space', 'yellow', 'purplealt', 'redalt', 'bluealt'];//for color notes
     public static var direction:Array<String> = ['left', 'down', 'up', 'right', 'space', 'leftalt', 'downalt', 'upalt', 'rightalt'];//for direection xml
+    public static var defaultCol:String = 'green';
+    //default anim if not exists(not gonna work with pixel notes)
+    public static var defaultDirection:String = 'up';
     public static var noteAnimIndex:Array<Array<Int>> = [
         [4],
         [0, 3],
@@ -38,8 +41,8 @@ class EKUtil {
         ['note_3K_left', 'note_3K_space', 'note_3K_right'],
         ['note_left', 'note_down', 'note_up', 'note_right'],
         ['note_5K_left', 'note_5K_down', 'note_5K_space', 'note_5K_up', 'note_5K_right'],
-        ['note_6K_left', 'note_6K_down', 'note_6K_right', 'note_6K_left2', 'note_6K_up', 'note_6K_right2'],
-        ['note_7K_left', 'note_7K_down', 'note_7K_right', 'note_7K_space', 'note_7K_left2', 'note_7K_up', 'note_7K_right2'],
+        ['note_6K_left', 'note_6K_up', 'note_6K_right', 'note_6K_left2', 'note_6K_down', 'note_6K_right2'],
+        ['note_7K_left', 'note_7K_up', 'note_7K_right', 'note_7K_space', 'note_7K_left2', 'note_7K_down', 'note_7K_right2'],
         ['note_8K_left', 'note_8K_down', 'note_8K_up', 'note_8K_right', 'note_8K_left2', 'note_8K_down2', 'note_8K_up2', 'note_8K_right2'],
         ['note_9K_left', 'note_9K_down', 'note_9K_up', 'note_9K_right', 'note_9K_space', 'note_9K_left2', 'note_9K_down2', 'note_9K_up2', 'note_9K_right2']
     ];
@@ -85,5 +88,11 @@ class EKUtil {
         }
         return copyArray;
     }
-    
+    private static function set_colArray(value:Array<String>):Array<String> {
+        if (colArray != value) {
+            if (value == null || value.length < 1) value = ['purple', 'blue', 'green', 'red', 'space', 'yellow', 'purplealt', 'redalt', 'bluealt'];
+            colArray = value;
+        }
+        return value;
+    }
 }

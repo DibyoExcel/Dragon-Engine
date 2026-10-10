@@ -36,19 +36,19 @@ class GamepadControls {
 
         //6K
         'note_6K_left'  => [DPAD_LEFT, NONE],
-        'note_6K_down'  => [DPAD_DOWN, NONE],
+        'note_6K_up'    => [DPAD_DOWN, NONE],
         'note_6K_right' => [DPAD_RIGHT, NONE],
         'note_6K_left2' => [X, NONE],
-        'note_6K_up'    => [A, NONE],
+        'note_6K_down'  => [A, NONE],
         'note_6K_right2'=> [B, NONE],
 
         //7K
         'note_7K_left'  => [DPAD_LEFT, NONE],
-        'note_7K_down'  => [DPAD_DOWN, NONE],
+        'note_7K_up'    => [DPAD_DOWN, NONE],
         'note_7K_right' => [DPAD_RIGHT, NONE],
         'note_7K_space' => [RIGHT_SHOULDER, NONE],
         'note_7K_left2' => [X, NONE],
-        'note_7K_up'    => [A, NONE],
+        'note_7K_down'  => [A, NONE],
         'note_7K_right2'=> [B, NONE],
 
         //8K
