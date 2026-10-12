@@ -55,7 +55,7 @@ class HoldCover extends FlxSprite
             if (note != null && note.getActualDownscroll()) {
                 specialAnim(this, "hold" + i, "hold cover " + nameColor + '_DownScroll0', "hold cover " + nameColor + '0', false, ClientPrefs.fpsStrumAnim);
                 specialAnim(this, "end" + i, "hold cover " + nameColor + ' end_DownScroll0', "hold cover " + nameColor + ' end0', false, ClientPrefs.fpsStrumAnim);
-                if (animation != null && animation.getByName("hold") == null) {
+                if (animation != null && !animation.exists("hold")) {
                     animation.addByPrefix('hold', "hold cover " + defaultColor + '0', ClientPrefs.fpsStrumAnim);
                 }
             } else {

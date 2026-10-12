@@ -765,7 +765,7 @@ class CharacterEditorState extends MusicBeatState
 			for (anim in char.animationsArray) {
 				if(animationInputText.text == anim.anim) {
 					lastOffsets = anim.offsets;
-					if(char.animation.getByName(animationInputText.text) != null) {
+					if(char.animation.exists(animationInputText.text)) {
 						char.animation.remove(animationInputText.text);
 					}
 					char.animationsArray.remove(anim);
@@ -820,7 +820,7 @@ class CharacterEditorState extends MusicBeatState
 					var resetAnim:Bool = false;
 					if(char.animation.curAnim != null && anim.anim == char.animation.curAnim.name) resetAnim = true;
 
-					if(char.animation.getByName(anim.anim) != null) {
+					if(char.animation.exists(anim.anim)) {
 						char.animation.remove(anim.anim);
 					}
 					if(char.animOffsets.exists(anim.anim)) {

@@ -314,7 +314,7 @@ class Character extends FlxSprite
 				holdTimer += elapsed;
 			} else holdTimer = 0;
 
-			if(animation.curAnim.finished && animation.getByName(animation.curAnim.name + '-loop') != null)
+			if(animation.curAnim.finished && animation.exists(animation.curAnim.name + '-loop'))
 			{
 				playAnim(animation.curAnim.name + '-loop');
 			}
@@ -340,7 +340,7 @@ class Character extends FlxSprite
 				else
 					playAnim('danceLeft' + idleSuffix);
 			}
-			else if(animation.getByName('idle' + idleSuffix) != null) {
+			else if(animation.exists('idle' + idleSuffix)) {
 					playAnim('idle' + idleSuffix);
 			}
 		}
@@ -399,7 +399,7 @@ class Character extends FlxSprite
 	private var settingCharacterUp:Bool = true;
 	public function recalculateDanceIdle() {
 		var lastDanceIdle:Bool = danceIdle;
-		danceIdle = (animation.getByName('danceLeft' + idleSuffix) != null && animation.getByName('danceRight' + idleSuffix) != null);
+		danceIdle = (animation.exists('danceLeft' + idleSuffix) && animation.exists('danceRight' + idleSuffix));
 
 		if(settingCharacterUp)
 		{

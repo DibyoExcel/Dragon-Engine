@@ -3139,7 +3139,7 @@ class PlayState extends MusicBeatState
 		} else if (gamemode == 'opponent') {
 			if (player == 0) {
 				for (i in 0...maniaCount) {
-					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-(((Note.swagWidth*maniaScale)*(Math.min(FlxG.width, 960)/960))/(maniaCount/2)))+(((Note.swagWidth*maniaScale)*(Math.min(FlxG.width, 960)/960))*i), strumLine.y, i, 0);
+					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-(((Note.swagWidth*maniaScale)*(Math.min(FlxG.width, 960)/960))*(maniaCount/2)))+(((Note.swagWidth*maniaScale)*(Math.min(FlxG.width, 960)/960))*i), strumLine.y, i, 0);
 					if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
 						babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
 					}
@@ -3172,7 +3172,7 @@ class PlayState extends MusicBeatState
 				}
 			} else if (player == 1) {
 				for (i in 0...maniaCount) {
-					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointPlayer)-(((Note.swagWidth*maniaScale)*(Math.min(FlxG.width, 960)/960))/(maniaCount/2)))+(((Note.swagWidth*maniaScale)*(Math.min(FlxG.width, 960)/960))*i), strumLine.y, i, 1);
+					var babyArrow:StrumNote = new StrumNote(((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointPlayer)-(((Note.swagWidth*maniaScale)*(Math.min(FlxG.width, 960)/960))*(maniaCount/2)))+(((Note.swagWidth*maniaScale)*(Math.min(FlxG.width, 960)/960))*i), strumLine.y, i, 1);
 					if (modcharttype == 'random flip scroll' || modcharttype == 'random direction scroll ') {
 						babyArrow.y = (FlxG.height/2)-(babyArrow.height/2);
 					}
@@ -6174,21 +6174,21 @@ class PlayState extends MusicBeatState
 						case 'Hurt Note': //Hurt note
 							if (!note.isDad) {
 								if (((gamemode == "bothside") && !note.mustPress) || gamemode == "opponent") {
-									if(dad.animation.getByName('hurt') != null) {
+									if(dad.animation.exists('hurt')) {
 										dad.playAnim('hurt', true, false, 0, note.isSustainNote);
 										dad.specialAnim = true;
 									} else {
-										if(boyfriend.animation.getByName('hurt') != null) {
+										if(boyfriend.animation.exists('hurt')) {
 											boyfriend.playAnim('hurt', true, false, 0, note.isSustainNote);
 											boyfriend.specialAnim = true;
 										}
 									}
 								} else {
-									if(boyfriend.animation.getByName('hurt') != null) {
+									if(boyfriend.animation.exists('hurt')) {
 										boyfriend.playAnim('hurt', true, false, 0, note.isSustainNote);
 										boyfriend.specialAnim = true;
 									} else {
-										if(dad.animation.getByName('hurt') != null) {
+										if(dad.animation.exists('hurt')) {
 											dad.playAnim('hurt', true, false, 0, note.isSustainNote);
 											dad.specialAnim = true;
 										}
@@ -7576,7 +7576,7 @@ class PlayState extends MusicBeatState
 		} else if (gamemode == 'opponent') {
 			if (opponentStrums != null) {
 				for (i in 0...opponentStrums.length) {
-					opponentStrums.members[i].x = ((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-(((Note.swagWidth*maniaScale)*(Math.min(FlxG.width, 960)/960))*(maniaCount)))+(((Note.swagWidth*maniaScale)*(Math.min(FlxG.width, 960)/960))*i);
+					opponentStrums.members[i].x = ((ClientPrefs.middleScroll || gamemode == "bothside" ? FlxG.width * strumPointMiddle : FlxG.width*strumPointOpponent)-(((Note.swagWidth*maniaScale)*(Math.min(FlxG.width, 960)/960))*(maniaCount/2)))+(((Note.swagWidth*maniaScale)*(Math.min(FlxG.width, 960)/960))*i);
 					if (strumLine != null) {
 						opponentStrums.members[i].y = strumLine.y;
 					}

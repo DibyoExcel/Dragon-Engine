@@ -1049,13 +1049,13 @@ class Note extends FlxSprite
 	private function animationDownScrollHandle(anim:String):String {
 		if (anim == null || anim.length < 1) return '';
 		if (getActualDownscroll() && !anim.endsWith('_down')) {
-			if (animation != null && animation.getByName(anim + '_down') != null) {
+			if (animation != null && animation.exists(anim + '_down')) {
 				return anim + '_down';
 			}
 		} else if (!getActualDownscroll() && anim.endsWith('_down')) {
 			return anim = anim.substring(0, anim.length-5);
 		}
-		if (anim.endsWith('_down') && animation.getByName(anim + '_down') == null) anim = anim.substring(0, anim.length-5);
+		if (anim.endsWith('_down') && !animation.exists(anim + '_down')) anim = anim.substring(0, anim.length-5);
 		return anim;
 	}
 	public function reloadAnim(){

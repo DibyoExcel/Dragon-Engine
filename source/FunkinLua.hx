@@ -10,6 +10,7 @@ import dge.obj.game.VideoSprite;
 import dge.frontend.MP4Order as VideoOrder;
 import dge.input.device.*;
 import dge.backend.EKUtil;
+import flixel.input.gamepad.FlxGamepad;
 
 import lime.app.Application;
 import lime.system.System;
@@ -1641,31 +1642,16 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "keyboardJustPressed", function(name:String)
 		{
 			var key = Reflect.getProperty(FlxG.keys.justPressed, name);
-			#if mobile
-			if (!key && PlayState.instance.hitboxSpace != null && name.toLowerCase() == 'space') {
-				key = PlayState.instance.hitboxSpace.justPressed;
-			}
-			#end
 			return key;
 		});
 		Lua_helper.add_callback(lua, "keyboardPressed", function(name:String)
 		{
 			var key = Reflect.getProperty(FlxG.keys.pressed, name);
-			#if mobile
-			if (!key && PlayState.instance.hitboxSpace != null && name.toLowerCase() == 'space') {
-				key = PlayState.instance.hitboxSpace.pressed;
-			}
-			#end
 			return key;
 		});
 		Lua_helper.add_callback(lua, "keyboardReleased", function(name:String)
 		{
 			var key = Reflect.getProperty(FlxG.keys.justReleased, name);
-			#if mobile
-			if (!key && PlayState.instance.hitboxSpace != null && name.toLowerCase() == 'space') {
-				key = PlayState.instance.hitboxSpace.justReleased;
-			}
-			#end
 			return key;
 		});
 
@@ -1729,119 +1715,293 @@ class FunkinLua {
 		});
 
 		Lua_helper.add_callback(lua, "keyJustPressed", function(name:String) {
-			var key:Bool = false;
 			var game = PlayState.instance;
+			var keysArray = game.keysArray;
+			var bindArray = game.bindArray;
+			var gamepad = FlxG.gamepads.lastActive;
+			if (EKUtil.getCurrentMania() != 4) return false;//not work for non 4K
 			#if mobile
 			var hitbox = (game != null ? game.hitbox != null ? game.hitbox : null : null);
 			#end
 			switch(name) {
 				case 'left': 
-					key = game.getControl('NOTE_LEFT_P');
+					if (keysArray != null && keysArray.length > 0) {
+						for (keyp in keysArray[0]) {
+							if (FlxG.keys.checkStatus(keyp, JUST_PRESSED)) {
+								return true;
+							}
+						}
+					}
+					if (gamepad != null && bindArray != null && bindArray.length > 0) {
+						for (bindKey in bindArray[0]) {
+							if (gamepad.checkStatus(bindKey, JUST_PRESSED)) {
+								return true;
+							}
+						}
+					}
 					#if mobile
-					if (!key && hitbox != null && hitbox.length > 0) key = game.hitbox.members[0].justPressed;
+					if (hitbox != null && hitbox.length > 0 && game.hitbox.members[0].justPressed) return true; 
 					#end
 				case 'down':
-					key = game.getControl('NOTE_DOWN_P');
+					if (keysArray != null && keysArray.length > 1) {
+						for (keyp in keysArray[1]) {
+							if (FlxG.keys.checkStatus(keyp, JUST_PRESSED)) {
+								return true;
+							}
+						}
+					}
+					if (gamepad != null && bindArray != null && bindArray.length > 1) {
+						for (bindKey in bindArray[1]) {
+							if (gamepad.checkStatus(bindKey, JUST_PRESSED)) {
+								return true;
+							}
+						}
+					}
 					#if mobile
-					if (!key && game.hitbox != null && hitbox.length > 1) key = game.hitbox.members[1].justPressed;
+					if (hitbox != null && hitbox.length > 1 && game.hitbox.members[1].justPressed) return true; 
 					#end
 				case 'up': 
-					key = game.getControl('NOTE_UP_P');
+					if (keysArray != null && keysArray.length > 2) {
+						for (keyp in keysArray[2]) {
+							if (FlxG.keys.checkStatus(keyp, JUST_PRESSED)) {
+								return true;
+							}
+						}
+					}
+					if (gamepad != null && bindArray != null && bindArray.length > 2) {
+						for (bindKey in bindArray[2]) {
+							if (gamepad.checkStatus(bindKey, JUST_PRESSED)) {
+								return true;
+							}
+						}
+					}
 					#if mobile
-					if (!key && game.hitbox != null && hitbox.length > 2) key = game.hitbox.members[2].justPressed;
+					if (hitbox != null && hitbox.length > 2 && game.hitbox.members[2].justPressed) return true; 
 					#end
 				case 'right':
-					key = game.getControl('NOTE_RIGHT_P');
+					if (keysArray != null && keysArray.length > 3) {
+						for (keyp in keysArray[3]) {
+							if (FlxG.keys.checkStatus(keyp, JUST_PRESSED)) {
+								return true;
+							}
+						}
+					}
+					if (gamepad != null && bindArray != null && bindArray.length > 3) {
+						for (bindKey in bindArray[3]) {
+							if (gamepad.checkStatus(bindKey, JUST_PRESSED)) {
+								return true;
+							}
+						}
+					}
 					#if mobile
-					if (!key && game.hitbox != null && hitbox.length > 3) key = game.hitbox.members[3].justPressed;
+					if (hitbox != null && hitbox.length > 3 && game.hitbox.members[3].justPressed) return true; 
 					#end
 				case 'space': 
-					key = FlxG.keys.justPressed.SPACE;//an extra key for convinience
+					//an extra key for convinience
+					if (FlxG.keys.justPressed.SPACE) {
+						return true;
+					}
 					#if mobile
-					if (!key && game.hitboxSpace != null) {
-						key = game.hitboxSpace.justPressed;
+					if (game.hitboxSpace != null && game.hitboxSpace.justPressed) {
+						return true;
 					}
 					#end
-				case 'accept': key = PlayState.instance.getControl('ACCEPT');
-				case 'back': key = PlayState.instance.getControl('BACK');
-				case 'pause': key = PlayState.instance.getControl('PAUSE');
-				case 'reset': key = PlayState.instance.getControl('RESET');
+				case 'accept': return PlayState.instance.getControl('ACCEPT');
+				case 'back': return PlayState.instance.getControl('BACK');
+				case 'pause': return PlayState.instance.getControl('PAUSE');
+				case 'reset': return PlayState.instance.getControl('RESET');
 			}
-			return key;
+			return false;
 		});
 		Lua_helper.add_callback(lua, "keyPressed", function(name:String) {
-			var key:Bool = false;
 			var game = PlayState.instance;
+			var keysArray = game.keysArray;
+			var bindArray = game.bindArray;
+			var gamepad = FlxG.gamepads.lastActive;
+			if (EKUtil.getCurrentMania() != 4) return false;//not work for non 4K
 			#if mobile
 			var hitbox = (game != null ? game.hitbox != null ? game.hitbox : null : null);
 			#end
 			switch(name) {
 				case 'left': 
-					key = game.getControl('NOTE_LEFT');
+					if (keysArray != null && keysArray.length > 0) {
+						for (keyp in keysArray[0]) {
+							if (FlxG.keys.checkStatus(keyp, PRESSED)) {
+								return true;
+							}
+						}
+					}
+					if (gamepad != null && bindArray != null && bindArray.length > 0) {
+						for (bindKey in bindArray[0]) {
+							if (gamepad.checkStatus(bindKey, PRESSED)) {
+								return true;
+							}
+						}
+					}
 					#if mobile
-					if (!key && hitbox != null && hitbox.length > 0) key = game.hitbox.members[0].pressed;
+					if (hitbox != null && hitbox.length > 0 && game.hitbox.members[0].pressed) return true; 
 					#end
 				case 'down':
-					key = game.getControl('NOTE_DOWN');
+					if (keysArray != null && keysArray.length > 1) {
+						for (keyp in keysArray[1]) {
+							if (FlxG.keys.checkStatus(keyp, PRESSED)) {
+								return true;
+							}
+						}
+					}
+					if (gamepad != null && bindArray != null && bindArray.length > 1) {
+						for (bindKey in bindArray[1]) {
+							if (gamepad.checkStatus(bindKey, PRESSED)) {
+								return true;
+							}
+						}
+					}
 					#if mobile
-					if (!key && game.hitbox != null && hitbox.length > 1) key = game.hitbox.members[1].pressed;
+					if (hitbox != null && hitbox.length > 1 && game.hitbox.members[1].pressed) return true; 
 					#end
 				case 'up': 
-					key = game.getControl('NOTE_UP');
+					if (keysArray != null && keysArray.length > 2) {
+						for (keyp in keysArray[2]) {
+							if (FlxG.keys.checkStatus(keyp, PRESSED)) {
+								return true;
+							}
+						}
+					}
+					if (gamepad != null && bindArray != null && bindArray.length > 2) {
+						for (bindKey in bindArray[2]) {
+							if (gamepad.checkStatus(bindKey, PRESSED)) {
+								return true;
+							}
+						}
+					}
 					#if mobile
-					if (!key && game.hitbox != null && hitbox.length > 2) key = game.hitbox.members[2].pressed;
+					if (hitbox != null && hitbox.length > 2 && game.hitbox.members[2].pressed) return true; 
 					#end
 				case 'right':
-					key = game.getControl('NOTE_RIGHT');
+					if (keysArray != null && keysArray.length > 3) {
+						for (keyp in keysArray[3]) {
+							if (FlxG.keys.checkStatus(keyp, PRESSED)) {
+								return true;
+							}
+						}
+					}
+					if (gamepad != null && bindArray != null && bindArray.length > 3) {
+						for (bindKey in bindArray[3]) {
+							if (gamepad.checkStatus(bindKey, PRESSED)) {
+								return true;
+							}
+						}
+					}
 					#if mobile
-					if (!key && game.hitbox != null && hitbox.length > 3) key = game.hitbox.members[3].pressed;
+					if (hitbox != null && hitbox.length > 3 && game.hitbox.members[3].pressed) return true; 
 					#end
 				case 'space': 
-					key = FlxG.keys.pressed.SPACE;//an extra key for convinience
+					//an extra key for convinience
+					if (FlxG.keys.pressed.SPACE) {
+						return true;
+					}
 					#if mobile
-					if (!key && game.hitboxSpace != null) {
-						key = game.hitboxSpace.pressed;
+					if (game.hitboxSpace != null && game.hitboxSpace.pressed) {
+						return true;
 					}
 					#end
 			}
-			return key;
+			return false;
 		});
 		Lua_helper.add_callback(lua, "keyReleased", function(name:String) {
-			var key:Bool = false;
 			var game = PlayState.instance;
+			var keysArray = game.keysArray;
+			var bindArray = game.bindArray;
+			var gamepad = FlxG.gamepads.lastActive;
+			if (EKUtil.getCurrentMania() != 4) return false;//not work for non 4K
 			#if mobile
 			var hitbox = (game != null ? game.hitbox != null ? game.hitbox : null : null);
 			#end
 			switch(name) {
 				case 'left': 
-					key = game.getControl('NOTE_LEFT_R');
+					if (keysArray != null && keysArray.length > 0) {
+						for (keyp in keysArray[0]) {
+							if (FlxG.keys.checkStatus(keyp, JUST_RELEASED)) {
+								return true;
+							}
+						}
+					}
+					if (gamepad != null && bindArray != null && bindArray.length > 0) {
+						for (bindKey in bindArray[0]) {
+							if (gamepad.checkStatus(bindKey, JUST_RELEASED)) {
+								return true;
+							}
+						}
+					}
 					#if mobile
-					if (!key && hitbox != null && hitbox.length > 0) key = game.hitbox.members[0].justReleased;
+					if (hitbox != null && hitbox.length > 0 && game.hitbox.members[0].justReleased) return true; 
 					#end
 				case 'down':
-					key = game.getControl('NOTE_DOWN_R');
+					if (keysArray != null && keysArray.length > 1) {
+						for (keyp in keysArray[1]) {
+							if (FlxG.keys.checkStatus(keyp, JUST_RELEASED)) {
+								return true;
+							}
+						}
+					}
+					if (gamepad != null && bindArray != null && bindArray.length > 1) {
+						for (bindKey in bindArray[1]) {
+							if (gamepad.checkStatus(bindKey, JUST_RELEASED)) {
+								return true;
+							}
+						}
+					}
 					#if mobile
-					if (!key && game.hitbox != null && hitbox.length > 1) key = game.hitbox.members[1].justReleased;
+					if (hitbox != null && hitbox.length > 1 && game.hitbox.members[1].justReleased) return true; 
 					#end
 				case 'up': 
-					key = game.getControl('NOTE_UP_R');
+					if (keysArray != null && keysArray.length > 2) {
+						for (keyp in keysArray[2]) {
+							if (FlxG.keys.checkStatus(keyp, JUST_RELEASED)) {
+								return true;
+							}
+						}
+					}
+					if (gamepad != null && bindArray != null && bindArray.length > 2) {
+						for (bindKey in bindArray[2]) {
+							if (gamepad.checkStatus(bindKey, JUST_RELEASED)) {
+								return true;
+							}
+						}
+					}
 					#if mobile
-					if (!key && game.hitbox != null && hitbox.length > 2) key = game.hitbox.members[2].justReleased;
+					if (hitbox != null && hitbox.length > 2 && game.hitbox.members[2].justReleased) return true; 
 					#end
 				case 'right':
-					key = game.getControl('NOTE_RIGHT_R');
+					if (keysArray != null && keysArray.length > 3) {
+						for (keyp in keysArray[3]) {
+							if (FlxG.keys.checkStatus(keyp, JUST_RELEASED)) {
+								return true;
+							}
+						}
+					}
+					if (gamepad != null && bindArray != null && bindArray.length > 3) {
+						for (bindKey in bindArray[3]) {
+							if (gamepad.checkStatus(bindKey, JUST_RELEASED)) {
+								return true;
+							}
+						}
+					}
 					#if mobile
-					if (!key && game.hitbox != null && hitbox.length > 3) key = game.hitbox.members[3].justReleased;
+					if (hitbox != null && hitbox.length > 3 && game.hitbox.members[3].justReleased) return true; 
 					#end
 				case 'space': 
-					key = FlxG.keys.justReleased.SPACE;//an extra key for convinience
+					//an extra key for convinience
+					if (FlxG.keys.justReleased.SPACE) {
+						return true;
+					}
 					#if mobile
-					if (!key && game.hitboxSpace != null) {
-						key = game.hitboxSpace.justReleased;
+					if (game.hitboxSpace != null && game.hitboxSpace.justReleased) {
+						return true;
 					}
 					#end
 			}
-			return key;
+			return false;
 		});
 		Lua_helper.add_callback(lua, "addCharacterToList", function(name:String, type:String) {
 			var charType:Int = 0;
@@ -2145,7 +2305,7 @@ class FunkinLua {
 		{
 			if(PlayState.instance.getLuaObject(obj, false) != null) {
 				var luaObj:FlxSprite = PlayState.instance.getLuaObject(obj,false);
-				if(luaObj.animation.getByName(name) != null)
+				if(luaObj.animation.exists(name))
 				{
 					luaObj.animation.play(name, forced, reverse, startFrame);
 					if(Std.isOfType(luaObj, ModchartSprite))
@@ -2166,7 +2326,7 @@ class FunkinLua {
 
 			var spr:FlxSprite = Reflect.getProperty(getInstance(), obj);
 			if(spr != null) {
-				if(spr.animation.getByName(name) != null)
+				if(spr.animation.exists(name))
 				{
 					if(Std.isOfType(spr, Character))
 					{

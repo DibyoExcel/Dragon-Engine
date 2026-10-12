@@ -86,7 +86,7 @@ class MenuCharacter extends FlxSprite
 				if(confirmAnim != null && confirmAnim.length > 0 && confirmAnim != charFile.idle_anim)
 				{
 					animation.addByPrefix('confirm', confirmAnim, 24, false);
-					if (animation.getByName('confirm') != null) //check for invalid animation
+					if (animation.exists('confirm')) //check for invalid animation
 						hasConfirmAnimation = true;
 				}
 

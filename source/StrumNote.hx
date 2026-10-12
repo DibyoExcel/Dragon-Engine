@@ -98,7 +98,7 @@ class StrumNote extends FlxSprite
 	public function playAnim(anim:String, ?force:Bool = false, sustainNote:Bool = false, ?note:Note = null) {
 		if (animation == null) return;
 		if ((note !=null ? note.getActualDownscroll() : ClientPrefs.downScroll)) anim += '_down';
-		if (anim.endsWith('_down') && animation.getByName(anim) == null) {
+		if (anim.endsWith('_down') && !animation.exists(anim)) {
 			anim = anim.substring(0, anim.length-5);
 		}
 		animation.play(anim, force);

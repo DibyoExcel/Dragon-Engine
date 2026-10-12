@@ -282,7 +282,7 @@ class CoolUtil
 		return (FlxG.width-1280)/2;
 	}
 	
-	public static function makeCheckerboardGraphic(width:Int = 64, height:Int = 64, size:Int = 32, color1:Int = 0x000000, color2:Int = 0xff0000):FlxGraphic
+	public static function makeCheckerboardGraphic(width:Int = 100, height:Int = 100, size:Int = 50, color1:Int = 0x000000, color2:Int = 0xff0000):FlxGraphic
 	{
 		var bitmapData:BitmapData = new BitmapData(width, height, false);
 		for (y in 0...height)
@@ -319,7 +319,7 @@ class CoolUtil
 		var hasAnim = true;
 		if (sprite != null && sprite.animation != null && anim.length > 0 && xmlName.length > 0 && defaultXmlName.length > 0) {
 			sprite.animation.addByPrefix(anim, xmlName, framerate, loop);
-			if (sprite.animation.getByName(anim) == null) {
+			if (!sprite.animation.exists(anim)) {
 				hasAnim = false;
 				sprite.animation.addByPrefix(anim, defaultXmlName, framerate, loop);
 			}
