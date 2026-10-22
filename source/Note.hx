@@ -151,7 +151,6 @@ class Note extends FlxSprite
 	//dge core
 	public var autoPress:Bool = false; // auto press like cpuControlled behavior but specific notes(cant be pressed by player)
 	public var direction:Float = 0;
-	public var noteScale(default, set):Float = 1.0;
 	public var noteSplashCam:String = '';//notesplash on specific cam(if want the this 'note' use 'setObjectCamera()' in lua)
 	public var noteSplashScale:Float = 1.0;
 	public var noteSplashScrollFactor:Array<Float> = [1, 1];//dont ask why 1 cuz is default of note splash(if want the this 'note' use 'setScrollFactor()' in lua)
@@ -361,10 +360,7 @@ class Note extends FlxSprite
 	{
 		if (texture != value)
 		{
-			var lasScale = noteScale;
-			noteScale = 1;
 			reloadNote('', value);
-			noteScale = lasScale;
 		}
 		texture = value;
 		return value;
@@ -634,14 +630,14 @@ class Note extends FlxSprite
 		}
 		else
 		{
-			try{
-				frames = Paths.getSparrowAtlas(blahblah);
-			} catch (e:Dynamic) {
-				try {
-					frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
-				} catch (e:Dynamic) {
-					frames = Paths.getSparrowAtlas('NOTE_assets');
-				}
+			var fr = Paths.getSparrowAtlas(blahblah);
+			var defaultSkin = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
+			if (fr != null) {
+				frames = fr;
+			} else if (defaultSkin != null) {
+				frames = defaultSkin;
+			} else {
+				frames = Paths.getSparrowAtlas('NOTE_assets');
 			}
 			loadNoteAnims();
 			setGraphicSize(Std.int(((width*0.7) * ClientPrefs.strumsize)*EKUtil.getNoteScale(EKUtil.getCurrentMania())));
@@ -727,20 +723,6 @@ class Note extends FlxSprite
 			gfNote = value;
 			reloadNoteSkin();
 		}
-		return value;
-	}
-
-	private function set_noteScale(value:Float):Float {
-		var ratio = value / noteScale;
-		if (!inEditor) {
-			if (!mustPress) {
-				scale.x *= ratio;
-				if (!isSustainNote) {
-					scale.y *= ratio;
-				}
-			}
-		}
-		noteScale = value;
 		return value;
 	}
 	private function runConfig(value:String = '') {
@@ -901,10 +883,7 @@ class Note extends FlxSprite
 		return value;
 	}
 	public function reloadNoteSkin() {
-		var lastScale = noteScale;
-		noteScale = 1;
 		reloadNote('', texture);
-		noteScale = lastScale;
 	}
 	function set_holdCover(value:HoldCover):HoldCover{
 		if (holdCover != value) {

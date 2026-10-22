@@ -3,6 +3,8 @@ package dge.states.options;
 #if mobile
 import dge.obj.mobile.VirtualButton;
 #end
+import dge.const.GlobalVar;
+
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -66,7 +68,9 @@ class DragonOptionsState extends MusicBeatState
 		DiscordClient.changePresence("DGE Options Menu", null);
 		#end
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		var gfx = Paths.image(GlobalVar.menuBackground);
+		if (gfx == null) gfx = Paths.image('menuDesat');
+		var bg:FlxSprite = new FlxSprite().loadGraphic(gfx);
 		bg.color = 0xffff0000;
 		CoolUtil.fitBackground(bg);
 		bg.antialiasing = ClientPrefs.globalAntialiasing;

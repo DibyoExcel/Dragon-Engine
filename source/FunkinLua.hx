@@ -1,7 +1,11 @@
 package;
 
-//import custom dge lua
+import dge.const.GlobalVar;
 import flixel.util.FlxStringUtil;
+import StageData;
+import haxe.Constraints.IMap;
+
+//import custom dge lua
 import dge.obj.lua.*;
 import openfl.filters.ShaderFilter;
 import dge.frontend.CameraZOrder;
@@ -1154,129 +1158,65 @@ class FunkinLua {
 			return true;
 		});
 		Lua_helper.add_callback(lua, "getPropertyFromGroup", function(obj:String, index:Int, variable:Dynamic) {
-			var shitMyPants:Array<String> = obj.split('.');
-			var isMap:Array<String> = obj.split('@');
-			if (isMap.length > 1) {
-				obj = isMap[0];
-				if (isMap[0] == 'customStrums') {//alias for order version
-					obj = 'strumGroupMap';
+			
+			var realObject:Dynamic = resolveGroupObject(obj);
+			if (realObject != null) {
+				if(Std.isOfType(realObject, FlxTypedGroup))
+				{
+					var result:Dynamic = getGroupStuff(realObject.members[index], variable);
+					if(result == null) Lua.pushnil(lua);
+					return result;
 				}
-			}
-			var realObject:Dynamic = Reflect.getProperty(getInstance(), obj);
-			if(shitMyPants.length>1)
-				realObject = getPropertyLoopThingWhatever(shitMyPants, true, false);
-			if (realObject is haxe.ds.StringMap) {
-				var mapObj:Map<Dynamic, Dynamic> = realObject;
-				if (isMap.length > 0) {
-					if (mapObj.exists(isMap[1])) {
-						realObject = mapObj.get(isMap[1]);
-					}
-				} else {
-					for (i in mapObj.keys()) {
-						realObject = mapObj.get(i);
-						break;
-					}
+	
+	
+				var leArray:Dynamic = realObject[index];
+				if(leArray != null) {
+					var result:Dynamic = null;
+					if(Type.typeof(variable) == ValueType.TInt)
+						result = leArray[variable];
+					else
+						result = getGroupStuff(leArray, variable);
+	
+					if(result == null) Lua.pushnil(lua);
+					return result;
 				}
-			}
-
-			if(Std.isOfType(realObject, FlxTypedGroup))
-			{
-				var result:Dynamic = getGroupStuff(realObject.members[index], variable);
-				if(result == null) Lua.pushnil(lua);
-				return result;
-			}
-
-
-			var leArray:Dynamic = realObject[index];
-			if(leArray != null) {
-				var result:Dynamic = null;
-				if(Type.typeof(variable) == ValueType.TInt)
-					result = leArray[variable];
-				else
-					result = getGroupStuff(leArray, variable);
-
-				if(result == null) Lua.pushnil(lua);
-				return result;
 			}
 			luaTrace("getPropertyFromGroup: Object #" + index + " from group: " + obj + " doesn't exist!", false, false, FlxColor.RED);
 			Lua.pushnil(lua);
 			return null;
 		});
 		Lua_helper.add_callback(lua, "setPropertyFromGroup", function(obj:String, index:Int, variable:Dynamic, value:Dynamic) {
-			var shitMyPants:Array<String> = obj.split('.');
-			var isMap:Array<String> = obj.split('@');
-			if (isMap.length > 1) {
-				obj = isMap[0];
-				if (obj == 'customStrums') {//alias for order version
-					obj = 'strumGroupMap';
-				}
-			}
-			var realObject:Dynamic = Reflect.getProperty(getInstance(), obj);
-			if(shitMyPants.length>1)
-				realObject = getPropertyLoopThingWhatever(shitMyPants, true, false);
-			if (realObject is haxe.ds.StringMap) {
-				var mapObj:Map<Dynamic, Dynamic> = realObject;
-				if (isMap.length > 0) {
-					if (mapObj.exists(isMap[1])) {
-						realObject = mapObj.get(isMap[1]);
-					}
-				} else {
-					for (i in mapObj.keys()) {
-						realObject = mapObj.get(i);
-						break;
-					}
-				}
-			}
-
-			if(Std.isOfType(realObject, FlxTypedGroup)) {
-				setGroupStuff(realObject.members[index], variable, value);
-				return;
-			}
-
-			var leArray:Dynamic = realObject[index];
-			if(leArray != null) {
-				if(Type.typeof(variable) == ValueType.TInt) {
-					leArray[variable] = value;
+			var realObject:Dynamic = resolveGroupObject(obj);
+			if (realObject != null) {
+				if(Std.isOfType(realObject, FlxTypedGroup)) {
+					setGroupStuff(realObject.members[index], variable, value);
 					return;
 				}
-				setGroupStuff(leArray, variable, value);
+	
+				var leArray:Dynamic = realObject[index];
+				if(leArray != null) {
+					if(Type.typeof(variable) == ValueType.TInt) {
+						leArray[variable] = value;
+						return;
+					}
+					setGroupStuff(leArray, variable, value);
+				}
 			}
 		});
 		Lua_helper.add_callback(lua, "removeFromGroup", function(obj:String, index:Int, dontDestroy:Bool = false) {
-			var shitMyPants:Array<String> = obj.split('.');
-			var isMap:Array<String> = obj.split('@');
-			if (isMap.length > 1) {
-				obj = isMap[0];
-				if (isMap[0] == 'customStrums') {//alias for order version
-					obj = 'strumGroupMap';
+			var realObject:Dynamic = resolveGroupObject(obj);
+			if (realObject != null) {
+				if(Std.isOfType(realObject, FlxTypedGroup)) {
+					var sex = realObject.members[index];
+					if(!dontDestroy)
+						sex.kill();
+					realObject.remove(sex, true);
+					if(!dontDestroy)
+						sex.destroy();
+					return;
 				}
+				realObject.remove(realObject[index]);
 			}
-			var realObject:Dynamic = Reflect.getProperty(getInstance(), obj);
-			if(shitMyPants.length>1)
-				realObject = getPropertyLoopThingWhatever(shitMyPants, true, false);
-			if (realObject is haxe.ds.StringMap) {
-				var mapObj:Map<Dynamic, Dynamic> = realObject;
-				if (isMap.length > 0) {
-					if (mapObj.exists(isMap[1])) {
-						realObject = mapObj.get(isMap[1]);
-					}
-				} else {
-					for (i in mapObj.keys()) {
-						realObject = mapObj.get(i);
-						break;
-					}
-				}
-			}
-			if(Std.isOfType(realObject, FlxTypedGroup)) {
-				var sex = realObject.members[index];
-				if(!dontDestroy)
-					sex.kill();
-				realObject.remove(sex, true);
-				if(!dontDestroy)
-					sex.destroy();
-				return;
-			}
-			realObject.remove(realObject[index]);
 		});
 
 		Lua_helper.add_callback(lua, "getPropertyFromClass", function(classVar:String, variable:String) {
@@ -2459,35 +2399,14 @@ class FunkinLua {
 			luaTrace('updateHitbox: Couldnt find object: ' + obj, false, false, FlxColor.RED);
 		});
 		Lua_helper.add_callback(lua, "updateHitboxFromGroup", function(group:String, index:Int) {
-			var shitMyPants:Array<String> = group.split('.');
-			var isMap:Array<String> = group.split('@');
-			if (isMap.length > 1) {
-				group = isMap[0];
-				if (group == 'customStrums') {//alias for order version
-					group = 'strumGroupMap';
+			var realObject:Dynamic = resolveGroupObject(group);
+			if (realObject != null) {
+				if(Std.isOfType(realObject, FlxTypedGroup)) {
+					realObject.members[index].updateHitbox();
+					return;
 				}
+				realObject[index].updateHitbox();
 			}
-			var realObject:Dynamic = Reflect.getProperty(getInstance(), group);
-			if(shitMyPants.length>1)
-				realObject = getPropertyLoopThingWhatever(shitMyPants, true, false);
-			if (realObject is haxe.ds.StringMap) {
-				var mapObj:Map<Dynamic, Dynamic> = realObject;
-				if (isMap.length > 0) {
-					if (mapObj.exists(isMap[1])) {
-						realObject = mapObj.get(isMap[1]);
-					}
-				} else {
-					for (i in mapObj.keys()) {
-						realObject = mapObj.get(i);
-						break;
-					}
-				}
-			}
-			if(Std.isOfType(realObject, FlxTypedGroup)) {
-				realObject.members[index].updateHitbox();
-				return;
-			}
-			realObject[index].updateHitbox();
 		});
 
 		Lua_helper.add_callback(lua, "removeLuaSprite", function(tag:String, destroy:Bool = true) {
@@ -3697,37 +3616,15 @@ class FunkinLua {
 		});
 
 		Lua_helper.add_callback(lua, "callPropertyFromGroup", function(obj:String, index:Int, variable:Dynamic, value:Array<Dynamic>) {
-			var shitMyPants:Array<String> = obj.split('.');
-			var isMap:Array<String> = obj.split('@');
-			if (isMap.length > 1) {
-				obj = isMap[0];
-				if (isMap[0] == 'customStrums') {//alias for order version
-					obj = 'strumGroupMap';
+			var realObject:Dynamic = resolveGroupObject(obj);
+			if (realObject != null) {
+				if(Std.isOfType(realObject, FlxTypedGroup)) {
+					return callGroupStuff(realObject.members[index], variable, value);
 				}
+				var leArray:Dynamic = realObject[index];
+				return callGroupStuff(leArray, variable, value);
 			}
-			var realObject:Dynamic = Reflect.getProperty(getInstance(), obj);
-			if(shitMyPants.length>1)
-				realObject = getPropertyLoopThingWhatever(shitMyPants, true, false);
-			if (realObject is haxe.ds.StringMap) {
-				var mapObj:Map<Dynamic, Dynamic> = realObject;
-				if (isMap.length > 1) {
-					if (mapObj.exists(isMap[1])) {
-						realObject = mapObj.get(isMap[1]);
-					}
-				} else {
-					for (i in mapObj.keys()) {
-						realObject = mapObj.get(i);
-						break;
-					}
-				}
-			}
-
-			if(Std.isOfType(realObject, FlxTypedGroup)) {
-				return callGroupStuff(realObject.members[index], variable, value);
-			}
-
-			var leArray:Dynamic = realObject[index];
-			return callGroupStuff(leArray, variable, value);
+			return null;
 		});
 
 		Lua_helper.add_callback(lua, "callProperty", function(variable:String, value:Array<Dynamic>) {
@@ -4841,6 +4738,28 @@ class FunkinLua {
 				}
 			}
 		});
+
+		Lua_helper.add_callback(lua, "addStageDataFromStageFile", function(tag:String, stageFile:String) {
+			var game = PlayState.instance;
+			var sf:StageFile = StageData.getStageFile(stageFile);
+			if (sf == null) sf = GlobalVar.defaultStage;
+			if (game != null && game.customStageMap != null && !game.customStageMap.exists(tag)) {
+				var stageData:StageLua = {
+					spriteList: [],
+					defaultZoom: sf.defaultZoom,
+					boyfriend: sf.boyfriend,
+					opponent: sf.opponent,
+					girlfriend: sf.girlfriend,
+					camera_boyfriend: sf.camera_boyfriend,
+					camera_opponent: sf.camera_opponent,
+					camera_girlfriend: sf.camera_girlfriend,
+					camera_speed: sf.camera_speed
+				};
+				game.customStageMap.set(tag, stageData);
+			} else {
+				luaTrace("Unable Created " + tag, false, false, FlxColor.RED);
+			}
+		});
 		call('onCreate', []);
 		#end
 	}
@@ -4875,198 +4794,159 @@ class FunkinLua {
 
 	public static function setVarInArray(instance:Dynamic, variable:String, value:Dynamic):Any
 	{
-		variable = variable.replace('customStrums@', 'strumGroupMap@');//alias older name for compatible
-		var shit:Array<String> = variable.split('[');
-		var isMap:Array<String> = variable.split('@');
-		if(shit.length > 1)
-		{
-			if (isMap.length > 1) {
-				shit[0] = isMap[0];
-			}
-			var blah:Dynamic = null;
-			if(PlayState.instance.variables.exists(shit[0]))
-			{
-				var retVal:Dynamic = PlayState.instance.variables.get(shit[0]);
-				if(retVal != null)
-					blah = retVal;
-			} else {
-
-				blah = Reflect.getProperty(instance, shit[0]);
-				if (blah is haxe.ds.StringMap) {
-					var mapObj:Map<Dynamic, Dynamic> = blah;
-					if (isMap.length > 1) {
-						blah = mapObj.get(isMap[1]);
-					} else {
-						for (i in mapObj.keys()) {
-							blah = mapObj.get(i);
-							break;
-						}
-					}
-				}
-			}
-
-			for (i in 1...shit.length)
-			{
-				var leNum:Dynamic = shit[i].substr(0, shit[i].length - 1);
-				if(i >= shit.length-1) //Last array
-					blah[leNum] = value;
-				else //Anything else
-					blah = blah[leNum];
-			}
-			return blah;
+		var resolved = resolveVariable(instance, variable);
+		if (resolved.isNestedArray) {
+			resolved.container[resolved.targetKey] = value;
+			return resolved.container;
 		}
-		/*if(Std.isOfType(instance, Map))
-			instance.set(variable,value);
-		else*/
-		if (isMap.length > 1) {
-			variable = isMap[0];
-		}
-		if(PlayState.instance.variables.exists(variable))
-		{
-			PlayState.instance.variables.set(variable, value);
+		
+		if (resolved.mapObj != null) {
+			resolved.mapObj.set(resolved.mapKey, value);
 			return true;
-		} else {
-			var blah:Dynamic = Reflect.getProperty(instance, variable);
-			if (blah is haxe.ds.StringMap) {
-				var mapObj:Map<Dynamic, Dynamic> = blah;
-				if (isMap.length > 1) {
-					blah = mapObj.get(isMap[1]);
-				} else {
-					for (i in mapObj.keys()) {
-						blah = mapObj.get(i);
-						break;
-					}
-				}
-				Reflect.setProperty(instance, blah, value);
-				return true;
-			}
 		}
-
-		Reflect.setProperty(instance, variable, value);
+		
+		if (resolved.isGlobalVar) {
+			PlayState.instance.variables.set(resolved.variableName, value);
+			return true;
+		}
+		
+		Reflect.setProperty(instance, resolved.variableName, value);
 		return true;
 	}
 
 	public static function callVarInArray(instance:Dynamic, variable:String, value:Array<Dynamic>):Any
 	{
-		variable = variable.replace('customStrums@', 'strumGroupMap@');//alias older name for compatible
-		var shit:Array<String> = variable.split('[');
-		var isMap:Array<String> = variable.split('@');
-		if(shit.length > 1)
-		{
-			if (isMap.length > 1) {
-				shit[0] = isMap[0];
-			}
-			var blah:Dynamic = null;
-			if(PlayState.instance.variables.exists(shit[0]))
-			{
-				var retVal:Dynamic = PlayState.instance.variables.get(shit[0]);
-				if(retVal != null)
-					blah = retVal;
-			}
-			else
-				blah = Reflect.getProperty(instance, shit[0]);
-
-			for (i in 1...shit.length)
-			{
-				var leNum:Dynamic = shit[i].substr(0, shit[i].length - 1);
-				if(i >= shit.length-1) //Last array
-					blah[leNum] = value;
-				else //Anything else
-					blah = blah[leNum];
-			}
-			return blah;
+		var resolved = resolveVariable(instance, variable);
+		if (resolved.isNestedArray) {
+			var method:Dynamic = resolved.container[resolved.targetKey];
+			return Reflect.callMethod(instance, method, value);
 		}
-		/*if(Std.isOfType(instance, Map))
-			instance.set(variable,value);
-		else*/
-		if (isMap.length > 1) {
-			variable = isMap[0];
-		}	
-		if(PlayState.instance.variables.exists(variable))
-		{
-			PlayState.instance.variables.set(variable, value);
-			return true;
+		
+		var method:Dynamic = null;
+		if (resolved.mapObj != null) {
+			method = resolved.mapObj.get(resolved.mapKey);
+		} else if (resolved.isGlobalVar) {
+			method = PlayState.instance.variables.get(resolved.variableName);
 		} else {
-			var blah:Dynamic = Reflect.getProperty(instance, variable);
-			if (blah is haxe.ds.StringMap) {
-				var mapObj:Map<Dynamic, Dynamic> = blah;
-				if (isMap.length > 1) {
-					blah = mapObj.get(isMap[1]);
-				} else {
-					for (i in mapObj.keys()) {
-						blah = mapObj.get(i);
-						break;
-					}
-				}
-				var methodMap = Reflect.field(instance, blah);
-				return Reflect.callMethod(instance, methodMap, value);
-			}
+			method = Reflect.field(instance, resolved.variableName);
 		}
-		var method = Reflect.field(instance, variable);
+		
 		return Reflect.callMethod(instance, method, value);
 	}
+
 	public static function getVarInArray(instance:Dynamic, variable:String):Any
 	{
-		variable = variable.replace('customStrums@', 'strumGroupMap@');//alias older name for compatible
+		var resolved = resolveVariable(instance, variable);
+		if (resolved.isNestedArray) {
+			return resolved.container[resolved.targetKey];
+		}
+		
+		if (resolved.mapObj != null) {
+			return resolved.mapObj.get(resolved.mapKey);
+		}
+		
+		if (resolved.isGlobalVar) {
+			return PlayState.instance.variables.get(resolved.variableName);
+		}
+		
+		return Reflect.getProperty(instance, resolved.variableName);
+	}
+
+	//object handling 
+	private static function resolveVariable(instance:Dynamic, variable:String):Dynamic
+	{
+		variable = variable.replace('customStrums@', 'strumGroupMap@');
 		var shit:Array<String> = variable.split('[');
 		var isMap:Array<String> = variable.split('@');
-		if(shit.length > 1)
-			{
-			if (isMap.length > 1) {
-				shit[0] = isMap[0];
-			}
-			var blah:Dynamic = null;
-			if(PlayState.instance.variables.exists(shit[0]))
-			{
-				var retVal:Dynamic = PlayState.instance.variables.get(shit[0]);
-				if(retVal != null)
-					blah = retVal;
-			}
-			else
-				blah = Reflect.getProperty(instance, shit[0]);
-				if (blah is haxe.ds.StringMap) {
-					var mapObj:Map<Dynamic, Dynamic> = blah;
-					if (isMap.length > 1) {
-						blah = mapObj.get(isMap[1]);
-					} else {
-						for (i in mapObj.keys()) {
-							blah = mapObj.get(i);
-							break;
-						}
-					}
-				}
+		
+		var varName = shit[0];
+		if (isMap.length > 1) {
+			varName = isMap[0];
+		}
 
-			for (i in 1...shit.length)
-			{
+		var isGlobal = PlayState.instance.variables.exists(varName);
+		var blah:Dynamic = null;
+
+		if (isGlobal) {
+			blah = PlayState.instance.variables.get(varName);
+		} else {
+			blah = Reflect.getProperty(instance, varName);
+		}
+
+		// Handle Map types
+		var mapObj:IMap<Dynamic, Dynamic> = null;
+		var mapKey:Dynamic = null;
+		if (Std.isOfType(blah, IMap)) {
+			mapObj = blah;
+			if (isMap.length > 1) {
+				mapKey = isMap[1];
+				blah = mapObj.get(mapKey);
+			} else {
+				for (i in mapObj.keys()) {
+					mapKey = i;
+					blah = mapObj.get(i);
+					break;
+				}
+			}
+		}
+
+		// Handle nested arrays / brackets
+		if (shit.length > 1) {
+			for (i in 1...(shit.length - 1)) {
 				var leNum:Dynamic = shit[i].substr(0, shit[i].length - 1);
 				blah = blah[leNum];
 			}
-			return blah;
+			var lastNum:Dynamic = shit[shit.length - 1].substr(0, shit[shit.length - 1].length - 1);
+			return {
+				isNestedArray: true,
+				container: blah,
+				targetKey: lastNum
+			};
 		}
-		if (isMap.length > 1) {
-			variable = isMap[0];
+
+		return {
+			isNestedArray: false,
+			variableName: varName,
+			isGlobalVar: isGlobal,
+			mapObj: mapObj,
+			mapKey: mapKey,
+			value: blah
+		};
+	}
+
+	
+	public static function resolveGroupObject(obj:String):Dynamic
+	{
+		var isMap:Array<String> = obj.split('@');
+		var cleanObj = isMap[0];
+		
+		if (cleanObj == 'customStrums') {
+			cleanObj = 'strumGroupMap';
 		}
-		if(PlayState.instance.variables.exists(variable))
-		{
-			var retVal:Dynamic = PlayState.instance.variables.get(variable);
-			if(retVal != null)
-				return retVal;
- 		} else {
-			var blah:Dynamic = Reflect.getProperty(instance, variable);
-			if (blah is haxe.ds.StringMap) {
-				var mapObj:Map<Dynamic, Dynamic> = blah;
-				if (isMap.length > 1) {
-					blah = mapObj.get(isMap[1]);
-				} else {
-					for (i in mapObj.keys()) {
-						blah = mapObj.get(i);
-						break;
-					}
+		
+		var shitMyPants:Array<String> = cleanObj.split('.');
+		var realObject:Dynamic = Reflect.getProperty(getInstance(), shitMyPants[0]);
+		
+		if (shitMyPants.length > 1) {
+			realObject = getPropertyLoopThingWhatever(shitMyPants, true, false);
+		}
+		
+		// Handle map lookups if '@' was used
+		if (Std.isOfType(realObject, IMap)) {
+			var mapObj:IMap<Dynamic, Dynamic> = realObject;
+			if (isMap.length > 1) {
+				if (mapObj.exists(isMap[1])) {
+					realObject = mapObj.get(isMap[1]);
 				}
-				return blah;
+			} else {
+				for (i in mapObj.keys()) {
+					realObject = mapObj.get(i);
+					break;
+				}
 			}
 		}
-		return Reflect.getProperty(instance, variable);
+		
+		return realObject;
 	}
 
 	inline static function getTextObject(name:String):FlxText

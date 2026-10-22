@@ -465,23 +465,18 @@ class FlxAnimationController implements IFlxDestroyable
 	 */
 	public function addByPrefix(Name:String, Prefix:String, FrameRate:Int = 30, Looped:Bool = true, FlipX:Bool = false, FlipY:Bool = false):Void
 	{
-		if (_sprite.frames != null)
-		{
-			var animFrames:Array<FlxFrame> = new Array<FlxFrame>();
-			findByPrefix(animFrames, Prefix); // adds valid frames to animFrames
+		if (_sprite.frames == null) return;
 
-			if (animFrames.length > 0)
-			{
-				var frameIndices:Array<Int> = new Array<Int>();
-				byPrefixHelper(frameIndices, animFrames, Prefix); // finds frames and appends them to the blank array
+		var animFrames:Array<FlxFrame> = [];
+		findByPrefix(animFrames, Prefix);
+		if (animFrames.length == 0) return;
 
-				if (frameIndices.length > 0)
-				{
-					var anim:FlxAnimation = new FlxAnimation(this, Name, frameIndices, FrameRate, Looped, FlipX, FlipY);
-					_animations.set(Name, anim);
-				}
-			}
-		}
+		var frameIndices:Array<Int> = [];
+		byPrefixHelper(frameIndices, animFrames, Prefix);
+		if (frameIndices.length == 0) return;
+
+		var anim:FlxAnimation = new FlxAnimation(this, Name, frameIndices, FrameRate, Looped, FlipX, FlipY);
+		_animations.set(Name, anim);
 	}
 
 	/**

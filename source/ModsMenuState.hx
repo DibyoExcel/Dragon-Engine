@@ -26,8 +26,10 @@ import flash.geom.Rectangle;
 import flixel.ui.FlxButton;
 import flixel.FlxBasic;
 import sys.io.File;
+
 import dge.backend.ModSetting;
 import dge.frontend.scale.ScreenScaleMode;
+import dge.const.GlobalVar;
 
 /*import haxe.zip.Reader;
 import haxe.zip.Entry;
@@ -93,7 +95,9 @@ class ModsMenuState extends MusicBeatState
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 
-		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		var gfx = Paths.image(GlobalVar.menuBackground);
+		if (gfx == null) gfx = Paths.image('menuDesat');
+		bg = new FlxSprite().loadGraphic(gfx);
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		add(bg);
 		CoolUtil.fitBackground(bg);

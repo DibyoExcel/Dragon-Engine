@@ -26,6 +26,7 @@ import flixel.input.keyboard.FlxKey;
 
 import dge.input.device.KeyboardControls;
 import dge.input.device.GamepadControls;
+import dge.const.GlobalVar;
 
 using StringTools;
 
@@ -85,7 +86,9 @@ class MainMenuState extends MusicBeatState
 		persistentUpdate = persistentDraw = true;
 
 		var yScroll:Float = Math.max(0.25 - (0.05 * (optionShit.length - 4)), 0.1);
-		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menuDesat'));
+		var gfx = Paths.image(GlobalVar.menuBackground);
+		if (gfx == null) gfx = Paths.image('menuDesat');
+		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(gfx);
 		bg.scrollFactor.set(0, yScroll);
 		bg.color = FlxColor.YELLOW;
 		CoolUtil.fitBackground(bg);
@@ -99,8 +102,9 @@ class MainMenuState extends MusicBeatState
 		camFollowPos = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
 		add(camFollowPos);
-
-		magenta = new FlxSprite(-80).loadGraphic(Paths.image('menuDesat'));
+		var gfx = Paths.image(GlobalVar.menuBackground2);
+		if (gfx == null) gfx = Paths.image('menuDesat');
+		magenta = new FlxSprite(-80).loadGraphic(gfx);
 		magenta.scrollFactor.set(0, yScroll);
 		CoolUtil.fitBackground(magenta);
 		magenta.setGraphicSize(Std.int(magenta.width * 1.175));

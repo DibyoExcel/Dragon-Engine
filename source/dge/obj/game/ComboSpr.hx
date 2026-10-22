@@ -43,10 +43,11 @@ class ComboSpr extends FlxSprite
         }
     }
     function loadAnims(texture:String) {
-        try {
-            this.frames = Paths.getSparrowAtlas(texture);
-        } catch (e:Dynamic) {
-            this.frames = Paths.getSparrowAtlas('comboAtlas');
+        var fr = Paths.getSparrowAtlas(texture);
+        if (fr != null) {
+            frames = fr;
+        } else {
+            frames = Paths.getSparrowAtlas('comboAtlas');
         }
         var list = [ 'combo', 'shit', 'bad', 'good', 'sick' ];
         for (anim in list) {
@@ -76,6 +77,7 @@ class ComboSpr extends FlxSprite
         else
         {
             setGraphicSize(Std.int(width * PlayState.daPixelZoom * 0.85 * (scale / 0.7)));
+            antialiasing = false;
         }
         updateHitbox();
     }

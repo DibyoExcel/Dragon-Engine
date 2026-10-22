@@ -5,16 +5,17 @@ package dge.states;
 import flixel.util.FlxColor;
 import flixel.text.FlxText;
 import flixel.FlxG;
-import dge.obj.ui.MenuItemStorage;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.FlxSprite;
 import sys.FileSystem as Synths;
 import sys.io.File as Kali;
 import dge.backend.StorageManager;
 using StringTools;
+
+
+import dge.obj.ui.MenuItemStorage;
 import dge.obj.ui.StorageIcon;
-
-
+import dge.const.GlobalVar;
 #if mobile
 import dge.obj.mobile.VirtualButton;
 #end
@@ -46,7 +47,9 @@ class FilePickerState extends MusicBeatSubstate
         if (FlxG.save.data.lastPathPick != null && Synths.exists(FlxG.save.data.lastPickPath)) {
             filePath = FlxG.save.data.lastPickPath;
         }
-        var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+        var gfx = Paths.image(GlobalVar.menuBackground);
+		if (gfx == null) gfx = Paths.image('menuDesat');
+        var bg:FlxSprite = new FlxSprite().loadGraphic(gfx);
         CoolUtil.fitBackground(bg);
         bg.color = 0xff800000;
         add(bg);

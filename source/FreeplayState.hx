@@ -25,6 +25,7 @@ import WeekData;
 import sys.FileSystem;
 #end
 import dge.obj.ui.MenuItem;
+import dge.const.GlobalVar;
 
 using StringTools;
 
@@ -106,8 +107,7 @@ class FreeplayState extends MusicBeatState
 				addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]), borderTexture);
 			}
 		}
-		WeekData.loadTheFirstEnabledMod();
-
+		
 		/*		//KIND OF BROKEN NOW AND ALSO PRETTY USELESS//
 
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
@@ -118,11 +118,13 @@ class FreeplayState extends MusicBeatState
 				addSong(songArray[0], 0, songArray[1], Std.parseInt(songArray[2]));
 			}
 		}*/
-
-		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		var gfx = Paths.image(GlobalVar.menuBackground);
+		if (gfx == null) gfx = Paths.image('menuDesat');
+		bg = new FlxSprite().loadGraphic(gfx);
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		CoolUtil.fitBackground(bg);
 		add(bg);
+		WeekData.loadTheFirstEnabledMod();
 	
 		grpSongs = new FlxTypedGroup<MenuItem>();
 		add(grpSongs);
@@ -175,8 +177,10 @@ class FreeplayState extends MusicBeatState
 			add(scoreText);
 	
 			if(curSelected >= songs.length) curSelected = 0;
-			bg.color = songs[curSelected].color;
-			intendedColor = bg.color;
+			if (GlobalVar.recolorableMenu) {
+				bg.color = songs[curSelected].color;
+				intendedColor = bg.color;
+			}
 	
 			if(lastDifficultyName == '')
 			{
@@ -505,7 +509,11 @@ class FreeplayState extends MusicBeatState
 		#end
 
 		PlayState.storyDifficulty = curDifficulty;
-		diffText.text = '< ' + CoolUtil.difficultyString() + ' >';
+		if (CoolUtil.difficulties.length > 0) {
+			diffText.text = '< ' + CoolUtil.difficultyString() + ' >';
+		} else{
+			diffText.text = CoolUtil.difficultyString();
+		}
 		positionHighscore();
 	}
 
@@ -522,18 +530,19 @@ class FreeplayState extends MusicBeatState
 			curSelected = songs.length - 1;
 		if (curSelected >= songs.length)
 			curSelected = 0;
-		
-		var newColor:Int = songs[curSelected].color;
-		if(newColor != intendedColor) {
-			if(colorTween != null) {
-				colorTween.cancel();
-			}
-			intendedColor = newColor;
-			colorTween = FlxTween.color(bg, 1, bg.color, intendedColor, {
-				onComplete: function(twn:FlxTween) {
-					colorTween = null;
+		if (GlobalVar.recolorableMenu) {
+			var newColor:Int = songs[curSelected].color;
+			if(newColor != intendedColor) {
+				if(colorTween != null) {
+					colorTween.cancel();
 				}
-			});
+				intendedColor = newColor;
+				colorTween = FlxTween.color(bg, 1, bg.color, intendedColor, {
+					onComplete: function(twn:FlxTween) {
+						colorTween = null;
+					}
+				});
+			}
 		}
 
 		// selector.y = (70 * curSelected) + 30;

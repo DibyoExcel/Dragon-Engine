@@ -3,6 +3,8 @@ package;
 #if mobile
 import dge.obj.mobile.VirtualButton;
 #end
+import dge.const.GlobalVar;
+
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
@@ -30,7 +32,9 @@ class OutdatedState extends MusicBeatState
 	{
 		super.create();
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		var gfx = Paths.image(GlobalVar.menuBackground);
+		if (gfx == null) gfx = Paths.image('menuDesat');
+		var bg:FlxSprite = new FlxSprite().loadGraphic(gfx);
 		bg.color = 0xff800080;
 		CoolUtil.fitBackground(bg);
 		add(bg);

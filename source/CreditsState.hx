@@ -3,6 +3,8 @@ package;
 #if mobile
 import dge.obj.mobile.VirtualButton;
 #end
+import dge.const.GlobalVar;
+
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -54,7 +56,9 @@ class CreditsState extends MusicBeatState
 		#end
 
 		persistentUpdate = true;
-		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		var gfx = Paths.image(GlobalVar.menuBackground);
+		if (gfx == null) gfx = Paths.image('menuDesat');
+		bg = new FlxSprite().loadGraphic(gfx);
 		add(bg);
 		CoolUtil.fitBackground(bg);
 		

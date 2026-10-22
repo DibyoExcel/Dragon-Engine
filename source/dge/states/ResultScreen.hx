@@ -2,6 +2,8 @@ package dge.states;
 #if mobile
 import dge.obj.mobile.VirtualButton;
 #end
+import dge.const.GlobalVar;
+
 import flixel.FlxG;
 import flixel.FlxSubState;
 import flixel.FlxSprite;
@@ -18,7 +20,9 @@ class ResultScreen extends MusicBeatState
     #end
     public function new(score:Int, miss:Int, rating:Null<String>, percent:Null<Float>) {
         super();
-        var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+        var gfx = Paths.image(GlobalVar.menuBackground);
+		if (gfx == null) gfx = Paths.image('menuDesat');
+        var bg:FlxSprite = new FlxSprite().loadGraphic(gfx);
         add(bg);
         var aaaa:Alphabet = new Alphabet(0, (FlxG.height/2)-125, (ClientPrefs.dragonW ? 'Coins: ' : 'Score: ') + score, false);
         add(aaaa);

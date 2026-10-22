@@ -180,10 +180,10 @@ class NoteSplash extends FlxSprite
 	}
 
 	function loadAnims(skin:String) {
-		try{
-			frames = Paths.getSparrowAtlas(skin);
-		}
-		catch(e:Dynamic) {
+		var skins = Paths.getSparrowAtlas(skin);
+		if (skins != null) {
+			frames = skins;
+		} else {
 			frames = Paths.getSparrowAtlas('noteSplashes');
 		}
 		var col = EKUtil.colArray;

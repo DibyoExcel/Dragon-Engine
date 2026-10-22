@@ -26,9 +26,11 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
+
 import dge.states.options.TypedValueSubState;
 import dge.input.device.KeyboardControls;
 import dge.input.device.GamepadControls;
+import dge.const.GlobalVar;
 
 
 using StringTools;
@@ -82,7 +84,9 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		DiscordClient.changePresence(rpcTitle, null);
 		#end
 		
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		var gfx = Paths.image(GlobalVar.menuBackground);
+		if (gfx == null) gfx = Paths.image('menuDesat');
+		var bg:FlxSprite = new FlxSprite().loadGraphic(gfx);
 		bg.color = 0xFFea71fd;
 		CoolUtil.fitBackground(bg);
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
@@ -129,7 +133,12 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		}
 		for (i in 0...4) {
 			var note_c = new FlxSprite(750+(i*112), 0);
-			note_c.frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
+			var fr = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
+			if (fr != null) {
+				note_c.frames = fr;
+			} else {
+				note_c.frames = Paths.getSparrowAtlas('NOTE_assets');
+			}
 			note_c.scale.set(0.7, 0.7);
 			add(note_c);
 			note_c.visible = false;

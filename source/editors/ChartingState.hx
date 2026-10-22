@@ -5,6 +5,9 @@ import dge.obj.mobile.VirtualButton;
 import dge.obj.mobile.ToggleButton;
 import dge.backend.instance.ButtonSwapHandle;
 #end
+import dge.backend.EKUtil;
+import dge.const.GlobalVar;
+
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -54,7 +57,6 @@ import openfl.utils.Assets as OpenFlAssets;
 import openfl.utils.ByteArray;
 
 using StringTools;
-import dge.backend.EKUtil;
 #if sys
 import flash.media.Sound;
 import sys.FileSystem;
@@ -343,7 +345,9 @@ class ChartingState extends MusicBeatState
 
 		vortex = FlxG.save.data.chart_vortex;
 		ignoreWarnings = FlxG.save.data.ignoreWarnings;
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		var gfx = Paths.image(GlobalVar.menuBackground);
+		if (gfx == null) gfx = Paths.image('menuDesat');
+		var bg:FlxSprite = new FlxSprite().loadGraphic(gfx);
 		bg.scrollFactor.set();
 		bg.color = 0xFF505050;
 		add(bg);
@@ -3368,7 +3372,7 @@ class ChartingState extends MusicBeatState
 				{
 					var susLength:Float = note.sustainLength;
 					susLength = susLength / Conductor.stepCrochet;
-					var floorSus:Int = Math.floor(susLength);
+					var floorSus:Int = Math.round(susLength);
 					var susNoteType:Note;
 					if (floorSus > 0) {
 						for (i in 0...floorSus+1) {
@@ -3386,7 +3390,7 @@ class ChartingState extends MusicBeatState
 			{
 				var susLength:Float = note.sustainLength;
 				susLength = susLength / Conductor.stepCrochet;
-				var floorSus:Int = Math.floor(susLength);
+				var floorSus:Int = Math.round(susLength);
 				var susNoteType:Note;
 				if (floorSus > 0) {
 					for (i in 0...floorSus+1) {
@@ -3446,7 +3450,7 @@ class ChartingState extends MusicBeatState
 				{
 					var susLength:Float = note.sustainLength;
 					susLength = susLength / Conductor.stepCrochet;
-					var floorSus:Int = Math.floor(susLength);
+					var floorSus:Int = Math.round(susLength);
 					var susNoteType:Note;
 					if (floorSus > 0) {
 						for (i in 0...floorSus+1) {

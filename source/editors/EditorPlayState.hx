@@ -1,10 +1,13 @@
 package editors;
+
 import dge.input.device.KeyboardControls;
 import dge.input.device.GamepadControls;
 import dge.backend.EKUtil;
 #if mobile
 import dge.obj.mobile.Hitbox;
 #end
+import dge.obj.game.ComboSpr;
+import dge.const.GlobalVar;
 
 import flixel.graphics.FlxGraphic;
 import flixel.FlxCamera;
@@ -27,8 +30,6 @@ import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import openfl.events.KeyboardEvent;
 import FunkinLua;
-import dge.obj.game.ComboSpr;
-import dge.input.Controls;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.input.gamepad.FlxGamepadInputID;
 
@@ -97,7 +98,9 @@ class EditorPlayState extends MusicBeatState
 		Paths.clearStoredMemory();
 		instance = this;
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		var gfx = Paths.image(GlobalVar.menuBackground);
+		if (gfx == null) gfx = Paths.image('menuDesat');
+		var bg:FlxSprite = new FlxSprite().loadGraphic(gfx);
 		bg.scrollFactor.set();
 		bg.color = FlxColor.fromHSB(FlxG.random.int(0, 359), FlxG.random.float(0, 0.8), FlxG.random.float(0.3, 1));
 		CoolUtil.fitBackground(bg);

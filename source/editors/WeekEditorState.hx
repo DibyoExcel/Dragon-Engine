@@ -35,6 +35,7 @@ import WeekData;
 
 using StringTools;
 import dge.obj.ui.MenuItem as ListMenu;
+import dge.const.GlobalVar;
 
 
 class WeekEditorState extends MusicBeatState
@@ -642,7 +643,9 @@ class WeekEditorFreeplayState extends MusicBeatState
 
 	override function create() {
 		WeekEditorState.instance = this;
-		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		var gfx = Paths.image(GlobalVar.menuBackground);
+		if (gfx == null) gfx = Paths.image('menuDesat');
+		bg = new FlxSprite().loadGraphic(gfx);
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 
 		bg.color = FlxColor.WHITE;

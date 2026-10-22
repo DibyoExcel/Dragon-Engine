@@ -217,14 +217,14 @@ class StrumNote extends FlxSprite
 		}
 		else
 		{
-			try{
-				frames = Paths.getSparrowAtlas(image);
-			} catch(e:Dynamic) {
-				try{
-					frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
-				} catch (e:Dynamic) {
-					frames = Paths.getSparrowAtlas('NOTE_assets');
-				}
+			var fr = Paths.getSparrowAtlas(image);
+			var dfr = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
+			if (fr != null) {
+				frames = fr;
+			} else if (dfr != null) {
+				frames = dfr;
+			} else {
+				frames = Paths.getSparrowAtlas('NOTE_assets');
 			}
 			var direct = EKUtil.direction;
 			for (i in 0...spriteCount) {

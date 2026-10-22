@@ -99,7 +99,7 @@ class Character extends FlxSprite
 
 			default:
 				var characterPath:String = 'characters/' + curCharacter + '.json';
-				var characterDefault:String = 'characters/' + curCharacter + '.json';
+				var characterDefault:String = 'characters/' + DEFAULT_CHARACTER + '.json';
 				var path:String = '';
 				var rawJson:String = null;
 				#if MODS_ALLOWED

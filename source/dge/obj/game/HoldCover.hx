@@ -42,9 +42,10 @@ class HoldCover extends FlxSprite
         antialiasing = ClientPrefs.globalAntialiasing;
     }
     function loadAnims(skin:String) {
-        try {
-            frames = Paths.getSparrowAtlas(skin);
-        } catch (e:Dynamic) {
+        var fr = Paths.getSparrowAtlas(skin);
+        if (fr != null) {
+            frames = fr;
+        } else {
             frames = Paths.getSparrowAtlas('holdCover');
         }
         var colors = EKUtil.colArray;

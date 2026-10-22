@@ -326,45 +326,52 @@ class Paths
 	inline static public function getSparrowAtlas(key:String, ?library:String):FlxAtlasFrames
 	{
 		if (!CacheUtil.cacheAtlas.exists(currentModDirectory + key + darkModeReturn())) {
-			#if MODS_ALLOWED
-			var imageLoaded:FlxGraphic = returnGraphic(key);
-			var xmlExists:Bool = false;
-			var pathXml:String = modsXml(key);
-			if (ClientPrefs.darkmode) {
-				var darkPathXml:String = modsXml(key + 'Dark');
-				if(FileSystem.exists(darkPathXml)) {
-					pathXml = darkPathXml;
-				} else {
-					//light mode
-					if(FileSystem.exists(modsXml(key))) {
-						pathXml = modsXml(key);
+			try {
+
+				#if MODS_ALLOWED
+				var imageLoaded:FlxGraphic = returnGraphic(key);
+				var xmlExists:Bool = false;
+				var pathXml:String = modsXml(key);
+				if (ClientPrefs.darkmode) {
+					var darkPathXml:String = modsXml(key + 'Dark');
+					if(FileSystem.exists(darkPathXml)) {
+						pathXml = darkPathXml;
+					} else {
+						//light mode
+						if(FileSystem.exists(modsXml(key))) {
+							pathXml = modsXml(key);
+						}
+					}
+					if (FileSystem.exists(pathXml)) {
+						xmlExists = true;
+					} else {
+						if(FileSystem.exists(externalPreloadPath('images/${key}Dark.xml'))) {
+							pathXml = externalPreloadPath('images/${key}Dark.xml');
+							xmlExists = true;
+						}
 					}
 				}
 				if (FileSystem.exists(pathXml)) {
 					xmlExists = true;
 				} else {
-					if(FileSystem.exists(externalPreloadPath('images/${key}Dark.xml'))) {
-						pathXml = externalPreloadPath('images/${key}Dark.xml');
+					if(FileSystem.exists(externalPreloadPath('images/$key.xml'))) {
+						pathXml = externalPreloadPath('images/$key.xml');
 						xmlExists = true;
 					}
 				}
+				var atlas = FlxAtlasFrames.fromSparrow((imageLoaded != null ? imageLoaded : image(key, library)), (xmlExists ? File.getContent(pathXml) : file('images/$key.xml', library)));
+				CacheUtil.cacheAtlas.set(currentModDirectory + key + darkModeReturn(), atlas);
+				return atlas;
+				#else
+				var atlas =  FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
+				CacheUtil.cacheAtlas.set(currentModDirectory + key + darkModeReturn(), atlas);
+				return atlas;
+				#end
+			} catch (e:Dynamic) {
+				trace('Broken Sparrow Atlas of "' + key + '"');
+				CacheUtil.cacheAtlas.set(currentModDirectory + key + darkModeReturn(), null);
+				return null;
 			}
-			if (FileSystem.exists(pathXml)) {
-				xmlExists = true;
-			} else {
-				if(FileSystem.exists(externalPreloadPath('images/$key.xml'))) {
-					pathXml = externalPreloadPath('images/$key.xml');
-					xmlExists = true;
-				}
-			}
-			var atlas = FlxAtlasFrames.fromSparrow((imageLoaded != null ? imageLoaded : image(key, library)), (xmlExists ? File.getContent(pathXml) : file('images/$key.xml', library)));
-			CacheUtil.cacheAtlas.set(currentModDirectory + key + darkModeReturn(), atlas);
-			return atlas;
-			#else
-			var atlas =  FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
-			CacheUtil.cacheAtlas.set(currentModDirectory + key + darkModeReturn(), atlas);
-			return atlas;
-			#end
 		}
 		return CacheUtil.cacheAtlas.get(currentModDirectory + key + darkModeReturn());
 	}
@@ -373,46 +380,52 @@ class Paths
 	inline static public function getPackerAtlas(key:String, ?library:String)
 	{
 		if (!CacheUtil.cachePackerAtlas.exists(currentModDirectory + key + darkModeReturn())) {
-			#if MODS_ALLOWED
-			var imageLoaded:FlxGraphic = returnGraphic(key);
-			var txtExists:Bool = false;
-			var pathTxt:String = modsTxt(key);
-			if (ClientPrefs.darkmode) {
-				var darkPathTxt:String = modsTxt(key + 'Dark');
-				if(FileSystem.exists(darkPathTxt)) {
-					pathTxt = darkPathTxt;
-				} else {
-					//light mode
-					if(FileSystem.exists(modsTxt(key))) {
-						pathTxt = modsTxt(key);
+			try {
+				#if MODS_ALLOWED
+				var imageLoaded:FlxGraphic = returnGraphic(key);
+				var txtExists:Bool = false;
+				var pathTxt:String = modsTxt(key);
+				if (ClientPrefs.darkmode) {
+					var darkPathTxt:String = modsTxt(key + 'Dark');
+					if(FileSystem.exists(darkPathTxt)) {
+						pathTxt = darkPathTxt;
+					} else {
+						//light mode
+						if(FileSystem.exists(modsTxt(key))) {
+							pathTxt = modsTxt(key);
+						}
+					}
+					if (FileSystem.exists(pathTxt)) {
+						txtExists = true;
+					} else {
+						if(FileSystem.exists(externalPreloadPath('images/${key}Dark.txt'))) {
+							pathTxt = externalPreloadPath('images/${key}Dark.txt');
+							txtExists = true;
+						}
 					}
 				}
-				if (FileSystem.exists(pathTxt)) {
+				if(FileSystem.exists(pathTxt)) {
 					txtExists = true;
 				} else {
-					if(FileSystem.exists(externalPreloadPath('images/${key}Dark.txt'))) {
-						pathTxt = externalPreloadPath('images/${key}Dark.txt');
+					if(FileSystem.exists(externalPreloadPath('images/$key.txt'))) {
+						pathTxt = externalPreloadPath('images/$key.txt');
 						txtExists = true;
 					}
 				}
+		
+				var atlas = FlxAtlasFrames.fromSpriteSheetPacker((imageLoaded != null ? imageLoaded : image(key, library)), (txtExists ? File.getContent(pathTxt) : file('images/$key.txt', library)));
+				CacheUtil.cachePackerAtlas.set(currentModDirectory + key + darkModeReturn(), atlas);
+				return atlas;
+				#else
+				var atlas = FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
+				CacheUtil.cachePackerAtlas.set(currentModDirectory + key + darkModeReturn(), atlas);
+				return atlas;
+				#end
+			} catch (e:Dynamic) {
+				trace('Broken Packer Atlas of "' + key + '"');
+				CacheUtil.cachePackerAtlas.set(currentModDirectory + key + darkModeReturn(), null);
+				return null;
 			}
-			if(FileSystem.exists(pathTxt)) {
-				txtExists = true;
-			} else {
-				if(FileSystem.exists(externalPreloadPath('images/$key.txt'))) {
-					pathTxt = externalPreloadPath('images/$key.txt');
-					txtExists = true;
-				}
-			}
-	
-			var atlas = FlxAtlasFrames.fromSpriteSheetPacker((imageLoaded != null ? imageLoaded : image(key, library)), (txtExists ? File.getContent(pathTxt) : file('images/$key.txt', library)));
-			CacheUtil.cachePackerAtlas.set(currentModDirectory + key + darkModeReturn(), atlas);
-			return atlas;
-			#else
-			var atlas = FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
-			CacheUtil.cachePackerAtlas.set(currentModDirectory + key + darkModeReturn(), atlas);
-			return atlas;
-			#end
 		}
 		return CacheUtil.cachePackerAtlas.get(currentModDirectory + key + darkModeReturn());
 	}

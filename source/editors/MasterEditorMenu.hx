@@ -3,6 +3,8 @@ package editors;
 #if mobile
 import dge.obj.mobile.VirtualButton;
 #end
+import dge.const.GlobalVar;
+
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -53,7 +55,9 @@ class MasterEditorMenu extends MusicBeatState
 		DiscordClient.changePresence("Editors Main Menu", null);
 		#end
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		var gfx = Paths.image(GlobalVar.menuBackground);
+		if (gfx == null) gfx = Paths.image('menuDesat');
+		var bg:FlxSprite = new FlxSprite().loadGraphic(gfx);
 		bg.scrollFactor.set();
 		bg.color = 0xFF353535;
 		add(bg);

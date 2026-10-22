@@ -72,6 +72,7 @@ import dge.obj.game.ComboSpr;
 import dge.obj.game.VideoSprite;
 import dge.frontend.CameraZOrder as CameraRender;
 import dge.frontend.scale.ScreenScaleMode;
+import dge.const.GlobalVar;
 
 import dge.input.device.KeyboardControls;
 import dge.input.device.GamepadControls;
@@ -601,21 +602,7 @@ class PlayState extends MusicBeatState
 
 		var stageData:StageFile = StageData.getStageFile(curStage);
 		if(stageData == null) { //Stage couldn't be found, create a dummy stage for preventing a crash
-			stageData = {
-				directory: "",
-				defaultZoom: 0.9,
-				isPixelStage: false,
-
-				boyfriend: [770, 100],
-				girlfriend: [400, 130],
-				opponent: [100, 100],
-				hide_girlfriend: false,
-
-				camera_boyfriend: [0, 0],
-				camera_opponent: [0, 0],
-				camera_girlfriend: [0, 0],
-				camera_speed: 1
-			};
+			stageData = GlobalVar.defaultStage;
 		}
 
 		defaultCamZoom = stageData.defaultZoom;
@@ -2793,7 +2780,6 @@ class PlayState extends MusicBeatState
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 				else
 					oldNote = null;
-				var swagNote:Note;
 				var noteDataSet:Int;
 				noteDataSet = daNoteData;
 				for (i in 0...multNote) {
@@ -2834,7 +2820,7 @@ class PlayState extends MusicBeatState
 						unspawnNotes.push(swagNote);
 					}
 
-					var floorSus:Int = Math.floor(susLength);
+					var floorSus:Int = Math.round(susLength);
 					if(floorSus > 0) {
 						for (susNote in 0...(floorSus+1))
 						{

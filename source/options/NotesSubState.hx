@@ -33,6 +33,7 @@ import dge.backend.EKUtil;
 using StringTools;
 
 import dge.shaders.ColorSwap;
+import dge.const.GlobalVar;
 
 
 class NotesSubState extends MusicBeatSubstate
@@ -64,7 +65,10 @@ class NotesSubState extends MusicBeatSubstate
 		
 		var indexTarget = EKUtil.noteAnimIndex[currentMania-1];
 		var scale = EKUtil.getNoteScale(currentMania, 4);
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		
+		var gfx = Paths.image(GlobalVar.menuBackground);
+		if (gfx == null) gfx = Paths.image('menuDesat');
+		var bg:FlxSprite = new FlxSprite().loadGraphic(gfx);
 		bg.color = 0xFFea71fd;
 		CoolUtil.fitBackground(bg);
 		bg.antialiasing = ClientPrefs.globalAntialiasing;

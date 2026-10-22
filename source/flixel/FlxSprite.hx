@@ -284,6 +284,8 @@ class FlxSprite extends FlxObject
 	public var shadowOffsets:Pointer = new Pointer(5, 5);
 	public var shadowColor:FlxColor = 0xFF000000;
 	public var shadowAlphaMult:Float = 0.5;
+	//scale offset
+	public var scaleMult(default, null):FlxPoint;
 	//store object after access
 	@:noCompletion
     private var _colorSwap:ColorSwap;
@@ -400,6 +402,7 @@ class FlxSprite extends FlxObject
 		offset = FlxPoint.get();
 		origin = FlxPoint.get();
 		scale = FlxPoint.get(1, 1);
+		scaleMult = FlxPoint.get(1, 1);
 		_halfSize = FlxPoint.get();
 		_matrix = new FlxMatrix();
 		colorTransform = new ColorTransform();
@@ -424,6 +427,7 @@ class FlxSprite extends FlxObject
 		offset = FlxDestroyUtil.put(offset);
 		origin = FlxDestroyUtil.put(origin);
 		scale = FlxDestroyUtil.put(scale);
+		scaleMult = FlxDestroyUtil.put(scaleMult);
 		_halfSize = FlxDestroyUtil.put(_halfSize);
 
 		framePixels = FlxDestroyUtil.dispose(framePixels);
@@ -782,7 +786,10 @@ class FlxSprite extends FlxObject
 	 */
 	override public function draw():Void
 	{
-		
+		var scaleX = scale.x;
+		var scaleY = scale.y;
+		scale.x *= scaleMult.x;
+		scale.y *= scaleMult.y;
 		if (enableShadow && shadowAlphaMult > 0) {
 			var origX = this.x;
 			var origY = this.y;
@@ -799,6 +806,8 @@ class FlxSprite extends FlxObject
 			color = origColor;
 		}
 		drawObj();
+		scale.x = scaleX;
+		scale.y = scaleY;
 	}
 	
 	function drawObj() {

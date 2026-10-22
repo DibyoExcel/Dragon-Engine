@@ -3,6 +3,8 @@ package;
 #if mobile
 import dge.obj.mobile.VirtualButton;
 #end
+import dge.const.GlobalVar;
+
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -199,7 +201,9 @@ class StoryMenuState extends MusicBeatState
 			add(scoreText);
 			add(txtWeekTitle);
 		} else {
-			var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+			var gfx = Paths.image(GlobalVar.menuBackground);
+			if (gfx == null) gfx = Paths.image('menuDesat');
+			var bg:FlxSprite = new FlxSprite().loadGraphic(gfx);
 			bg.antialiasing = ClientPrefs.globalAntialiasing;
 			CoolUtil.fitBackground(bg);
 			bg.color = 0xffff0000;

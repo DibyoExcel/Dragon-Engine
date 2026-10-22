@@ -2,6 +2,7 @@ package dge.backend;
 import openfl.media.Sound;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.graphics.frames.FlxFramesCollection;
 
 ///CACHE OF COURSE
 class CacheTools {

@@ -25,6 +25,7 @@ import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
 
 import dge.input.device.KeyboardControls;
+import dge.const.GlobalVar;
 
 using StringTools;
 
@@ -133,7 +134,9 @@ class ControlsSubState extends MusicBeatSubstate {
 	public function new() {
 		super();
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		var gfx = Paths.image(GlobalVar.menuBackground);
+		if (gfx == null) gfx = Paths.image('menuDesat');
+		var bg:FlxSprite = new FlxSprite().loadGraphic(gfx);
 		bg.color = 0xFFea71fd;
 		CoolUtil.fitBackground(bg);
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
