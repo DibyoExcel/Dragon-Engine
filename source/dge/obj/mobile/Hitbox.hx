@@ -18,6 +18,7 @@ class Hitbox extends TouchButton
     //hint hitbox
     public var hitboxHint:FlxSprite = null;
     public var hintTexture(default, set):String = null;
+    public var followHintColor:Bool = true;
     
 
     override private function set_justReleased(value:Bool):Bool {
@@ -40,7 +41,7 @@ class Hitbox extends TouchButton
 
     private function set_texture(value:String):String {
         if (texture != value) {
-            if (value == null || value.length < 1) {
+            if (value == null || value.length < 1 || Paths.image(value) == null) {
                 value = 'hitbox';
             }
             texture = value;
@@ -125,7 +126,7 @@ class Hitbox extends TouchButton
     function set_hintTexture(value:String):String {
         if (hintTexture != value) {
             hintTexture = value;
-            if (hintTexture == null || hintTexture.length < 1) {
+            if (hintTexture == null || hintTexture.length < 1 || Paths.image(hintTexture) == null) {
                 hintTexture = 'hitbox-hint';
             }
             if (hitboxHint != null) {
@@ -153,13 +154,15 @@ class Hitbox extends TouchButton
     override function draw():Void {
         super.draw();
         if (hitboxHint != null && hitboxHint.visible && hitboxHint.alpha > 0) {
+            var hintColor = hitboxHint.color;
             CoolUtil.alignItem(this, hitboxHint, BOTTOM_MIDDLE);
             var offsetMax = 100;
             var centerOffset = (height - hitboxHint.height) / 2;
             hitboxHint.y -= Math.min(centerOffset, offsetMax);
-            hitboxHint.color = this.color;
+            if (followHintColor) hitboxHint.color = this.color;
             hitboxHint.cameras = this.cameras;
             hitboxHint.draw();
+            hitboxHint.color = hintColor;
         }
     }
 

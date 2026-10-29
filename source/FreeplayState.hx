@@ -116,15 +116,15 @@ class FreeplayState extends MusicBeatState
 			if(initSonglist[i] != null && initSonglist[i].length > 0) {
 				var songArray:Array<String> = initSonglist[i].split(":");
 				addSong(songArray[0], 0, songArray[1], Std.parseInt(songArray[2]));
-			}
-		}*/
+				}
+				}*/
+		WeekData.loadTheFirstEnabledMod();
 		var gfx = Paths.image(GlobalVar.menuBackground);
 		if (gfx == null) gfx = Paths.image('menuDesat');
 		bg = new FlxSprite().loadGraphic(gfx);
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		CoolUtil.fitBackground(bg);
 		add(bg);
-		WeekData.loadTheFirstEnabledMod();
 	
 		grpSongs = new FlxTypedGroup<MenuItem>();
 		add(grpSongs);

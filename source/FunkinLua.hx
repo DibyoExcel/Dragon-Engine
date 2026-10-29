@@ -4635,76 +4635,78 @@ class FunkinLua {
 		});
 		Lua_helper.add_callback(lua, "changeStage", function(stage:String) {
 			var game = PlayState.instance;
-			var stageMap = game.customStageMap;
-			if (game != null && stageMap != null && stageMap.exists(stage)) {
-				for (stageList in stageMap.keys()) {
-					var mapInvisible = stageMap.get(stageList).spriteList;
-					for (sprite in mapInvisible) {
+			if (game != null) {
+				var stageMap = game.customStageMap;
+				if (stageMap != null && stageMap.exists(stage)) {
+					for (stageList in stageMap.keys()) {
+						var mapInvisible = stageMap.get(stageList).spriteList;
+						for (sprite in mapInvisible) {
+							var spr:FlxBasic = PlayState.instance.getLuaObject(sprite);
+							if (spr == null) {
+								spr = Reflect.getProperty(getInstance(), sprite);
+							}
+							if (spr != null) {
+								spr.visible = false;
+							}
+						}
+					}
+					var stageTarget = stageMap.get(stage);
+					var mapVisible = stageTarget.spriteList;
+					for (sprite in mapVisible) {
 						var spr:FlxBasic = PlayState.instance.getLuaObject(sprite);
 						if (spr == null) {
 							spr = Reflect.getProperty(getInstance(), sprite);
 						}
 						if (spr != null) {
-							spr.visible = false;
+							spr.visible = true;
 						}
 					}
-				}
-				var stageTarget = stageMap.get(stage);
-				var mapVisible = stageTarget.spriteList;
-				for (sprite in mapVisible) {
-					var spr:FlxBasic = PlayState.instance.getLuaObject(sprite);
-					if (spr == null) {
-						spr = Reflect.getProperty(getInstance(), sprite);
+					game.defaultCamZoom = stageTarget.defaultZoom;
+					var boy = stageTarget.boyfriend;
+					if (boy.length > 0 && game.boyfriendGroup != null) {
+						game.boyfriendGroup.x = boy[0];
+						if (boy.length > 1) {
+							game.boyfriendGroup.y = boy[1];
+						}
 					}
-					if (spr != null) {
-						spr.visible = true;
+					var dad = stageTarget.opponent;
+					if (dad.length > 0 && game.dadGroup != null) {
+						game.dadGroup.x = dad[0];
+						if (dad.length > 1) {
+							game.dadGroup.y = dad[1];
+						}
 					}
-				}
-				game.defaultCamZoom = stageTarget.defaultZoom;
-				var boy = stageTarget.boyfriend;
-				if (boy.length > 0 && game.boyfriendGroup != null) {
-					game.boyfriendGroup.x = boy[0];
-					if (boy.length > 1) {
-						game.boyfriendGroup.y = boy[1];
+					var gf = stageTarget.girlfriend;
+					if (gf.length > 0 && game.gfGroup != null) {
+						game.gfGroup.x = gf[0];
+						if (gf.length > 1) {
+							game.gfGroup.y = gf[1];
+						}
 					}
-				}
-				var dad = stageTarget.opponent;
-				if (dad.length > 0 && game.dadGroup != null) {
-					game.dadGroup.x = dad[0];
-					if (dad.length > 1) {
-						game.dadGroup.y = dad[1];
+					var boy = stageTarget.camera_boyfriend;
+					if (boy.length > 0) {
+						game.boyfriendCameraOffset[0] = boy[0];
+						if (boy.length > 1) {
+							game.boyfriendCameraOffset[1] = boy[1];
+						}
 					}
-				}
-				var gf = stageTarget.girlfriend;
-				if (gf.length > 0 && game.gfGroup != null) {
-					game.gfGroup.x = gf[0];
-					if (gf.length > 1) {
-						game.gfGroup.y = gf[1];
+					var dad = stageTarget.camera_opponent;
+					if (dad.length > 0) {
+						game.opponentCameraOffset[0] = dad[0];
+						if (dad.length > 1) {
+							game.opponentCameraOffset[1] = dad[1];
+						}
 					}
-				}
-				var boy = stageTarget.camera_boyfriend;
-				if (boy.length > 0) {
-					game.boyfriendCameraOffset[0] = boy[0];
-					if (boy.length > 1) {
-						game.boyfriendCameraOffset[1] = boy[1];
+					var gf = stageTarget.camera_girlfriend;
+					if (gf.length > 0) {
+						game.girlfriendCameraOffset[0] = gf[0];
+						if (gf.length > 1) {
+							game.girlfriendCameraOffset[1] = gf[1];
+						}
 					}
+					game.cameraSpeed = stageTarget.camera_speed;
+					game.callOnLuas('onChangeStage', [stage]);
 				}
-				var dad = stageTarget.camera_opponent;
-				if (dad.length > 0) {
-					game.opponentCameraOffset[0] = dad[0];
-					if (dad.length > 1) {
-						game.opponentCameraOffset[1] = dad[1];
-					}
-				}
-				var gf = stageTarget.camera_girlfriend;
-				if (gf.length > 0) {
-					game.girlfriendCameraOffset[0] = gf[0];
-					if (gf.length > 1) {
-						game.girlfriendCameraOffset[1] = gf[1];
-					}
-				}
-				game.cameraSpeed = stageTarget.camera_speed;
-				game.callOnLuas('onChangeStage', [stage]);
 			}
 		});
 
@@ -4742,8 +4744,13 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "addStageDataFromStageFile", function(tag:String, stageFile:String) {
 			var game = PlayState.instance;
 			var sf:StageFile = StageData.getStageFile(stageFile);
-			if (sf == null) sf = GlobalVar.defaultStage;
+			var defSf = GlobalVar.defaultStage;
+			if (sf == null) sf = defSf;
 			if (game != null && game.customStageMap != null && !game.customStageMap.exists(tag)) {
+				if (sf.camera_speed == null) sf.camera_speed = 1;
+				if (sf.camera_boyfriend == null) sf.camera_boyfriend = defSf.camera_boyfriend;
+				if (sf.camera_opponent == null) sf.camera_opponent = defSf.camera_opponent;
+				if (sf.camera_girlfriend == null) sf.camera_girlfriend = defSf.camera_girlfriend;
 				var stageData:StageLua = {
 					spriteList: [],
 					defaultZoom: sf.defaultZoom,
