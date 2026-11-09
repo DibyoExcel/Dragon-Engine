@@ -43,6 +43,15 @@ class EditorSubState extends BaseOptionsMenu
 			false);
 		addOption(option);
 
+		var option:Option = new Option('Grid Size',
+			"How much pixel for Chart Editor grid size?",
+			'chartEditorGridSize',
+			'int',
+			#if mobile 60 #else 40 #end);
+		option.minValue = 20;
+		option.scrollSpeed = 5;
+		addOption(option);
+
 		super();
 		changeBGColor(0xffff0000);
 	}

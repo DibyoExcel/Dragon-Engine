@@ -120,9 +120,13 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		add(descText);
 		spriteNote = new Array<FlxSprite>();
 		spriteNote_c = new Array<FlxSprite>();
+		var fr = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
+		if (fr == null) {
+			fr = Paths.getSparrowAtlas('NOTE_assets');
+		}
 		for (i in 0...4) {
 			var note = new FlxSprite(750+(i*112), 0);
-			note.frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
+			note.frames = fr;
 			note.scale.set(0.7, 0.7);
 			add(note);
 			note.visible = false;
@@ -133,12 +137,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		}
 		for (i in 0...4) {
 			var note_c = new FlxSprite(750+(i*112), 0);
-			var fr = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
-			if (fr != null) {
-				note_c.frames = fr;
-			} else {
-				note_c.frames = Paths.getSparrowAtlas('NOTE_assets');
-			}
+			note_c.frames = fr;
 			note_c.scale.set(0.7, 0.7);
 			add(note_c);
 			note_c.visible = false;

@@ -13,6 +13,7 @@ import dge.obj.game.HoldCover;
 
 using StringTools;
 import dge.backend.EKUtil;
+import dge.frontend.math.BoundHelper.Point;
 
 typedef NoteJson = {
 	noteData:Null<NoteSide>
@@ -37,6 +38,83 @@ typedef EventNote =
 	event:String,
 	value1:String,
 	value2:String
+}
+
+typedef ExternalSpriteData = {
+	shader:ShaderShit,
+	shaderType:String,
+	texture:String,
+	angle:Float,
+	alpha:Float,
+	camera:String,
+	scale:Float,
+	scrollFactor:Point,
+	offset:Point,
+	offsetOrigin:Point,
+	copyAlpha:Bool,
+	disabled:Bool
+}
+
+typedef ShaderShit = {
+	//colorSwap
+	colorSwap:ColorSwapSetting,
+	//single
+	singleColor:RGBFloat,
+	//invert
+	invertColor:RGBBool,
+	//RGBSwap
+	rgbSwap:RGBInt,
+	//pixel
+	pixel:PixelSetting,
+	//posterize
+	posterize:PosterizeSetting,
+	//RGB Palette
+	rgbPalette:RGBInt,
+	//GS
+	grayscale:GrayscaleSetting,
+	//BW
+	BAndW:BANDWSetting
+}
+
+typedef ColorSwapSetting = {
+	hue:Float,
+	saturation:Float,
+	brightness:Float
+}
+
+typedef RGBBool = {
+	r:Bool,
+	g:Bool,
+	b:Bool
+}
+
+typedef RGBFloat = {
+	r:Float,
+	g:Float,
+	b:Float
+}
+
+typedef RGBInt = {
+	r:Int,
+	g:Int,
+	b:Int
+}
+
+typedef PixelSetting = {
+	size:Float
+}
+
+typedef PosterizeSetting = {
+	range:Float
+}
+
+typedef GrayscaleSetting = {
+	mult:Float
+}
+
+typedef BANDWSetting = {
+	mult:Float,
+	threshold:Float
 }
 
 
@@ -80,46 +158,71 @@ class Note extends FlxSprite
 	public var lateHitMult:Float = 1;
 	public var lowPriority:Bool = false;
 
-	public static var swagWidth:Float = (160*0.7) * ClientPrefs.strumsize;
+	public static var swagWidth(get, never):Float;
 
 	// private var EKutil.colArray:Array<String> = ['purple', 'blue', 'green', 'red', 'space', 'yellow', 'purplealt', 'redalt', 'bluealt'];
 	// private var EKUtil.pixelInt:Array<Int> = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
 	// Lua shit
-	public var noteSplashDisabled:Bool = false;
-	public var noteSplashTexture(default, set):String = null;
-	public var noteSplashShaderType:String = 'swap';
-	public var noteSplashAngle:Float = 0;
-	public var noteSplashAlpha:Float = ClientPrefs.noteSplashAlpha;
+	@:deprecated("use noteSplashData.disabled instead")
+	public var noteSplashDisabled(get, set):Bool;
+	@:deprecated("use noteSplashData.texture instead")
+	public var noteSplashTexture(get, set):String;
+	@:deprecated("use noteSplashData.shaderType instead")
+	public var noteSplashShaderType(get, set):String;
+	@:deprecated("use noteSplashData.angle instead")
+	public var noteSplashAngle(get, set):Float;
+	@:deprecated("use noteSplashData.alpha instead")
+	public var noteSplashAlpha(get, set):Float;
 	//swap
-	public var noteSplashHue:Float = 0;
-	public var noteSplashSat:Float = 0;
-	public var noteSplashBrt:Float = 0;
+	@:deprecated("use noteSplashData.shader.colorSwap.hue instead")
+	public var noteSplashHue(get, set):Float;
+	@:deprecated("use noteSplashData.shader.colorSwap.saturation instead")
+	public var noteSplashSat(get, set):Float;
+	@:deprecated("use noteSplashData.shader.colorSwap.brightness instead")
+	public var noteSplashBrt(get, set):Float;
 	//single
-	public var noteSplashSingleR:Float = 1;
-	public var noteSplashSingleG:Float = 1;
-	public var noteSplashSingleB:Float = 1;
+	@:deprecated("use noteSplashData.shader.singleColor.r instead")
+	public var noteSplashSingleR(get, set):Float;
+	@:deprecated("use noteSplashData.shader.singleColor.g instead")
+	public var noteSplashSingleG(get, set):Float;
+	@:deprecated("use noteSplashData.shader.singleColor.b instead")
+	public var noteSplashSingleB(get, set):Float;
 	//invert
-	public var noteSplashInvertR:Bool = true;
-	public var noteSplashInvertG:Bool = true;
-	public var noteSplashInvertB:Bool = true;
+	@:deprecated("use noteSplashData.shader.invertColor.r instead")
+	public var noteSplashInvertR(get, set):Bool;
+	@:deprecated("use noteSplashData.shader.invertColor.g instead")
+	public var noteSplashInvertG(get, set):Bool;
+	@:deprecated("use noteSplashData.shader.invertColor.b instead")
+	public var noteSplashInvertB(get, set):Bool;
 	//colorRGBSwap
-	public var noteSplashRGBSwapR:Int = 0;
-	public var noteSplashRGBSwapG:Int = 1;
-	public var noteSplashRGBSwapB:Int = 2;
+	@:deprecated("use noteSplashData.shader.rgbSwap.r instead")
+	public var noteSplashRGBSwapR(get, set):Int;
+	@:deprecated("use noteSplashData.shader.rgbSwap.g instead")
+	public var noteSplashRGBSwapG(get, set):Int;
+	@:deprecated("use noteSplashData.shader.rgbSwap.b instead")
+	public var noteSplashRGBSwapB(get, set):Int;
 	//pixel
-	public var noteSplashPixelSize:Float = 0;
+	@:deprecated("use noteSplashData.shader.pixel.size instead")
+	public var noteSplashPixelSize(get, set):Float;
 	//posterize
-	public var noteSplashPosterizeRange:Float = 0;
+	@:deprecated("use noteSplashData.shader.posterize.range instead")
+	public var noteSplashPosterizeRange(get, set):Float;
 	//rgb palette
-	public var noteSplashR:Int = 0xFFFF0000;
-	public var noteSplashG:Int = 0xFF00FF00;
-	public var noteSplashB:Int = 0xFF0000FF;
+	@:deprecated("use noteSplashData.shader.rgbPalette.r instead")
+	public var noteSplashR(get, set):Int;
+	@:deprecated("use noteSplashData.shader.rgbPalette.g instead")
+	public var noteSplashG(get, set):Int;
+	@:deprecated("use noteSplashData.shader.rgbPalette.b instead")
+	public var noteSplashB(get, set):Int;
 	//grayscale
-	public var noteSplashGrayscaleMult:Float = 1;
+	@:deprecated("use noteSplashData.shader.grayscale.mult instead")
+	public var noteSplashGrayscaleMult(get, set):Float;
 	//black and white
-	public var noteSplashBAndWMult:Float = 1;
-	public var noteSplashBAndWThreshold:Float = 0.5;
+	@:deprecated("use noteSplashData.shader.BAndW.mult instead")
+	public var noteSplashBAndWMult(get, set):Float;
+	@:deprecated("use noteSplashData.shader.BAndW.threshold instead")
+	public var noteSplashBAndWThreshold(get, set):Float;
 
 	public var offsetX:Float = 0;
 	public var offsetY:Float = 0;
@@ -151,9 +254,12 @@ class Note extends FlxSprite
 	//dge core
 	public var autoPress:Bool = false; // auto press like cpuControlled behavior but specific notes(cant be pressed by player)
 	public var direction:Float = 0;
-	public var noteSplashCam:String = '';//notesplash on specific cam(if want the this 'note' use 'setObjectCamera()' in lua)
-	public var noteSplashScale:Float = 1.0;
-	public var noteSplashScrollFactor:Array<Float> = [1, 1];//dont ask why 1 cuz is default of note splash(if want the this 'note' use 'setScrollFactor()' in lua)
+	@:deprecated("use noteSplashData.camera instead")
+	public var noteSplashCam(get, set):String;//notesplash on specific cam(if want the this 'note' use 'setObjectCamera()' in lua)
+	@:deprecated("use noteSplashData.scale instead")
+	public var noteSplashScale(get, set):Float;
+	@:deprecated("use noteSplashData.scrollFactor instead")
+	public var noteSplashScrollFactor(get, set):Array<Float>;//dont ask why 1 cuz is default of note splash(if want the this 'note' use 'setScrollFactor()' in lua)
 	public var offsetStrumTime:Float = 0;
 	public var fakeNoHit:Bool = false;//DISABLED!
 	public var ignoreTextureChange:Bool = false;//for prevent change when use changeNotesTexture() lua
@@ -164,7 +270,7 @@ class Note extends FlxSprite
 	//custom field
 	public var customField:Bool = false;//info this become unused
 	public var fieldTarget:String = '';//warning if not exist it might set 'customField' to false(hopefully)
-	public var isCustomField(get, null):Bool;//return `true` if `targetField` is not empty or null string or else will `false`
+	public var isCustomField(get, never):Bool;//return `true` if `targetField` is not empty or null string or else will `false`
 	//end of custom field
 	//sustain thing
 	public var sustainTail:Bool = false;
@@ -196,6 +302,7 @@ class Note extends FlxSprite
 	public var copyDirection:Bool = true;//attach direction from strums
 	public var copyScrollFactor:Bool = true;
 	public var copyCam:Bool = true;
+	public var copyScale:Bool = true;
 	//end copy thing
 	//snap prop
 	public var snapX:Float = 0;
@@ -210,55 +317,90 @@ class Note extends FlxSprite
 	public var resetTimeStrumAnim:Float = 0;//override 'resetTime' of strum(0 or under will disable override)
 	public var topLayer:Bool = false;//very top layer notes
 	public var noteSplash:NoteSplash = null;//it only for after spawn note splash when hit.(more likely get note splash for change the note splash properties after spawn it)
-	public var noteSplashOffsetX:Float = 0;//note splash x offset
-	public var noteSplashOffsetY:Float = 0;//note splash y offset
-	public var noteSplashOffsetOriginX:Float = 0;//note splash x origin offset
-	public var noteSplashOffsetOriginY:Float = 0;//note splash y origin offset
-	public var noteSplashCopyAlpha:Bool = true;
+	@:deprecated("use noteSplashData.offset.x instead")
+	public var noteSplashOffsetX(get, set):Float;//note splash x offset
+	@:deprecated("use noteSplashData.offset.y instead")
+	public var noteSplashOffsetY(get, set):Float;//note splash y offset
+	@:deprecated("use noteSplashData.offsetOrigin.x instead")
+	public var noteSplashOffsetOriginX(get, set):Float;//note splash x origin offset
+	@:deprecated("use noteSplashData.offsetOrigin.y instead")
+	public var noteSplashOffsetOriginY(get, set):Float;//note splash y origin offset
+	@:deprecated("use noteSplashData.copyAlpha instead")
+	public var noteSplashCopyAlpha(get, set):Bool;
 	public var stickyNoteSplash:Bool = ClientPrefs.stickyNoteSplash;//make note splash always sticky at strum
 	//hold cover implement(hope this work)
 	public var holdCover(default, set):HoldCover = null;//this only for get current hold cover after hold cover spr spawn
-	public var holdCoverDisabled:Bool = false;
-	public var holdCoverTexture(default, set):String = null;
-	public var holdCoverAlpha:Float = ClientPrefs.holdCoverAlpha;
-	public var holdCoverCopyAlpha:Bool = true;
-	public var holdCoverCam:String = '';//hold cover on specific cam(if want the this 'note' use 'setObjectCamera()' in lua)
-	public var holdCoverScrollFactor:Array<Float> = [1, 1];//(if want the this 'note' use 'setScrollFactor()' in lua)
-	public var holdCoverScale:Float = 1;
-	public var holdCoverOffsetX:Float = 0;
-	public var holdCoverOffsetY:Float = 0;
+	@:deprecated("use holdCoverData.disabled instead")
+	public var holdCoverDisabled(get, set):Bool;
+	@:deprecated("use holdCoverData.texture instead")
+	public var holdCoverTexture(get, set):String;
+	@:deprecated("use holdCoverData.alpha instead")
+	public var holdCoverAlpha(get, set):Float;
+	@:deprecated("use holdCoverData.copyAlpha instead")
+	public var holdCoverCopyAlpha(default, set):Bool;
+	@:deprecated("use holdCoverData.camera instead")
+	public var holdCoverCam(get, set):String;//hold cover on specific cam(if want the this 'note' use 'setObjectCamera()' in lua)
+	@:deprecated("use holdCoverData.scrollFactor instead")
+	public var holdCoverScrollFactor(get, set):Array<Float>;//(if want the this 'note' use 'setScrollFactor()' in lua)
+	@:deprecated("use holdCoverData.scale instead")
+	public var holdCoverScale(get, set):Float;
+	@:deprecated("use holdCoverData.offset.x instead")
+	public var holdCoverOffsetX(get, set):Float;
+	@:deprecated("use holdCoverData.offset.y instead")
+	public var holdCoverOffsetY(get, set):Float;
 	public var holdCoverDelaySplash:Float = 0.0;
 	//other shader thing
-	public var holdCoverShaderType:String = 'swap';
+	@:deprecated("use holdCoverData.shaderType instead")
+	public var holdCoverShaderType(get, set):String;
 	//swap
-	public var holdCoverHue:Float = 0;
-	public var holdCoverBrt:Float = 0;
-	public var holdCoverSat:Float = 0;
+	@:deprecated("use holdCoverData.shader.colorSwap.hue instead")
+	public var holdCoverHue(get, set):Float;
+	@:deprecated("use holdCoverData.shader.colorSwap.brightness instead")
+	public var holdCoverBrt(get, set):Float;
+	@:deprecated("use holdCoverData.shader.colorSwap.saturation instead")
+	public var holdCoverSat(get, set):Float;
 	//single
-	public var holdCoverSingleR:Float = 1;
-	public var holdCoverSingleG:Float = 1;
-	public var holdCoverSingleB:Float = 1;
+	@:deprecated("use holdCoverData.shader.singleColor.r instead")
+	public var holdCoverSingleR(get, set):Float;
+	@:deprecated("use holdCoverData.shader.singleColor.g instead")
+	public var holdCoverSingleG(get, set):Float;
+	@:deprecated("use holdCoverData.shader.singleColor.b instead")
+	public var holdCoverSingleB(get, set):Float;
 	//invert
-	public var holdCoverInvertR:Bool = true;
-	public var holdCoverInvertG:Bool = true;
-	public var holdCoverInvertB:Bool = true;
+	@:deprecated("use holdCoverData.shader.invertColor.r instead")
+	public var holdCoverInvertR(get, set):Bool;
+	@:deprecated("use holdCoverData.shader.invertColor.g instead")
+	public var holdCoverInvertG(get, set):Bool;
+	@:deprecated("use holdCoverData.shader.invertColor.b instead")
+	public var holdCoverInvertB(get, set):Bool;
 	//colorRGBSwap
-	public var holdCoverRGBSwapR:Int = 0;
-	public var holdCoverRGBSwapG:Int = 1;
-	public var holdCoverRGBSwapB:Int = 2;
+	@:deprecated("use holdCoverData.shader.rgbSwap.r instead")
+	public var holdCoverRGBSwapR(get, set):Int;
+	@:deprecated("use holdCoverData.shader.rgbSwap.g instead")
+	public var holdCoverRGBSwapG(get, set):Int;
+	@:deprecated("use holdCoverData.shader.rgbSwap.b instead")
+	public var holdCoverRGBSwapB(get, set):Int;
 	//pixel
-	public var holdCoverPixelSize:Float = 0;
+	@:deprecated("use holdCoverData.shader.pixel.size instead")
+	public var holdCoverPixelSize(get, set):Float;
 	//posterize
-	public var holdCoverPosterizeRange:Float = 0;
+	@:deprecated("use holdCoverData.shader.posterize.range instead")
+	public var holdCoverPosterizeRange(get, set):Float;
 	//rgb palette
-	public var holdCoverR:Int = 0xFFFF0000;
-	public var holdCoverG:Int = 0xFF00FF00;
-	public var holdCoverB:Int = 0xFF0000FF;
+	@:deprecated("use holdCoverData.shader.rgbPalette.r instead")
+	public var holdCoverR(get, set):Int;
+	@:deprecated("use holdCoverData.shader.rgbPalette.g instead")
+	public var holdCoverG(get, set):Int;
+	@:deprecated("use holdCoverData.shader.rgbPalette.b instead")
+	public var holdCoverB(get, set):Int;
 	//grayscale
-	public var holdCoverGrayscaleMult:Float = 1;
+	@:deprecated("use holdCoverData.shader.grayscale.mult instead")
+	public var holdCoverGrayscaleMult(get, set):Float;
 	//black and white
-	public var holdCoverBAndWMult:Float = 1;
-	public var holdCoverBAndWThreshold:Float = 1;
+	@:deprecated("use holdCoverData.shader.BAndW.mult instead")
+	public var holdCoverBAndWMult(get, set):Float;
+	@:deprecated("use holdCoverData.shader.BAndW.threshold instead")
+	public var holdCoverBAndWThreshold(get, set):Float;
 	//distance update
 	public var updateDistance:Bool = true;//whether update distance for note(only for visual, not affect hit time)
 	//fake strum(more likely strum land  override hehe)
@@ -282,12 +424,121 @@ class Note extends FlxSprite
 	public var shifterDirection:Bool = true;////should direction will shifter
 	public var shifterAlpha:Bool = true;////should alpha will shifter
 	public var shifterDownScroll:Bool = true;//should downScroll/upScroll will shifter
-	public var shifterFlipY:Bool = true;//should flipY will shifter
+	public var shifterFlipY:Bool = true;//should flipY will shifter?
+	public var shifterScale:Bool = true;//should scale wil shifter?
 	public var shifterEase:String = 'quadInOut';//ease tween type for shifter(same like tweeen in lua)
 	public var shifterEndDistance:Float = 40; //how much distance shifter end before touching strums(more big value more range before hit strum)
 	public var shiferRangeMove:Float=1;//how much movement speed shifter do(more big value more slower it get and more wider)
 	public var comboTexture(default, set):String = null;//overwrite combo texture
 	public var numTexture(default, set):String = null;//overwrite combo number texture
+	public var downScrollOffset:Float = 0;//offset Y for Downscroll animation
+	//data holdCover and Note Splash
+	public var noteSplashData(default, set):ExternalSpriteData = {
+		shader: {
+			colorSwap: {
+				hue: 0,
+				saturation: 0,
+				brightness: 0
+			},
+			singleColor: {
+				r: 1,
+				g: 1,
+				b: 1
+			},
+			invertColor: {
+				r: true,
+				g: true,
+				b: true
+			},
+			rgbSwap: {
+				r: 0,
+				g: 1,
+				b: 2
+			},
+			pixel: {
+				size: 0
+			},
+			posterize: {
+				range: 0
+			},
+			rgbPalette: {
+				r: 0xFFFF0000,
+				g: 0xFF00FF00,
+				b: 0xFF0000FF
+			},
+			grayscale: {
+				mult: 1
+			},
+			BAndW: {
+				mult: 1,
+				threshold: 0.5
+			}
+		},
+		shaderType: 'swap',
+		texture: '',
+		angle: 0,
+		alpha: ClientPrefs.noteSplashAlpha,
+		camera: '',
+		scale: 1,
+		scrollFactor: {x: 1, y: 1},
+		offset: {x: 0, y: 0},
+		offsetOrigin: {x: 0, y: 0},
+		copyAlpha: true,
+		disabled: false
+	};
+	public var holdCoverData(default, set):ExternalSpriteData = {
+		shader: {
+			colorSwap: {
+				hue: 0,
+				saturation: 0,
+				brightness: 0
+			},
+			singleColor: {
+				r: 1,
+				g: 1,
+				b: 1
+			},
+			invertColor: {
+				r: true,
+				g: true,
+				b: true
+			},
+			rgbSwap: {
+				r: 0,
+				g: 1,
+				b: 2
+			},
+			pixel: {
+				size: 0
+			},
+			posterize: {
+				range: 0
+			},
+			rgbPalette: {
+				r: 0xFFFF0000,
+				g: 0xFF00FF00,
+				b: 0xFF0000FF
+			},
+			grayscale: {
+				mult: 1
+			},
+			BAndW: {
+				mult: 1,
+				threshold: 0.5
+			}
+		},
+		shaderType: 'swap',
+		texture: '',
+		angle: 0,
+		alpha: ClientPrefs.holdCoverAlpha,
+		camera: '',
+		scale: 1,
+		scrollFactor: {x: 1, y: 1},
+		offset: {x: 0, y: 0},
+		offsetOrigin: {x: 0, y: 0},
+		copyAlpha: true,
+		disabled: false
+	};
 	//end dge core
 
 	@:noCompletion
@@ -384,7 +635,7 @@ class Note extends FlxSprite
 				case 'Hurt Note':
 					ignoreNote = mustPress;
 					texture = "HURTNOTE_assets";
-					noteSplashTexture = 'HURTnoteSplashes';
+					noteSplashData.texture = 'HURTnoteSplash';
 					colorSwap.hue = 0;
 					colorSwap.saturation = 0;
 					colorSwap.brightness = 0;
@@ -444,12 +695,12 @@ class Note extends FlxSprite
 			}
 			noteType = value;
 		}
-		noteSplashHue = colorSwap.hue;
-		noteSplashSat = colorSwap.saturation;
-		noteSplashBrt = colorSwap.brightness;
-		holdCoverHue = colorSwap.hue;
-		holdCoverSat = colorSwap.saturation;
-		holdCoverBrt = colorSwap.brightness;
+		noteSplashData.shader.colorSwap.hue = colorSwap.hue;
+		noteSplashData.shader.colorSwap.saturation = colorSwap.saturation;
+		noteSplashData.shader.colorSwap.brightness = colorSwap.brightness;
+		holdCoverData.shader.colorSwap.hue = colorSwap.hue;
+		holdCoverData.shader.colorSwap.saturation = colorSwap.saturation;
+		holdCoverData.shader.colorSwap.brightness = colorSwap.brightness;
 		runConfig(value);
 		return value;
 	}
@@ -541,7 +792,6 @@ class Note extends FlxSprite
 		hitsound = 'hitsound';
 		this.mustPress = mustPress;
 		this.gfNote = gfSec;
-		this.noteSplashTexture = '';
 		this.noteType = noteType;
 		//sorry
 		//runConfig(noteType);
@@ -802,79 +1052,281 @@ class Note extends FlxSprite
 		return value;
 	}
 
-	private function set_noteSplashTexture(value:String):String {
-		if (noteSplashTexture != value) {
-			noteSplashTexture = value;
-			//auto cache
-			try {
-				if (value == null || value.length < 1) {
-					var skin:String = PlayState.SONG.splashSkin;
-					var skinOpt:String = PlayState.SONG.splashSkinOpt;
-					var skinSec:String = PlayState.SONG.splashSkinSec;
-					if (skin == null || skin.length < 1) {
-						skin = "noteSplashes";
-					}
-					if (skinOpt == null || skinOpt.length < 1) {
-						skinOpt = skin;
-					}
-					if (skinSec == null || skinSec.length < 1) {
-						if (skinOpt == null || skinOpt.length < 1) {
-							skinOpt = skin;
-						}
-						skinSec = skinOpt;
-					}
-					if (mustPress) {
-						Paths.getSparrowAtlas(skin);
-					} else if (gfNote) {
-						Paths.getSparrowAtlas(skinSec);
-					} else {
-						Paths.getSparrowAtlas(skinOpt);
-					}
-				} else {
-					Paths.getSparrowAtlas(value);
-				}
-			} catch (e:Dynamic) {
-				Paths.getSparrowAtlas('noteSplashes');
+	//it just reference old code to new data
+	inline private function get_noteSplashTexture():String return noteSplashData.texture;
+
+	inline private function set_noteSplashTexture(value:String):String return noteSplashData.texture = value;
+
+	inline private function get_noteSplashShaderType():String return noteSplashData.shaderType;
+
+	inline private function set_noteSplashShaderType(value:String):String return noteSplashData.shaderType = value;
+	
+	inline private function get_noteSplashAngle():Float return noteSplashData.angle;
+
+	inline private function set_noteSplashAngle(value:Float):Float return noteSplashData.angle = value;
+
+	inline private function get_noteSplashAlpha():Float return noteSplashData.alpha;
+
+	inline private function set_noteSplashAlpha(value:Float):Float return noteSplashData.alpha = value;
+
+	inline private function get_noteSplashHue():Float return noteSplashData.shader.colorSwap.hue;
+
+	inline private function set_noteSplashHue(value:Float):Float return noteSplashData.shader.colorSwap.hue = value;
+
+	inline private function get_noteSplashSat():Float return noteSplashData.shader.colorSwap.saturation;
+
+	inline private function set_noteSplashSat(value:Float):Float return noteSplashData.shader.colorSwap.saturation = value;
+
+	inline private function get_noteSplashBrt():Float return noteSplashData.shader.colorSwap.brightness;
+
+	inline private function set_noteSplashBrt(value:Float):Float return noteSplashData.shader.colorSwap.brightness = value;
+
+	inline private function get_noteSplashSingleR():Float return noteSplashData.shader.singleColor.r;
+
+	inline private function set_noteSplashSingleR(value:Float):Float return noteSplashData.shader.singleColor.r = value;
+
+	inline private function get_noteSplashSingleG():Float return noteSplashData.shader.singleColor.g;
+
+	inline private function set_noteSplashSingleG(value:Float):Float return noteSplashData.shader.singleColor.g = value;
+
+	inline private function get_noteSplashSingleB():Float return noteSplashData.shader.singleColor.b;
+
+	inline private function set_noteSplashSingleB(value:Float):Float return noteSplashData.shader.singleColor.b = value;
+
+	inline private function get_noteSplashInvertR():Bool return noteSplashData.shader.invertColor.r;
+
+	inline private function set_noteSplashInvertR(value:Bool):Bool return noteSplashData.shader.invertColor.r = value;
+
+	inline private function get_noteSplashInvertG():Bool return noteSplashData.shader.invertColor.g;
+
+	inline private function set_noteSplashInvertG(value:Bool):Bool return noteSplashData.shader.invertColor.g = value;
+
+	inline private function get_noteSplashInvertB():Bool return noteSplashData.shader.invertColor.b;
+
+	inline private function set_noteSplashInvertB(value:Bool):Bool return noteSplashData.shader.invertColor.b = value;
+
+	inline private function get_noteSplashRGBSwapR():Int return noteSplashData.shader.rgbSwap.r;
+
+	inline private function set_noteSplashRGBSwapR(value:Int):Int return noteSplashData.shader.rgbSwap.r = value;
+
+	inline private function get_noteSplashRGBSwapG():Int return noteSplashData.shader.rgbSwap.g;
+
+	inline private function set_noteSplashRGBSwapG(value:Int):Int return noteSplashData.shader.rgbSwap.g = value;
+
+	inline private function get_noteSplashRGBSwapB():Int return noteSplashData.shader.rgbSwap.b;
+
+	inline private function set_noteSplashRGBSwapB(value:Int):Int return noteSplashData.shader.rgbSwap.b = value;
+
+	inline private function get_noteSplashPixelSize():Float return noteSplashData.shader.pixel.size;	
+
+	inline private function set_noteSplashPixelSize(value:Float):Float return noteSplashData.shader.pixel.size = value;
+
+	inline private function get_noteSplashPosterizeRange():Float return noteSplashData.shader.posterize.range;
+
+	inline private function set_noteSplashPosterizeRange(value:Float):Float return noteSplashData.shader.posterize.range = value;
+
+	inline private function get_noteSplashR():Int return noteSplashData.shader.rgbPalette.r;
+
+	inline private function set_noteSplashR(value:Int):Int return noteSplashData.shader.rgbPalette.r = value;
+
+	inline private function get_noteSplashG():Int return noteSplashData.shader.rgbPalette.g;
+
+	inline private function set_noteSplashG(value:Int):Int return noteSplashData.shader.rgbPalette.g = value;
+
+	inline private function get_noteSplashB():Int return noteSplashData.shader.rgbPalette.b;
+
+	inline private function set_noteSplashB(value:Int):Int return noteSplashData.shader.rgbPalette.b = value;
+
+	inline private function get_noteSplashGrayscaleMult():Float return noteSplashData.shader.grayscale.mult;
+
+	inline private function set_noteSplashGrayscaleMult(value:Float):Float return noteSplashData.shader.grayscale.mult = value;
+
+	inline private function get_noteSplashBAndWMult():Float return noteSplashData.shader.BAndW.mult;
+
+	inline private function set_noteSplashBAndWMult(value:Float):Float return noteSplashData.shader.BAndW.mult = value;
+
+	inline private function get_noteSplashBAndWThreshold():Float return noteSplashData.shader.BAndW.threshold;
+
+	inline private function set_noteSplashBAndWThreshold(value:Float):Float return noteSplashData.shader.BAndW.threshold = value;
+
+	inline private function get_noteSplashCam():String return noteSplashData.camera;
+
+	inline private function set_noteSplashCam(value:String):String return noteSplashData.camera = value;
+
+	inline private function get_noteSplashScale():Float return noteSplashData.scale;
+
+	inline private function set_noteSplashScale(value:Float):Float return noteSplashData.scale = value;
+
+	inline private function get_noteSplashScrollFactor():Array<Float> return [noteSplashData.scrollFactor.x, noteSplashData.scrollFactor.y];
+
+	inline private function set_noteSplashScrollFactor(value:Array<Float>):Array<Float> {
+		if (value.length < 2) {
+			if (value.length < 1) {
+				value = [1, 1];
+			} else {
+				value = [value[0], value[0]];
 			}
 		}
+		noteSplashData.scrollFactor.x = value[0];
+		noteSplashData.scrollFactor.y = value[1];
 		return value;
 	}
-	private function set_holdCoverTexture(value:String):String {
-		if (holdCoverTexture != value) {
-			holdCoverTexture = value;
-			try {
-				if (value == null || value.length < 1) {
-					var skin:String = PlayState.SONG.holdCoverSkin;
-					var skinOpt:String = PlayState.SONG.holdCoverSkinOpt;
-					var skinSec:String = PlayState.SONG.holdCoverSkinSec;
-					if (skin == null || skin.length < 1) {
-						skin = "holdCover";
-					}
-					if (skinOpt == null || skinOpt.length < 1) {
-						skinOpt = skin;
-					}
-					if (skinSec == null || skinSec.length < 1) {
-						if (skinOpt == null || skinOpt.length < 1) {
-							skinOpt = skin;
-						}
-						skinSec = skinOpt;
-					}
-					if (mustPress) {
-						Paths.getSparrowAtlas(skin);
-					} else if (gfNote) {
-						Paths.getSparrowAtlas(skinSec);
-					} else {
-						Paths.getSparrowAtlas(skinOpt);
-					}
-				} else {
-					Paths.getSparrowAtlas(value);
-				}
-			} catch (e:Dynamic) {
-				Paths.getSparrowAtlas('holdCover');
+
+	inline private function get_noteSplashOffsetX():Float return noteSplashData.offset.x;
+
+	inline private function set_noteSplashOffsetX(value:Float):Float return noteSplashData.offset.x = value;
+
+	inline private function get_noteSplashOffsetY():Float return noteSplashData.offset.y;
+
+	inline private function set_noteSplashOffsetY(value:Float):Float return noteSplashData.offset.y = value;
+
+	inline private function get_noteSplashOffsetOriginX():Float return noteSplashData.offsetOrigin.x;
+
+	inline private function set_noteSplashOffsetOriginX(value:Float):Float return noteSplashData.offsetOrigin.x = value;
+
+	inline private function get_noteSplashOffsetOriginY():Float return noteSplashData.offsetOrigin.y;
+
+	inline private function set_noteSplashOffsetOriginY(value:Float):Float return noteSplashData.offsetOrigin.y = value;
+
+	inline private function get_noteSplashCopyAlpha():Bool return noteSplashData.copyAlpha;
+
+	inline private function set_noteSplashCopyAlpha(value:Bool):Bool return noteSplashData.copyAlpha = value;
+	
+	inline private function get_noteSplashDisabled():Bool return noteSplashData.disabled;
+
+	inline private function set_noteSplashDisabled(value:Bool):Bool return noteSplashData.disabled = value;
+
+	inline private function get_holdCoverTexture():String return holdCoverData.texture;
+
+	inline private function set_holdCoverTexture(value:String):String return holdCoverData.texture = value;
+
+	inline private function get_holdCoverAlpha():Float return holdCoverData.alpha;
+
+	inline private function set_holdCoverAlpha(value:Float):Float return holdCoverData.alpha = value;
+
+	inline private function get_holdCoverCopyAlpha():Bool return holdCoverData.copyAlpha;
+
+	inline private function set_holdCoverCopyAlpha(value:Bool):Bool return holdCoverData.copyAlpha = value;
+
+	inline private function get_holdCoverCam():String return holdCoverData.camera;
+
+	inline private function set_holdCoverCam(value:String):String return holdCoverData.camera = value;
+
+	inline private function get_holdCoverScrollFactor():Array<Float> return [holdCoverData.scrollFactor.x, holdCoverData.scrollFactor.y];
+
+	inline private function set_holdCoverScrollFactor(value:Array<Float>):Array<Float> {
+		if (value.length < 2) {
+			if (value.length < 1) {
+				value = [1, 1];
+			} else {
+				value = [value[0], value[0]];
 			}
 		}
+		holdCoverData.scrollFactor.x = value[0];
+		holdCoverData.scrollFactor.y = value[1];
 		return value;
 	}
+
+	inline private function get_holdCoverScale():Float return holdCoverData.scale;
+
+	inline private function set_holdCoverScale(value:Float):Float return holdCoverData.scale = value;
+
+	inline private function get_holdCoverOffsetX():Float return holdCoverData.offset.x;
+
+	inline private function set_holdCoverOffsetX(value:Float):Float return holdCoverData.offset.x = value;
+
+	inline private function get_holdCoverOffsetY():Float return holdCoverData.offset.y;
+
+	inline private function set_holdCoverOffsetY(value:Float):Float return holdCoverData.offset.y = value;
+
+	inline private function get_holdCoverShaderType():String return holdCoverData.shaderType;
+
+	inline private function set_holdCoverShaderType(value:String):String return holdCoverData.shaderType = value;
+
+	inline private function get_holdCoverHue():Float return holdCoverData.shader.colorSwap.hue;
+
+	inline private function set_holdCoverHue(value:Float):Float return holdCoverData.shader.colorSwap.hue = value;
+
+	inline private function get_holdCoverBrt():Float return holdCoverData.shader.colorSwap.brightness;
+
+	inline private function set_holdCoverBrt(value:Float):Float return holdCoverData.shader.colorSwap.brightness = value;
+
+	inline private function get_holdCoverSat():Float return holdCoverData.shader.colorSwap.saturation;
+
+	inline private function set_holdCoverSat(value:Float):Float return holdCoverData.shader.colorSwap.saturation = value;
+
+	inline private function get_holdCoverSingleR():Float return holdCoverData.shader.singleColor.r;
+
+	inline private function set_holdCoverSingleR(value:Float):Float return holdCoverData.shader.singleColor.r = value;
+
+	inline private function get_holdCoverSingleG():Float return holdCoverData.shader.singleColor.g;
+
+	inline private function set_holdCoverSingleG(value:Float):Float return holdCoverData.shader.singleColor.g = value;
+
+	inline private function get_holdCoverSingleB():Float return holdCoverData.shader.singleColor.b;
+
+	inline private function set_holdCoverSingleB(value:Float):Float return holdCoverData.shader.singleColor.b = value;
+
+	inline private function get_holdCoverInvertR():Bool return holdCoverData.shader.invertColor.r;
+
+	inline private function set_holdCoverInvertR(value:Bool):Bool return holdCoverData.shader.invertColor.r = value;
+
+	inline private function get_holdCoverInvertG():Bool return holdCoverData.shader.invertColor.g;
+
+	inline private function set_holdCoverInvertG(value:Bool):Bool return holdCoverData.shader.invertColor.g = value;
+
+	inline private function get_holdCoverInvertB():Bool return holdCoverData.shader.invertColor.b;
+
+	inline private function set_holdCoverInvertB(value:Bool):Bool return holdCoverData.shader.invertColor.b = value;
+
+	inline private function get_holdCoverRGBSwapR():Int return holdCoverData.shader.rgbSwap.r;
+
+	inline private function set_holdCoverRGBSwapR(value:Int):Int return holdCoverData.shader.rgbSwap.r = value;
+
+	inline private function get_holdCoverRGBSwapG():Int return holdCoverData.shader.rgbSwap.g;
+
+	inline private function set_holdCoverRGBSwapG(value:Int):Int return holdCoverData.shader.rgbSwap.g = value;
+
+	inline private function get_holdCoverRGBSwapB():Int return holdCoverData.shader.rgbSwap.b;
+
+	inline private function set_holdCoverRGBSwapB(value:Int):Int return holdCoverData.shader.rgbSwap.b = value;
+
+	inline private function get_holdCoverPixelSize():Float return holdCoverData.shader.pixel.size;
+	
+	inline private function set_holdCoverPixelSize(value:Float):Float return holdCoverData.shader.pixel.size = value;
+
+	inline private function get_holdCoverPosterizeRange():Float return holdCoverData.shader.posterize.range;
+
+	inline private function set_holdCoverPosterizeRange(value:Float):Float return holdCoverData.shader.posterize.range = value;
+
+	inline private function get_holdCoverR():Int return holdCoverData.shader.rgbPalette.r;
+
+	inline private function set_holdCoverR(value:Int):Int return holdCoverData.shader.rgbPalette.r = value;
+
+	inline private function get_holdCoverG():Int return holdCoverData.shader.rgbPalette.g;
+
+	inline private function set_holdCoverG(value:Int):Int return holdCoverData.shader.rgbPalette.g = value;
+
+	inline private function get_holdCoverB():Int return holdCoverData.shader.rgbPalette.b;
+
+	inline private function set_holdCoverB(value:Int):Int return holdCoverData.shader.rgbPalette.b = value;
+
+	inline private function get_holdCoverGrayscaleMult():Float return holdCoverData.shader.grayscale.mult;
+
+	inline private function set_holdCoverGrayscaleMult(value:Float):Float return holdCoverData.shader.grayscale.mult = value;
+
+	inline private function get_holdCoverBAndWMult():Float return holdCoverData.shader.BAndW.mult;
+
+	inline private function set_holdCoverBAndWMult(value:Float):Float return holdCoverData.shader.BAndW.mult = value;
+
+	inline private function get_holdCoverBAndWThreshold():Float return holdCoverData.shader.BAndW.threshold;
+
+	inline private function set_holdCoverBAndWThreshold(value:Float):Float return holdCoverData.shader.BAndW.threshold = value;
+
+	inline private function get_holdCoverDisabled():Bool return holdCoverData.disabled;
+
+	inline private function set_holdCoverDisabled(value:Bool):Bool return holdCoverData.disabled = value;
+
 	private function set_mustPress(value:Bool):Bool {
 		if (mustPress != value) {
 			mustPress = value;
@@ -1067,5 +1519,28 @@ class Note extends FlxSprite
 			}
 		}
 		return value;
+	}
+	private function set_noteSplashData(value:ExternalSpriteData):ExternalSpriteData {
+		if (value != null) {
+			noteSplashData = value;
+		}
+		return value;
+	}
+	private function set_holdCoverData(value:ExternalSpriteData):ExternalSpriteData {
+		if (value != null) {
+			holdCoverData = value;
+		}
+		return value;
+	}
+	private static function get_swagWidth():Float {
+		return (160*0.7) * ClientPrefs.strumsize;
+	}
+	override function draw() {
+		var offsetYMod = y;
+		if (animation != null && animation.curAnim != null && animation.curAnim.name.endsWith('_down')) {
+			y += downScrollOffset;
+		}
+		super.draw();
+		y = offsetYMod;
 	}
 }

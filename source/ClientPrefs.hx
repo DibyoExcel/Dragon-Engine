@@ -8,6 +8,7 @@ import dge.input.device.KeyboardControls;
 
 class ClientPrefs {
 	//dge setting
+	public static var chartEditorGridSize:Int = #if mobile 60 #else 40 #end;
 	public static var hitboxHintAlpha:Float = 0.75;
 	public static var fpsBGAlpha:Float = 0.5;
 	public static var fillScreen:Bool = false;
@@ -134,6 +135,7 @@ class ClientPrefs {
 	public static var safeFrames:Float = 10;
 
 	public static function saveSettings() {
+		FlxG.save.data.chartEditorGridSize = chartEditorGridSize;
 		FlxG.save.data.hitboxHintAlpha = hitboxHintAlpha;
 		FlxG.save.data.fpsBGAlpha = fpsBGAlpha;
 		FlxG.save.data.fillScreen = fillScreen;
@@ -226,6 +228,9 @@ class ClientPrefs {
 	public static function loadPrefs() {
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.chartEditorGridSize != null) {
+			chartEditorGridSize = FlxG.save.data.chartEditorGridSize;
 		}
 		if(FlxG.save.data.hitboxHintAlpha != null) {
 			hitboxHintAlpha = FlxG.save.data.hitboxHintAlpha;

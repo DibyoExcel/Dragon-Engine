@@ -555,7 +555,7 @@ class EditorPlayState extends MusicBeatState
 							StrumPlayAnim(true, Std.int(Math.abs(daNote.noteData)), time, daNote);
 						}
 					} else if((daNote.strumTime + daNote.offsetStrumTime) <= Conductor.songPosition || daNote.isSustainNote) {
-						if (!daNote.noteSplashDisabled && !ClientPrefs.clsstrum) {
+						if (!daNote.noteSplashData.disabled && !ClientPrefs.clsstrum) {
 							spawnNoteSplashOnNote(daNote, daNote.mustPress);
 						}
 						daNote.kill();
@@ -906,7 +906,7 @@ class EditorPlayState extends MusicBeatState
 					noteMiss();
 					--songMisses;
 					if(!note.isSustainNote) {
-						if(!note.noteSplashDisabled && !ClientPrefs.clsstrum) {
+						if(!note.noteSplashData.disabled && !ClientPrefs.clsstrum) {
 							spawnNoteSplashOnNote(note, note.mustPress);
 						}
 					}
@@ -1010,7 +1010,7 @@ class EditorPlayState extends MusicBeatState
 			//score = 200;
 		}
 
-		if(daRating == 'sick' && !note.noteSplashDisabled && !ClientPrefs.clsstrum)
+		if(daRating == 'sick' && !note.noteSplashData.disabled && !ClientPrefs.clsstrum)
 		{
 			spawnNoteSplashOnNote(note, note.mustPress);
 		}
@@ -1266,16 +1266,19 @@ class EditorPlayState extends MusicBeatState
 	function spawnNoteSplash(x:Float, y:Float, data:Int, ?note:Note = null) {
 		var skin:String = '';
 		
-		var hue:Float = ClientPrefs.arrowHSV[EKUtil.getCurrentMania()][data % 4][0] / 360;
-		var sat:Float = ClientPrefs.arrowHSV[EKUtil.getCurrentMania()][data % 4][1] / 100;
-		var brt:Float = ClientPrefs.arrowHSV[EKUtil.getCurrentMania()][data % 4][2] / 100;
+		var getColorHSV = ClientPrefs.arrowHSV[EKUtil.getCurrentMania()];
+		var hue:Float = getColorHSV[data % getColorHSV.length][0] / 360;
+		var sat:Float = getColorHSV[data % getColorHSV.length][1] / 100;
+		var brt:Float = getColorHSV[data % getColorHSV.length][2] / 100;
 		if(note != null) {
-			skin = note.noteSplashTexture;
-			hue = note.noteSplashHue;
-			sat = note.noteSplashSat;
-			brt = note.noteSplashBrt;
+			var splashData = note.noteSplashData;
+			skin = splashData.texture;
+			var shaderO = splashData.shader;
+			hue = shaderO.colorSwap.hue;
+			sat = shaderO.colorSwap.saturation;
+			brt = shaderO.colorSwap.brightness;
 			var splash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
-			splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, '', note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1]);
+			splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, '', splashData.scale, splashData.scrollFactor.x, splashData.scrollFactor.y);
 			note.noteSplash = splash;
 			grpNoteSplashes.add(splash);
 		}

@@ -4015,6 +4015,8 @@ class PlayState extends MusicBeatState
 						var strumDirectionR:Float = strumDirection;
 						var strumAlphaR:Float = strumAlpha;
 						var strumScrollR:Bool = strumScroll;
+						var strumScale:Array<Float> = [actualStrum.scaleMult.x, actualStrum.scaleMult.y];
+						var strumScaleR:Array<Float> = [actualStrum.scaleMult.x, actualStrum.scaleMult.y];
 						if (fakeStrum != null) {
 							strumXR = daNote.fakeStrumX == null ? (fakeStrum.fakeStrumX == null ? fakeStrum.x : fakeStrum.fakeStrumX) : daNote.fakeStrumX;
 							strumYR = daNote.fakeStrumY == null ? (fakeStrum.fakeStrumY == null ? fakeStrum.y : fakeStrum.fakeStrumY) : daNote.fakeStrumY;
@@ -4022,6 +4024,7 @@ class PlayState extends MusicBeatState
 							strumDirectionR = daNote.fakeStrumDirection == null ? (fakeStrum.fakeStrumDirection == null ? fakeStrum.direction : fakeStrum.fakeStrumDirection) : daNote.fakeStrumDirection;
 							strumAlphaR = daNote.fakeStrumAlpha == null ? (fakeStrum.fakeStrumAlpha == null ? fakeStrum.alpha : fakeStrum.fakeStrumAlpha) : daNote.fakeStrumAlpha;
 							strumScrollR = daNote.fakeStrumDownScroll == null ? (fakeStrum.fakeStrumDownScroll == null ? fakeStrum.downScroll : fakeStrum.fakeStrumDownScroll) : daNote.fakeStrumDownScroll;
+							strumScaleR = [fakeStrum.scaleMult.x, fakeStrum.scaleMult.y];
 						}
 						strumDirection += daNote.direction;
 						strumDirectionR += daNote.direction;
@@ -4082,6 +4085,8 @@ class PlayState extends MusicBeatState
 						var totalStrumDir = FlxMath.lerp(strumDirection, strumDirectionR, lerpThing);
 						var totalStrumAng = FlxMath.lerp(strumAngle, strumAngleR, lerpThing);
 						var totalAngleDir = FlxMath.lerp(angleDir, angleDirR, lerpThing);
+						var totalScaleX = FlxMath.lerp(strumScale[0], strumScaleR[0], lerpThing);
+						var totalScaleY = FlxMath.lerp(strumScale[1], strumScaleR[1], lerpThing);
 						if (daNote.updateDistance) {
 							if (strumScroll) //Downscroll
 							{
@@ -4183,6 +4188,10 @@ class PlayState extends MusicBeatState
 						if (daNote.copyScrollFactor) {
 							daNote.scrollFactor.x = actualStrum.scrollFactor.x;
 							daNote.scrollFactor.y = actualStrum.scrollFactor.y;
+						}
+						if (daNote.copyScale) {
+							daNote.scaleMult.x = totalScaleX;
+							daNote.scaleMult.y = totalScaleY;
 						}
 						if (daNote.copyCam) {
 							daNote.cameras = actualStrum.cameras;
@@ -5510,7 +5519,7 @@ class PlayState extends MusicBeatState
 			if (!note.ratingDisabled) totalNotesHit += daRating.ratingMod;
 		}
 
-		if((daRating.noteSplash && !note.noteSplashDisabled && !note.fakeNoHit) || note.forceNoteSplash)
+		if((daRating.noteSplash && !note.noteSplashData.disabled && !note.fakeNoHit) || note.forceNoteSplash)
 		{
 			spawnNoteSplashOnNote(note, note.mustPress);
 		}
@@ -6003,7 +6012,7 @@ class PlayState extends MusicBeatState
 				 if (gamemode == "opponent") {
 						health += note.hitHealth * healthDrainMult;
 					}
-				if((((note.opponentRating && daRating.noteSplash) || !note.opponentRating) && !note.noteSplashDisabled && !note.isSustainNote && !note.fakeNoHit) || note.forceNoteSplash) {
+				if((((note.opponentRating && daRating.noteSplash) || !note.opponentRating) && !note.noteSplashData.disabled && !note.isSustainNote && !note.fakeNoHit) || note.forceNoteSplash) {
 					spawnNoteSplashOnNote(note, note.mustPress);
 				}
 				if (Paths.formatToSongPath(SONG.song) != 'tutorial' && (!note.mustPress || (note.mustPress && note.isDad)))
@@ -6082,7 +6091,7 @@ class PlayState extends MusicBeatState
 				} else {
 					callOnLuas((note.mustPress ? 'goodNoteHit' : 'opponentNoteHit'), [notes.members.indexOf(note), Math.abs(note.noteData), note.noteType, note.isSustainNote]);
 				}
-				if (!note.holdCoverDisabled && ClientPrefs.holdCoverOpt &&  !note.fakeNoHit && note.playStrumAnim) {
+				if (!note.holdCoverData.disabled && ClientPrefs.holdCoverOpt &&  !note.fakeNoHit && note.playStrumAnim) {
 					spawnHoldCover(note);
 				}
 				if (note.multiPress <= 0) {
@@ -6150,7 +6159,7 @@ class PlayState extends MusicBeatState
 
 			if(note.hitCausesMiss && gamemode != 'opponent') {
 				noteMiss(note);
-				if((!note.noteSplashDisabled && !note.isSustainNote && !note.fakeNoHit) || note.forceNoteSplash) {
+				if((!note.noteSplashData.disabled && !note.isSustainNote && !note.fakeNoHit) || note.forceNoteSplash) {
 					spawnNoteSplashOnNote(note, note.mustPress);
 				}
 
@@ -6326,7 +6335,7 @@ class PlayState extends MusicBeatState
 			} else {
 				callOnLuas((!note.mustPress || note.isDad ? 'opponentNoteHit' : 'goodNoteHit'), [notes.members.indexOf(note), leData, leType, isSus]);
 			}
-			if (!note.holdCoverDisabled && ClientPrefs.holdCover && !note.fakeNoHit && note.playStrumAnim) {
+			if (!note.holdCoverData.disabled && ClientPrefs.holdCover && !note.fakeNoHit && note.playStrumAnim) {
 				spawnHoldCover(note);
 			}
 			if (note.multiPress <= 0) {
@@ -6362,6 +6371,7 @@ class PlayState extends MusicBeatState
 		var brt:Float = 0;
 		var data = 0;
 		if (note != null) data = note.noteData;
+		var splashData = note.noteSplashData;
 		if (data > -1)
 		{
 			var getColorMania = ClientPrefs.arrowHSV[EKUtil.getCurrentMania() % ClientPrefs.arrowHSV.length];
@@ -6370,10 +6380,10 @@ class PlayState extends MusicBeatState
 			sat = colroNoteData[1] / 100;
 			brt = colroNoteData[2] / 100;
 			if(note != null) {
-				skin = note.noteSplashTexture;
-				hue = note.noteSplashHue;
-				sat = note.noteSplashSat;
-				brt = note.noteSplashBrt;
+				skin = splashData.texture;
+				hue = splashData.shader.colorSwap.hue;
+				sat = splashData.shader.colorSwap.saturation;
+				brt = splashData.shader.colorSwap.brightness;
 			}
 		}
 		if (note != null) {
@@ -6387,7 +6397,7 @@ class PlayState extends MusicBeatState
 				groupTarget = grpNoteSplashesGf;
 			}
 			var splash:NoteSplash = groupTarget.recycle(NoteSplash);
-			splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, note.noteSplashCam, note.noteSplashScale, note.noteSplashScrollFactor[0], note.noteSplashScrollFactor[1], note);
+			splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, splashData.camera, splashData.scale, splashData.scrollFactor.x, splashData.scrollFactor.y, note);
 			note.noteSplash = splash;
 			groupTarget.add(splash);
 			splash.color = 0xFFFFFFFF;

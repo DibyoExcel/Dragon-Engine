@@ -83,9 +83,6 @@ class VisualUISubState extends BaseOptionsMenu
 		option.maxValue = 5;//How The Hell How Much Play Note Size As 5?
 		option.scrollSpeed = 1.6;
 		option.changeValue = 0.1;
-		option.onChange = function() {
-			Note.swagWidth = (160*0.7) * ClientPrefs.strumsize;
-		};
 		addOption(option);
 
 		var option:Option = new Option('Dark Mode',
@@ -283,15 +280,16 @@ class VisualUISubState extends BaseOptionsMenu
 	}
 	function reloadSubstate() {
 		ClientPrefs.saveSettings();
-		FlxG.resetState();
+		close();
+		FlxG.state.openSubState(new VisualUISubState());
 	}
 	function onChangeNoteSkin() {
+		var fr = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
+		if (fr == null) {
+			fr = Paths.getSparrowAtlas("NOTE_assets");
+		}
 		for (i in 0...spriteNote.length) {
-			try{
-				spriteNote[i].frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
-			} catch (e:Dynamic) {
-				spriteNote[i].frames = Paths.getSparrowAtlas("NOTE_assets");
-			}
+			spriteNote[i].frames = fr;
 			spriteNote[i].animation.addByPrefix('idle', 'arrow' + arrowDir[i].toUpperCase(), ClientPrefs.fpsStrumAnim, true);
 			spriteNote[i].animation.addByPrefix('confirm', arrowDir[i].toLowerCase() + ' confirm', ClientPrefs.fpsStrumAnim, true);
 			spriteNote[i].animation.play('idle');
@@ -299,11 +297,7 @@ class VisualUISubState extends BaseOptionsMenu
 			spriteNote[i].centerOffsets();
 		}
 		for (i in 0...spriteNote_c.length) {
-			try{
-				spriteNote_c[i].frames = Paths.getSparrowAtlas(ClientPrefs.dflnoteskin);
-			} catch (e:Dynamic) {
-				spriteNote_c[i].frames = Paths.getSparrowAtlas("NOTE_assets");
-			}
+			spriteNote_c[i].frames = fr;
 			spriteNote_c[i].animation.addByPrefix('idle', noteColor[i].toLowerCase() + "0", ClientPrefs.fpsStrumAnim, true);
 			//spriteNote_c[i].animation.addByPrefix('confirm', arrowDir[i].toLowerCase() + ' confirm', ClientPrefs.fpsStrumAnim, false);
 			spriteNote_c[i].animation.play('idle');

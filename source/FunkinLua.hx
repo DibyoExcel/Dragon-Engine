@@ -3794,12 +3794,12 @@ class FunkinLua {
 			luaTrace("changeNotesSplashTexture is deprecated! Use changeNotesSplashTextureV2 instead", false, true);
 			for (i in PlayState.instance.notes) {
 				if (!i.ignoreTextureChange && i.mustPress == player && i.gfNote == gf) {
-					i.noteSplashTexture = texture;
+					i.noteSplashData.texture = texture;
 				}
 			}
 			for (i in PlayState.instance.unspawnNotes) {
 				if (!i.ignoreTextureChange && i.mustPress == player && i.gfNote == gf) {
-					i.noteSplashTexture = texture;
+					i.noteSplashData.texture = texture;
 				}
 			}
 		});
@@ -3812,12 +3812,12 @@ class FunkinLua {
 			luaTrace("changeNotesHoldCover is deprecated! Use changeNotesHoldCoverV2 instead", false, true);
 			for (i in PlayState.instance.notes) {
 				if (!i.ignoreTextureChange && i.mustPress == player && i.gfNote == gf) {
-					i.holdCoverTexture = texture;
+					i.holdCoverData.texture = texture;
 				}
 			}
 			for (i in PlayState.instance.unspawnNotes) {
 				if (!i.ignoreTextureChange && i.mustPress == player && i.gfNote == gf) {
-					i.holdCoverTexture = texture;
+					i.holdCoverData.texture = texture;
 				}
 			}
 		});
@@ -3951,8 +3951,14 @@ class FunkinLua {
 					for (i in game.notes.members) {
 						if (i.fieldTarget == getString) {
 							if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-							if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-							if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+							if (holdCover) {
+								i.holdCoverData.scrollFactor.x = scroll[0];
+								i.holdCoverData.scrollFactor.y = scroll[1];
+							};
+							if (noteSplash) {
+								i.noteSplashData.scrollFactor.x = scroll[0];
+								i.noteSplashData.scrollFactor.y = scroll[1];
+							}
 						}
 					}
 				}
@@ -3960,8 +3966,14 @@ class FunkinLua {
 					for (i in game.unspawnNotes) {
 						if (i.fieldTarget == getString) {
 							if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-							if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-							if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+							if (holdCover) {
+								i.holdCoverData.scrollFactor.x = scroll[0];
+								i.holdCoverData.scrollFactor.y = scroll[1];
+							};
+							if (noteSplash) {
+								i.noteSplashData.scrollFactor.x = scroll[0];
+								i.noteSplashData.scrollFactor.y = scroll[1];
+							}
 						}
 					}
 				}
@@ -3972,15 +3984,27 @@ class FunkinLua {
 							for (i in game.notes) {
 								if (i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
 									if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-									if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-									if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+									if (holdCover) {
+										i.holdCoverData.scrollFactor.x = scroll[0];
+										i.holdCoverData.scrollFactor.y = scroll[1];
+									};
+									if (noteSplash) {
+										i.noteSplashData.scrollFactor.x = scroll[0];
+										i.noteSplashData.scrollFactor.y = scroll[1];
+									}
 								}
 							}
 							for (i in game.unspawnNotes) {
 								if (i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
 									if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-									if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-									if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+									if (holdCover) {
+										i.holdCoverData.scrollFactor.x = scroll[0];
+										i.holdCoverData.scrollFactor.y = scroll[1];
+									};
+									if (noteSplash) {
+										i.noteSplashData.scrollFactor.x = scroll[0];
+										i.noteSplashData.scrollFactor.y = scroll[1];
+									}
 								}
 							}
 						}
@@ -3992,15 +4016,27 @@ class FunkinLua {
 							for (i in game.notes) {
 								if (!i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
 									if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-									if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-									if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+									if (holdCover) {
+										i.holdCoverData.scrollFactor.x = scroll[0];
+										i.holdCoverData.scrollFactor.y = scroll[1];
+									};
+									if (noteSplash) {
+										i.noteSplashData.scrollFactor.x = scroll[0];
+										i.noteSplashData.scrollFactor.y = scroll[1];
+									}
 								}
 							}
 							for (i in game.unspawnNotes) {
 								if (!i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
 									if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-									if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-									if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+									if (holdCover) {
+										i.holdCoverData.scrollFactor.x = scroll[0];
+										i.holdCoverData.scrollFactor.y = scroll[1];
+									};
+									if (noteSplash) {
+										i.noteSplashData.scrollFactor.x = scroll[0];
+										i.noteSplashData.scrollFactor.y = scroll[1];
+									}
 								}
 							}
 						}
@@ -4012,15 +4048,27 @@ class FunkinLua {
 							for (i in game.notes) {
 								if (i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
 									if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-									if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-									if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+									if (holdCover) {
+										i.holdCoverData.scrollFactor.x = scroll[0];
+										i.holdCoverData.scrollFactor.y = scroll[1];
+									};
+									if (noteSplash) {
+										i.noteSplashData.scrollFactor.x = scroll[0];
+										i.noteSplashData.scrollFactor.y = scroll[1];
+									}
 								}
 							}
 							for (i in game.unspawnNotes) {
 								if (i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
 									if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-									if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-									if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+									if (holdCover) {
+										i.holdCoverData.scrollFactor.x = scroll[0];
+										i.holdCoverData.scrollFactor.y = scroll[1];
+									};
+									if (noteSplash) {
+										i.noteSplashData.scrollFactor.x = scroll[0];
+										i.noteSplashData.scrollFactor.y = scroll[1];
+									}
 								}
 							}
 						}
@@ -4032,15 +4080,27 @@ class FunkinLua {
 							for (i in game.notes) {
 								if (i.gfNote && i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
 									if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-									if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-									if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+									if (holdCover) {
+										i.holdCoverData.scrollFactor.x = scroll[0];
+										i.holdCoverData.scrollFactor.y = scroll[1];
+									};
+									if (noteSplash) {
+										i.noteSplashData.scrollFactor.x = scroll[0];
+										i.noteSplashData.scrollFactor.y = scroll[1];
+									}
 								}
 							}
 							for (i in game.unspawnNotes) {
 								if (i.gfNote && i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
 									if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-									if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-									if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+									if (holdCover) {
+										i.holdCoverData.scrollFactor.x = scroll[0];
+										i.holdCoverData.scrollFactor.y = scroll[1];
+									};
+									if (noteSplash) {
+										i.noteSplashData.scrollFactor.x = scroll[0];
+										i.noteSplashData.scrollFactor.y = scroll[1];
+									}
 								}
 							}
 						}
@@ -4052,15 +4112,27 @@ class FunkinLua {
 							for (i in PlayState.instance.notes) {
 								if (i.gfNote && !i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
 									if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-									if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-									if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+									if (holdCover) {
+										i.holdCoverData.scrollFactor.x = scroll[0];
+										i.holdCoverData.scrollFactor.y = scroll[1];
+									};
+									if (noteSplash) {
+										i.noteSplashData.scrollFactor.x = scroll[0];
+										i.noteSplashData.scrollFactor.y = scroll[1];
+									}
 								}
 							}
 							for (i in PlayState.instance.unspawnNotes) {
 								if (i.gfNote && !i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && exludeNoteType.indexOf(i.noteType) == -1) {
 									if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-									if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-									if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+									if (holdCover) {
+										i.holdCoverData.scrollFactor.x = scroll[0];
+										i.holdCoverData.scrollFactor.y = scroll[1];
+									};
+									if (noteSplash) {
+										i.noteSplashData.scrollFactor.x = scroll[0];
+										i.noteSplashData.scrollFactor.y = scroll[1];
+									}
 								}
 							}
 						}
@@ -4071,13 +4143,25 @@ class FunkinLua {
 						if (note || holdCover || noteSplash) {
 							for (i in game.notes) {
 								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+								if (holdCover) {
+									i.holdCoverData.scrollFactor.x = scroll[0];
+									i.holdCoverData.scrollFactor.y = scroll[1];
+								};
+								if (noteSplash) {
+									i.noteSplashData.scrollFactor.x = scroll[0];
+									i.noteSplashData.scrollFactor.y = scroll[1];
+								}
 							}
 							for (i in game.unspawnNotes) {
 								if (note) i.scrollFactor.set(scroll[0], scroll[1]);
-								if (holdCover) i.holdCoverScrollFactor = [scroll[0], scroll[1]];
-								if (noteSplash) i.noteSplashScrollFactor = [scroll[0], scroll[1]];
+								if (holdCover) {
+									i.holdCoverData.scrollFactor.x = scroll[0];
+									i.holdCoverData.scrollFactor.y = scroll[1];
+								};
+								if (noteSplash) {
+									i.noteSplashData.scrollFactor.x = scroll[0];
+									i.noteSplashData.scrollFactor.y = scroll[1];
+								}
 							}
 						}
 						if (strum) {
@@ -4238,12 +4322,12 @@ class FunkinLua {
 				var getString = targetField.substring(1);
 				if (game.notes != null) for (i in game.notes.members) {
 					if (i.fieldTarget == getString && excludeNoteType.indexOf(i.noteType) == -1) {
-						i.noteSplashTexture = texture;
+						i.noteSplashData.texture = texture;
 					}
 				}
 				if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
 					if (i.fieldTarget == getString && excludeNoteType.indexOf(i.noteType) == -1) {
-						i.noteSplashTexture = texture;
+						i.noteSplashData.texture = texture;
 					}
 				}
 			} else {
@@ -4251,67 +4335,67 @@ class FunkinLua {
 					case 'player': 
 						if (game.notes != null) for (i in game.notes) {
 							if (i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
-								i.noteSplashTexture = texture;
+								i.noteSplashData.texture = texture;
 							}
 						}
 						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
 							if (i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
-								i.noteSplashTexture = texture;		
+								i.noteSplashData.texture = texture;		
 							}
 						}
 					case 'opponent':
 						if (game.notes != null) for (i in game.notes) {
 							if (!i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
-								i.noteSplashTexture = texture;
+								i.noteSplashData.texture = texture;
 							}
 						}
 						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
 							if (!i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
-								i.noteSplashTexture = texture;
+								i.noteSplashData.texture = texture;
 							}
 						}
 					case 'gf':
 						if (game.notes != null) for (i in game.notes) {
 							if (i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
-								i.noteSplashTexture = texture;
+								i.noteSplashData.texture = texture;
 							}
 						}
 						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
 							if (i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
-								i.noteSplashTexture = texture;
+								i.noteSplashData.texture = texture;
 							}
 						}
 					case 'gf-player':
 						if (game.notes != null) for (i in game.notes) {
 							if (i.gfNote && i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
-								i.noteSplashTexture = texture;
+								i.noteSplashData.texture = texture;
 							}
 						}
 						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
 							if (i.gfNote && i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
-								i.noteSplashTexture = texture;
+								i.noteSplashData.texture = texture;
 							}
 						}
 					case 'gf-opponent':
 						if (game.notes != null) for (i in game.notes) {
 							if (i.gfNote && !i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
-								i.noteSplashTexture = texture;
+								i.noteSplashData.texture = texture;
 							}
 						}
 						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
 							if (i.gfNote && !i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
-								i.noteSplashTexture = texture;
+								i.noteSplashData.texture = texture;
 							}
 						}
 					case 'all':
 						if (game.notes != null) for (i in game.notes) {
 							if (excludeNoteType.indexOf(i.noteType) == -1) {
-								i.noteSplashTexture = texture;
+								i.noteSplashData.texture = texture;
 							}
 						}
 						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
 							if (excludeNoteType.indexOf(i.noteType) == -1) {
-								i.noteSplashTexture = texture;
+								i.noteSplashData.texture = texture;
 							}
 						}
 				}
@@ -4329,12 +4413,12 @@ class FunkinLua {
 				var getString = targetField.substring(1);
 				if (game.notes != null) for (i in game.notes.members) {
 					if (i.fieldTarget == getString && excludeNoteType.indexOf(i.noteType) == -1) {
-						i.holdCoverTexture = texture;
+						i.holdCoverData.texture = texture;
 					}
 				}
 				if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
 					if (i.fieldTarget == getString && excludeNoteType.indexOf(i.noteType) == -1) {
-						i.holdCoverTexture = texture;
+						i.holdCoverData.texture = texture;
 					}
 				}
 			} else {
@@ -4342,67 +4426,67 @@ class FunkinLua {
 					case 'player': 
 						if (game.notes != null) for (i in game.notes) {
 							if (i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
-								i.holdCoverTexture = texture;
+								i.holdCoverData.texture = texture;
 							}
 						}
 						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
 							if (i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
-								i.holdCoverTexture = texture;		
+								i.holdCoverData.texture = texture;		
 							}
 						}
 					case 'opponent':
 						if (game.notes != null) for (i in game.notes) {
 							if (!i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
-								i.holdCoverTexture = texture;
+								i.holdCoverData.texture = texture;
 							}
 						}
 						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
 							if (!i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
-								i.holdCoverTexture = texture;
+								i.holdCoverData.texture = texture;
 							}
 						}
 					case 'gf':
 						if (game.notes != null) for (i in game.notes) {
 							if (i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
-								i.holdCoverTexture = texture;
+								i.holdCoverData.texture = texture;
 							}
 						}
 						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
 							if (i.gfNote && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
-								i.holdCoverTexture = texture;
+								i.holdCoverData.texture = texture;
 							}
 						}
 					case 'gf-player':
 						if (game.notes != null) for (i in game.notes) {
 							if (i.gfNote && i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
-								i.holdCoverTexture = texture;
+								i.holdCoverData.texture = texture;
 							}
 						}
 						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
 							if (i.gfNote && i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
-								i.holdCoverTexture = texture;
+								i.holdCoverData.texture = texture;
 							}
 						}
 					case 'gf-opponent':
 						if (game.notes != null) for (i in game.notes) {
 							if (i.gfNote && !i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
-								i.holdCoverTexture = texture;
+								i.holdCoverData.texture = texture;
 							}
 						}
 						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
 							if (i.gfNote && !i.mustPress && (i.fieldTarget == null || i.fieldTarget.length < 1) && excludeNoteType.indexOf(i.noteType) == -1) {
-								i.holdCoverTexture = texture;
+								i.holdCoverData.texture = texture;
 							}
 						}
 					case 'all':
 						if (game.notes != null) for (i in game.notes) {
 							if (excludeNoteType.indexOf(i.noteType) == -1) {
-								i.holdCoverTexture = texture;
+								i.holdCoverData.texture = texture;
 							}
 						}
 						if (game.unspawnNotes != null) for (i in game.unspawnNotes) {
 							if (excludeNoteType.indexOf(i.noteType) == -1) {
-								i.holdCoverTexture = texture;
+								i.holdCoverData.texture = texture;
 							}
 						}
 				}

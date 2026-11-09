@@ -96,72 +96,74 @@ class NoteSplash extends FlxSprite
 		if (oriNote != null) {
 			this.note = oriNote;
 			if (oriNote.strumNote != null) this.strum = oriNote.strumNote;
-			var shaderType = oriNote.noteSplashShaderType.toLowerCase();
+			var splashData = oriNote.noteSplashData;
+			var shaderType = splashData.shaderType.toLowerCase();
 			shader = FunkinLua.shaderSpriteHandler(this, shaderType);
+			var shaderObj = splashData.shader;
             if (shaderType == 'swap') {
 				//swap
-                colorSwap.hue = oriNote.noteSplashHue;
-                colorSwap.saturation = oriNote.noteSplashSat;
-                colorSwap.brightness = oriNote.noteSplashBrt;
+                colorSwap.hue = shaderObj.colorSwap.hue;
+                colorSwap.saturation = shaderObj.colorSwap.saturation;
+                colorSwap.brightness = shaderObj.colorSwap.brightness;
             }
             if (shaderType == 'single') {
                 //single
-                colorSingle.r = oriNote.noteSplashSingleR;
-                colorSingle.g = oriNote.noteSplashSingleG;
-                colorSingle.b = oriNote.noteSplashSingleB;
+                colorSingle.r = shaderObj.singleColor.r;
+                colorSingle.g = shaderObj.singleColor.g;
+                colorSingle.b = shaderObj.singleColor.b;
             }
             if (shaderType == 'invert') {
                 //invert
-                colorInvert.invertR = oriNote.noteSplashInvertR;
-                colorInvert.invertG = oriNote.noteSplashInvertG;
-                colorInvert.invertB = oriNote.noteSplashInvertB;
+                colorInvert.invertR = shaderObj.invertColor.r;
+                colorInvert.invertG = shaderObj.invertColor.g;
+                colorInvert.invertB = shaderObj.invertColor.b;
             }
             if (shaderType == 'rgbswap') {
                 //rgbSwap
-                colorRGBSwap.swapR = oriNote.noteSplashRGBSwapR;
-                colorRGBSwap.swapG = oriNote.noteSplashRGBSwapG;
-                colorRGBSwap.swapB = oriNote.noteSplashRGBSwapB;
+                colorRGBSwap.swapR = shaderObj.rgbSwap.r;
+                colorRGBSwap.swapG = shaderObj.rgbSwap.g;
+                colorRGBSwap.swapB = shaderObj.rgbSwap.b;
             }
             if (shaderType == 'pixel') {
                 //pixel
-                pixelSprite.pixelSize = oriNote.noteSplashPixelSize;
+                pixelSprite.pixelSize = shaderObj.pixel.size;
             }
             if (shaderType == 'posterize') {
                 //posterize
-                posterize.posterizeRange = oriNote.noteSplashPosterizeRange;
+                posterize.posterizeRange = shaderObj.posterize.range;
             }
             if (shaderType == 'rgbpalette') {
                 //rgb palette
-                rgbShader.r = oriNote.noteSplashR;
-                rgbShader.g = oriNote.noteSplashG;
-                rgbShader.b = oriNote.noteSplashB;
+                rgbShader.r = shaderObj.rgbPalette.r;
+                rgbShader.g = shaderObj.rgbPalette.g;
+                rgbShader.b = shaderObj.rgbPalette.b;
             }
             if (shaderType == 'grayscale') {
                 //grayscale
-                grayScale.mult = oriNote.noteSplashGrayscaleMult;
+                grayScale.mult = shaderObj.grayscale.mult;
             }
             if (shaderType == 'b&w') {
                 //black and white
-                blackAndWhite.mult = oriNote.noteSplashBAndWMult;
-                blackAndWhite.threshold = oriNote.noteSplashBAndWThreshold;
+                blackAndWhite.mult = shaderObj.BAndW.mult;
+                blackAndWhite.threshold = shaderObj.BAndW.threshold;
             }
 			//angle
-			angle = oriNote.noteSplashAngle;
+			angle = splashData.angle;
 			//alpha
-			if (oriNote.noteSplashCopyAlpha && oriNote.strumNote != null) {
-				alpha = oriNote.strumNote.alpha * oriNote.noteSplashAlpha;
+			if (splashData.copyAlpha && oriNote.strumNote != null) {
+				alpha = oriNote.strumNote.alpha * splashData.alpha;
 			} else {
-				alpha = oriNote.noteSplashAlpha;
+				alpha = splashData.alpha;
 			}
 			if (oriNote.strumNote != null) {
 				noteWidth = oriNote.strumNote.width;
 				noteHeight = oriNote.strumNote.height;
 			}
 			stickyStrum = oriNote.stickyNoteSplash;
-			noteSplashOffsetX = oriNote.noteSplashOffsetX;
-			noteSplashOffsetY = oriNote.noteSplashOffsetY;
-			noteSplashOffsetOriginX = oriNote.noteSplashOffsetOriginX;
-			noteSplashOffsetOriginY = oriNote.noteSplashOffsetOriginY;
+			noteSplashOffsetX = splashData.offset.x;
+			noteSplashOffsetY = splashData.offset.y;
+			noteSplashOffsetOriginX = splashData.offsetOrigin.x;
+			noteSplashOffsetOriginY = splashData.offsetOrigin.y;
 		}
 		loadAnims(texture);
 		var mania = EKUtil.getCurrentMania();
@@ -206,8 +208,8 @@ class NoteSplash extends FlxSprite
 			if (stickyStrum) {
 				setPosition((strum.x + (strum.width/2)-(width/2)), (strum.y + (strum.height/2))-(height/2));
 			}
-			if (note != null && note.noteSplashCopyAlpha) {
-				alpha = strum.alpha * note.noteSplashAlpha;
+			if (note != null && note.noteSplashData.copyAlpha) {
+				alpha = strum.alpha * note.noteSplashData.alpha;
 			} 
 		}
 		if(animation != null && animation.curAnim != null)if(animation.curAnim.finished) kill();

@@ -150,7 +150,7 @@ class ChartingState extends MusicBeatState
 
 	var highlight:FlxSprite;
 
-	public static var GRID_SIZE:Int = #if mobile 60 #else 40 #end;//slightly bigger grid size for mobile for better visibility and easier note placement, also it would be too hard to place notes with 40px grid on mobile, so yeah.
+	public static var GRID_SIZE(get, never):Int;
 	var CAM_OFFSET:Float = (360+(GRID_SIZE*4)) - #if mobile 125 #else 0 #end;
 
 	var dummyArrow:FlxSprite;
@@ -2128,7 +2128,6 @@ class ChartingState extends MusicBeatState
 						FlxG.sound.music.time -= (FlxG.mouse.wheel * Conductor.stepCrochet*0.8);
 					else
 						{
-							var time:Float = FlxG.sound.music.time;
 							var beat:Float = curDecBeat;
 							var snap:Float = quantization / 4;
 							var increase:Float = 1 / snap;
@@ -2163,7 +2162,6 @@ class ChartingState extends MusicBeatState
 						FlxG.sound.music.time -= (wheelRange * Conductor.stepCrochet*0.8);
 					else
 						{
-							var time:Float = FlxG.sound.music.time;
 							var beat:Float = curDecBeat;
 							var snap:Float = quantization / 4;
 							var increase:Float = 1 / snap;
@@ -4144,6 +4142,7 @@ class ChartingState extends MusicBeatState
 			note.scrollFactor.set(1, 1);
 		}
 	}
+	inline static function get_GRID_SIZE():Int return Std.int(Math.max(20, ClientPrefs.chartEditorGridSize));
 }
 
 class AttachedFlxText extends FlxText

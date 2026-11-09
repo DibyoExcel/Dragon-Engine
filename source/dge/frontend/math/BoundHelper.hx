@@ -14,7 +14,7 @@ class BoundHelper {
      * @param originX Normalized origin X (0 = left, 1 = right)
      * @param originY Normalized origin Y (0 = top, 1 = bottom)
      */
-    public static function computeAABB(rectX:Float, rectY:Float, w:Float, h:Float, angle:Float, originX:Float, originY:Float):AABB {
+    inline public static function computeAABB(rectX:Float, rectY:Float, w:Float, h:Float, angle:Float, originX:Float, originY:Float):AABB {
         if (angle == 0) return { minX: rectX, minY: rectY, maxX: rectX + w, maxY: rectY + h};
         var pivotX = rectX + originX * w;
         var pivotY = rectY + originY * h;

@@ -1,4 +1,5 @@
 package dge.frontend.scale;
+//just simple game resolution changer
 
 import flixel.FlxG;
 import flixel.system.scaleModes.BaseScaleMode;
@@ -6,8 +7,8 @@ import flixel.system.scaleModes.BaseScaleMode;
 class ScreenScaleMode extends BaseScaleMode
 {
     public static var allowWideScreen(default, set):Bool = false;
-    public static var screenWidth(default, set):Int = 960;
-    public static var screenHeight(default, set):Int = 960;
+    public static var screenWidth(default, set):Int = 1280;
+    public static var screenHeight(default, set):Int = 720;
     private static var resolutionListener:Array<Int->Int->Void> = [];
 
     public function new(W:Int = 1280, H:Int = 720) {
@@ -78,7 +79,7 @@ class ScreenScaleMode extends BaseScaleMode
         @:privateAccess {
             FlxG.width = screenWidth;
             FlxG.height = screenHeight;
-            FlxG.game.resizeGame(FlxG.stage.stageWidth, FlxG.stage.stageHeight);
+            if (FlxG.game != null) FlxG.game.resizeGame(FlxG.stage.stageWidth, FlxG.stage.stageHeight);
         }
         for (l in resolutionListener) {
             if (l == null) continue;

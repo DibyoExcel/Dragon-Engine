@@ -71,10 +71,11 @@ class HoldCover extends FlxSprite
         var texture = '';
         alpha = ClientPrefs.holdCoverAlpha;
         if (note != null) {
-            if (note.holdCoverTexture != null && note.holdCoverTexture.length > 0) {
-                texture = note.holdCoverTexture;
+            var holdData = note.holdCoverData;
+            if (holdData.texture != null && holdData.texture.length > 0) {
+                texture = holdData.texture;
             }
-            alpha = note.holdCoverAlpha;
+            alpha = holdData.alpha;
         }
         if (texture == null || texture.length < 1) {
             var skin:String = PlayState.SONG.holdCoverSkin;
@@ -104,13 +105,14 @@ class HoldCover extends FlxSprite
 			if (texture == null || texture.length < 1) texture = 'holdCover';
         }
         if (note != null) {
+            var holdData = note.holdCoverData;
             timer = ((note.sustainLength+((note.strumTime+note.offsetStrumTime)-Conductor.songPosition))/1000)+note.holdCoverDelaySplash;
-            if (note.holdCoverCopyAlpha && strum != null) {
-                alpha = strum.alpha * note.holdCoverAlpha;
+            if (holdData.copyAlpha && strum != null) {
+                alpha = strum.alpha * holdData.alpha;
             } else {
-                alpha = note.holdCoverAlpha;
+                alpha = holdData.alpha;
             }
-            setGraphicSize(Std.int(width * (note.holdCoverScale*(ClientPrefs.strumsize*(EKUtil.getNoteScale(EKUtil.getCurrentMania()))))), Std.int(height * (note.holdCoverScale*(ClientPrefs.strumsize*(EKUtil.getNoteScale(EKUtil.getCurrentMania()))))));
+            setGraphicSize(Std.int(width * (holdData.scale*(ClientPrefs.strumsize*(EKUtil.getNoteScale(EKUtil.getCurrentMania()))))), Std.int(height * (holdData.scale*(ClientPrefs.strumsize*(EKUtil.getNoteScale(EKUtil.getCurrentMania()))))));
         }
         if (strum != null) {
             setPosition((x+strum.width/2)-(width/2), (y+strum.height/2)-(height/2));
@@ -130,58 +132,62 @@ class HoldCover extends FlxSprite
         centerOrigin();
 		centerOffsets();
         if (note != null) {
-            var shaderType = note.holdCoverShaderType.toLowerCase();
+            var holdData = note.holdCoverData;
+            origin.x += holdData.offsetOrigin.x;
+            origin.y += holdData.offsetOrigin.y;
+            var shaderData = holdData.shader;
+            var shaderType = holdData.shaderType.toLowerCase();
             shader = FunkinLua.shaderSpriteHandler(this, shaderType);
             if (shaderType == 'swap') {
                 //swap
-                colorSwap.hue = note.holdCoverHue;
-                colorSwap.saturation = note.holdCoverSat;
-                colorSwap.brightness = note.holdCoverBrt;
+                colorSwap.hue = shaderData.colorSwap.hue;
+                colorSwap.saturation = shaderData.colorSwap.saturation;
+                colorSwap.brightness = shaderData.colorSwap.brightness;
             }
             if (shaderType == 'single') {
                 //single
-                colorSingle.r = note.holdCoverSingleR;
-                colorSingle.g = note.holdCoverSingleG;
-                colorSingle.b = note.holdCoverSingleB;
+                colorSingle.r = shaderData.singleColor.r;
+                colorSingle.g = shaderData.singleColor.g;
+                colorSingle.b = shaderData.singleColor.b;
             }
             if (shaderType == 'invert') {
                 //invert
-                colorInvert.invertR = note.holdCoverInvertR;
-                colorInvert.invertG = note.holdCoverInvertG;
-                colorInvert.invertB = note.holdCoverInvertB;
+                colorInvert.invertR = shaderData.invertColor.r;
+                colorInvert.invertG = shaderData.invertColor.g;
+                colorInvert.invertB = shaderData.invertColor.b;
             }
             if (shaderType == 'rgbswap') {
                 //rgbSwap
-                colorRGBSwap.swapR = note.holdCoverRGBSwapR;
-                colorRGBSwap.swapG = note.holdCoverRGBSwapG;
-                colorRGBSwap.swapB = note.holdCoverRGBSwapB;
+                colorRGBSwap.swapR = shaderData.rgbSwap.r;
+                colorRGBSwap.swapG = shaderData.rgbSwap.g;
+                colorRGBSwap.swapB = shaderData.rgbSwap.b;
             }
             if (shaderType == 'pixel') {
                 //pixel
-                pixelSprite.pixelSize = note.holdCoverPixelSize;
+                pixelSprite.pixelSize = shaderData.pixel.size;
             }
             if (shaderType == 'posterize') {
                 //posterize
-                posterize.posterizeRange = note.holdCoverPosterizeRange;
+                posterize.posterizeRange = shaderData.posterize.range;
             }
             if (shaderType == 'rgbpalette') {
                 //rgb palette
-                rgbShader.r = note.holdCoverR;
-                rgbShader.g = note.holdCoverG;
-                rgbShader.b = note.holdCoverB;
+                rgbShader.r = shaderData.rgbPalette.r;
+                rgbShader.g = shaderData.rgbPalette.g;
+                rgbShader.b = shaderData.rgbPalette.b;
             }
             if (shaderType == 'grayscale') {
                 //grayscale
-                grayScale.mult = note.holdCoverGrayscaleMult;
+                grayScale.mult = shaderData.grayscale.mult;
             }
             if (shaderType == 'b&w') {
                 //black and white
-                blackAndWhite.mult = note.holdCoverBAndWMult;
-                blackAndWhite.threshold = note.holdCoverBAndWThreshold;
+                blackAndWhite.mult = shaderData.BAndW.mult;
+                blackAndWhite.threshold = shaderData.BAndW.threshold;
             }
-            scrollFactor.set(note.holdCoverScrollFactor[0], note.holdCoverScrollFactor[1]);
-            if (note.holdCoverCam != null && note.holdCoverCam.length > 0) {
-                var camArray:Array<String> = note.holdCoverCam.split(',');
+            scrollFactor.set(holdData.scrollFactor.x, holdData.scrollFactor.y);
+            if (holdData.camera != null && holdData.camera.length > 0) {
+                var camArray:Array<String> = holdData.camera.split(',');
                 var realCam:Array<String> = [];
                 for (i in 0...camArray.length) {
                     realCam[i] = camArray[i].trim();
@@ -197,10 +203,10 @@ class HoldCover extends FlxSprite
             var offsetX = 0.0;
             var offsetY = 0.0;
             if (note != null) {
-                offsetX = note.holdCoverOffsetX;
-                offsetY = note.holdCoverOffsetY;
-                if (note.holdCoverCopyAlpha) {
-                    alpha = strum.alpha * note.holdCoverAlpha;
+                offsetX = note.holdCoverData.offset.x;
+                offsetY = note.holdCoverData.offset.y;
+                if (note.holdCoverData.copyAlpha) {
+                    alpha = strum.alpha * note.holdCoverData.alpha;
                 }
             }
             setPosition(((strum.x+strum.width/2)-(width/2))+offsetX, ((strum.y+strum.height/2)-(height/2))+offsetY);
