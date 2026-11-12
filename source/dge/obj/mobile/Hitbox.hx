@@ -107,6 +107,13 @@ class Hitbox extends TouchButton
 		return super.set_alpha(value);
 	}
 
+    override public function set_cameras(value:Array<FlxCamera>):Array<FlxCamera> {
+        if (hitboxHint != null) {
+            hitboxHint.cameras = value;
+        }
+        return super.set_cameras(value);
+    }
+
     function set_pressAlpha(value:Float):Float {
         if (pressAlpha != value) {
             pressAlpha = value;
@@ -160,7 +167,6 @@ class Hitbox extends TouchButton
             var centerOffset = (height - hitboxHint.height) / 2;
             hitboxHint.y -= Math.min(centerOffset, offsetMax);
             if (followHintColor) hitboxHint.color = this.color;
-            hitboxHint.cameras = this.cameras;
             hitboxHint.draw();
             hitboxHint.color = hintColor;
         }

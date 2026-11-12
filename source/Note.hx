@@ -302,7 +302,8 @@ class Note extends FlxSprite
 	public var copyDirection:Bool = true;//attach direction from strums
 	public var copyScrollFactor:Bool = true;
 	public var copyCam:Bool = true;
-	public var copyScale:Bool = true;
+	public var copyScaleX:Bool = true;
+	public var copyScaleY:Bool = true;
 	//end copy thing
 	//snap prop
 	public var snapX:Float = 0;
@@ -635,7 +636,7 @@ class Note extends FlxSprite
 				case 'Hurt Note':
 					ignoreNote = mustPress;
 					texture = "HURTNOTE_assets";
-					noteSplashData.texture = 'HURTnoteSplash';
+					noteSplashData.texture = 'HURTnoteSplashes';
 					colorSwap.hue = 0;
 					colorSwap.saturation = 0;
 					colorSwap.brightness = 0;
@@ -755,6 +756,7 @@ class Note extends FlxSprite
 			hitsoundDisabled = true;
 
 			copyAngle = false;
+			copyScaleY = false;
 			copyFlipY = true;
 			var mania = EKUtil.getCurrentMania();
 			var indexTarget = EKUtil.noteAnimIndex[mania-1];
@@ -1536,11 +1538,11 @@ class Note extends FlxSprite
 		return (160*0.7) * ClientPrefs.strumsize;
 	}
 	override function draw() {
-		var offsetYMod = y;
+		var origY = y;
 		if (animation != null && animation.curAnim != null && animation.curAnim.name.endsWith('_down')) {
 			y += downScrollOffset;
 		}
 		super.draw();
-		y = offsetYMod;
+		y = origY;
 	}
 }

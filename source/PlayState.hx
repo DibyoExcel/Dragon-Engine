@@ -4189,61 +4189,55 @@ class PlayState extends MusicBeatState
 							daNote.scrollFactor.x = actualStrum.scrollFactor.x;
 							daNote.scrollFactor.y = actualStrum.scrollFactor.y;
 						}
-						if (daNote.copyScale) {
+						if (daNote.copyScaleX) {
 							daNote.scaleMult.x = totalScaleX;
+						}
+						if (daNote.copyScaleY) {
 							daNote.scaleMult.y = totalScaleY;
 						}
 						if (daNote.copyCam) {
 							daNote.cameras = actualStrum.cameras;
 						}
+						var needClip = false;
 						if (!daNote.fakeNoHit) {
 
 							var center:Float = strumY + (actualStrum.height * actualStrum.sustainReducePoint);
 							if(actualStrum.sustainReduce && daNote.isSustainNote && (gamemodeManager(daNote) || (!daNote.ignoreNote && !daNote.canFreeze)) &&
 								(!gamemodeManager(daNote) || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && (!daNote.canBeHit || cpuControlled)))))
 							{
-								if (strumScroll)
-								{
-									if(daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= center)
-									{
-										var swagRect = new FlxRect(0, 0, daNote.frameWidth, daNote.frameHeight);
-										swagRect.height = (center - daNote.y) / daNote.scale.y;
-										swagRect.y = daNote.frameHeight - swagRect.height;
-	
+								var scaleY = daNote.scale.y * daNote.scaleMult.x;
+								var offsetY = daNote.offset.y * daNote.scaleMult.y;
+								if (daNote.flipY) offsetY = -offsetY;
+								var noteY = daNote.y;
+								var noteWR = daNote.frameWidth;
+								var noteHR = daNote.frameHeight;
+								//rewrite
+								var diff = ((center - noteY) / scaleY);
+								var yPos = (daNote.flipY ? noteHR - diff : diff);
+								var hPos = (!daNote.flipY ? noteHR - diff : diff);
+								var swagRect = FlxRect.get();//idk how pool work but i think best optimized i can do
+								swagRect.x = 0;
+								swagRect.y = yPos;
+								swagRect.width = noteWR;
+								swagRect.height = hPos;
+								if (strumScroll) {
+									var edgeNote = (noteY + (offsetY * scaleY)) + noteHR;
+									if (edgeNote >= center) {
 										daNote.clipRect = swagRect;
-									} else {
-										//scroll speed fix
-										if (daNote.clipRect != null) {
-											daNote.clipRect = null;
-										}
+										needClip = true;
+									}
+								} else {
+									var edgeNote = (noteY + (offsetY * scaleY));
+									if (edgeNote <= center) {
+										daNote.clipRect = swagRect;
+										needClip = true;
 									}
 								}
-								else
-								{
-									if (daNote.y + daNote.offset.y * daNote.scale.y <= center)
-									{
-										var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
-										swagRect.y = (center - daNote.y) / daNote.scale.y;
-										swagRect.height -= swagRect.y;
-	
-										daNote.clipRect = swagRect;
-									} else {
-										//scroll speed fix
-										if (daNote.clipRect != null) {
-											daNote.clipRect = null;
-										}
-									}
-								}
-							} else {
-								//i know it was not on purpose change after hit but just incase if some 'modder' try messed up
-								if (daNote.clipRect != null) {
-									daNote.clipRect = null;
-								}
+								swagRect.put();
 							}
-						} else {
-							if (daNote.clipRect != null) {
-								daNote.clipRect = null;
-							}
+						}
+						if (!needClip && daNote.clipRect != null) {
+							daNote.clipRect = null;
 						}
 					} else {
 						daNote.strumNote = null;
