@@ -48,6 +48,7 @@ class MainOptionsState extends MusicBeatState
 	private var enterButton:VirtualButton;
 	#end
 	private var settingName:String = 'Global Setting';
+	public static var inGame:Bool = false;
 
 	function openSelectedSubstate(label:String) {
 		switch(label) {
@@ -131,7 +132,12 @@ class MainOptionsState extends MusicBeatState
 
 		if (controls.BACK #if android || FlxG.android.justPressed.BACK #end) {
 			FlxG.sound.play(Paths.sound('cancelMenu'));
-			MusicBeatState.switchState(new MainMenuState());
+			if (inGame) {
+				inGame = false;
+				LoadingState.loadAndSwitchState(new PlayState());
+			} else {
+				MusicBeatState.switchState(new MainMenuState());
+			}
 		}
 
 		if (controls.ACCEPT #if mobile || enterButton.justPressed #end) {

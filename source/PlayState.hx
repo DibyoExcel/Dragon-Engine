@@ -4214,26 +4214,19 @@ class PlayState extends MusicBeatState
 								//rewrite
 								var diff = ((center - noteY) / scaleY);
 								var yPos = (daNote.flipY ? noteHR - diff : diff);
-								var hPos = (!daNote.flipY ? noteHR - diff : diff);
-								var swagRect = FlxRect.get();//idk how pool work but i think best optimized i can do
-								swagRect.x = 0;
-								swagRect.y = yPos;
-								swagRect.width = noteWR;
-								swagRect.height = hPos;
-								if (strumScroll) {
-									var edgeNote = (noteY + (offsetY * scaleY)) + noteHR;
-									if (edgeNote >= center) {
-										daNote.clipRect = swagRect;
-										needClip = true;
-									}
-								} else {
-									var edgeNote = (noteY + (offsetY * scaleY));
-									if (edgeNote <= center) {
-										daNote.clipRect = swagRect;
-										needClip = true;
-									}
+								var hPos = noteHR - yPos;
+								var edgeNote = (noteY + (offsetY * scaleY)) + (strumScroll ? noteHR : 0);
+								var isClipped = (strumScroll ? edgeNote >= center : edgeNote <= center);
+								if (isClipped) {
+									var swagRect = FlxRect.get();//idk how pool work but i think best optimized i can do
+									swagRect.x = 0;
+									swagRect.y = yPos;
+									swagRect.width = noteWR;
+									swagRect.height = hPos;
+									daNote.clipRect = swagRect;
+									needClip = true;
+									swagRect.put();
 								}
-								swagRect.put();
 							}
 						}
 						if (!needClip && daNote.clipRect != null) {

@@ -26,6 +26,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
+import flixel.FlxCamera;
 
 
 #if sys
@@ -55,6 +56,8 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 	private var enterButton:VirtualButton;
 	private var resetButton:VirtualButton;
 	#end
+	public static var inGame:Bool = false;//just mark from pause menu
+	private var overlayCamera:FlxCamera;//prevent put this shit into game world :sob:
 
 	function getOptions()
 	{
@@ -260,6 +263,10 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 
 		changeSelection();
 		reloadCheckboxes();
+		overlayCamera = new FlxCamera();
+		overlayCamera.bgColor.alpha = 0;
+		FlxG.cameras.add(overlayCamera, false);
+		cameras = [overlayCamera];
 	}
 
 	var nextAccept:Int = 5;
@@ -280,6 +287,10 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 			close();
 			ClientPrefs.saveSettings();
 			FlxG.sound.play(Paths.sound('cancelMenu'));
+			if (inGame) {
+				PauseSubState.restartSong();//force reload
+				inGame = false;
+			}
 		}
 
 		if(nextAccept <= 0)
@@ -477,6 +488,12 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 		for (checkbox in checkboxGroup) {
 			checkbox.daValue = (optionsArray[checkbox.ID].getValue() == true);
 		}
+	}
+	override public function close():Void
+	{
+		super.close();
+		FlxG.cameras.remove(overlayCamera, true);
+		overlayCamera.destroy();
 	}
 }
 

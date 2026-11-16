@@ -50,10 +50,10 @@ class PauseSubState extends MusicBeatSubstate
 	public function new()
 	{
 		super();
+		//added back options in pause menu(it' ve exists from 1.5.9 then remove in 1.6.3.2)
+		menuItemsOG = ['Resume', 'Restart Song', 'Change Difficulty', 'Options', 'Gameplay Changer' #if mobile , 'Chart Editor' #end, 'Exit to menu'];
 		if (ClientPrefs.dragonW) {
-			menuItemsOG = ['Dragonflight', 'Reignite Melody', 'Scale Challenge' #if mobile , 'Chart Editor' #end, 'Return to Lair'];
-		} else {
-			menuItemsOG = ['Resume', 'Restart Song', 'Change Difficulty'  #if mobile , 'Chart Editor' #end, 'Exit to menu'];
+			menuItemsOG = ['Dragonflight', 'Reignite Melody', 'Scale Challenge', 'Options', 'Gameplay Changer' #if mobile , 'Chart Editor' #end, 'Return to Lair'];
 		}
 		if(CoolUtil.difficulties.length < 2) menuItemsOG.remove((ClientPrefs.dragonW ? 'Scale Challenge' : 'Change Difficulty')); //No need to change difficulty if there is only one!
 		if(PlayState.chartingMode)
@@ -197,33 +197,7 @@ class PauseSubState extends MusicBeatSubstate
 		var daSelected:String = menuItems[curSelected];
 		switch (daSelected)
 		{
-			case 'Skip Time':
-				if (controls.UI_LEFT_P #if mobile || leftButton.justPressed #end)
-				{
-					FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
-					curTime -= 1000;
-					holdTime = 0;
-				}
-				if (controls.UI_RIGHT_P #if mobile || rightButton.justPressed #end)
-				{
-					FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
-					curTime += 1000;
-					holdTime = 0;
-				}
-
-				if((controls.UI_LEFT #if mobile || leftButton.pressed #end) || (controls.UI_RIGHT #if mobile || rightButton.pressed #end))
-				{
-					holdTime += elapsed;
-					if(holdTime > 0.5)
-					{
-						curTime += 45000 * elapsed * ((controls.UI_LEFT #if mobile || leftButton.pressed #end) ? -1 : 1);
-					}
-
-					if(curTime >= FlxG.sound.music.length) curTime -= FlxG.sound.music.length;
-					else if(curTime < 0) curTime += FlxG.sound.music.length;
-					updateSkipTimeText();
-				}
-			case 'Time Control':
+			case 'Skip Time' | 'Time Control':
 				if (controls.UI_LEFT_P #if mobile || leftButton.justPressed #end)
 				{
 					FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
@@ -283,37 +257,22 @@ class PauseSubState extends MusicBeatSubstate
 
 			switch (daSelected)
 			{
-				case "Resume":
+				case "Resume" | "Dragonflight":
 					close();
-				case 'Change Difficulty':
+				case 'Change Difficulty' | 'Scale Challenge':
 					menuItems = difficultyChoices;
 					deleteSkipTimeText();
 					regenMenu();
-				case "Dragonflight":
-					close();
-				case 'Scale Challenge':
-					menuItems = difficultyChoices;
-					deleteSkipTimeText();
-					regenMenu();
-				case 'Toggle Practice Mode':
+				case 'Toggle Practice Mode' | 'Toggle Wyrm Training':
 					PlayState.instance.practiceMode = !PlayState.instance.practiceMode;
 					PlayState.changedDifficulty = true;
 					practiceText.visible = PlayState.instance.practiceMode;
-				case 'Toggle Wyrm Training':
-					PlayState.instance.practiceMode = !PlayState.instance.practiceMode;
-					PlayState.changedDifficulty = true;
-					practiceText.visible = PlayState.instance.practiceMode;
-				case "Restart Song":
+				case "Restart Song" | "Reignite Melody":
 					restartSong();
-				case "Reignite Melody":
-					restartSong();
-				case "Leave Charting Mode":
+				case "Leave Charting Mode" | "Left Forge":
 					restartSong();
 					PlayState.chartingMode = false;
-				case "Left Forge":
-					restartSong();
-					PlayState.chartingMode = false;
-				case 'Skip Time':
+				case 'Skip Time' | "Time Control":
 					if(curTime < Conductor.songPosition)
 					{
 						PlayState.startOnTime = curTime;
@@ -328,42 +287,26 @@ class PauseSubState extends MusicBeatSubstate
 						}
 						close();
 					}
-				case "End Song":
+				case "End Song" | "End Melody":
 					close();
 					PlayState.instance.finishSong(true);
-				case 'Time Control':
-					if(curTime < Conductor.songPosition)
-					{
-						PlayState.startOnTime = curTime;
-						restartSong(true);
-					}
-					else
-					{
-						if (curTime != Conductor.songPosition)
-						{
-							PlayState.instance.clearNotesBefore(curTime);
-							PlayState.instance.setSongTime(curTime);
-						}
-						close();
-					}
-				case "End Melody":
-					close();
-					PlayState.instance.finishSong(true);
-				case 'Toggle Botplay':
+				case 'Toggle Botplay' | "Toggle Autoflight":
 					PlayState.instance.cpuControlled = !PlayState.instance.cpuControlled;
 					PlayState.changedDifficulty = true;
 					PlayState.instance.botplayTxt.visible = PlayState.instance.cpuControlled;
 					PlayState.instance.botplayTxt.alpha = 1;
 					PlayState.instance.botplaySine = 0;
-				case 'Toggle Autoflight':
-					PlayState.instance.cpuControlled = !PlayState.instance.cpuControlled;
-					PlayState.changedDifficulty = true;
-					PlayState.instance.botplayTxt.visible = PlayState.instance.cpuControlled;
-					PlayState.instance.botplayTxt.alpha = 1;
-					PlayState.instance.botplaySine = 0;
+				#if mobile
 				case "Chart Editor":
 					PlayState.instance.openChartEditor();
-				case "Exit to menu":
+				#end
+				case 'Options': 
+					options.MainOptionsState.inGame = true;
+					LoadingState.loadAndSwitchState(new options.MainOptionsState());
+				case 'Gameplay Changer':
+					GameplayChangersSubstate.inGame = true;
+					openSubState(new GameplayChangersSubstate());
+				case "Exit to menu" | "Return to Lair":
 					PlayState.deathCounter = 0;
 					PlayState.seenCutscene = false;
 
@@ -377,20 +320,6 @@ class PauseSubState extends MusicBeatSubstate
 					FlxG.sound.playMusic(Paths.music('freakyMenu'));
 					PlayState.changedDifficulty = false;
 					PlayState.chartingMode = false;
-				case "Return to Lair":
-						PlayState.deathCounter = 0;
-						PlayState.seenCutscene = false;
-	
-						//WeekData.loadTheFirstEnabledMod();
-						if(PlayState.isStoryMode) {
-							MusicBeatState.switchState(new StoryMenuState());
-						} else {
-							MusicBeatState.switchState(new FreeplayState());
-						}
-						PlayState.cancelMusicFadeTween();
-						FlxG.sound.playMusic(Paths.music('freakyMenu'));
-						PlayState.changedDifficulty = false;
-						PlayState.chartingMode = false;
 			}
 		}
 	}
@@ -431,12 +360,11 @@ class PauseSubState extends MusicBeatSubstate
 		super.destroy();
 	}
 
-	#if mobile
 	override public function close() {
-		FlxG.cameras.remove(pauseOverlay, true);
 		super.close();
+		FlxG.cameras.remove(pauseOverlay, true);
+		pauseOverlay.destroy();
 	}
-	#end
 
 	function changeSelection(change:Int = 0):Void
 	{
