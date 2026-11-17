@@ -107,6 +107,7 @@ class Hitbox extends TouchButton
 		return super.set_alpha(value);
 	}
 
+    @:noCompletion
     override public function set_cameras(value:Array<FlxCamera>):Array<FlxCamera> {
         if (hitboxHint != null) {
             hitboxHint.cameras = value;
