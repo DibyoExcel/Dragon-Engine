@@ -64,7 +64,9 @@ jobs:
         shell: cmd
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
+        uses: android-actions/setup-android@v3
+        with:
+          packages: tools platform-tools
 
       - name: Install Android packages
         run: |
