@@ -91,7 +91,7 @@ class Song
 		if (songJson.mania == null) {
 			songJson.mania = 4;
 		} else if (songJson.mania < 1) {
-			songJson.mania = 0;
+			songJson.mania = 1;
 		} else if (songJson.mania > 9) {
 			songJson.mania = 9;//only support at max 9
 		}

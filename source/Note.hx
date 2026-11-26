@@ -433,6 +433,7 @@ class Note extends FlxSprite
 	public var comboTexture(default, set):String = null;//overwrite combo texture
 	public var numTexture(default, set):String = null;//overwrite combo number texture
 	public var downScrollOffset:Float = 0;//offset Y for Downscroll animation
+	public var shouldAffectSV:Bool = true;
 	//data holdCover and Note Splash
 	public var noteSplashData(default, set):ExternalSpriteData = {
 		shader: {

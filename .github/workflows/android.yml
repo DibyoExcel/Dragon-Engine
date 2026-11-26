@@ -48,6 +48,7 @@ jobs:
           haxelib install hxcpp 4.2.1 --quiet
           haxelib install android6permissions 0.2.1 --quiet
           haxelib git extension-orientation  https://github.com/HaxeExtension/extension-orientation
+          haxelib install flxcamera-z-order --quiet
           haxelib set flixel-addons 3.0.2
           haxelib set flixel-demos 2.9.0
           haxelib set flixel-templates 2.6.6
@@ -64,9 +65,7 @@ jobs:
         shell: cmd
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          packages: tools platform-tools
+        uses: android-actions/setup-android@v2
 
       - name: Install Android packages
         run: |

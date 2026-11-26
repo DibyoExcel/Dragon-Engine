@@ -10,8 +10,8 @@ import dge.input.device.GamepadControls;
 class EKUtil {
     public static var colArray(default, set):Array<String> = ['purple', 'blue', 'green', 'red', 'space', 'yellow', 'purplealt', 'redalt', 'bluealt'];//for color notes
     public static var direction:Array<String> = ['left', 'down', 'up', 'right', 'space', 'leftalt', 'downalt', 'upalt', 'rightalt'];//for direection xml
-    public static var defaultCol:String = 'green';
     //default anim if not exists(not gonna work with pixel notes)
+    public static var defaultCol:String = 'green';
     public static var defaultDirection:String = 'up';
     public static var noteAnimIndex:Array<Array<Int>> = [
         [4],

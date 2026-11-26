@@ -193,11 +193,11 @@ class NoteSplash extends FlxSprite
 			for (i in 1...3) {
 				if (note != null && note.getActualDownscroll()) {
 					CoolUtil.addSpecialAnimation(this, "note" + color + '-' + i, 'note splash '+ col[color] + ' ' + i + '_DownScroll', 'note splash '+ col[color] + ' ' + i, false, ClientPrefs.fpsStrumAnim);
-					if (animation != null && !animation.exists("note" + color + '-' + i)) {
-						animation.addByPrefix("note" + color + '-' + i, "note splash " + EKUtil.defaultCol.toLowerCase() + '0', ClientPrefs.fpsStrumAnim, false);
-					}
 				} else {
 					animation.addByPrefix("note" + color + "-" + i, "note splash " + col[color] + ' ' + i, ClientPrefs.fpsStrumAnim, false);
+				}
+				if (animation != null && !animation.exists("note" + color + '-' + i)) {
+					animation.addByPrefix("note" + color + '-' + i, "note splash " + EKUtil.defaultCol.toLowerCase() + ' ' + i, ClientPrefs.fpsStrumAnim, false);
 				}
 			}
 		}

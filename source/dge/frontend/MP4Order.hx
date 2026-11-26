@@ -2,6 +2,7 @@ package dge.frontend;
 import vlc.MP4Handler;
 import flixel.FlxCamera;
 import flixel.FlxG;
+import dubenderdragon.flxcamera.ZOrder as CameraZOrder;
 //same like CameraZOrder but for `MP4Handler` object relations with FlxCamera
 //great now `MP$Handler` now can be useful
 

@@ -261,7 +261,7 @@ class VisualUISubState extends BaseOptionsMenu
 		changeBGColor(0xffff0000);
 	}
 	override public function close():Void {
-		if (mustRestart) {
+		if (mustRestart && !options.MainOptionsState.inGame) {
 			//reset
 			TitleState.initialized = false;
 			TitleState.closedState = false;

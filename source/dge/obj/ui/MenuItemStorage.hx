@@ -19,11 +19,10 @@ class MenuItemStorage extends FlxSpriteGroup {
     public var startPoint:FlxPoint = new FlxPoint(0, 0);
     public var distancePerItem:FlxPoint = new FlxPoint(0, 200);
     public var targetY:Int = 0;
-    public var isFile:Bool = false;
     public var textPath:String = '';
     
     
-    public function new(x:Float, y:Float, title:String = '?????', icon:String, texture:String, isFile:Bool = false) {
+    public function new(x:Float, y:Float, title:String = '?????', icon:String, texture:String) {
         super(0, 0);
         startPoint.x = x;
         startPoint.y = y;
@@ -42,7 +41,6 @@ class MenuItemStorage extends FlxSpriteGroup {
         CoolUtil.alignItem(songPanel, songName, MIDDLE_LEFT);
         songName.x += 20;
         add(songName);
-        this.isFile = isFile;
         textPath = title;
         snapToPosition();
     }

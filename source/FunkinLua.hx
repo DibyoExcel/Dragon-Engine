@@ -8,10 +8,12 @@ import haxe.Constraints.IMap;
 //import custom dge lua
 import dge.obj.lua.*;
 import openfl.filters.ShaderFilter;
-import dge.frontend.CameraZOrder;
+import dubenderdragon.flxcamera.ZOrder as CameraZOrder;
 import dge.frontend.scale.ScreenScaleMode;
+#if VIDEOS_ALLOWED
 import dge.obj.game.VideoSprite;
 import dge.frontend.MP4Order as VideoOrder;
+#end
 import dge.input.device.*;
 import dge.backend.EKUtil;
 import flixel.input.gamepad.FlxGamepad;
@@ -226,7 +228,7 @@ class FunkinLua {
 		set('practice', PlayState.instance.practiceMode);
 		set('healthDrainMult', PlayState.instance.healthDrainMult);
 
-		for (i in 0...9) {
+		for (i in 0...EKUtil.colArray.length) {
 			set('defaultPlayerStrumX' + i, 0);
 			set('defaultPlayerStrumY' + i, 0);
 			set('defaultOpponentStrumX' + i, 0);

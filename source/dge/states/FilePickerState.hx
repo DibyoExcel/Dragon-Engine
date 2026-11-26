@@ -29,13 +29,13 @@ class FilePickerState extends MusicBeatSubstate
     var curSelect:Int = 0;
     public var callback:String->Void;
     var textLoad:FlxText;
-    #if android
+    #if mobile
     private var touch:TouchUtil = new TouchUtil();
     private var leftButton:VirtualButton;
     private var enterButton:VirtualButton;
     private var quitButton:VirtualButton;
     #end
-    var antiSpamTimer:Float = 0.2;//prevent accident press when enter state
+    var antiSpamTimer:Float = 0.25;//prevent accident press when enter state
 
     public function new(?callback:String->Void) {
         super();
@@ -44,7 +44,8 @@ class FilePickerState extends MusicBeatSubstate
 
     override function create() {
         super.create();
-        if (FlxG.save.data.lastPathPick != null && Synths.exists(FlxG.save.data.lastPickPath)) {
+        var bckFP = filePath;
+        if (FlxG.save.data.lastPickPath != null && Synths.exists(FlxG.save.data.lastPickPath)) {
             filePath = FlxG.save.data.lastPickPath;
         }
         var gfx = Paths.image(GlobalVar.menuBackground);
@@ -64,7 +65,10 @@ class FilePickerState extends MusicBeatSubstate
         textLoad = new FlxText(textBG.x, textBG.y + 4, FlxG.width, "% Item Loaded", 16);
 		textLoad.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT);
 		add(textLoad);
-        reloadList();
+        if (reloadList()) {
+            filePath = bckFP;
+            reloadList();
+        }
         #if mobile
         leftButton = new VirtualButton(0, FlxG.height-(125+16), 'left');
         leftButton.screenCenter(X);
@@ -121,7 +125,7 @@ class FilePickerState extends MusicBeatSubstate
             filePath = tempFile;
             reloadList();
         }
-        antiSpamTimer = 0.2;//prevent accidental double press
+        antiSpamTimer = 0.25;//prevent accidental double press
     }
 
     function enterPath() {
@@ -130,7 +134,7 @@ class FilePickerState extends MusicBeatSubstate
             var tempPath = filePath;
             filePath += '/' + grpFileList.members[curSelect].textPath;
             if (Synths.exists(filePath)) {//i know what your doing, a experiement user
-                if (grpFileList.members[curSelect].isFile) {
+                if (!Synths.isDirectory(filePath)) {
                     if (callback != null) callback(filePath);
                     FlxG.save.data.lastPickPath = tempPath;
                     FlxG.save.flush();
@@ -146,7 +150,7 @@ class FilePickerState extends MusicBeatSubstate
                 filePath = tempPath;
                 reloadList();
             }
-            antiSpamTimer = 0.2;//prevent accidental double press
+            antiSpamTimer = 0.25;//prevent accidental double press
         }
     }
 
@@ -188,15 +192,9 @@ class FilePickerState extends MusicBeatSubstate
                     for (file in 0...fileList.length) {
                         var fullPath = filePath + '/' + fileList[file];
                         var xCenter = (FlxG.width/2)-((150+25+(Std.int(870*(FlxG.width/1280))))/2);
-                        var makeText = new MenuItemStorage(xCenter, (FlxG.height/2)-75, fileList[file], fullPath, 'ui/nineslice', !Synths.isDirectory(fullPath));
+                        var makeText = new MenuItemStorage(xCenter, (FlxG.height/2)-75, fileList[file], fullPath, 'ui/nineslice');
                         makeText.targetY = file - curSelect;
                         grpFileList.add(makeText);
-                        //makeText.snapToPosition();
-                        //icon
-                        /*var icon = new StorageIcon(fullPath);
-                        icon.sprTracker = makeText;
-                        icon.snapIconToSprTracker();
-                        grpIconList.add(icon);*/
                     }
                     var uiArr:Int = 0;
                     for (item in grpFileList.members) {

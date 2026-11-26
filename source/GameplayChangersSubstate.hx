@@ -217,15 +217,22 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 
 		checkboxGroup = new FlxTypedGroup<CheckboxThingie>();
 		add(checkboxGroup);
+		overlayCamera = new FlxCamera();
+		overlayCamera.bgColor.alpha = 0;
+		FlxG.cameras.add(overlayCamera, false);
+		cameras = [overlayCamera];
 		#if mobile
 		leftButton = new VirtualButton(0, FlxG.height-125, 'left');
+		leftButton.cameras = [overlayCamera];
 		add(leftButton);
 		rightButton = new VirtualButton(125, FlxG.height-125, 'right');
 		add(rightButton);
+		rightButton.cameras = [overlayCamera];
 		resetButton = new VirtualButton(0, FlxG.height-250, 'r');
 		add(resetButton);
 		enterButton = new VirtualButton(FlxG.width-125, FlxG.height-125, 'enter');
 		add(enterButton);
+		enterButton.cameras = [overlayCamera];
 		#end
 		
 		getOptions();
@@ -263,10 +270,6 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 
 		changeSelection();
 		reloadCheckboxes();
-		overlayCamera = new FlxCamera();
-		overlayCamera.bgColor.alpha = 0;
-		FlxG.cameras.add(overlayCamera, false);
-		cameras = [overlayCamera];
 	}
 
 	var nextAccept:Int = 5;

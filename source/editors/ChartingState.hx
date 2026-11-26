@@ -123,6 +123,7 @@ class ChartingState extends MusicBeatState
 		['Change Second Strums', "Value 1: should use 2nd strums mode(1 = true 0 = false).\nValue 2: transition(1 is true 0 is false)\n\nexample: \"1, 0\". the first number(1) is a transition for\nplayer side. The second number(0) is a disable\nopponent strums transition"],
 		['Alert', "Value1: content of alert.\nValue2: title of alert."],
 		['Freeze Note', "Freeze the notes on the screen for a duration.\nValue 1: Duration in seconds(Default 1).\nValue 2: Should destroy after freeze (1 = true 0 = false)\n(default 1)."],
+		['SV Modifier', 'Modified Scroll Velocity as touch `this` event.\nValue 1: Multiple speed to move.']
 	];
 
 	var _file:FileReference;
